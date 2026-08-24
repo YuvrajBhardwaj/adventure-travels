@@ -12,8 +12,8 @@ export default function SummerTreksRail() {
         <FadeUp>
           <div className="flex items-center gap-3">
             <span className="h-px w-10 bg-primary" aria-hidden />
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
-              APR – OCT · SUMMER
+            <span className="font-nav text-xs font-bold uppercase tracking-[0.3em] text-primary">
+              JAN – DEC · TREKS
             </span>
           </div>
           <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-display-lg">

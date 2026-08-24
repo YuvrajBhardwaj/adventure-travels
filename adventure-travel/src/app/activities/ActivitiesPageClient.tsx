@@ -1,12 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
 import SmartImage from "@/components/SmartImage";
-import SkiingCourseModal from "@/components/SkiingCourseModal";
-
 const activities = [
   {
     id: "trekking",
@@ -23,22 +20,6 @@ const activities = [
     stats: { treks: "9+", difficulty: "Easy to Expert", duration: "4-12 Days" },
     cta: { label: "Explore Treks", href: "/treks" },
     color: "emerald",
-  },
-  {
-    id: "skiing",
-    name: "Skiing & Snowboarding",
-    tagline: "Carve the slopes of Auli",
-    image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80",
-    description: "Professional 7-day courses in Auli, Uttarakhand. Learn from certified instructors with complete equipment provided.",
-    features: [
-      "Certified ski & snowboard instructors",
-      "Complete equipment included",
-      "Beginner to intermediate slopes",
-      "Stunning Himalayan backdrop",
-    ],
-    stats: { courses: "2", price: "₹30K-35K", duration: "7 Days" },
-    cta: { label: "Explore Skills", href: "/activities#skills-academy" },
-    color: "sky",
   },
   {
     id: "camping",
@@ -106,7 +87,6 @@ const icons: Record<string, React.JSX.Element> = {
 
 export default function ActivitiesPage() {
   const { ref: headerRef } = useReveal("reveal-up");
-  const [showCourse, setShowCourse] = useState(false);
 
   return (
     <div className="min-h-screen bg-white dark:bg-background">
@@ -211,15 +191,15 @@ export default function ActivitiesPage() {
               from beginner nursery slopes to intermediate runs, all beneath the gaze of Nanda Devi.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
-              <button
-                onClick={() => setShowCourse(true)}
+              <Link
+                href="/courses"
                 className="inline-flex items-center gap-2 rounded-full border-2 border-sky-500 px-7 py-3 text-sm font-semibold text-sky-600 transition-all hover:-translate-y-0.5 hover:bg-sky-500 hover:text-white"
               >
                 View Courses
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
-              </button>
+              </Link>
             </div>
           </motion.div>
         </div>
@@ -262,9 +242,9 @@ export default function ActivitiesPage() {
                 </div>
                 <p className="mt-4 text-sm text-muted">Master stance, balance, and stopping on nursery slopes. Progress through linked turns to chairlift runs with an instructor at your side.</p>
                 <div className="mt-5 flex items-center justify-between">
-                  <p className="font-heading text-xl font-bold text-foreground">₹30,000 <span className="text-xs font-normal text-muted">/ 7 days</span></p>
+                  <p className="font-heading text-xl font-bold text-foreground">From ₹10,000 <span className="text-xs font-normal text-muted">/ 7 days</span></p>
                   <div className="flex flex-wrap gap-2">
-                    <Link href="/courses/skiing-course" className="rounded-xl bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-sky-600 hover:scale-105">View Course</Link>
+                    <Link href="/courses" className="rounded-xl bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-sky-600 hover:scale-105">View Course</Link>
                     <a href={`https://wa.me/917817912062?text=${encodeURIComponent("Hi! I'm interested in the Skiing course in Auli.")}`} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-sky-500 px-4 py-2.5 text-sm font-semibold text-sky-600 transition-all hover:bg-sky-50">Book</a>
                   </div>
                 </div>
@@ -294,7 +274,7 @@ export default function ActivitiesPage() {
                 <div className="mt-5 flex items-center justify-between">
                   <p className="font-heading text-xl font-bold text-foreground">₹35,000 <span className="text-xs font-normal text-muted">/ 7 days</span></p>
                   <div className="flex flex-wrap gap-2">
-                    <Link href="/courses/snowboarding-course" className="rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-indigo-600 hover:scale-105">View Course</Link>
+                    <Link href="/courses" className="rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-indigo-600 hover:scale-105">View Course</Link>
                     <a href={`https://wa.me/917817912062?text=${encodeURIComponent("Hi! I'm interested in the Snowboarding course in Auli.")}`} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-indigo-400 px-4 py-2.5 text-sm font-semibold text-indigo-600 transition-all hover:bg-indigo-50">Book</a>
                   </div>
                 </div>
@@ -424,27 +404,15 @@ export default function ActivitiesPage() {
                     </div>
 
                     {/* CTA */}
-                    {act.id === "skiing" ? (
-                      <button
-                        onClick={() => setShowCourse(true)}
-                        className={`inline-flex items-center gap-2 rounded-xl ${colors.accent} px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:scale-105`}
-                      >
-                        {act.cta.label}
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </button>
-                    ) : (
-                      <Link
-                        href={act.cta.href}
-                        className={`inline-flex items-center gap-2 rounded-xl ${colors.accent} px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:scale-105`}
-                      >
-                        {act.cta.label}
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </Link>
-                    )}
+                    <Link
+                      href={act.cta.href}
+                      className={`inline-flex items-center gap-2 rounded-xl ${colors.accent} px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:scale-105`}
+                    >
+                      {act.cta.label}
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </Link>
                   </div>
                 </div>
               );
@@ -628,7 +596,6 @@ export default function ActivitiesPage() {
         </div>
       </section>
 
-      <SkiingCourseModal open={showCourse} onClose={() => setShowCourse(false)} />
     </div>
   );
 }

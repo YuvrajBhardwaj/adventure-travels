@@ -15,7 +15,7 @@ export default function SnowSchool() {
         <FadeUp>
           <div className="flex items-center gap-3">
             <span className="h-px w-10 bg-secondary" aria-hidden />
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-secondary">
+            <span className="font-nav text-xs font-bold uppercase tracking-[0.3em] text-secondary">
               DEC – MAR · WINTER
             </span>
           </div>

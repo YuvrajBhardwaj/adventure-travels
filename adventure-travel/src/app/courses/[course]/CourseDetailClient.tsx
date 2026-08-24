@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { createActivityBooking } from "@/lib/auth";
 import type { Course } from "@/data/courses";
@@ -46,6 +46,36 @@ const TYPE_COLORS: Record<string, { gradient: string; badge: string }> = {
 
 const WA_BASE = "https://wa.me/917817912062?text=";
 
+const STAY_LABELS: Record<"base" | "full", string> = {
+  base: "Without lodging & food",
+  full: "With lodging & meals",
+};
+
+/* Per-combo bullet points for the package cards ("what changes" between the 4 options). */
+function pkgBullets(tier: { id: string }, stay: "base" | "full"): string[] {
+  if (stay === "full") {
+    return [
+      "7 nights Auli stay included",
+      "All meals included (breakfast, lunch & dinner)",
+      tier.id === "premium" ? "Video analysis, seminars & final assessment" : "3–4 hrs practical coaching daily",
+      "Certificate + graduation ceremony",
+    ];
+  }
+  return tier.id === "premium"
+    ? [
+        "Training only — no stay or meals",
+        "4–5 hrs daily + HD video movement analysis",
+        "Snow-science seminars, final assessment & après-ski",
+        "Certificate + graduation ceremony",
+      ]
+    : [
+        "Training only — no stay or meals",
+        "3–4 hrs practical coaching daily",
+        "Gliding, snow-plough turns & ski-lift basics",
+        "Certificate + graduation ceremony",
+      ];
+}
+
 /* ─── Availability / batch schedule (derived from the course season + duration) ─── */
 type CAvail = "available" | "few" | "sold";
 type CourseBatch = { id: string; label: string; iso: string; days: number; price: number; availability: CAvail };
@@ -69,7 +99,7 @@ function fmtCourseDate(year: number, monthIdx: number, day: number): string {
 }
 
 // Parse the season string (e.g. "Dec 2026 — Mar 2027") + duration into upcoming batches.
-function getCourseBatches(course: Course): CourseBatch[] {
+function getCourseBatches(course: Course, priceOverride?: number): CourseBatch[] {
   const monthTokens = (course.dates.match(/[A-Za-z]{3,}/g) ?? [])
     .map((t) => CMONTHS.findIndex((x) => x.toLowerCase() === t.slice(0, 3).toLowerCase()))
     .filter((i) => i >= 0);
@@ -102,7 +132,7 @@ function getCourseBatches(course: Course): CourseBatch[] {
         label: `${fmtCourseDate(mo.y, mo.m, sd)} – ${fmtCourseDate(end.getFullYear(), end.getMonth(), end.getDate())} ${end.getFullYear()}`,
         iso: new Date(mo.y, mo.m, sd).toISOString().slice(0, 10),
         days,
-        price: course.price,
+        price: priceOverride ?? course.price,
         availability: C_CYCLE[ci++ % C_CYCLE.length],
       });
       if (out.length >= 6) break;
@@ -173,6 +203,7 @@ interface Props {
 
 export default function CourseDetailClient({ course }: Props) {
   const { user } = useAuth();
+  const shouldReduceMotion = useReducedMotion();
   const [tab, setTab] = useState<Tab>("overview");
   const [bookingForm, setBookingForm] = useState({
     name: "",
@@ -184,7 +215,16 @@ export default function CourseDetailClient({ course }: Props) {
   });
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
+  const [bookError, setBookError] = useState("");
   const [lightbox, setLightbox] = useState<number | null>(null);
+
+  // Multi-tier pricing (skiing course sells Basic/Premium × without/with stay)
+  const tiers = course.tiers ?? [];
+  const [tierId, setTierId] = useState(tiers[0]?.id ?? "");
+  const [stay, setStay] = useState<"base" | "full">("base");
+  const selectedTier = tiers.find((t) => t.id === tierId) ?? tiers[0];
+  const total = selectedTier ? (stay === "full" ? selectedTier.priceFull : selectedTier.priceBase) : course.price;
+  const packages = tiers.flatMap((t) => (["base", "full"] as const).map((s) => ({ tier: t, stay: s })));
 
   const colors = TYPE_COLORS[course.type];
   const images = course.gallery || [course.image];
@@ -202,6 +242,21 @@ export default function CourseDetailClient({ course }: Props) {
   const registerForBatch = (iso: string) => {
     setBookingForm((f) => ({ ...f, date: iso }));
     goToTab("book");
+  };
+
+  const onTabKeyDown = (e: React.KeyboardEvent, index: number) => {
+    const keys = ["ArrowRight", "ArrowLeft", "Home", "End"];
+    if (!keys.includes(e.key)) return;
+    e.preventDefault();
+    let next = index;
+    if (e.key === "ArrowRight") next = (index + 1) % TAB_LIST.length;
+    else if (e.key === "ArrowLeft") next = (index - 1 + TAB_LIST.length) % TAB_LIST.length;
+    else if (e.key === "Home") next = 0;
+    else next = TAB_LIST.length - 1;
+    const key = TAB_LIST[next].key;
+    setTab(key);
+    tabRefs.current[next]?.focus();
+    tabRefs.current[next]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   };
 
   useEffect(() => {
@@ -234,12 +289,11 @@ export default function CourseDetailClient({ course }: Props) {
         activity_name: course.name,
         activity_date: bookingForm.date,
         group_size: bookingForm.groupSize,
-        message: `Name: ${bookingForm.name}, Email: ${bookingForm.email}, Phone: ${bookingForm.phone}. ${bookingForm.message}`,
+        message: `${selectedTier ? `Package: ${selectedTier.name} (${STAY_LABELS[stay]}) — Rs.${total.toLocaleString("en-IN")}. ` : ""}Name: ${bookingForm.name}, Email: ${bookingForm.email}, Phone: ${bookingForm.phone}. ${bookingForm.message}`,
       });
       setSent(true);
     } catch {
-      // ponytail: show error state
-      alert("Something went wrong. Please try again or contact us on WhatsApp.");
+      setBookError("Something went wrong on our end. Please try again, or book instantly on WhatsApp.");
     } finally {
       setSubmitting(false);
     }
@@ -313,43 +367,95 @@ export default function CourseDetailClient({ course }: Props) {
           <div className="flex-1">
             {/* Tab Navigation */}
             <div className="sticky top-16 z-30 mb-8 border-b border-gray-200 bg-white/90 backdrop-blur-md">
-              <div className="flex gap-1 overflow-x-auto">
+              <div role="tablist" aria-label="Course details" className="flex gap-1 overflow-x-auto">
                 {TAB_LIST.map((t, i) => (
                   <button
                     key={t.key}
                     ref={(el) => { tabRefs.current[i] = el; }}
+                    role="tab"
+                    id={`course-tab-${i}`}
+                    aria-selected={tab === t.key}
+                    aria-controls="course-tabpanel"
+                    tabIndex={tab === t.key ? 0 : -1}
                     onClick={() => goToTab(t.key)}
-                    className={`px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm font-medium whitespace-nowrap transition-colors relative active:scale-95 ${
+                    onKeyDown={(e) => onTabKeyDown(e, i)}
+                    className={`px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm font-medium whitespace-nowrap transition-colors relative active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 rounded-t-md ${
                       tab === t.key
                         ? "text-sky-600"
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
-                    {t.label}
-                    {tab === t.key && (
-                      <motion.div
-                        layoutId="tab-indicator"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-600"
-                      />
-                    )}
+                    {tab === t.key &&
+                      (shouldReduceMotion ? (
+                        <span className="absolute inset-x-1 inset-y-1 rounded-full bg-sky-50 ring-1 ring-sky-200" />
+                      ) : (
+                        <motion.span
+                          layoutId="course-tab-pill"
+                          transition={{ type: "spring", damping: 30, stiffness: 380 }}
+                          className="absolute inset-x-1 inset-y-1 rounded-full bg-sky-50 ring-1 ring-sky-200"
+                        />
+                      ))}
+                    <span className="relative">{t.label}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Tab Content */}
+            <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={tab}
               id="course-tabpanel"
+              role="tabpanel"
+              aria-labelledby={`course-tab-${TAB_LIST.findIndex((t) => t.key === tab)}`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="scroll-mt-36"
+              className="scroll-mt-36 focus:outline-none"
             >
               {tab === "overview" && (
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Course</h2>
                   <p className="text-gray-600 leading-relaxed mb-8">{course.description}</p>
+
+                  {packages.length > 0 && (
+                    <div className="mb-10">
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">Choose Your Package</h3>
+                      <p className="text-sm text-gray-500 mb-4">Two itineraries, each with or without stay &amp; meals — pick one and it carries through to booking.</p>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {packages.map(({ tier, stay: s }) => {
+                          const active = tier.id === tierId && s === stay;
+                          const price = s === "full" ? tier.priceFull : tier.priceBase;
+                          return (
+                            <button key={`${tier.id}-${s}`} type="button"
+                              onClick={() => { setTierId(tier.id); setStay(s); }}
+                              aria-pressed={active}
+                              className={`relative flex flex-col rounded-2xl border p-5 text-left transition focus-visible:ring-2 focus-visible:ring-sky-400 ${
+                                active ? "border-sky-500 bg-sky-50 ring-2 ring-sky-200 shadow-md" : "border-gray-200 bg-white hover:border-sky-300 hover:shadow-sm"
+                              }`}>
+                              {active && (
+                                <span className="absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full bg-sky-500">
+                                  <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                                </span>
+                              )}
+                              <span className={`inline-block self-start rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${tier.id === "premium" ? "bg-violet-100 text-violet-700" : "bg-sky-100 text-sky-700"}`}>{tier.name}</span>
+                              <span className="mt-2 font-heading text-2xl font-bold text-gray-900">Rs.{price.toLocaleString("en-IN")}</span>
+                              <span className="text-xs text-gray-400">per person · {STAY_LABELS[s]}</span>
+                              <ul className="mt-3 w-full space-y-1.5 border-t border-gray-100 pt-3">
+                                {pkgBullets(tier, s).map((b) => (
+                                  <li key={b} className="flex items-start gap-2 text-xs leading-snug text-gray-600">
+                                    <svg className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                                    {b}
+                                  </li>
+                                ))}
+                              </ul>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   {(course.levelRequirement || course.instructorRatio || course.weeklyHours) && (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -390,44 +496,85 @@ export default function CourseDetailClient({ course }: Props) {
                     <p className="text-sky-600 text-sm mt-1">{course.duration} intensive course</p>
                   </div>
 
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">Testimonials</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">What Guests Say</h3>
                   <div className="space-y-4">
                     {course.testimonials.map((t, i) => (
-                      <div key={i} className="bg-gray-50 rounded-xl p-6">
-                        <div className="flex items-center gap-1 mb-2">
-                          {Array.from({ length: t.rating }).map((_, j) => (
-                            <svg key={j} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                          ))}
-                        </div>
-                        <p className="text-gray-600 italic mb-2">&ldquo;{t.text}&rdquo;</p>
-                        <p className="text-sm font-medium text-gray-900">{t.name} — {t.location}</p>
-                      </div>
+                      <figure key={i} className="bg-gray-50 rounded-xl p-6">
+                        <span aria-hidden className="font-heading text-3xl leading-none text-sky-300">&ldquo;</span>
+                        <blockquote className="mt-1 text-gray-600 italic mb-2">{t.text}</blockquote>
+                        <figcaption className="text-sm font-medium text-gray-900">{t.name} — {t.location}</figcaption>
+                      </figure>
                     ))}
                   </div>
                 </div>
               )}
 
               {tab === "dates" && (
-                <AvailabilityView batches={getCourseBatches(course)} currency={course.currency} onBook={registerForBatch} />
+                <AvailabilityView batches={getCourseBatches(course, selectedTier?.priceBase)} currency={course.currency} onBook={registerForBatch} />
               )}
 
               {tab === "itinerary" && (
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">{course.duration} Itinerary</h2>
-                  <p className="text-gray-600 mb-8">A structured progression from first turns to certified confidence.</p>
-                  <div className="space-y-6">
-                    {course.itinerary.map((day) => (
-                      <div key={day.day} className="flex gap-4">
-                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold">
-                          {day.day}
-                        </div>
-                        <div className="flex-1 pb-6 border-b border-gray-100 last:border-0">
-                          <h3 className="font-bold text-gray-900 mb-1">{day.title}</h3>
-                          <p className="text-gray-600 text-sm">{day.description}</p>
-                        </div>
+                  <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                    <h2 className="text-2xl font-bold text-gray-900">{course.duration} Itinerary</h2>
+                    {tiers.length > 0 && (
+                      <div role="tablist" aria-label="Itinerary tier" className="flex gap-1 rounded-full bg-gray-100 p-1">
+                        {tiers.map((t) => (
+                          <button key={t.id} type="button" onClick={() => setTierId(t.id)} aria-pressed={selectedTier?.id === t.id}
+                            className={`relative rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
+                              selectedTier?.id === t.id ? "text-sky-700" : "text-gray-500 hover:text-gray-800"
+                            }`}>
+                            {selectedTier?.id === t.id &&
+                              (shouldReduceMotion ? (
+                                <span className="absolute inset-0 rounded-full bg-white shadow-sm" />
+                              ) : (
+                                <motion.span layoutId="tier-pill" transition={{ type: "spring", damping: 30, stiffness: 380 }}
+                                  className="absolute inset-0 rounded-full bg-white shadow-sm" />
+                              ))}
+                            <span className="relative">{t.name}</span>
+                          </button>
+                        ))}
                       </div>
-                    ))}
+                    )}
                   </div>
+                  {selectedTier ? (
+                    <>
+                      <p className="text-gray-600 mb-2">{selectedTier.blurb}</p>
+                      <p className="mb-6 text-sm text-gray-500">
+                        Rs.{selectedTier.priceBase.toLocaleString("en-IN")} without stay &amp; meals · Rs.{selectedTier.priceFull.toLocaleString("en-IN")} with lodging &amp; all meals. Certificate and graduation ceremony included in both.
+                      </p>
+                      <div className="space-y-6">
+                        {selectedTier.itinerary.map((day) => (
+                          <div key={day.day} className="flex gap-4">
+                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold">
+                              {day.day}
+                            </div>
+                            <div className="flex-1 pb-6 border-b border-gray-100 last:border-0">
+                              <h3 className="font-bold text-gray-900 mb-1">Day {day.day} · {day.title}</h3>
+                              <p className="text-gray-600 text-sm">{day.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-600 mb-8">A structured progression from first turns to certified confidence.</p>
+                      <div className="space-y-6">
+                        {course.itinerary.map((day) => (
+                          <div key={day.day} className="flex gap-4">
+                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold">
+                              {day.day}
+                            </div>
+                            <div className="flex-1 pb-6 border-b border-gray-100 last:border-0">
+                              <h3 className="font-bold text-gray-900 mb-1">{day.title}</h3>
+                              <p className="text-gray-600 text-sm">{day.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -575,48 +722,71 @@ export default function CourseDetailClient({ course }: Props) {
                       <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">Booking Confirmed!</h3>
-                      <p className="text-gray-600 mb-4">We&apos;ll contact you soon with course details.</p>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">Request Received!</h3>
+                      <p className="text-gray-600 mb-4">We&apos;ll confirm availability for your dates shortly.</p>
                       <button onClick={() => setSent(false)} className="text-sky-600 hover:underline">
                         Book another course
                       </button>
                     </div>
                   ) : (
-                    <form onSubmit={handleBook} className="space-y-4">
+                    <>
+                      {selectedTier && tiers.length > 0 && (
+                        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-sky-50 p-4 ring-1 ring-sky-100">
+                          <div>
+                            <p className="text-sm font-bold text-gray-900">{selectedTier.name} · {STAY_LABELS[stay]}</p>
+                            <p className="text-xs text-gray-500">Picked from the package cards on the Overview tab.</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-heading text-xl font-bold text-gray-900">Rs.{total.toLocaleString("en-IN")}</p>
+                            <button type="button" onClick={() => goToTab("overview")} className="text-xs font-semibold text-sky-600 hover:underline">
+                              Change package
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <form onSubmit={handleBook} className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                          <label htmlFor="cb-name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                           <input
+                            id="cb-name"
                             type="text"
                             required
+                            autoComplete="name"
                             value={bookingForm.name}
                             onChange={(e) => setBookingForm({ ...bookingForm, name: e.target.value })}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                          <label htmlFor="cb-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                           <input
+                            id="cb-email"
                             type="email"
                             required
+                            autoComplete="email"
                             value={bookingForm.email}
                             onChange={(e) => setBookingForm({ ...bookingForm, email: e.target.value })}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                          <label htmlFor="cb-phone" className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                           <input
+                            id="cb-phone"
                             type="tel"
                             required
+                            inputMode="tel"
+                            autoComplete="tel"
                             value={bookingForm.phone}
                             onChange={(e) => setBookingForm({ ...bookingForm, phone: e.target.value })}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
+                          <label htmlFor="cb-date" className="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
                           <input
+                            id="cb-date"
                             type="date"
                             required
                             value={bookingForm.date}
@@ -625,8 +795,9 @@ export default function CourseDetailClient({ course }: Props) {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Group Size</label>
+                          <label htmlFor="cb-group" className="block text-sm font-medium text-gray-700 mb-1">Group Size</label>
                           <select
+                            id="cb-group"
                             value={bookingForm.groupSize}
                             onChange={(e) => setBookingForm({ ...bookingForm, groupSize: e.target.value })}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
@@ -638,8 +809,9 @@ export default function CourseDetailClient({ course }: Props) {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Message (optional)</label>
+                        <label htmlFor="cb-msg" className="block text-sm font-medium text-gray-700 mb-1">Message (optional)</label>
                         <textarea
+                          id="cb-msg"
                           rows={3}
                           value={bookingForm.message}
                           onChange={(e) => setBookingForm({ ...bookingForm, message: e.target.value })}
@@ -647,6 +819,9 @@ export default function CourseDetailClient({ course }: Props) {
                           placeholder="Any special requirements or questions..."
                         />
                       </div>
+                      {bookError && (
+                        <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 ring-1 ring-red-100">{bookError}</p>
+                      )}
                       <button
                         type="submit"
                         disabled={submitting}
@@ -654,11 +829,13 @@ export default function CourseDetailClient({ course }: Props) {
                       >
                         {submitting ? "Submitting..." : "Submit Booking"}
                       </button>
-                    </form>
+                      </form>
+                    </>
                   )}
                 </div>
               )}
             </motion.div>
+            </AnimatePresence>
           </div>
 
           {/* Sidebar */}
@@ -670,8 +847,36 @@ export default function CourseDetailClient({ course }: Props) {
                 </span>
               </div>
               <div className="mb-4">
-                <span className="text-3xl font-bold text-gray-900">Rs.{course.price.toLocaleString("en-IN")}</span>
-                <span className="text-gray-500 ml-1">/ person</span>
+                {tiers.length > 0 ? (
+                  <>
+                    <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400">From</span>
+                    <span className="text-3xl font-bold text-gray-900">Rs.{Math.min(...tiers.map((t) => t.priceBase)).toLocaleString("en-IN")}</span>
+                    <span className="text-gray-500 ml-1">/ person</span>
+                    <table className="mt-3 w-full text-left text-xs">
+                      <thead>
+                        <tr className="text-gray-400">
+                          <th className="py-1 font-medium" scope="col"><span className="sr-only">Tier</span></th>
+                          <th className="py-1 text-right font-medium" scope="col">No stay</th>
+                          <th className="py-1 text-right font-medium" scope="col">With stay</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tiers.map((t) => (
+                          <tr key={t.id} className={`border-t border-gray-100 ${selectedTier?.id === t.id ? "text-sky-700 font-semibold" : ""}`}>
+                            <td className="py-1.5">{t.name}</td>
+                            <td className="py-1.5 text-right">Rs.{t.priceBase.toLocaleString("en-IN")}</td>
+                            <td className="py-1.5 text-right">Rs.{t.priceFull.toLocaleString("en-IN")}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-3xl font-bold text-gray-900">Rs.{course.price.toLocaleString("en-IN")}</span>
+                    <span className="text-gray-500 ml-1">/ person</span>
+                  </>
+                )}
               </div>
               <p className="text-sm text-gray-500 mb-6">{course.duration} · {course.dates}</p>
               
@@ -696,15 +901,15 @@ export default function CourseDetailClient({ course }: Props) {
                   Certified instruction
                 </div>
                 <div className="flex items-center gap-2">
-                  <svg className="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <svg className="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={INC_ICONS.equipment} /></svg>
                   All equipment included
                 </div>
                 <div className="flex items-center gap-2">
-                  <svg className="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  Accommodation & meals
+                  <svg className="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={INC_ICONS.bed} /></svg>
+                  Accommodation &amp; meals
                 </div>
                 <div className="flex items-center gap-2">
-                  <svg className="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <svg className="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
                   Free cancellation
                 </div>
               </div>

@@ -71,7 +71,7 @@ export default function FAQV2() {
     <section className="py-section px-6 lg:px-8">
       <div className="mx-auto max-w-3xl">
         <FadeUp className="text-center mb-12">
-          <span className="text-sm font-semibold tracking-widest uppercase text-accent">FAQ</span>
+          <span className="font-nav text-xs font-bold uppercase tracking-[0.3em] text-accent">FAQ</span>
           <h2 className="mt-4 font-heading text-display-lg font-bold text-foreground leading-tight">
             Frequently Asked Questions
           </h2>

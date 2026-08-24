@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef, type ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import type { Trek } from "@/data/treks";
 import ContactPopup from "@/components/ContactPopup";
@@ -148,6 +148,7 @@ const NOT_INCLUDED = ["Flights / Transport", "Travel Insurance", "Personal Trekk
 
 export default function TrekDetailClient({ trek }: { trek: Trek }) {
   const { user } = useAuth();
+  const shouldReduceMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState<Tab>("Overview");
   const [showContact, setShowContact] = useState(false);
   const [wished, setWished] = useState(false);
@@ -351,13 +352,17 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
                         activeTab === tab ? "text-emerald-600" : "text-muted hover:text-foreground"
                       }`}
                     >
-                      {tab}
-                      {activeTab === tab && (
-                        <motion.div
-                          layoutId="tab-underline"
-                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600"
-                        />
-                      )}
+                      {activeTab === tab &&
+                        (shouldReduceMotion ? (
+                          <span className="absolute inset-x-1 inset-y-1 rounded-full bg-emerald-50 ring-1 ring-emerald-200 dark:bg-emerald-500/10 dark:ring-emerald-500/25" />
+                        ) : (
+                          <motion.span
+                            layoutId="trek-tab-pill"
+                            transition={{ type: "spring", damping: 30, stiffness: 380 }}
+                            className="absolute inset-x-1 inset-y-1 rounded-full bg-emerald-50 ring-1 ring-emerald-200 dark:bg-emerald-500/10 dark:ring-emerald-500/25"
+                          />
+                        ))}
+                      <span className="relative">{tab}</span>
                     </button>
                   ))}
                 </div>
@@ -695,16 +700,16 @@ function QuickInfo({ trek }: { trek: Trek }) {
 }
 
 function OverviewTab({ trek }: { trek: Trek }) {
-  // Generic, trek-agnostic highlights (avoids showing one trek's specifics on every page).
+  // Operational, per-trek facts — no generic marketing filler.
+  const totalHours = trek.itinerary.reduce((sum, d) => sum + d.hours, 0);
+  const maxTrekkers = trek.groupSize ?? 15;
   const highlights = [
-    "Alpine meadows & valleys",
-    "Panoramic Himalayan views",
-    "Expert local trek leaders",
-    "Camp under starlit skies",
-    "Rich mountain biodiversity",
-    "Small-group departures",
-    "All permits handled for you",
-    "Daily acclimatisation buffers",
+    `Small-group departure — capped at ${maxTrekkers} trekkers`,
+    "All permits & national park entry fees arranged",
+    "Experienced local trek leaders on every batch",
+    "All camping equipment provided",
+    "Freshly cooked meals served on the trail",
+    "First-aid kit & safety gear carried by the crew",
   ];
   return (
     <div>
@@ -712,9 +717,9 @@ function OverviewTab({ trek }: { trek: Trek }) {
       <QuickInfo trek={trek} />
       <p className="text-muted leading-relaxed mt-6 mb-6">{trek.blurb}</p>
       <p className="text-muted leading-relaxed mb-8">
-        This trek offers an unparalleled experience through some of the most pristine landscapes in the Indian Himalayas.
-        From lush rhododendron forests to high-altitude meadows, every day brings new vistas and cultural encounters.
-        Suitable for trekkers with basic fitness, this journey combines adventure with spiritual tranquility.
+        Across {trek.days} days you&apos;ll spend roughly {totalHours} hours on the trail and reach a high point of{" "}
+        {trek.maxAltitude.toLocaleString("en-IN")}&nbsp;m. The most reliable window for this route is {trek.bestSeason}.
+        {trek.difficulty !== "Easy" && ` Rated ${trek.difficulty.toLowerCase()} — build up your fitness before signing up.`}
       </p>
       <h3 className="text-lg font-bold text-foreground mb-4">Highlights</h3>
       <div className="grid grid-cols-2 gap-3">
@@ -864,11 +869,7 @@ function ItineraryTab({ trek }: { trek: Trek }) {
                 <p className="text-muted text-sm leading-relaxed">{day.description}</p>
                 <div className="flex flex-wrap gap-4 mt-3 text-xs text-muted">
                   <span className="flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3H21" /></svg>
-                    Guesthouse / Lodge
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0L3 16.5m15-3.38a48.474 48.474 0 00-6-.37c-2.032 0-4.034.126-6 .37m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.17c0 .62-.504 1.124-1.125 1.124H4.125A1.125 1.125 0 013 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 016 13.12M12.265 3.11a.375.375 0 11-.53 0L12 2.845l.265.265z" /></svg>
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 11-6 0 3.354 3.354 0 016 0zm2.25-3.75a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM12 18.75a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>
                     Meals: {day.meals || "B/L/D"}
                   </span>
                 </div>

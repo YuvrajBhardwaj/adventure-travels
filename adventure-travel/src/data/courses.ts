@@ -17,6 +17,19 @@ export interface CourseTestimonial {
   rating: number;
 }
 
+/** Pricing/itinerary tier (e.g. Basic vs Premium) for courses sold in packages. */
+export interface CourseTier {
+  id: string;
+  name: string;
+  blurb: string;
+  /** Price WITHOUT lodging & food */
+  priceBase: number;
+  /** Price WITH lodging & all meals */
+  priceFull: number;
+  features: string[];
+  itinerary: CourseItineraryDay[];
+}
+
 export interface Course {
   id: number;
   name: string;
@@ -44,11 +57,48 @@ export interface Course {
   instructorRatio?: string;
   weeklyHours?: string;
   highlights?: string[];
+  /** Multi-tier pricing (Basic/Premium) — falls back to `price` when absent. */
+  tiers?: CourseTier[];
 }
 
 export function slugify(str: string): string {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
+
+/* ─── 14-Day International-Style Skiing Course itineraries ─── */
+const SKI14_BASIC_ITINERARY: CourseItineraryDay[] = [
+  { day: 1, title: "Arrival & Ski Academy Orientation", description: "Theme: welcome to the mountains. Check-in at your Auli accommodation, welcome briefing, introductions to instructors and the group, course overview and progression plan, plus an introduction to Auli's ski terrain. Full equipment fitting (boots, skis, poles, helmet, goggles), equipment handling and care, slope etiquette, mountain safety briefing and basic ski terminology." },
+  { day: 2, title: "Ski Foundations — Balance, Movement & Gliding", description: "Ski-specific warm-up, getting comfortable in boots, walking with skis and side-stepping, basic stance with balance and weight distribution, straight gliding and speed awareness, safe falling technique and recovery, finishing with controlled beginner runs. Goal: become comfortable moving on skis." },
+  { day: 3, title: "Snow-Plough & Speed Control — Learning to Stop", description: "Review of gliding, then snow-plough position and braking, speed control and controlled stopping, traversing while maintaining balance across the slope, and repeated beginner runs. Goal: control speed and stop confidently." },
+  { day: 4, title: "Fundamental Turns — Changing Direction", description: "Snow-plough turn mechanics, left and right turns, turn initiation and directional control, weight distribution through the turn, speed control while linking basic turns, and progressive practice runs. Goal: ski continuously while controlling direction." },
+  { day: 5, title: "Traversing & Edge Control — Ski Control", description: "Traversing across the slope, uphill movement and side-stepping, basic edging and ski alignment, weight transfer, snow-plough turns on longer practice runs, and terrain awareness. Goal: develop stronger ski control." },
+  { day: 6, title: "Turning Rhythm — Flow & Coordination", description: "Review of fundamental turns, then continuous turning with rhythm and body coordination, weight transfer and basic swing movement, managing speed on longer beginner runs. Goal: move from individual turns to fluid skiing." },
+  { day: 7, title: "Terrain Confidence — Skiing Longer Runs", description: "Extended warm-up followed by longer downhill runs with continuous linked turns, traversing, speed control and basic terrain adaptation on instructor-guided confidence-building runs. Goal: become comfortable skiing continuously." },
+  { day: 8, title: "Introduction to Parallel Skiing", description: "Moving beyond the snow-plough: parallel ski position and alignment, weight transfer, basic edging, parallel movement exercises and open parallel turns with controlled practice. Goal: understand the fundamentals of parallel skiing." },
+  { day: 9, title: "Parallel Turns — Developing Efficiency", description: "Parallel stance, open then linked parallel turns, edge control and pole positioning, speed management and technique refinement on longer runs. Goal: more efficient and controlled turns." },
+  { day: 10, title: "Lift & Mountain Skills — Expanding Your Terrain", description: "Ski-lift orientation with safe approach, loading and unloading, lift etiquette and slope awareness, then longer suitable runs with continuous skiing, speed management and terrain selection. Goal: comfortably access longer ski runs." },
+  { day: 11, title: "Agility & Slalom — Direction, Rhythm & Control", description: "Parallel-turn revision, shorter turns and direction changes, basic pole use, slalom fundamentals with rhythm and timing, edge control and speed management in slalom practice. Goal: improve agility and directional control." },
+  { day: 12, title: "Ski Skills Consolidation — Putting It All Together", description: "Snow-plough, linked and parallel turns, short and long turns, basic slalom, lift practice and longer runs, closing with independent skiing under supervision. Goal: consolidate the complete skill set." },
+  { day: 13, title: "Ski Skills Assessment — Demonstrate Your Progress", description: "Participants demonstrate equipment handling, stance, balance, straight gliding, snow-plough, braking, traversing, turning, linked and parallel skiing, speed control, lift operation, terrain awareness and ski safety. Instructors provide individual feedback and recommendations for continued skiing." },
+  { day: 14, title: "Free Skiing & Course Completion", description: "Final warm-up, guided practice runs and free skiing within individual ability, technique revision and group skiing, final photographs, course completion briefing, equipment return and check-out. Departure: Auli → Joshimath / Dehradun / Rishikesh." },
+];
+
+const SKI14_PREMIUM_ITINERARY: CourseItineraryDay[] = [
+  { day: 1, title: "Premium Welcome & Personal Ski Assessment", description: "Everything in the Basic Day 1 programme, plus a personal introduction with your instructor, individual skiing goals, an initial skill assessment, a personal progression plan, and premium equipment fitting with individual adjustments." },
+  { day: 2, title: "Ski Foundations + Personal Coaching", description: "The Basic foundations curriculum plus an individual balance assessment, personal stance correction, one-to-one instructor feedback and additional practice runs." },
+  { day: 3, title: "Snow-Plough & Braking + Video Feedback", description: "The Basic curriculum plus individual speed-control coaching, technique correction and instructor-led progression drills. Video feedback: selected skiing footage is recorded for technical review." },
+  { day: 4, title: "Fundamental Turns + Movement Analysis", description: "The Basic curriculum plus individual turn analysis, body-position correction, turn-initiation coaching and linking-turn drills. Movement-analysis review covering stance, balance, ski alignment and turn mechanics." },
+  { day: 5, title: "Edge Control & Traversing + Guided Runs", description: "Advanced beginner edging drills, weight-transfer exercises, terrain-specific coaching and individual technique correction, closing with longer guided runs." },
+  { day: 6, title: "Turn Rhythm & Basic Swing + Personal Coaching", description: "Advanced turn drills, rhythm development and body coordination, basic swing development with personal coaching throughout. Video feedback wherever useful." },
+  { day: 7, title: "Longer Runs, Confidence & Progression Review", description: "Longer guided runs with continuous skiing, terrain adaptation and speed management under individual coaching, ending with a personal progression review against your Day 1 goals." },
+  { day: 8, title: "Parallel Skiing + Technique Review", description: "Parallel stance and alignment, weight transfer, edge engagement and open parallel turns with individual coaching. Video technique review comparing your early-course and current skiing." },
+  { day: 9, title: "Parallel Turn Development", description: "Linked parallel turns, turn rhythm, edge control and pole positioning, with short and long turn variations and individual technique refinement." },
+  { day: 10, title: "Lift & Mountain Skills + Instructor-Led Runs", description: "Lift training, longer runs and mountain orientation with terrain selection and speed management on instructor-led runs, including individual corrections throughout." },
+  { day: 11, title: "Slalom & Agility + Performance Review", description: "Short-turn development, pole use, slalom, rhythm, edge control, directional accuracy and speed management — followed by a performance review where your instructor identifies areas for improvement." },
+  { day: 12, title: "Performance Consolidation + Mountain Skills Session", description: "Complete technique revision — parallel, short, long turns and slalom — with lift practice, longer runs and independent skiing under personal coaching. Mountain skills session: reading terrain, understanding snow conditions, cold-weather management, responsible skiing and basic emergency awareness." },
+  { day: 13, title: "Premium Final Assessment + Personal Ski Report", description: "Individual assessment covering equipment handling, balance, stance, gliding, braking, snow-plough, turning, traversing, parallel skiing, short turns, slalom, speed control, lift operation, terrain awareness, safety and overall confidence — with final video analysis (strengths, improvements, body positioning, turn mechanics, next steps) and a personal written skiing report." },
+  { day: 14, title: "Free Skiing & Premium Graduation", description: "Final warm-up, guided and free skiing with parallel turns, short/long turns and slalom practice, final instructor corrections and group photographs. Graduation: individual performance feedback, the Expedition Happiness Ski Course Certificate and personal next-level recommendations — closed out with an après-ski experience of tea, snacks, course memories and an optional bonfire, weather permitting. Departure: Auli → Joshimath / Dehradun / Rishikesh." },
+];
 
 export const courses: Course[] = [
   {
@@ -57,7 +107,7 @@ export const courses: Course[] = [
     slug: "skiing-course",
     type: "Skiing",
     title: "Learn to Ski in the Himalayas",
-    price: 30000,
+    price: 10000,
     currency: "Rs.",
     duration: "7 Days",
     dates: "Dec 2026 — Mar 2027",
@@ -87,6 +137,61 @@ export const courses: Course[] = [
       { day: 6, title: "Intermediate Slopes & Off-Piste Taster", description: "Progress to steeper runs and a guided taste of soft off-piste powder beneath Nanda Devi. End with a group challenge run and celebratory après." },
       { day: 7, title: "Assessment & Certification", description: "A final assessed run demonstrating your progression, personalised written evaluation from your Level 4 Pro, course certificate, and a celebratory send-off." },
     ],
+    tiers: [
+      {
+        id: "basic",
+        name: "Basic",
+        blurb: "The complete beginner progression — core technique, lifts and independent skiing on Auli's nursery and green runs.",
+        priceBase: 10000,
+        priceFull: 20000,
+        features: [
+          "Certificate of completion + graduation ceremony",
+          "Certified instructors · max 6 students per instructor",
+          "3–4 hrs of practical coaching daily",
+          "Equipment handling, stance, balance & straight gliding",
+          "Safe falling & recovery techniques",
+          "Snow-plough braking and basic turns",
+          "Linked beginner turns with speed control",
+          "Introduction to parallel skiing & basic edging",
+          "Ski-lift operation & slope etiquette",
+          "Independent practice on suitable beginner terrain",
+        ],
+        itinerary: [
+          { day: 1, title: "Arrival & Ski Orientation", description: "Joshimath → Auli. Check-in and welcome briefing from the Expedition Happiness team, introductions and course overview. Equipment introduction (skis, boots, poles, helmet, goggles) with fitting and adjustment, a short acclimatisation walk around Auli, and an intro to slope rules and ski etiquette. Overnight in Auli. Training: orientation + basic theory." },
+          { day: 2, title: "Skiing Fundamentals & Balance", description: "\"Getting comfortable on snow.\" Warm-up and mobility, walking with skis, side-stepping and climbing gentle slopes, basic stance and weight distribution, straight gliding on beginner terrain, safe falling and recovery, intro to speed control and the snow-plough position with controlled stopping on gentle slopes. Practical training: 3–4 hrs." },
+          { day: 3, title: "Braking & Basic Turns", description: "Snow-plough braking and speed management, traversing across a gentle slope, first directional changes and basic snow-plough turns left and right — controlling speed through the turns with correct body position. Individual instructor corrections and practice throughout. Practical training: 3–4 hrs." },
+          { day: 4, title: "Linked Turns & Slope Confidence", description: "Link consecutive snow-plough turns while maintaining controlled speed without stopping after every turn. Intro to the parallel-skiing position, weight transfer and basic edging, with instructor-guided runs on slightly more challenging beginner terrain matched to your ability. Practical training: 3–4 hrs." },
+          { day: 5, title: "Ski Lift & Longer Slope Practice", description: "Introduction to ski-lift operation — approaching the lift, getting on and off safely — plus lift safety and slope etiquette. Then guided skiing on suitable longer runs: continuous linked turns, controlled braking, speed management and multiple practice runs with instructor guidance. Practical training: 3–4 hrs." },
+          { day: 6, title: "Independent Practice", description: "\"Putting it all together.\" Supervised independent practice runs — snow-plough braking, linked turns, basic parallel-skiing practice, controlled stops and speed control on suitable beginner terrain, with individual instructor guidance where required. Practical training: 3–4 hrs." },
+          { day: 7, title: "Final Ski Session & Course Completion", description: "Final warm-up and revision of key techniques, guided practice runs, basic lift practice and group photographs. Course wrap-up with general instructor feedback and guidance for continuing your skiing. Departure after breakfast towards Joshimath / Dehradun / Rishikesh." },
+        ],
+      },
+      {
+        id: "premium",
+        name: "Premium",
+        blurb: "More slope time plus HD video analysis, snow-science seminars, après-ski socials, a formal final assessment and a graduation ceremony.",
+        priceBase: 15000,
+        priceFull: 30000,
+        features: [
+          "Everything in Basic — certificate + graduation ceremony included",
+          "4–5 hrs practical coaching daily (~25+ hrs total)",
+          "HD video movement analysis sessions",
+          "Evening seminars: mountain safety, snow science & equipment care",
+          "Formal final assessment with personal evaluation",
+          "Après-ski social session with optional bonfire",
+          "Certified instructors · max 6 students per instructor",
+        ],
+        itinerary: [
+          { day: 1, title: "Arrival, Orientation & Acclimatisation", description: "Joshimath → Auli. Check-in, welcome briefing, introductions and course overview with full safety briefing. Equipment briefing, fitting and adjustment, short acclimatisation walk around Auli. Evening session: mountain safety, weather and snow conditions, ski etiquette and basic terminology. Overnight in Auli. Training: orientation + theory." },
+          { day: 2, title: "Skiing Fundamentals & Balance", description: "First practical session after breakfast: warm-up and mobility, walking and side-stepping with skis, basic stance, balance and weight distribution, straight gliding on beginner terrain, safe falling techniques, speed control, snow-plough position and controlled stops — with individual instructor feedback. Evening theory: equipment care, snow conditions and mountain weather. Training: 4–5 hrs." },
+          { day: 3, title: "Braking, Snow-Plough & Basic Turns", description: "Snow-plough braking, speed management, traversing and linking left–right turns with correct body position — filmed for movement analysis. Evening HD video analysis session: instructors review footage covering body position, balance, ski alignment and turning technique, with areas to improve. Training: 4–5 hrs." },
+          { day: 4, title: "Linked Turns & Slope Confidence", description: "Connect skills into continuous skiing: controlled traversing, linked turns without stopping, intro to parallel position, weight transfer and edging, on terrain matched to ability — plus instructor-led practice runs and personal technique evaluation. Evening seminar: mountain safety & snow science — reading slopes, cold-weather precautions and emergency response. Training: 4–5 hrs." },
+          { day: 5, title: "Ski Lift, Longer Runs & Après-Ski", description: "Chairlift orientation — approaching, loading and unloading safely — then guided skiing on longer suitable runs: continuous linked turns, braking at designated points, terrain awareness and multiple corrected practice runs. Evening après-ski social: tea and snacks, group interaction, photos and videos, optional bonfire weather permitting. Training: 4–5 hrs." },
+          { day: 6, title: "Independent Skiing & Final Assessment", description: "Independent practice runs within your ability — refining snow-plough and linked turns, parallel fundamentals, controlled stops and slope awareness — followed by the final assessed run covering equipment handling, stance, gliding, braking, directional control, speed management, lift usage and overall confidence. Evening: individual feedback and next-level guidance. Training: 4–5 hrs." },
+          { day: 7, title: "Final Ski Session & Graduation Ceremony", description: "A fun final morning of guided practice runs where you demonstrate everything learned, with group photos and videos — then the Graduation Ceremony: individual performance feedback and the Expedition Happiness Ski Course Certificate. Departure after breakfast towards Joshimath / Dehradun / Rishikesh." },
+        ],
+      },
+    ],
     inclusions: [
       { icon: "structor", label: "Certified Instructor", description: "20+ hrs/week from Level 4 qualified coaches" },
       { icon: "equipment", label: "All Equipment", description: "Skis, boots, helmets & poles fitted by specialists" },
@@ -108,6 +213,93 @@ export const courses: Course[] = [
       "https://images.pexels.com/photos/352092/pexels-photo-352092.jpeg?w=800&q=80",
       "https://images.pexels.com/photos/163444/ski-snow-winter-sports-163444.jpeg?w=800&q=80",
       "https://images.pexels.com/photos/30309572/pexels-photo-30309572.jpeg?w=800&q=80",
+      "https://images.pexels.com/photos/6815358/pexels-photo-6815358.jpeg?w=800&q=80",
+      "https://images.pexels.com/photos/6575867/pexels-photo-6575867.jpeg?w=800&q=80",
+    ],
+  },
+  {
+    id: 6,
+    name: "14-Day International-Style Skiing Course",
+    slug: "skiing-intensive-2week",
+    type: "Skiing",
+    title: "Ski Auli the International Way",
+    price: 18500,
+    currency: "Rs.",
+    duration: "14 Days",
+    dates: "Dec 2026 — Mar 2027",
+    location: "Auli, Uttarakhand, India",
+    level: "Beginner → Basic Intermediate",
+    levelRequirement: "No prior experience needed. Open to complete beginners.",
+    instructorRatio: "Maximum 6 students per instructor (smaller on Premium)",
+    weeklyHours: "International-style progressive ski instruction",
+    description: "A 14-day international-style progressive ski course on the slopes of Auli. Move from your first glide to confident parallel turns and slalom across a structured fortnight — balance and foundations, snow-plough control, fundamental turns, edge work, rhythm, lift skills and agility — closing with a formal skills assessment and free-skiing finale. Choose the Basic program, or go Premium for personal progression plans, HD video feedback, individual coaching and a personal skiing report.",
+    shortDescription: "14 days of international-style progressive ski instruction — from first glide to parallel turns, with an optional Premium one-to-one track.",
+    highlights: [
+      "International-style progressive syllabus across 14 days / 13 nights",
+      "Full arc: gliding → snow-plough → linked turns → parallel → slalom",
+      "Lift & mountain-skills day to unlock Auli's longer runs",
+      "Day-13 skills assessment with individual instructor feedback",
+      "Premium track: personal progression plan + HD video feedback",
+      "Premium track: final video analysis & personal skiing report",
+      "Certificate of completion for every participant",
+      "Best season Dec–Mar, subject to snow conditions",
+    ],
+    itinerary: SKI14_BASIC_ITINERARY,
+    tiers: [
+      {
+        id: "basic",
+        name: "Basic",
+        blurb: "The complete international-style progression over two weeks — gliding to parallel turns and slalom, capped by a formal skills assessment.",
+        priceBase: 18500,
+        priceFull: 38000,
+        features: [
+          "14-day international-style progression: glide → snow-plough → parallel → slalom",
+          "Certified instructors · maximum 6 students per instructor",
+          "Lift & mountain-skills training included",
+          "Day-13 skills assessment with individual feedback",
+          "Certificate of completion",
+          "Free-skiing finale within your ability",
+        ],
+        itinerary: SKI14_BASIC_ITINERARY,
+      },
+      {
+        id: "premium",
+        name: "Premium",
+        blurb: "Same proven syllabus, delivered like a private academy — personal progression plans, HD video reviews, daily one-to-one coaching and a final analysis report.",
+        priceBase: 23500,
+        priceFull: 45500,
+        features: [
+          "Everything in Basic — same international syllabus",
+          "Personal progression plan from Day 1",
+          "HD video feedback across the fortnight",
+          "Daily individual coaching & technique correction",
+          "Final video analysis + personal written skiing report",
+          "Premium equipment fitting & adjustments",
+          "Graduation ceremony & après-ski bonfire (weather permitting)",
+        ],
+        itinerary: SKI14_PREMIUM_ITINERARY,
+      },
+    ],
+    inclusions: [
+      { icon: "structor", label: "Certified Instructor", description: "International-style progressive coaching, certified" },
+      { icon: "equipment", label: "All Equipment", description: "Skis, boots, helmets & poles fitted by specialists" },
+      { icon: "lift", label: "Lift Passes", description: "Full 14-day Auli cable car & chairlift access" },
+      { icon: "bed", label: "Accommodation", description: "13 nights in Auli accommodation (with-stay packages)" },
+      { icon: "food", label: "All Meals", description: "Breakfast, lunch & dinner included daily (with-stay packages)" },
+      { icon: "certificate", label: "Certification", description: "Course completion certificate + personal feedback" },
+      { icon: "firstaid", label: "Safety Support", description: "Emergency first aid & mountain rescue protocol" },
+      { icon: "photos", label: "HD Video Analysis", description: "Regular movement analysis + professional course photos" },
+    ],
+    testimonials: [
+      { name: "Rohan M.", location: "Delhi", text: "Two weeks took me from never wearing skis to parallel turns on blue runs. The progression was perfectly paced and the video sessions made improvement obvious.", rating: 5 },
+      { name: "Ishita S.", location: "Mumbai", text: "Worth every rupee. Small groups meant constant feedback, and by week two we were riding lifts and doing proper longer descents. Already signed up for next season.", rating: 5 },
+      { name: "Karan V.", location: "Chandigarh", text: "This is a proper snow school, not a holiday camp. Structured days, theory seminars, real assessment at the end. My skiing transformed.", rating: 5 },
+    ],
+    image: "https://images.pexels.com/photos/352092/pexels-photo-352092.jpeg?w=800&q=80",
+    gallery: [
+      "https://images.pexels.com/photos/352092/pexels-photo-352092.jpeg?w=800&q=80",
+      "https://images.pexels.com/photos/848591/pexels-photo-848591.jpeg?w=800&q=80",
+      "https://images.pexels.com/photos/163444/ski-snow-winter-sports-163444.jpeg?w=800&q=80",
       "https://images.pexels.com/photos/6815358/pexels-photo-6815358.jpeg?w=800&q=80",
       "https://images.pexels.com/photos/6575867/pexels-photo-6575867.jpeg?w=800&q=80",
     ],

@@ -87,7 +87,7 @@ export default function HimalayanMap() {
     <section className="py-section-sm bg-gradient-to-b from-background/70 via-background/40 to-accent/10 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeUp className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-          <span className="text-sm font-semibold tracking-widest uppercase text-accent">Explore</span>
+          <span className="font-nav text-xs font-bold uppercase tracking-[0.3em] text-accent">Explore</span>
           <h2 className="mt-3 sm:mt-4 font-heading text-2xl sm:text-3xl md:text-display-lg font-bold text-foreground leading-tight">
             Interactive Himalayan Map
           </h2>

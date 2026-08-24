@@ -316,7 +316,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
           <>
             <P>
               Before the trek you should comfortably be able to cover <strong>{FITNESS[trek.difficulty]}</strong>. This is the single best
-              predictor of whether you'll enjoy the {trek.name} or endure it.
+              predictor of whether you&apos;ll enjoy the {trek.name} or endure it.
             </P>
             <H>Your 4-week prep plan</H>
             <UL items={[
@@ -361,7 +361,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
         body: (
           <>
             <P>
-              Carrying extra luggage you don't want on the trail? Leave it at our basecamp cloakroom. It's a locked storage room at the
+              Carrying extra luggage you don&apos;t want on the trail? Leave it at our basecamp cloakroom. It&apos;s a locked storage room at the
               base town where non-essential bags stay safe while you trek.
             </P>
             <UL items={[

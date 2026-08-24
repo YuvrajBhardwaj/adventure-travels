@@ -1,9 +1,14 @@
 "use client";
 
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { treks } from "@/data/treks";
 import { FadeUp } from "./MotionWrapper";
 
 export default function TheRange() {
+  const reduceMotion = useReducedMotion();
+  const chartRef = useRef<HTMLDivElement>(null);
+  const chartInView = useInView(chartRef, { once: true, margin: "-80px" });
   const highest = [...treks]
     .sort((a, b) => b.maxAltitude - a.maxAltitude)
     .slice(0, 3);
@@ -23,11 +28,11 @@ export default function TheRange() {
         <FadeUp>
           <div className="flex items-center gap-3">
             <span className="h-px w-10 bg-foreground/20" aria-hidden />
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-muted">
+            <span className="font-nav text-xs font-bold uppercase tracking-[0.3em] text-muted">
               THE RANGE
             </span>
           </div>
-          <h2 className="mt-4 font-heading text-2xl font-bold leading-tight text-foreground sm:text-3xl">
+          <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-display-lg">
             One range, two altitudes of adventure
           </h2>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">
@@ -37,7 +42,7 @@ export default function TheRange() {
         </FadeUp>
 
         <FadeUp className="mt-10">
-          <div className="overflow-hidden rounded-3xl border border-foreground/10 bg-card p-6 shadow-sm sm:p-8">
+          <div ref={chartRef} className="overflow-hidden rounded-3xl border border-foreground/10 bg-card p-6 shadow-sm sm:p-8">
             {/* Altitude SVG */}
             <svg
               viewBox="0 0 1200 280"
@@ -85,18 +90,21 @@ export default function TheRange() {
                 5,000 m
               </text>
 
-              {/* Mountain path */}
-              <path
+              {/* Mountain path — draws itself on scroll into view */}
+              <motion.path
                 d="M40,220 C280,210 420,110 640,80 C820,55 980,35 1160,18"
                 fill="none"
                 stroke="url(#range-stroke)"
                 strokeWidth={3}
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                initial={reduceMotion ? undefined : { pathLength: 0 }}
+                animate={chartInView || reduceMotion ? { pathLength: 1 } : undefined}
+                transition={{ duration: 1.6, ease: "easeInOut" }}
               />
 
-              {/* Markers */}
-              {markers.map((m) => {
+              {/* Markers — pop in one by one after the path draws */}
+              {markers.map((m, i) => {
                 const x = (m.alt / 5000) * 1120 + 40;
                 // y follows the mountain path roughly
                 const t = m.alt / 5000;
@@ -106,7 +114,13 @@ export default function TheRange() {
                     ? "var(--color-secondary)"
                     : "var(--color-primary)";
                 return (
-                  <g key={m.label}>
+                  <motion.g
+                    key={m.label}
+                    initial={reduceMotion ? undefined : { opacity: 0, scale: 0 }}
+                    animate={chartInView || reduceMotion ? { opacity: 1, scale: 1 } : undefined}
+                    transition={{ delay: reduceMotion ? 0 : 1 + i * 0.18, duration: 0.45, type: "spring", stiffness: 260, damping: 18 }}
+                    style={{ transformBox: "fill-box", transformOrigin: "center" }}
+                  >
                     <circle
                       cx={x}
                       cy={y}
@@ -141,7 +155,7 @@ export default function TheRange() {
                     >
                       {m.alt.toLocaleString("en-IN")} m
                     </text>
-                  </g>
+                  </motion.g>
                 );
               })}
             </svg>
