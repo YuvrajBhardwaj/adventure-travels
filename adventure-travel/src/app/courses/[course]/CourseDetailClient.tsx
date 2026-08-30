@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
@@ -230,13 +231,44 @@ export default function CourseDetailClient({ course }: Props) {
   const images = course.gallery || [course.image];
 
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  // Switch tab, center it in the strip, and jump the panel just below the sticky bar.
+  // Switch tab and center it in the strip. Panel scrolling happens in a
+  // useEffect after AnimatePresence (mode="wait") has swapped the panel in.
   const goToTab = (key: Tab) => {
     setTab(key);
     const idx = TAB_LIST.findIndex((t) => t.key === key);
     tabRefs.current[idx]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-    document.getElementById("course-tabpanel")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  // Jump just below the sticky bars once the new panel has actually rendered.
+  // Skipped on first mount so the page doesn't auto-scroll on load. Uses an
+  // instant scrollIntoView (the panel carries scroll-mt-36) retried over several
+  // frames so it lands correctly even while the enter animation is settling on
+  // touch devices — smooth/JS-timed scrolling is flaky there.
+  const firstTabRef = useRef(true);
+  useEffect(() => {
+    if (firstTabRef.current) {
+      firstTabRef.current = false;
+      return;
+    }
+    let raf = 0;
+    const tries = 8;
+    let i = 0;
+    const scrollToPanel = () => {
+      document.getElementById("course-tabpanel")?.scrollIntoView({ behavior: "auto", block: "start" });
+      if (++i < tries) raf = requestAnimationFrame(scrollToPanel);
+    };
+    const t = window.setTimeout(() => {
+      scrollToPanel();
+    }, 220);
+    const raf2 = window.requestAnimationFrame(() => {
+      scrollToPanel();
+    });
+    return () => {
+      window.clearTimeout(t);
+      window.cancelAnimationFrame(raf);
+      window.cancelAnimationFrame(raf2);
+    };
+  }, [tab]);
 
   // Book a specific batch → prefill the date and jump to the booking form.
   const registerForBatch = (iso: string) => {
@@ -616,7 +648,9 @@ export default function CourseDetailClient({ course }: Props) {
                     ))}
                   </div>
 
-                  {/* Lightbox */}
+                  {/* Lightbox — portaled to body so the animating tab panel's
+                      CSS transform can't break its fixed/centered positioning */}
+                  {createPortal(
                   <AnimatePresence>
                     {lightbox !== null && (
                       <motion.div
@@ -688,7 +722,9 @@ export default function CourseDetailClient({ course }: Props) {
                         </div>
                       </motion.div>
                     )}
-                  </AnimatePresence>
+                  </AnimatePresence>,
+                  document.body
+                  )}
                 </div>
               )}
 
@@ -918,6 +954,35 @@ export default function CourseDetailClient({ course }: Props) {
         </div>
         </div>
       </section>
+
+      {/* Fixed mobile booking band — price + CTA always reachable on phones */}
+      <div
+        className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
+        <div className="flex items-center gap-3 px-4 py-3">
+          <div className="flex-shrink-0">
+            <div className="text-[11px] leading-none text-gray-500">From</div>
+            <div className="text-lg font-bold leading-tight text-gray-900">
+              Rs.{Math.min(...tiers.map((t) => t.priceBase), course.price).toLocaleString("en-IN")}
+            </div>
+          </div>
+          <a
+            href={waLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0 rounded-full border-2 border-emerald-500 px-4 py-2.5 text-sm font-semibold text-emerald-600 active:scale-95 transition"
+          >
+            WhatsApp
+          </a>
+          <button
+            onClick={() => goToTab("book")}
+            className="flex-1 rounded-full bg-sky-500 px-4 py-2.5 text-sm font-bold text-white shadow-md active:scale-95 transition"
+          >
+            Book Now →
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

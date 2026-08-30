@@ -9,9 +9,9 @@ import { signOut } from "@/lib/auth";
 
 const navLinks = [
   { label: "Home", href: "/" },
-  { label: "Adventures", href: "/treks" },
+  { label: "🏔️ Adventures", href: "/treks" },
   { label: "Destinations", href: "/destinations" },
-  { label: "Courses", href: "/courses" },
+  { label: "⛷️ Courses", href: "/courses" },
 ];
 
 const activities = [
@@ -26,7 +26,7 @@ const activities = [
     description: "Himalayan trekking expeditions",
   },
   {
-    label: "Skiing & Snowboarding",
+    label: "⛷️ Skiing & 🏂 Snowboarding",
     href: "/activities#skiing",
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

@@ -4,7 +4,6 @@ import { useState } from "react";
 
 const TERMS_TABS = [
   { id: "cancellation", label: "Cancellation Policy" },
-  { id: "refund", label: "Refund Policy" },
   { id: "payments", label: "Payments Terms & Policy" },
   { id: "others", label: "Others" },
 ] as const;
@@ -36,8 +35,10 @@ export default function TermsConditions() {
       <div className="rounded-2xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-card p-6 md:p-8 text-foreground leading-relaxed space-y-4 text-sm md:text-base">
         {activeTab === "cancellation" && (
           <>
-            <p className="font-semibold">Cancellation Process &amp; Terms &amp; Conditions</p>
-            {/* ponytail: replace with real support email */}
+            <p>
+              <strong>Note:</strong> No refund on unutilized services of the package, if any. See the{" "}
+              <strong>Cancellation Process &amp; Terms &amp; Conditions</strong> below.
+            </p>
             <p>
               To cancel your booking, email <strong>support@expeditionhappinesstreks.com</strong> with your booking
               reference number. Cancellation requests cannot be taken over phone calls or messages.
@@ -86,11 +87,6 @@ export default function TermsConditions() {
               with your voucher code and preferred batch date.
             </p>
           </>
-        )}
-        {activeTab === "refund" && (
-          <p>
-            <strong>Note:</strong> No refund on unutilized services of the package, if any.
-          </p>
         )}
         {activeTab === "payments" && (
           <ul className="list-disc pl-6 space-y-2">

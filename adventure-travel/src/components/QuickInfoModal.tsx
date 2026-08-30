@@ -7,7 +7,8 @@ import { DIFFICULTY_COLORS } from "@/data/treks";
 
 export type QuickInfoId =
   | "difficulty" | "duration" | "altitude" | "season" | "group"
-  | "basecamp" | "age" | "accommodation" | "fitness" | "offloading" | "cloakroom";
+  | "basecamp" | "age" | "accommodation" | "fitness" | "offloading" | "cloakroom"
+  | "inc-tent" | "inc-permits" | "inc-medical" | "inc-meals";
 
 /* ponytail: heuristics keyed off difficulty — replace with per-trek data if it ever matters */
 const AGE: Record<string, string> = { Easy: "8 – 62 years", Moderate: "10 – 60 years", Challenging: "14 – 55 years", Strenuous: "16 – 50 years" };
@@ -369,6 +370,87 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
               "One piece of luggage can be left behind at no charge.",
               "Anything beyond one piece is chargeable at Rs. 500 per extra bag.",
               <span key="val"><em>Note: <strong>do not leave valuables in your cloakroom bag</strong> — wallets, passports, and laptops are best carried with you. Bags are stored together in one room under team supervision, not in individual lockers.</em></span>,
+            ]} />
+          </>
+        ),
+      };
+
+    case "inc-tent":
+      return {
+        title: "Twin Sharing Tent Accommodation",
+        body: (
+          <>
+            <P>
+              Standard on every trek — you share a spacious dome tent with a fellow trekker of the same gender. The cost of tents is fully
+              included in your trek price.
+            </P>
+            <UL items={[
+              "High-altitude alpine dome tents, weather-tested for Himalayan wind and rain.",
+              "Sleeping bags rated for sub-zero temperatures, plus a fresh hygiene liner for every trekker.",
+              "Foam sleeping mats given to each person for insulation against the cold ground.",
+              "Tents are set up and taken down by our camp crew — you just walk in at the day's end.",
+              "Want a tent to yourself? Single Tent Occupancy is available on request at an extra cost.",
+            ]} />
+          </>
+        ),
+      };
+
+    case "inc-permits":
+      return {
+        title: "All Permits & Entry Fees",
+        body: (
+          <>
+            <P>
+              We arrange every permit and entry fee required for your trek — so you don&apos;t handle paperwork, queue at checkposts, or pay extra
+              at the last minute.
+            </P>
+            <UL items={[
+              "Forest department trekking permits are arranged in advance by our team.",
+              "National park and sanctuary entry fees are included where applicable.",
+              "For ILP-restricted frontier treks, we also arrange the Inner Line Permit (ILP).",
+              "Porters, guides, and camp staff are fully licensed and registered.",
+              "A government-linked ID (Aadhaar / Passport / Driving Licence) is all you need to carry.",
+            ]} />
+          </>
+        ),
+      };
+
+    case "inc-medical":
+      return {
+        title: "Daily Medical & Safety Check-ups",
+        body: (
+          <>
+            <P>
+              Your safety is non-negotiable. Every batch carries a certified trek leader and a full first-aid kit, and every trekker gets a
+              health check at the start of each trekking day.
+            </P>
+            <UL items={[
+              "Baseline health check (pulse, blood pressure, SpO₂) at the start of the trek.",
+              "Daily pulse and oxygen (SpO₂) monitoring at every campsite by your trek leader.",
+              "A complete first-aid kit and emergency oxygen cylinder travel with every batch.",
+              "Satellite phone / Garmin device for emergency communication in remote zones.",
+              "Emergency evacuation protocol in place, with the nearest medical facility identified on each route.",
+            ]} />
+          </>
+        ),
+      };
+
+    case "inc-meals":
+      return {
+        title: "Freshly Cooked Meals on Trail",
+        body: (
+          <>
+            <P>
+              Our trail kitchen serves hygienic, freshly cooked hot meals at every camp — plentiful Indian food designed for the altitude,
+              and the cost is included in your trek price.
+            </P>
+            <UL items={[
+              "Breakfast, packed lunch, evening tea & snacks, and dinner every trekking day.",
+              "High-carb, high-energy meals — rotis, dal, rice, sabzi, soups, and more.",
+              "Hot beverages (tea, coffee, lemon tea, hot water) served through the day.",
+              "Dinner and breakfast are prepared to order in our on-trail kitchen, not pre-packaged.",
+              "Veg meals by default; eggs/dairy where appropriate. Vegan or Jain preferences can be arranged on request.",
+              "Purified/filtered drinking water is made available at every camp.",
             ]} />
           </>
         ),

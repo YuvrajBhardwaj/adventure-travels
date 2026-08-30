@@ -5,10 +5,11 @@ import SeasonSplitHero from "@/components/SeasonSplitHero";
 import StatsStrip from "@/components/StatsStrip";
 import SummerTreksRail from "@/components/SummerTreksRail";
 import SnowSchool from "@/components/SnowSchool";
-import TheRange from "@/components/TheRange";
+import VideoShowcase from "@/components/VideoShowcase";
 import StoriesTestimonials from "@/components/StoriesTestimonials";
 import HimalayanMap from "@/components/HimalayanMap";
 import CallToActionV2 from "@/components/CallToActionV2";
+import UnlockRestrictedUttarakhand from "@/components/UnlockRestrictedUttarakhand";
 import FooterV2 from "@/components/FooterV2";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import MobileSearchButton from "@/components/MobileSearchButton";
@@ -29,13 +30,14 @@ export default function Home() {
     <SmoothScrollProvider>
       <main className="relative overflow-x-hidden">
         <SeasonSplitHero />
-        <div className="relative z-10">
+        <div className="relative z-10 pb-24 md:pb-0">
           <StatsStrip />
           <SummerTreksRail />
           <SnowSchool />
-          <TheRange />
+          <VideoShowcase />
           <StoriesTestimonials />
           <HimalayanMap />
+          <UnlockRestrictedUttarakhand />
           <FAQV2 />
           <CallToActionV2 />
           <FooterV2 />

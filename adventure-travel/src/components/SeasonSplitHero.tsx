@@ -257,6 +257,12 @@ export default function SeasonSplitHero() {
         <CarouselLayer slides={WINTER_SLIDES} intervalMs={6000} gradient="bg-gradient-to-t from-sky-950/70 via-sky-950/15 to-transparent" reduceMotion={reduceMotion} paused={paused} frozen={!heroVisible} />
       </motion.div>
 
+      {/* Global scrim — keeps the white copy readable over any (even bright) slide */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-t from-black/55 via-black/10 to-black/25"
+        aria-hidden
+      />
+
       {/* Divider */}
       <motion.div
         ref={dragRef}
@@ -280,7 +286,7 @@ export default function SeasonSplitHero() {
       {/* Content — scroll-parallax wrapper, orchestrated entrance inside */}
       <motion.div
         style={reduceMotion ? undefined : { y: contentY, opacity: contentOpacity }}
-        className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-between px-6 pb-14 pt-24 lg:px-8"
+        className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-between px-6 pb-14 pt-28 lg:px-8"
       >
         <motion.div variants={heroStagger} initial={reduceMotion ? "show" : "hidden"} animate="show" className="contents">
           {/* Top rail */}
@@ -307,7 +313,7 @@ export default function SeasonSplitHero() {
                   Explore treks
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </Link>
-                <Link href="/courses" className="inline-flex items-center gap-2 rounded-full bg-secondary px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:bg-secondary/90 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary">
+                <Link href="/courses" className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/5 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-white hover:bg-white/15 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
                   Learn to ski
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </Link>

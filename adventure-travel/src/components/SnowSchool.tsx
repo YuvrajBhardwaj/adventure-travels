@@ -14,15 +14,15 @@ export default function SnowSchool() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <FadeUp>
           <div className="flex items-center gap-3">
-            <span className="h-px w-10 bg-secondary" aria-hidden />
+            <span className="h-[2px] w-8 bg-secondary" aria-hidden />
             <span className="font-nav text-xs font-bold uppercase tracking-[0.3em] text-secondary">
               DEC – MAR · WINTER
             </span>
           </div>
-          <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-display-lg">
+          <h2 className="mt-4 font-heading text-3xl font-bold leading-snug text-foreground sm:text-4xl md:text-display-lg">
             The Auli Snow School
           </h2>
-          <p className="mt-3 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+          <p className="mt-3 max-w-xl text-base leading-relaxed text-foreground/70 sm:text-lg">
             Skiing, snowboarding, and backcountry courses under Nanda Devi.
             Certified instructors, 6:1 ratios, and a completion certificate.
           </p>

@@ -11,6 +11,7 @@ import SmartImage from "@/components/SmartImage";
 import { useAuth } from "@/contexts/AuthContext";
 import { createTrekBooking } from "@/lib/auth";
 import { getDepartures, type Departure, type Availability, type MonthGroup } from "./trekContent";
+import ScrollProgressRing from "@/components/ScrollProgressRing";
 
 const DIFFICULTY_COLORS: Record<string, string> = {
   Easy: "#22c55e",
@@ -25,7 +26,7 @@ const AVAIL: Record<Availability, { color: string; label: string }> = {
   sold: { color: "#DC2626", label: "Sold Out" },
 };
 
-const TABS = ["Overview", "Dates", "Day by Day", "T&C", "Photo Gallery", "What's Included", "Make Reservation"] as const;
+const TABS = ["Overview", "Dates", "Itinerary", "T&C", "Photo Gallery", "What's Included", "Packing List", "Make Reservation"] as const;
 type Tab = (typeof TABS)[number];
 
 const GALLERY_IMAGES = [
@@ -328,54 +329,54 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
 
       {/* Main Content + Sticky Sidebar */}
       <div className="max-w-7xl mx-auto px-6 pt-8 pb-28 lg:pb-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left: Tabs Content */}
-          <div className="lg:w-2/3">
-            {/* Tabs */}
-            <div className="sticky top-16 z-30 mb-8 border-b border-gray-200 dark:border-white/10 bg-white/90 dark:bg-background/90 backdrop-blur-md relative">
-              <div className="overflow-x-auto">
-                <div role="tablist" aria-label="Trek details" className="flex gap-0 min-w-max">
-                  {TABS.map((tab, index) => (
-                    <button
-                      key={tab}
-                      ref={(el) => {
-                        tabRefs.current[index] = el;
-                      }}
-                      role="tab"
-                      id={`trek-tab-${index}`}
-                      aria-selected={activeTab === tab}
-                      aria-controls="trek-tabpanel"
-                      tabIndex={activeTab === tab ? 0 : -1}
-                      onClick={() => goToTab(tab)}
-                      onKeyDown={(e) => onTabKeyDown(e, index)}
-                      className={`px-3 py-2.5 text-xs sm:px-5 sm:py-3 sm:text-sm font-medium whitespace-nowrap transition-colors relative active:scale-95 ${
-                        activeTab === tab ? "text-emerald-600" : "text-muted hover:text-foreground"
-                      }`}
-                    >
-                      {activeTab === tab &&
-                        (shouldReduceMotion ? (
-                          <span className="absolute inset-x-1 inset-y-1 rounded-full bg-emerald-50 ring-1 ring-emerald-200 dark:bg-emerald-500/10 dark:ring-emerald-500/25" />
-                        ) : (
-                          <motion.span
-                            layoutId="trek-tab-pill"
-                            transition={{ type: "spring", damping: 30, stiffness: 380 }}
-                            className="absolute inset-x-1 inset-y-1 rounded-full bg-emerald-50 ring-1 ring-emerald-200 dark:bg-emerald-500/10 dark:ring-emerald-500/25"
-                          />
-                        ))}
-                      <span className="relative">{tab}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {/* Mobile scroll hint */}
-              <div className="flex items-center justify-end gap-1 pr-2 pb-2 md:hidden">
-                <span className="text-xs text-emerald-600 font-medium">Swipe for more</span>
-                <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                </svg>
-              </div>
+        {/* Full-width sticky tab bar — sticks against the whole page, stays visible past the Trek Cost card */}
+        <div className="sticky top-16 z-30 -mx-6 mb-8 bg-white/95 dark:bg-background/95 backdrop-blur-md border-b border-gray-200 dark:border-white/10 sm:mx-0 sm:rounded-2xl sm:rounded-b-none sm:border-x sm:border-t sm:rounded-t-2xl">
+          <div className="overflow-x-auto">
+            <div role="tablist" aria-label="Trek details" className="flex min-w-max px-2">
+              {TABS.map((tab, index) => (
+                <button
+                  key={tab}
+                  ref={(el) => {
+                    tabRefs.current[index] = el;
+                  }}
+                  role="tab"
+                  id={`trek-tab-${index}`}
+                  aria-selected={activeTab === tab}
+                  aria-controls="trek-tabpanel"
+                  tabIndex={activeTab === tab ? 0 : -1}
+                  onClick={() => goToTab(tab)}
+                  onKeyDown={(e) => onTabKeyDown(e, index)}
+                  className={`relative px-3.5 py-3.5 text-xs sm:px-5 sm:text-sm font-semibold whitespace-nowrap transition-colors ${
+                    activeTab === tab ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500 hover:text-slate-800 dark:text-gray-400 dark:hover:text-gray-200"
+                  }`}
+                >
+                  {tab}
+                  {activeTab === tab &&
+                    (shouldReduceMotion ? (
+                      <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+                    ) : (
+                      <motion.span
+                        layoutId="trek-tab-underline"
+                        transition={{ type: "spring", damping: 32, stiffness: 350 }}
+                        className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-emerald-600 dark:bg-emerald-400"
+                      />
+                    ))}
+                </button>
+              ))}
             </div>
+          </div>
+          {/* Mobile scroll hint */}
+          <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-gradient-to-l from-white/95 via-white/70 to-transparent pl-6 pr-3 py-2 rounded-l-xl md:hidden dark:from-background/95 dark:via-background/70">
+            <span className="text-[11px] font-medium text-emerald-600">Scroll</span>
+            <svg className="h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </div>
+        </div>
 
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left: Tab Content */}
+          <div className="lg:w-2/3">
             {/* Tab Content */}
             <AnimatePresence mode="wait">
               <motion.div
@@ -392,10 +393,11 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
               >
                 {activeTab === "Overview" && <OverviewTab trek={trek} />}
                 {activeTab === "Dates" && <DatesTab departures={departures} currency={trek.currency} onRegister={registerForDate} />}
-                {activeTab === "Day by Day" && <ItineraryTab trek={trek} />}
+                {activeTab === "Itinerary" && <ItineraryTab trek={trek} />}
                 {activeTab === "T&C" && <TermsConditions />}
                 {activeTab === "Photo Gallery" && <GalleryTab trek={trek} />}
                 {activeTab === "What's Included" && <IncludedTab />}
+                {activeTab === "Packing List" && <PackingListTab />}
                 {activeTab === "Make Reservation" && (
                   <ReservationTab trek={trek} form={bookingForm} setForm={setBookingForm} onSubmit={handleBookingSubmit} />
                 )}
@@ -405,58 +407,15 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
 
           {/* Right: Sticky Sidebar */}
           <div className="lg:w-1/3">
-            <div className="sticky top-24 space-y-6">
+            <div className="lg:sticky lg:top-24 space-y-6">
               {/* Booking Card */}
-              <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-white/10 shadow-lg p-6">
-                <div className="mb-4">
-                  <span className="text-3xl font-bold text-foreground">{trek.currency}{trek.price.toLocaleString("en-IN")}</span>
-                  <span className="text-muted text-sm ml-1">per person</span>
-                </div>
-                <button
-                  onClick={() => goToTab("Dates")}
-                  className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors mb-3"
-                >
-                  View Dates &amp; Register
-                </button>
-                <button
-                  onClick={() => setShowContact(true)}
-                  className="w-full py-3 border-2 border-emerald-600 text-emerald-600 font-semibold rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
-                >
-                  Request Information
-                </button>
-                <p className="text-center text-sm text-muted mt-4 flex items-center justify-center gap-2">
-                  <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Free Consultation · No payment required
-                </p>
-              </div>
-
-              {/* Help Planning Card */}
-              <div className="bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl p-5 border border-emerald-100 dark:border-emerald-900/30">
-                <h4 className="font-semibold text-foreground mb-1">Need Help Planning?</h4>
-                <p className="text-sm text-muted mb-3">Talk to a trek specialist for personalized advice.</p>
-                <div className="space-y-2">
-                  <a
-                    href="tel:+917817912062"
-                    className="flex items-center gap-2 text-emerald-700 font-semibold text-sm hover:text-emerald-800"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                    </svg>
-                    +91 78179 12062
-                  </a>
-                  <a
-                    href="tel:+918650561564"
-                    className="flex items-center gap-2 text-emerald-700 font-semibold text-sm hover:text-emerald-800"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                    </svg>
-                    +91 86505 61564
-                  </a>
-                </div>
-              </div>
+              <BookingCard
+                trek={trek}
+                departures={departures}
+                onViewDates={() => goToTab("Dates")}
+                onContact={() => setShowContact(true)}
+                onNav={(tab) => goToTab(tab)}
+              />
 
               {/* Elevation Profile Mini */}
               <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-white/10 p-5">
@@ -474,19 +433,19 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="flex items-center gap-3 px-4 py-3">
-          <div className="flex-shrink-0">
-            <div className="text-[11px] leading-none text-muted">From</div>
-            <div className="text-lg font-bold leading-tight text-foreground">{trek.currency}{trek.price.toLocaleString("en-IN")}</div>
+          <div className="flex-shrink-0 leading-tight">
+            <div className="text-[11px] leading-none text-muted mb-0.5">From</div>
+            <div className="text-base sm:text-lg font-bold leading-none text-foreground">{trek.currency}{trek.price.toLocaleString("en-IN")}</div>
           </div>
           <button
             onClick={() => setShowContact(true)}
-            className="flex-shrink-0 rounded-full border-2 border-emerald-600 px-4 py-2.5 text-sm font-semibold text-emerald-600 active:scale-95 transition"
+            className="flex-shrink-0 self-center rounded-lg border border-emerald-600/40 bg-emerald-50 px-3 py-2.5 text-sm font-semibold text-emerald-700 active:scale-95 transition"
           >
             Info
           </button>
           <button
             onClick={() => goToTab("Dates")}
-            className="flex-1 rounded-full bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-md active:scale-95 transition"
+            className="flex-1 self-center truncate rounded-lg bg-emerald-600 px-3 py-2.5 text-sm font-bold text-white shadow-md active:scale-95 transition"
           >
             View Dates &amp; Register →
           </button>
@@ -494,6 +453,228 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
       </div>
 
       <ContactPopup open={showContact} onClose={() => setShowContact(false)} />
+
+      <ScrollProgressRing className="bottom-28 right-4 lg:bottom-8 lg:right-6" />
+    </div>
+  );
+}
+
+/* ─── Booking / Cost Breakup Card ─── */
+function BookingCard({
+  trek,
+  departures,
+  onViewDates,
+  onContact,
+  onNav,
+}: {
+  trek: Trek;
+  departures: MonthGroup[];
+  onViewDates: () => void;
+  onContact: () => void;
+  onNav: (tab: Tab) => void;
+}) {
+  const oldPrice = Math.round((trek.price / 0.9) / 10) * 10;
+  const discount = Math.round((1 - trek.price / oldPrice) * 100);
+  const rating = trek.rating ?? 4.8;
+  const reviews = trek.reviewCount ?? 692;
+  const shownDepartures = departures.flatMap((g) => g.departures).filter((d) => d.availability !== "sold").slice(0, 3);
+  const [showIncludedInfo, setShowIncludedInfo] = useState<QuickInfoId | null>(null);
+
+  const badge =
+    shownDepartures.length === 0
+      ? { label: "Join Waitlist", cls: "bg-slate-600" }
+      : shownDepartures.some((d) => d.availability === "few")
+        ? { label: "Filling Fast", cls: "bg-amber-500" }
+        : { label: "Dates Open", cls: "bg-emerald-600" };
+
+  const INCLUDED_UI = [
+    { icon: "tent", label: "Twin Sharing Tent Accommodation", info: "inc-tent" as QuickInfoId },
+    { icon: "card", label: "All Permits & Entry Fees", info: "inc-permits" as QuickInfoId },
+    { icon: "med", label: "Daily Medical & Safety Check-ups", info: "inc-medical" as QuickInfoId },
+    { icon: "meal", label: "Freshly Cooked Meals on Trail", info: "inc-meals" as QuickInfoId },
+  ];
+
+  const icon = (name: string, cls: string) => {
+    const base = { className: `text-emerald-500 shrink-0 ${cls}` };
+    switch (name) {
+      case "tent":
+        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5M4.5 22.5L12 6l7.5 16.5M8.25 14.25l3.75-6 3.75 6M12 6V3.75" /></svg>;
+      case "card":
+        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" /></svg>;
+      case "med":
+        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>;
+      case "meal":
+        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 3.75v12.75M15.75 3.75a3.75 3.75 0 00-3.75 3.75v6h3.75M9.75 3.75v22.5" /></svg>;
+      case "taxi":
+        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M6 11.25L7.5 6h9l1.5 5.25M6 11.25h12M6 11.25a2.25 2.25 0 00-2.25 2.25v3a0.75 0 001.5 0v-3m14.25 0a0.75 0 001.5 0v3a2.25 2.25 0 01-2.25 2.25M6 11.25v7.5m12 3v-7.5" /></svg>;
+      case "backpack":
+        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M16 8V6a4 4 0 10-8 0v2M8 8h8M6 8h12a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2v-9a2 2 0 012-2zM9 20v-5h6v5" /></svg>;
+      case "bed":
+        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 3v18M21 6a2 2 0 00-2-2H9a2 2 0 00-2 2v8h14V6zM3 12h18M3 18h18" /></svg>;
+      case "star":
+        return <svg {...base} width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.4 4.32a1 1 0 00.95.69h4.56c.97 0 1.37 1.24.59 1.81l-3.69 2.68a1 1 0 00-.36 1.12l1.4 4.32c.3.92-.75 1.69-1.54 1.12l-3.68-2.68a1 1 0 00-1.18 0l-3.68 2.68c-.79.57-1.85-.2-1.55-1.12l1.4-4.32a1 1 0 00-.36-1.12L2 9.75c-.78-.57-.38-1.81.6-1.81h4.55a1 1 0 00.95-.69l1.4-4.32z" /></svg>;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="relative overflow-hidden rounded-3xl border-2 border-emerald-500 bg-white p-4 shadow-lg sm:p-5 dark:bg-card">
+      <div className="pointer-events-none absolute left-0 top-0 h-[180px] w-full opacity-70 blur-[58px]" style={{ transform: "translate(100px,-40px)" }} aria-hidden />
+      <div className="sr-only">Trek cost details</div>
+
+      {/* Header */}
+      <div className="relative z-10 flex items-start justify-between gap-3">
+        <h4 className="text-3xl font-semibold text-foreground">Trek Cost</h4>
+        <span className={`rounded-full ${badge.cls} px-2.5 py-1 text-[10px] font-bold text-white`}>{badge.label}</span>
+      </div>
+
+      {/* Price */}
+      <div className="relative z-10 mt-2">
+        <div className="flex items-baseline gap-2">
+          <span className="text-md font-semibold text-slate-500 line-through decoration-2 decoration-rose-500/80">
+            {trek.currency}{oldPrice.toLocaleString("en-IN")}
+          </span>
+          <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-bold text-rose-600">{discount}% OFF</span>
+        </div>
+        <div className="mt-1 flex items-baseline gap-1.5">
+          <span className="text-4xl font-bold tracking-tight text-foreground">{trek.currency}{trek.price.toLocaleString("en-IN")}</span>
+          <span className="text-sm text-muted">/ person</span>
+        </div>
+      </div>
+
+      {/* Trust + rating */}
+      <div className="relative z-10 mt-4 space-y-2">
+        <p className="flex items-center gap-1.5 text-sm font-semibold text-emerald-700">
+          <span className="flex" aria-hidden>{[...Array(5)].map((_, i) => <span key={i}>{icon("star", "h-4 w-4 text-amber-400")}</span>)}</span>
+          <span>{rating}</span>
+          <span className="font-medium text-muted">· {reviews >= 1000 ? `${(reviews / 1000).toFixed(1)}k+` : `${reviews}+`} people rated this trek</span>
+        </p>
+        <p className="text-xs text-muted">All-inclusive · No-cost EMI · Free Trek Date Change</p>
+      </div>
+
+      {/* Included */}
+      <div className="relative z-10 mt-5">
+        <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted">What&apos;s Included</p>
+        <ul className="space-y-2.5">
+          {INCLUDED_UI.map((item) => (
+            <li key={item.label} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
+              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-100 dark:bg-emerald-500/10 dark:ring-emerald-500/20">
+                {icon(item.icon, "h-5 w-5")}
+              </span>
+              <span className="flex-1 break-words">{item.label}</span>
+              <button
+                onClick={() => setShowIncludedInfo(item.info)}
+                aria-label={`More about ${item.label}`}
+                className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
+              >
+                <svg className="h-4.5 w-4.5" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                </svg>
+              </button>
+            </li>
+          ))}
+        </ul>
+        {showIncludedInfo && (
+          <QuickInfoModal
+            id={showIncludedInfo}
+            label={INCLUDED_UI.find((i) => i.info === showIncludedInfo)?.label ?? "Included"}
+            trek={trek}
+            onClose={() => setShowIncludedInfo(null)}
+          />
+        )}
+        <button
+          onClick={onViewDates}
+          className="mt-4 w-full rounded-xl border border-gray-200 bg-white py-3 text-center font-bold text-foreground shadow-sm transition-colors hover:border-emerald-300 hover:bg-emerald-50 dark:bg-card dark:hover:bg-emerald-950/30"
+        >
+          View full package &amp; dates
+        </button>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <button
+            onClick={() => onNav("Packing List")}
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs font-bold text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800/40 dark:bg-emerald-950/30 dark:text-emerald-300 dark:hover:bg-emerald-950/50"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Package List
+          </button>
+          <button
+            onClick={() => onNav("T&C")}
+            className="flex items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-bold text-foreground transition-colors hover:border-emerald-300 hover:bg-emerald-50 dark:bg-card dark:hover:bg-emerald-950/30"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+            Terms &amp; Conditions
+          </button>
+        </div>
+      </div>
+
+      <div className="my-6 h-px w-full bg-gray-200 dark:bg-white/10" />
+
+      {/* Optional extras */}
+      <div className="relative z-10 mt-5 rounded-2xl border border-dashed border-gray-200 bg-gray-50/70 p-4 dark:border-white/10 dark:bg-white/5">
+        <p className="mb-1 text-xs font-bold uppercase tracking-wider text-muted">Optional</p>
+        <ul className="space-y-2.5">
+          <li className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
+            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-50 ring-1 ring-gray-100 dark:bg-white/5 dark:ring-white/10">
+              {icon("backpack", "h-5 w-5")}
+            </span>
+            <span>
+              Backpack Offloading — <span className="font-bold text-foreground">avail on request, extra cost</span>
+            </span>
+          </li>
+          <li className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
+            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-50 ring-1 ring-gray-100 dark:bg-white/5 dark:ring-white/10">
+              {icon("bed", "h-5 w-5")}
+            </span>
+            <span>
+              Single Tent / Hotel Room Occupancy — <span className="font-bold text-foreground">on request, extra cost</span>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      {/* Trust row */}
+      <div className="relative z-10 mt-4 grid grid-cols-2 gap-4 border-t border-gray-100 pt-4 text-[13px] font-semibold leading-snug text-slate-500 dark:border-white/10 dark:text-gray-400">
+        <div className="flex items-start gap-2">
+          <span aria-hidden>🔒</span>
+          <span>Secure payment</span>
+        </div>
+        <div className="flex items-start gap-2">
+          <span aria-hidden className="text-emerald-600">✓</span>
+          <span>Book by paying only 30% advance</span>
+        </div>
+      </div>
+
+      {/* Call experts */}
+      <div className="relative z-10 mt-5 rounded-2xl bg-orange-50 p-3 text-center dark:bg-orange-950/20">
+        <p className="w-full rounded-2xl bg-orange-100 p-2 text-lg font-semibold text-foreground shadow-lg dark:bg-orange-900/30">
+          Call Our Mountain Experts!
+        </p>
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[13px] text-gray-800 dark:text-gray-200">
+          <a href="tel:+917817912062" className="font-semibold hover:underline">+91 78179 12062</a>
+          <span className="h-4 w-px bg-black/50 dark:bg-white/30" aria-hidden />
+          <a href="tel:+918650561564" className="font-semibold hover:underline">+91 86505 61564</a>
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div className="relative z-10 mt-4 space-y-2">
+        <button
+          onClick={onViewDates}
+          className="w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white transition-colors hover:bg-emerald-700"
+        >
+          View All Dates &amp; Register
+        </button>
+        <button
+          onClick={onContact}
+          className="w-full rounded-xl border-2 border-emerald-600 py-3 font-semibold text-emerald-600 transition-colors hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+        >
+          Request Information
+        </button>
+      </div>
     </div>
   );
 }
@@ -547,8 +728,8 @@ function QuickInfo({ trek }: { trek: Trek }) {
       value: trek.difficulty,
       color: DIFFICULTY_COLORS[trek.difficulty],
       icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3 20L9 8l4 6 3-4 5 10H3z" />
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M2 20h.01M7 20v-4M12 20v-8M17 20V8M22 4v16" />
         </svg>
       ),
     },
@@ -557,8 +738,9 @@ function QuickInfo({ trek }: { trek: Trek }) {
       label: "Trek Duration",
       value: `${trek.days} Days · ${totalHours}h Trekking`,
       icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4.5 2.25M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
         </svg>
       ),
     },
@@ -567,9 +749,8 @@ function QuickInfo({ trek }: { trek: Trek }) {
       label: "Highest Altitude",
       value: `${trek.maxAltitude.toLocaleString("en-IN")} m (${ft.toLocaleString("en-IN")} ft)`,
       icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M2 25h20L14.5 8l-2.5 4L8 6 2 18z" transform="scale(0.9) translate(1.5,-1)" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v3m0-3l1.5 1.5M12 3l-1.5 1.5" />
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M8 3l4 8 5-5 5 15H2L8 3z" />
         </svg>
       ),
     },
@@ -578,8 +759,9 @@ function QuickInfo({ trek }: { trek: Trek }) {
       label: "Best Season",
       value: trek.bestSeason,
       icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636" />
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
         </svg>
       ),
     },
@@ -619,8 +801,8 @@ function QuickInfo({ trek }: { trek: Trek }) {
       label: "Accommodation",
       value: "Tents & Mountain Lodges",
       icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M4 20L12 4l8 16H4zM12 4v6" />
         </svg>
       ),
     },
@@ -639,8 +821,8 @@ function QuickInfo({ trek }: { trek: Trek }) {
       label: "Offloading",
       value: "Available",
       icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 7.5V4.5A2.25 2.25 0 0012.75 2.25h-1.5A2.25 2.25 0 009 4.5v3m6 0a3 3 0 013 3v9a1.5 1.5 0 01-1.5 1.5H7.5A1.5 1.5 0 016 19.5v-9a3 3 0 013-3m0 0h6m-6 0l-.75-3H6.75M15 7.5l.75-3h1.5" />
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M21 8l-9-5-9 5v8l9 5 9-5V8zM3 8l9 5 9-5M12 13v8" />
         </svg>
       ),
     },
@@ -700,38 +882,51 @@ function QuickInfo({ trek }: { trek: Trek }) {
 }
 
 function OverviewTab({ trek }: { trek: Trek }) {
-  // Operational, per-trek facts — no generic marketing filler.
-  const totalHours = trek.itinerary.reduce((sum, d) => sum + d.hours, 0);
-  const maxTrekkers = trek.groupSize ?? 15;
-  const highlights = [
-    `Small-group departure — capped at ${maxTrekkers} trekkers`,
-    "All permits & national park entry fees arranged",
-    "Experienced local trek leaders on every batch",
-    "All camping equipment provided",
-    "Freshly cooked meals served on the trail",
-    "First-aid kit & safety gear carried by the crew",
-  ];
   return (
     <div>
-      <h2 className="text-2xl font-bold text-foreground mb-6">About This Trek</h2>
-      <QuickInfo trek={trek} />
-      <p className="text-muted leading-relaxed mt-6 mb-6">{trek.blurb}</p>
-      <p className="text-muted leading-relaxed mb-8">
-        Across {trek.days} days you&apos;ll spend roughly {totalHours} hours on the trail and reach a high point of{" "}
-        {trek.maxAltitude.toLocaleString("en-IN")}&nbsp;m. The most reliable window for this route is {trek.bestSeason}.
-        {trek.difficulty !== "Easy" && ` Rated ${trek.difficulty.toLowerCase()} — build up your fitness before signing up.`}
-      </p>
-      <h3 className="text-lg font-bold text-foreground mb-4">Highlights</h3>
-      <div className="grid grid-cols-2 gap-3">
-        {highlights.map((h) => (
-          <div key={h} className="flex items-center gap-2 text-foreground">
-            <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span className="text-sm">{h}</span>
+      <h2 className="text-2xl font-bold text-foreground mb-6">Key Facts</h2>
+
+      {/* About This Trek */}
+      <div className="mb-6 rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm dark:border-emerald-800/30 dark:bg-card">
+        <h3 className="flex items-center gap-2 text-lg font-bold text-foreground">
+          About This Trek
+          <span className="h-px flex-1 bg-emerald-200/70 dark:bg-emerald-800/40" aria-hidden />
+        </h3>
+        <p className="mt-2.5 text-sm leading-relaxed text-muted">{trek.blurb}</p>
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          <div className="rounded-xl bg-emerald-50/70 px-2 py-2.5 text-center dark:bg-emerald-950/20">
+            <p className="text-sm font-bold text-foreground">{trek.days} days</p>
+            <p className="text-[10px] font-medium uppercase tracking-wide text-muted">{trek.itinerary.reduce((s, d) => s + d.hours, 0)}h trek</p>
           </div>
-        ))}
+          <div className="rounded-xl bg-emerald-50/70 px-2 py-2.5 text-center dark:bg-emerald-950/20">
+            <p className="text-sm font-bold text-foreground">{trek.maxAltitude.toLocaleString("en-IN")}</p>
+            <p className="text-[10px] font-medium uppercase tracking-wide text-muted">m max altitude</p>
+          </div>
+          <div className="rounded-xl bg-emerald-50/70 px-2 py-2.5 text-center dark:bg-emerald-950/20">
+            <p className="text-sm font-bold text-foreground">{trek.groupSize ?? 15}</p>
+            <p className="text-[10px] font-medium uppercase tracking-wide text-muted">group size</p>
+          </div>
+        </div>
+        <p className="mt-4 mb-2 text-[11px] font-bold uppercase tracking-wider text-muted">Highlights</p>
+        <ul className="space-y-1.5">
+          {[
+            `Small-group departure — capped at ${trek.groupSize ?? 15} trekkers`,
+            "All permits & national park entry fees arranged",
+            "Experienced local trek leaders on every batch",
+            "All camping equipment provided · Freshly cooked meals on trail",
+            "First-aid kit & safety gear carried by the crew",
+          ].map((h) => (
+            <li key={h} className="flex items-start gap-2 text-sm text-foreground">
+              <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{h}</span>
+            </li>
+          ))}
+        </ul>
       </div>
+
+      <QuickInfo trek={trek} />
     </div>
   );
 }
@@ -844,40 +1039,103 @@ function DepartureRow({ d, currency, onRegister }: { d: Departure; currency: str
 
 /* ─── Day by Day Tab ─── */
 function ItineraryTab({ trek }: { trek: Trek }) {
+  const days = trek.itinerary;
+  const reduceMotion = useReducedMotion();
+  const [active, setActive] = useState(0);
+  const day = days[Math.min(active, days.length - 1)];
+
+  const go = (next: number) => setActive(Math.min(days.length - 1, Math.max(0, next)));
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-foreground mb-6">Day-by-Day Itinerary</h2>
-      <div className="space-y-4">
-        {trek.itinerary.map((day) => (
-          <div key={day.day} className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-white/10 p-5 hover:border-emerald-200 dark:hover:border-emerald-700 hover:shadow-md transition-all">
-            <div className="flex gap-4">
-              <div className="flex-shrink-0 w-11 h-11 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                {day.day}
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-foreground">{day.title}</h3>
-                <div className="flex flex-wrap items-center gap-3 text-xs text-muted mt-1.5 mb-2">
-                  <span className="flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
-                    {day.altitude.toLocaleString()}m
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {day.hours} hrs
-                  </span>
-                </div>
-                <p className="text-muted text-sm leading-relaxed">{day.description}</p>
-                <div className="flex flex-wrap gap-4 mt-3 text-xs text-muted">
-                  <span className="flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 11-6 0 3.354 3.354 0 016 0zm2.25-3.75a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM12 18.75a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>
-                    Meals: {day.meals || "B/L/D"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+
+      {/* Day selector rail */}
+      <div className="-mx-1 mb-6 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {days.map((d, i) => (
+          <button
+            key={d.day}
+            type="button"
+            onClick={() => setActive(i)}
+            aria-pressed={i === active}
+            className={`shrink-0 rounded-xl px-4 py-3 text-sm font-semibold transition-all border ${
+              i === active
+                ? "border-emerald-600 bg-emerald-600 text-white shadow-lg shadow-emerald-600/20"
+                : "border-gray-100 bg-white text-foreground hover:border-emerald-200 hover:bg-emerald-50 dark:border-white/10 dark:bg-card"
+            }`}
+          >
+            <span className={`block text-[10px] font-bold uppercase tracking-wider ${i === active ? "text-white/70" : "text-foreground/70"}`}>Day {d.day}</span>
+            <span className={`mt-0.5 block text-[11px] font-medium ${i === active ? "text-white/90" : "text-foreground"}`}>{d.altitude.toLocaleString()}m</span>
+          </button>
         ))}
       </div>
+
+      {/* Active day panel */}
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-white/10 dark:bg-card">
+        <div className="relative border-b border-gray-100 bg-gradient-to-r from-emerald-600 to-emerald-500 px-5 py-4 text-white dark:border-white/10">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-white/70">Day {day.day}</div>
+          <h3 className="mt-1 pr-14 font-heading text-lg font-bold leading-snug sm:text-xl">{day.title}</h3>
+          <span className="absolute right-4 top-4 hidden h-11 w-11 items-center justify-center rounded-full bg-white/15 text-lg font-bold sm:flex">
+            {day.day}
+          </span>
+        </div>
+        <div className="p-5">
+          <div className="grid grid-cols-3 gap-3">
+            <FactChip label="Altitude" value={`${day.altitude.toLocaleString()}m`} />
+            <FactChip label="Duration" value={`${day.hours} hrs`} />
+            <FactChip label="Meals" value={day.meals || "B/L/D"} />
+          </div>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.p
+              key={active}
+              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+              className="mt-4 text-sm leading-relaxed text-foreground/80"
+            >
+              {day.description}
+            </motion.p>
+          </AnimatePresence>
+          {day.note && (
+            <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-bold leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+              Note: {day.note}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Prev / Next */}
+      <div className="mt-5 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => go(active - 1)}
+          disabled={active === 0}
+          className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-foreground transition hover:border-emerald-300 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-card"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+          Day {Math.max(1, active)}
+        </button>
+        <span className="text-xs font-medium text-muted">{active + 1} / {days.length}</span>
+        <button
+          type="button"
+          onClick={() => go(active + 1)}
+          disabled={active === days.length - 1}
+          className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-foreground transition hover:border-emerald-300 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-card"
+        >
+          Day {Math.min(days.length, active + 2)}
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FactChip({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 px-3 py-2.5 dark:border-white/10 dark:bg-white/5">
+      <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">{label}</div>
+      <div className="mt-0.5 text-sm font-semibold text-foreground">{value}</div>
     </div>
   );
 }
@@ -1060,6 +1318,135 @@ function IncludedTab() {
             ))}
           </ul>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Packing List Tab ─── */
+const PACKING_GROUPS: {
+  title: string;
+  note?: string;
+  items: { name: string; why: string; pro?: string }[];
+}[] = [
+  {
+    title: "Major Gears",
+    items: [
+      { name: "Waterproof, Ankle-Height Trekking Boots", why: "Stiff rubber soles prevent water entry and protect ankles.", pro: "Must be fully broken in before the trek." },
+      { name: "Trekking Poles (Pair)", why: "Extra points of contact for stability and knee relief on descents.", pro: "Use together to distribute pack weight." },
+      { name: "Waterproof Gloves (2 Pairs)", why: "Protect against cold injury while keeping hands warm.", pro: "Keep the shell dry for a waterproof layer." },
+      { name: "Gaiters", why: "Seal the gap between boots and trousers so snow stays out.", pro: "Put them on as soon as you reach the snowline." },
+      { name: "High-Grade SPF Sunscreen & Lip Balm", why: "Reflected snow UV burns exposed skin fast at altitude.", pro: "Reapply every 2 hours on the snow." },
+      { name: "Sunglasses (Category 4)", why: "Protect against temporary snow blindness.", pro: "Never remove them while on snow." },
+    ],
+  },
+  {
+    title: "Clothing — The Layering System",
+    items: [
+      { name: "Warm Beanie / Balaclava", why: "A large percentage of body heat is lost from the head.", pro: "Must cover the ears completely." },
+      { name: "Moisture-Wicking T-Shirts (2)", why: "Synthetic or merino keeps you dry; cotton makes you cold.", pro: "Short or long sleeve both work." },
+      { name: "Thermal Base Layer (1)", why: "Locks in body heat as the start of your layering system." },
+      { name: "Fleece Jacket (1)", why: "Best warmth-to-weight ratio; worn alone or under your shell." },
+      { name: "Insulated Puff Jacket (1)", why: "Your main heat source for cold nights and the summit push.", pro: "Rated for 0°C and below." },
+      { name: "Waterproof & Windproof Jacket (1)", why: "Keeps rain, snow and wind out.", pro: "Prefer a taped-seam shell." },
+      { name: "Quick-Dry Trekking Pants (2)", why: "Synthetic, stretchable trousers dry fast and move well." },
+      { name: "Waterproof Rain Pants (1)", why: "Protect your base layers in rain or snow." },
+      { name: "Trekking Socks (4–5 pairs)", why: "Wool or synthetic blend manages moisture and prevents blisters.", pro: "Keep 1–2 thick pairs for nights." },
+      { name: "Camp Shoes", why: "Let your feet rest and boots dry at camp." },
+    ],
+  },
+  {
+    title: "Equipment & Essentials",
+    items: [
+      { name: "Main Rucksack (50–60 L)", why: "Carried by the porter; needs a good frame and hip belt." },
+      { name: "Daypack (20–30 L)", why: "Daily carry — water, layers, snacks, camera, gloves." },
+      { name: "Sleeping Bag (Rated to −10°C)", why: "Warmth on cold mountain nights.", pro: "Confirm whether your operator provides one." },
+      { name: "Sleeping Bag Liner", why: "Adds warmth and keeps the bag clean." },
+      { name: "Insulated Water Bottles (2 × 1 L)", why: "Hydration bladders freeze at altitude — use insulated bottles." },
+      { name: "Hydration Tablets / ORS", why: "Replaces electrolytes lost at high altitude." },
+      { name: "Headlamp with Spare Batteries", why: "Essential for early-morning pass crossings.", pro: "Pack extra batteries." },
+      { name: "Basic First-Aid Kit", why: "Plasters, antiseptic, pain relief and any personal medication." },
+    ],
+  },
+  {
+    title: "Essential Documents & Cash",
+    note: "Carry copies in waterproof/ziplock bags.",
+    items: [
+      { name: "Government Photo ID", why: "Verification at basecamp and forest checkpoints — Aadhaar/Voter ID/Passport." },
+      { name: "ID Copies (2)", why: "Submitted to forest authorities for trekking permits." },
+      { name: "Medical Certificate & Undertaking Form", why: "Confirms you are fit for high-altitude trekking." },
+      { name: "Cash", why: "No ATMs on the trail — carry enough for personal expenses." },
+    ],
+  },
+];
+
+function PackingListTab() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-foreground mb-3">Packing List</h2>
+      <p className="mb-6 text-sm text-muted">
+        Pack for safety and performance. Our treks call for an<strong> essential-over-extras</strong> approach — every
+        item below is a genuine need on a high-altitude Himalayan trek.
+      </p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+        {[
+          { t: "Extremity Protection", d: "UV sunglasses, waterproof gloves and a warm balaclava to protect exposed areas." },
+          { t: "Layering System", d: "Multiple synthetic or wool layers to manage temperature and moisture — never cotton." },
+          { t: "Waterproof Footwear", d: "Mid-calf waterproof boots so your feet and ankles stay protected on snow and ice." },
+        ].map((c) => (
+          <div key={c.t} className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 dark:border-emerald-800/30 dark:bg-emerald-950/20">
+            <p className="text-sm font-bold text-emerald-700 dark:text-emerald-300">{c.t}</p>
+            <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">{c.d}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="space-y-10">
+        {PACKING_GROUPS.map((group) => (
+          <div key={group.title}>
+            <h3 className="mb-3 flex items-center gap-2 text-base font-bold text-foreground">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden />
+              {group.title}
+            </h3>
+            {group.note && <p className="mb-3 text-xs text-muted">{group.note}</p>}
+            <div className="overflow-hidden rounded-2xl border border-gray-200 dark:border-white/10">
+              <ul className="divide-y divide-gray-100 dark:divide-white/10">
+                {group.items.map((item) => (
+                  <li key={item.name} className="flex items-start gap-3 bg-white px-4 py-3.5 dark:bg-card">
+                    <svg className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-foreground">{item.name}</p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-muted">{item.why}</p>
+                      {item.pro && (
+                        <p className="mt-1.5 inline-flex rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
+                          Pro-tip: {item.pro}
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-10 rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-white/10 dark:bg-card">
+        <h3 className="mb-3 flex items-center gap-2 text-base font-bold text-foreground">
+          <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5l-3 3-4.5-4.5M19.5 10.5a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Trek Leader Tips
+        </h3>
+        <ul className="space-y-3 text-sm text-foreground">
+          <li className="flex gap-2"><span className="font-bold text-emerald-600">Three Second Rule:</span><span>If you can&apos;t immediately think of a reason to pack it, don&apos;t pack it.</span></li>
+          <li className="flex gap-2"><span className="font-bold text-emerald-600">Test Everything:</span><span>Break in your boots and set up your sleeping system at home before the trek.</span></li>
+          <li className="flex gap-2"><span className="font-bold text-emerald-600">Leave No Trace:</span><span>Carry everything out and stick to established trails.</span></li>
+          <li className="flex gap-2"><span className="font-bold text-emerald-600">Tell Someone:</span><span>Share your itinerary and guide contacts with family before you leave.</span></li>
+        </ul>
       </div>
     </div>
   );
