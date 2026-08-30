@@ -1,0 +1,51 @@
+
+> adventure-travel@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.10 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://10.2.0.2:3000
+✓ Ready in 2.7s
+
+○ Compiling / ...
+ GET / 200 in 7.5s (next.js: 5.1s, application-code: 2.3s)
+ GET /treks 200 in 7.4s (next.js: 4.3s, application-code: 3.2s)
+ GET / 200 in 338ms (next.js: 94ms, application-code: 244ms)
+ GET /treks 200 in 7.6s (next.js: 4.7s, application-code: 2.9s)
+ GET /treks 200 in 437ms (next.js: 18ms, application-code: 419ms)
+⨯ Error: Page "/treks/[id]/page" is missing param "/treks/[id]" in "generateStaticParams()", which is required with "output: export" config.
+    at ignore-listed frames {
+  page: '/treks/kedarkantha-trek'
+}
+ GET /treks/kedarkantha-trek 500 in 4.8s (next.js: 4.2s, application-code: 640ms)
+ GET / 200 in 1256ms (next.js: 33ms, application-code: 1223ms)
+ GET /treks/kedarkantha 200 in 3.8s (next.js: 2.9s, generate-params: 2.9s, application-code: 854ms)
+ GET /courses 200 in 408ms (next.js: 230ms, application-code: 178ms)
+ GET /courses 200 in 533ms (next.js: 43ms, application-code: 489ms)
+ GET /courses/snowboarding-course 200 in 3.8s (next.js: 3.5s, generate-params: 3.3s, application-code: 248ms)
+ GET /treks/kedarkantha-trek 200 in 449ms (next.js: 39ms, generate-params: 25ms, application-code: 411ms)
+ GET /treks/valley-of-flowers 200 in 511ms (next.js: 11ms, generate-params: 93µs, application-code: 501ms)
+⨯ Failed to generate static paths for /treks/[id]:
+Error: Page "/treks/[id]/page" is missing param "/treks/[id]" in "generateStaticParams()", which is required with "output: export" config.
+    at ignore-listed frames
+ GET /activities 200 in 233ms (next.js: 161ms, application-code: 72ms)
+ GET /treks 200 in 104ms (next.js: 15ms, application-code: 89ms)
+ GET / 200 in 78ms (next.js: 12ms, application-code: 66ms)
+ GET /courses 200 in 327ms (next.js: 45ms, application-code: 282ms)
+ GET / 200 in 71ms (next.js: 12ms, application-code: 59ms)
+ GET /courses/snowboard-intensive-2week 200 in 133ms (next.js: 37ms, generate-params: 23ms, application-code: 96ms)
+ GET /courses/snowboard-intensive-2week 200 in 435ms (next.js: 55ms, generate-params: 35ms, application-code: 380ms)
+ GET /treks 200 in 96ms (next.js: 16ms, application-code: 80ms)
+ GET / 200 in 69ms (next.js: 10ms, application-code: 58ms)
+ GET /courses 200 in 85ms (next.js: 13ms, application-code: 72ms)
+ GET /activities 200 in 111ms (next.js: 21ms, application-code: 90ms)
+ GET /destinations 200 in 286ms (next.js: 200ms, application-code: 86ms)
+ GET /treks 200 in 118ms (next.js: 17ms, application-code: 101ms)
+ GET / 200 in 99ms (next.js: 16ms, application-code: 83ms)
+ GET /treks 200 in 122ms (next.js: 13ms, application-code: 109ms)
+ GET / 200 in 117ms (next.js: 33ms, application-code: 84ms)
+ GET /courses 200 in 204ms (next.js: 26ms, application-code: 178ms)
+ GET / 200 in 837ms (next.js: 11ms, application-code: 826ms)
+ GET /treks 200 in 507ms (next.js: 17ms, application-code: 490ms)
+ GET / 200 in 871ms (next.js: 21ms, application-code: 851ms)
+ GET / 200 in 355ms (next.js: 143ms, application-code: 211ms)
