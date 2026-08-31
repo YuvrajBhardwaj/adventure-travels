@@ -1039,103 +1039,45 @@ function DepartureRow({ d, currency, onRegister }: { d: Departure; currency: str
 
 /* ─── Day by Day Tab ─── */
 function ItineraryTab({ trek }: { trek: Trek }) {
-  const days = trek.itinerary;
-  const reduceMotion = useReducedMotion();
-  const [active, setActive] = useState(0);
-  const day = days[Math.min(active, days.length - 1)];
-
-  const go = (next: number) => setActive(Math.min(days.length - 1, Math.max(0, next)));
-
   return (
     <div>
       <h2 className="text-2xl font-bold text-foreground mb-6">Day-by-Day Itinerary</h2>
-
-      {/* Day selector rail */}
-      <div className="-mx-1 mb-6 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {days.map((d, i) => (
-          <button
-            key={d.day}
-            type="button"
-            onClick={() => setActive(i)}
-            aria-pressed={i === active}
-            className={`shrink-0 rounded-xl px-4 py-3 text-sm font-semibold transition-all border ${
-              i === active
-                ? "border-emerald-600 bg-emerald-600 text-white shadow-lg shadow-emerald-600/20"
-                : "border-gray-100 bg-white text-foreground hover:border-emerald-200 hover:bg-emerald-50 dark:border-white/10 dark:bg-card"
-            }`}
-          >
-            <span className={`block text-[10px] font-bold uppercase tracking-wider ${i === active ? "text-white/70" : "text-foreground/70"}`}>Day {d.day}</span>
-            <span className={`mt-0.5 block text-[11px] font-medium ${i === active ? "text-white/90" : "text-foreground"}`}>{d.altitude.toLocaleString()}m</span>
-          </button>
+      <div className="space-y-4">
+        {trek.itinerary.map((day) => (
+          <div key={day.day} className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-white/10 p-5 hover:border-emerald-200 dark:hover:border-emerald-700 hover:shadow-md transition-all">
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-11 h-11 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                {day.day}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-foreground">{day.title}</h3>
+                <div className="flex flex-wrap items-center gap-3 text-xs text-muted mt-1.5 mb-2">
+                  <span className="flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
+                    {day.altitude.toLocaleString()}m
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {day.hours} hrs
+                  </span>
+                </div>
+                <p className="text-muted text-sm leading-relaxed">{day.description}</p>
+                {day.note && (
+                  <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-bold leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+                    Note: {day.note}
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-4 mt-3 text-xs text-muted">
+                  <span className="flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 11-6 0 3.354 3.354 0 016 0zm2.25-3.75a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM12 18.75a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>
+                    Meals: {day.meals || "B/L/D"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         ))}
       </div>
-
-      {/* Active day panel */}
-      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-white/10 dark:bg-card">
-        <div className="relative border-b border-gray-100 bg-gradient-to-r from-emerald-600 to-emerald-500 px-5 py-4 text-white dark:border-white/10">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-white/70">Day {day.day}</div>
-          <h3 className="mt-1 pr-14 font-heading text-lg font-bold leading-snug sm:text-xl">{day.title}</h3>
-          <span className="absolute right-4 top-4 hidden h-11 w-11 items-center justify-center rounded-full bg-white/15 text-lg font-bold sm:flex">
-            {day.day}
-          </span>
-        </div>
-        <div className="p-5">
-          <div className="grid grid-cols-3 gap-3">
-            <FactChip label="Altitude" value={`${day.altitude.toLocaleString()}m`} />
-            <FactChip label="Duration" value={`${day.hours} hrs`} />
-            <FactChip label="Meals" value={day.meals || "B/L/D"} />
-          </div>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.p
-              key={active}
-              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className="mt-4 text-sm leading-relaxed text-foreground/80"
-            >
-              {day.description}
-            </motion.p>
-          </AnimatePresence>
-          {day.note && (
-            <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-bold leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
-              Note: {day.note}
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Prev / Next */}
-      <div className="mt-5 flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={() => go(active - 1)}
-          disabled={active === 0}
-          className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-foreground transition hover:border-emerald-300 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-card"
-        >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-          Day {Math.max(1, active)}
-        </button>
-        <span className="text-xs font-medium text-muted">{active + 1} / {days.length}</span>
-        <button
-          type="button"
-          onClick={() => go(active + 1)}
-          disabled={active === days.length - 1}
-          className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-foreground transition hover:border-emerald-300 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-card"
-        >
-          Day {Math.min(days.length, active + 2)}
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function FactChip({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 px-3 py-2.5 dark:border-white/10 dark:bg-white/5">
-      <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">{label}</div>
-      <div className="mt-0.5 text-sm font-semibold text-foreground">{value}</div>
     </div>
   );
 }

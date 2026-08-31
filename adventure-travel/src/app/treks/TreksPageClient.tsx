@@ -241,50 +241,52 @@ function TrekCard({ trek }: { trek: (typeof treks)[0] }) {
   const badge = DIFF_BADGE[trek.difficulty] || DIFF_BADGE.Moderate;
 
   return (
-    <div className="bg-white dark:bg-card rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 group">
-      {/* Image */}
-      <div className="relative overflow-hidden">
-        <SmartImage
-          src={trek.image}
-          alt={trek.name}
-          className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    <Link
+      href={`/treks/${trek.slug}`}
+      className="relative block overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 group"
+    >
+      {/* Full-bleed image */}
+      <SmartImage
+        src={trek.image}
+        alt={trek.name}
+        className="w-full h-80 sm:h-96 object-cover transition-transform duration-700 group-hover:scale-105"
+      />
 
-        {/* Difficulty Badge */}
-        <div className="absolute top-4 left-4">
-          <span className={`px-3 py-1 rounded-full text-sm font-medium ${badge.text} ${badge.bg} backdrop-blur-sm`}>
-            {trek.difficulty}
-          </span>
-        </div>
+      {/* Readability gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10 transition-opacity duration-300" />
 
-        {/* Rating Badge */}
-        {trek.rating && (
-          <div className="absolute top-4 right-4 bg-white/90 dark:bg-card/90 backdrop-blur-sm rounded-lg px-3 py-1">
-            <div className="flex items-center space-x-1">
-              <svg className="h-4 w-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <span className="text-sm font-medium text-foreground">{trek.rating}</span>
-              <span className="text-sm text-muted">({trek.reviewCount})</span>
-            </div>
-          </div>
-        )}
+      {/* Difficulty Badge */}
+      <div className="absolute top-4 left-4">
+        <span className={`px-3 py-1 rounded-full text-sm font-medium ${badge.text} ${badge.bg} backdrop-blur-sm`}>
+          {trek.difficulty}
+        </span>
       </div>
 
-      {/* Content */}
-      <div className="p-6">
-        <div className="flex items-center text-sm text-muted mb-2">
+      {/* Rating Badge */}
+      {trek.rating && (
+        <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-sm rounded-lg px-3 py-1">
+          <div className="flex items-center space-x-1">
+            <svg className="h-4 w-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            <span className="text-sm font-medium text-white">{trek.rating}</span>
+            <span className="text-sm text-white/70">({trek.reviewCount})</span>
+          </div>
+        </div>
+      )}
+
+      {/* Overlaid content */}
+      <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
+        <div className="flex items-center text-sm text-white/80 mb-1">
           <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           {trek.location || trek.region}
         </div>
-        <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-emerald-600 transition-colors">{trek.name}</h3>
-        <p className="text-muted mb-4 line-clamp-2">{trek.blurb}</p>
+        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">{trek.name}</h3>
 
-        <div className="flex items-center justify-between text-sm text-muted mb-4">
+        <div className="flex items-center justify-between gap-3 text-sm text-white/80 mb-3">
           <div className="flex items-center">
             <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
@@ -299,19 +301,19 @@ function TrekCard({ trek }: { trek: (typeof treks)[0] }) {
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-2xl font-bold text-foreground">{trek.currency}{trek.price.toLocaleString("en-IN")}</span>
-            <span className="text-muted ml-1">per person</span>
+        <div className="flex items-center justify-between gap-3 border-t border-white/20 pt-3">
+          <div className="flex min-w-0 flex-col">
+            <span className="text-2xl font-bold text-white leading-tight">{trek.currency}{trek.price.toLocaleString("en-IN")}</span>
+            <span className="text-xs text-white/70 whitespace-nowrap">per person</span>
           </div>
-          <Link href={`/treks/${trek.slug}`} className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors flex items-center space-x-2">
-            <span>Reserve Spot</span>
+          <span className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-emerald-600 text-white px-4 py-2 text-sm font-semibold transition-colors group-hover:bg-emerald-700">
+            Reserve Spot
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" /><path strokeLinecap="round" strokeLinejoin="round" d="m12 5 7 7-7 7" />
             </svg>
-          </Link>
+          </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
