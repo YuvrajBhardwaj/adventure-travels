@@ -205,7 +205,7 @@ export const treks: Trek[] = [
       { day: 6, title: "Chillolgadh → Ganghad → Sankri", altitude: 1950, hours: 6, description: "Trek back to Ganghad, then drive to Sankri. Arrive by afternoon/evening, check in, and celebrate the completion of the trek.", meals: "B/L/D" },
       { day: 7, title: "Sankri → Dehradun (190–200 km, 8-10 hrs)", altitude: 640, hours: 10, description: "After breakfast, drive back to Dehradun via Mori, Purola and Mussoorie. Arrive by evening, marking the end of your Har Ki Dun adventure.", meals: "Breakfast & Lunch" },
     ],
-    image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80",
+    image: "/assets/har-ki-dun/e9a6b4b0-145b-4ce1-ba6c-7cd151231700.jpeg",
     featured: true,
     groupSize: 18,
   },
@@ -487,7 +487,7 @@ export const treks: Trek[] = [
       { day: 8, title: "Descend to Ruing via Dronagiri Village", altitude: 2393, hours: 7, description: "Long descent back through Dronagiri Village to Ruing.", meals: "B/L/D" },
       { day: 9, title: "Trek to Jumma, drive to Joshimath", altitude: 1875, hours: 6, description: "Final trek to Jumma and drive back to Joshimath.", meals: "Breakfast" },
     ],
-    image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80",
+    image: "/assets/dronagiri/c3de05f4-7486-4ad7-bd72-ee923d6f6831.jpeg",
     groupSize: 12,
   },
   {

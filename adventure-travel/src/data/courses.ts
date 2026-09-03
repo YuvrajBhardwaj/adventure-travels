@@ -211,7 +211,7 @@ export const courses: Course[] = [
     gallery: [
       "https://images.pexels.com/photos/848591/pexels-photo-848591.jpeg?w=800&q=80",
       "https://images.pexels.com/photos/352092/pexels-photo-352092.jpeg?w=800&q=80",
-      "https://images.pexels.com/photos/163444/ski-snow-winter-sports-163444.jpeg?w=800&q=80",
+      "https://images.pexels.com/photos/2404843/pexels-photo-2404843.jpeg?w=800&q=80",
       "https://images.pexels.com/photos/30309572/pexels-photo-30309572.jpeg?w=800&q=80",
       "https://images.pexels.com/photos/6815358/pexels-photo-6815358.jpeg?w=800&q=80",
       "https://images.pexels.com/photos/6575867/pexels-photo-6575867.jpeg?w=800&q=80",
@@ -299,7 +299,7 @@ export const courses: Course[] = [
     gallery: [
       "https://images.pexels.com/photos/352092/pexels-photo-352092.jpeg?w=800&q=80",
       "https://images.pexels.com/photos/848591/pexels-photo-848591.jpeg?w=800&q=80",
-      "https://images.pexels.com/photos/163444/ski-snow-winter-sports-163444.jpeg?w=800&q=80",
+      "https://images.pexels.com/photos/2404843/pexels-photo-2404843.jpeg?w=800&q=80",
       "https://images.pexels.com/photos/6815358/pexels-photo-6815358.jpeg?w=800&q=80",
       "https://images.pexels.com/photos/6575867/pexels-photo-6575867.jpeg?w=800&q=80",
     ],
@@ -332,13 +332,13 @@ export const courses: Course[] = [
       "Course completion certificate",
     ],
     itinerary: [
-      { day: 1, title: "Arrive Joshimath & Gear Up", description: "Transfer from Joshimath to Auli. Meet your instructors, get fitted for a board and boots by our equipment specialists, and settle into your mountain-view accommodation." },
-      { day: 2, title: "First Rides on the Nursery Slopes", description: "Ride the Auli cable car up and learn the fundamentals — stance, balance, heel-side stops, and how to fall safely. Afternoon: theory session on mountain safety and weather patterns." },
-      { day: 3, title: "Toe-Side Turns & Edge Control", description: "Build control on gentle gradients: toe-side turns, edge transitions, and linking heel-to-toe. Afternoon: equipment tuning clinic — waxing, edge sharpening, and board care." },
-      { day: 4, title: "Linking Turns & Speed Control", description: "Start linking turns down beginner blue runs. Your instructor films your technique for the afternoon video analysis session — see your stance, edge angle, and body position in detail." },
-      { day: 5, title: "Chairlift & Longer Descents", description: "Take the chairlift for longer runs across Auli's varied terrain. Refine your carving and carry more speed across wider pistes. Afternoon: snow science seminar." },
-      { day: 6, title: "Intermediate Slopes & Freestyle Taster", description: "Progress to steeper runs and a guided introduction to the terrain park — ollies, flat-ground tricks, and small features. End with a group challenge and celebratory après." },
-      { day: 7, title: "Assessment & Certification", description: "A final assessed run demonstrating your progression, personalised written evaluation from your Level 4 Pro, course certificate, and a celebratory send-off." },
+      { day: 1, title: "Arrival & Snowboard Orientation", description: "Arrival and accommodation check-in. Introduction to the instructor and course, snowboard equipment fitting, understanding snowboard, bindings and boots, safety briefing and mountain etiquette. Warm-up and mobility session, basic stance identification, introduction to balancing on the board and practice on flat snow. Focus: getting comfortable with the equipment and snowboard." },
+      { day: 2, title: "Balance, Stance & Basic Movement", description: "Warm-up and mobility, correct riding stance, falling and getting back up safely, skate technique, straight glide, heel-edge control, toe-edge introduction, speed control and basic stopping techniques. Focus: learning to control the snowboard rather than simply sliding." },
+      { day: 3, title: "Edge Control & Turning", description: "Revision of basic techniques, heel-side and toe-side traversing, edge engagement, speed management, introduction to linked turns, basic J-turns, C-turn progression and controlled riding on beginner terrain. Focus: developing confident turns and edge control." },
+      { day: 4, title: "Linked Turns & Mountain Riding", description: "Warm-up and technical drills, linking heel-side and toe-side turns, controlling speed through turns, riding different sections of the slope, line selection, introduction to riding steeper terrain and individual correction by instructor. Focus: becoming a controlled and independent rider." },
+      { day: 5, title: "Intermediate Riding Skills", description: "Dynamic turning, improving posture and balance, carving fundamentals, riding variable snow conditions, terrain awareness, lift/tow awareness and mountain etiquette, and introduction to basic freeride concepts, conditions permitting. Focus: improving technique and confidence." },
+      { day: 6, title: "Freeride & Advanced Fundamentals", description: "Technical warm-up, edge-control drills, carving progression, introduction to freeride technique, terrain selection, riding natural features safely, individual coaching, and video analysis/session review where conditions and equipment permit. Focus: applying technique in real mountain conditions." },
+      { day: 7, title: "Final Riding Day & Assessment", description: "Warm-up, technical revision, individual riding assessment, demonstration of linked turns, edge control and stopping, controlled descent, instructor feedback and course completion assessment. Certificate of participation/completion from Expedition Happiness Treks. Focus: demonstrating what you have learned and understanding your next progression." },
     ],
     inclusions: [
       { icon: "structor", label: "Certified Instructor", description: "20+ hrs/week from Level 4 qualified coaches" },

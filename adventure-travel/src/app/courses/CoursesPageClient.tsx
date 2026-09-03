@@ -18,10 +18,10 @@ const HERO_MEDIA: { type: "image" | "video"; src: string }[] = [
   { type: "video", src: "/assets/snowboarding/IMG_5272.MOV" },
 ];
 
-const TYPE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  Skiing: { bg: "bg-sky-50", text: "text-sky-700", border: "border-sky-200" },
-  Snowboarding: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
-  Backcountry: { bg: "bg-violet-50", text: "text-violet-700", border: "border-violet-200" },
+const TYPE_COLORS: Record<string, { bg: string; text: string; border: string; hoverRing: string }> = {
+  Skiing: { bg: "bg-sky-50", text: "text-sky-700", border: "border-sky-200", hoverRing: "hover:ring-sky-300" },
+  Snowboarding: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200", hoverRing: "hover:ring-blue-300" },
+  Backcountry: { bg: "bg-violet-50", text: "text-violet-700", border: "border-violet-200", hoverRing: "hover:ring-violet-300" },
 };
 
 export default function CoursesPageClient() {
@@ -47,6 +47,10 @@ export default function CoursesPageClient() {
   const lineReveal: Variants = reduceMotion
     ? { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.4 } } }
     : { hidden: { y: "112%" }, show: { y: "0%", transition: { duration: 0.95, ease: [0.22, 1, 0.36, 1] } } };
+  const inViewStagger: Variants = {
+    hidden: {},
+    show: { transition: { staggerChildren: reduceMotion ? 0 : 0.07 } },
+  };
 
   useEffect(() => {
     if (reduceMotion || HERO_MEDIA.length < 2) return;
@@ -160,83 +164,109 @@ export default function CoursesPageClient() {
 
       {/* Course Cards */}
       <section id="courses-grid" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-60px" }}
+          variants={fadeUp}
+          className="text-center mb-12"
+        >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-heading">
             Choose Your Course
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             From first-timers to seasoned adventurers — structured progression tracks taught by certified mountain guides.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-60px" }}
+          variants={inViewStagger}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
           {courses.map((course) => {
             const colors = TYPE_COLORS[course.type];
             const displayPrice = course.tiers ? Math.min(...course.tiers.map((t) => t.priceBase)) : course.price;
             return (
-              <Link
-                key={course.id}
-                href={`/courses/${course.slug}`}
-                className={`group relative bg-white rounded-2xl shadow-lg overflow-hidden border-2 ${colors.border} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
-              >
-                {course.featured && (
-                  <div className="absolute top-4 right-4 z-10 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full">
-                    MOST POPULAR
-                  </div>
-                )}
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={course.image}
-                    alt={course.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${colors.bg} ${colors.text} mb-3`}>
-                    {course.type}
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-sky-600 transition-colors">
-                    {course.name}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {course.shortDescription}
-                  </p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-                    <span className="flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      {course.duration}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                      {course.level}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div>
-                      <span className="text-2xl font-bold text-gray-900">{course.tiers ? "From " : ""}Rs.{displayPrice.toLocaleString("en-IN")}</span>
-                      <span className="text-sm text-gray-500 ml-1">/ person</span>
+              <motion.div key={course.id} variants={fadeUp}>
+                <Link
+                  href={`/courses/${course.slug}`}
+                  className={`group relative block h-full bg-white rounded-2xl overflow-hidden ring-1 ring-gray-900/5 shadow-sm transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-sky-900/10 hover:ring-2 ${colors.hoverRing}`}
+                >
+                  {course.featured && (
+                    <div className="absolute top-4 right-4 z-10 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full">
+                      MOST POPULAR
                     </div>
-                    <span className="text-sky-600 font-semibold group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                      View Course
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                    </span>
+                  )}
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={course.image}
+                      alt={course.name}
+                      className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] group-hover:scale-[1.07]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                   </div>
-                </div>
-              </Link>
+                  <div className="p-6">
+                    <div className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${colors.bg} ${colors.text} mb-3`}>
+                      {course.type}
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-sky-600 transition-colors duration-300">
+                      {course.name}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {course.shortDescription}
+                    </p>
+                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                      <span className="flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        {course.duration}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        {course.level}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <div>
+                        <span className="text-2xl font-bold text-gray-900">{course.tiers ? "From " : ""}Rs.{displayPrice.toLocaleString("en-IN")}</span>
+                        <span className="text-sm text-gray-500 ml-1">/ person</span>
+                      </div>
+                      <span className="text-sky-600 font-semibold group-hover:translate-x-1 transition-transform duration-300 inline-flex items-center gap-1">
+                        View Course
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </section>
 
       {/* Why Choose Us */}
       <section className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-60px" }}
+            variants={fadeUp}
+            className="text-center mb-12"
+          >
             <h2 className="text-3xl font-bold text-gray-900 mb-4 font-heading">
               Why Learn With Us
             </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          </motion.div>
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-60px" }}
+            variants={inViewStagger}
+            className="grid grid-cols-1 md:grid-cols-4 gap-8"
+          >
             {[
               {
                 title: "Certified Instructors",
@@ -275,21 +305,29 @@ export default function CoursesPageClient() {
                 ),
               },
             ].map((item) => (
-              <div key={item.title} className="text-center p-6">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50">
-                  {item.icon}
+              <motion.div key={item.title} variants={fadeUp} className="group">
+                <div className="text-center p-6 rounded-2xl transition-colors duration-300 group-hover:bg-white group-hover:shadow-lg group-hover:shadow-sky-900/5">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50 transition-[transform,background-color,box-shadow] duration-300 group-hover:-translate-y-1 group-hover:scale-105 group-hover:bg-sky-100 group-hover:shadow-md">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
+                  <p className="text-gray-600 text-sm">{item.desc}</p>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-gray-600 text-sm">{item.desc}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="bg-gradient-to-r from-sky-600 to-cyan-500 py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative overflow-hidden bg-[linear-gradient(115deg,#0369a1,#0ea5e9,#22d3ee,#0ea5e9,#0369a1)] animate-gradient py-16">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-60px" }}
+          variants={fadeUp}
+          className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+        >
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 font-heading">
             Ready to Hit the Slopes?
           </h2>
@@ -300,17 +338,23 @@ export default function CoursesPageClient() {
             href="https://wa.me/917817912062?text=Hi!%20I'm%20interested%20in%20the%20skiing/snowboarding%20course%20in%20Auli."
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-white text-sky-600 px-8 py-3 rounded-full font-semibold hover:bg-sky-50 transition-colors"
+            className="group inline-flex items-center gap-2 bg-white text-sky-600 px-8 py-3 rounded-full font-semibold shadow-lg shadow-sky-900/20 transition-[transform,box-shadow,background-color] duration-300 ease-out hover:-translate-y-0.5 hover:bg-sky-50 hover:shadow-xl hover:shadow-sky-900/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             Book on WhatsApp
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+            <svg className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
           </a>
-        </div>
+        </motion.div>
       </section>
 
       {/* Course Film — playable with sound (native controls) */}
       <section className="bg-white py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-60px" }}
+          variants={fadeUp}
+          className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+        >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-heading">
             See the Slopes for Yourself
           </h2>
@@ -329,7 +373,7 @@ export default function CoursesPageClient() {
           <p className="mt-3 text-xs text-gray-400">
             Filmed on our Auli slopes during past courses.
           </p>
-        </div>
+        </motion.div>
       </section>
 
       {/* Terms & Conditions */}
