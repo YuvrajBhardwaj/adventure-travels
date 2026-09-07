@@ -1,0 +1,10 @@
+<!-- Expedition Happiness Treks — Mark (print-ready, single color, pure vector) -->
+<!-- Usage: embeds as <img src="/brand/logo-mark.svg"> or inline. Works at 16px. No gradients/filters. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="400" height="400" role="img" aria-label="Expedition Happiness Treks mark">
+  <rect x="2.5" y="2.5" width="35" height="35" rx="9" fill="none" stroke="currentColor" stroke-width="1"/>
+  <path d="M6 28 L13.2 16.5 L17.2 22.2 L20.2 11.2 L24.4 22.2 L28.2 15.2 L34 28 Z" fill="currentColor" stroke="none"/>
+  <path d="M11.5 28.5 C14.2 25.2 16 22 20 18.2" stroke="white" stroke-width="1.35" stroke-linecap="round"/>
+  <circle cx="20" cy="14.2" r="1.9" fill="white"/>
+  <path d="M20 9.2 A3.8 3.8 0 0 1 23.6 11" stroke="white" stroke-width="1.1" stroke-linecap="round"/>
+  <path d="M8.5 29.8 H31.5" stroke="currentColor" stroke-width="0.9" stroke-linecap="round"/>
+</svg>
