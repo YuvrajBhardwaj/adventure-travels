@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "build": "cd adventure-travel && npm install && npm run build && node -e \"const fs=require('fs');fs.cpSync('out','../out',{recursive:true,force:true})\"",
+    "dev": "cd adventure-travel && npm run dev",
+    "lint": "cd adventure-travel && npm run lint"
+  },
   "dependencies": {
     "@dietrichgebert/ponytail": "^4.8.4"
   }
