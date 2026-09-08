@@ -7,7 +7,7 @@ import { FadeUp, StaggerContainer, StaggerItem } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
 
 export default function StoriesTestimonials() {
-  const featuredStories = stories.filter((s) => s.featured).slice(0, 3);
+  const featuredStories = stories.slice(0, 3);
   const picks = testimonials.slice(0, 3);
 
   return (

@@ -158,7 +158,7 @@ export default function ActivitiesPage() {
               <div className="relative aspect-square overflow-hidden rounded-2xl border-[5px] border-white shadow-xl">
                 <SmartImage
                   src="https://plus.unsplash.com/premium_photo-1754337730608-59a489f3c9fd?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  alt="Backcountry ski touring in the Himalayas"
+                  alt="Backcountry Ski & Snowboard Touring in the Himalayas"
                   className="h-full w-full object-cover"
                 />
                 <span className="absolute bottom-2 left-2 rounded-full bg-sky-600/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
