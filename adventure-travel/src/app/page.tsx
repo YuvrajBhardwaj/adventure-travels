@@ -5,6 +5,7 @@ import SeasonSplitHero from "@/components/SeasonSplitHero";
 import StatsStrip from "@/components/StatsStrip";
 import SummerTreksRail from "@/components/SummerTreksRail";
 import SnowSchool from "@/components/SnowSchool";
+import CampingSection from "@/components/CampingSection";
 import VideoShowcase from "@/components/VideoShowcase";
 import StoriesTestimonials from "@/components/StoriesTestimonials";
 import HimalayanMap from "@/components/HimalayanMap";
@@ -34,6 +35,7 @@ export default function Home() {
           <StatsStrip />
           <SummerTreksRail />
           <SnowSchool />
+          <CampingSection />
           <VideoShowcase />
           <StoriesTestimonials />
           <HimalayanMap />

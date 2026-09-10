@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
 import SmartImage from "@/components/SmartImage";
+import CampingSection from "@/components/CampingSection";
 const activities = [
   {
     id: "trekking",
@@ -134,7 +135,7 @@ export default function ActivitiesPage() {
             <div className="pointer-events-none absolute -inset-4 -z-10 rounded-[2.5rem] bg-gradient-to-br from-sky-300/30 to-blue-400/20 blur-2xl" />
             <div className="group relative aspect-[4/3] overflow-hidden rounded-[2rem] shadow-2xl shadow-sky-900/15">
               <SmartImage
-                src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1000&q=80"
+                src="/assets/skiing/IMG_5035.JPG.jpeg"
                 alt="Snowboarding the powder slopes of Auli"
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
@@ -338,6 +339,11 @@ export default function ActivitiesPage() {
         </div>
       </section>
 
+      {/* Camping — detailed section (anchor target for #camping) */}
+      <div id="camping" className="scroll-mt-24">
+        <CampingSection />
+      </div>
+
       {/* Activity Cards */}
       <section className="py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -351,7 +357,7 @@ export default function ActivitiesPage() {
           </div>
 
           <div className="grid gap-8 md:grid-cols-2">
-            {activities.map((act) => {
+            {activities.filter((act) => act.id !== "camping").map((act) => {
               const colors = colorMap[act.color];
               return (
                 <div

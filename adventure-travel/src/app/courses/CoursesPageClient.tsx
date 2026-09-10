@@ -6,12 +6,16 @@ import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, typ
 import { courses } from "@/data/courses";
 import TermsConditions from "@/components/TermsConditions";
 
-// Hero media — skiing gallery + snowboarding videos, mixed carousel
-const GALLERY_WALLPAPERS = (courses.find((c) => c.slug === "skiing-course")?.gallery ?? []).map((u) =>
+// Hero media — skiing gallery (images only) + real course videos, mixed carousel
+const SKIING_GALLERY = courses.find((c) => c.slug === "skiing-course")?.gallery ?? [];
+const GALLERY_WALLPAPERS = SKIING_GALLERY.filter((u) => !/\.(mp4|mov)$/i.test(u)).map((u) =>
   u.replace("w=800", "w=1920")
 );
 const HERO_MEDIA: { type: "image" | "video"; src: string }[] = [
   ...GALLERY_WALLPAPERS.map((src) => ({ type: "image" as const, src })),
+  { type: "video", src: "/assets/skiing/IMG_4968.MP4" },
+  { type: "video", src: "/assets/skiing/IMG_4975.MP4" },
+  { type: "video", src: "/assets/skiing/IMG_5018.MP4" },
   { type: "video", src: "/assets/snowboarding/IMG_5201.MOV" },
   { type: "video", src: "/assets/snowboarding/IMG_4222.MOV" },
   { type: "video", src: "/assets/snowboarding/IMG_5198.MOV" },

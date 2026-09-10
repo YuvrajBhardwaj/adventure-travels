@@ -2,14 +2,26 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import SmartImage from "./SmartImage";
 
 const PHONE = "917817912062";
 const CONTACT_NAME = "Kuldeep Rawat";
-const WA_LINK = `https://wa.me/${PHONE}?text=${encodeURIComponent("Hi Kuldeep! I'd like to know more about your Himalayan adventures.")}`;
 
-export default function ContactPopup({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [form, setForm] = useState({ name: "", phone: "", message: "" });
+interface ContactPopupProps {
+  open: boolean;
+  onClose: () => void;
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  defaultMessage?: string;
+}
+
+export default function ContactPopup({ open, onClose, title, subtitle, image, defaultMessage }: ContactPopupProps) {
+  const [form, setForm] = useState({ name: "", phone: "", message: defaultMessage ?? "" });
   const [sent, setSent] = useState(false);
+
+  const waText = defaultMessage ?? "Hi Kuldeep! I'd like to know more about your Himalayan adventures.";
+  const WA_LINK = `https://wa.me/${PHONE}?text=${encodeURIComponent(waText)}`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,15 +48,27 @@ export default function ContactPopup({ open, onClose }: { open: boolean; onClose
             className="relative w-full max-w-md rounded-3xl bg-white dark:bg-card p-8 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <button onClick={onClose} className="absolute top-4 right-4 text-muted hover:text-foreground">
+            <button onClick={onClose} className="absolute top-4 right-4 z-10 rounded-full bg-black/30 p-1 text-white hover:bg-black/50">
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
-            <h3 className="font-heading text-2xl font-bold text-primary mb-1">Get in Touch</h3>
+            {image && (
+              <div className="relative -m-8 mb-6 h-44 overflow-hidden rounded-t-3xl">
+                <SmartImage src={image} alt={title ?? "Camp"} className="h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                {title && (
+                  <p className="absolute bottom-3 left-5 font-heading text-xl font-bold text-white">{title}</p>
+                )}
+              </div>
+            )}
+
+            <h3 className="font-heading text-2xl font-bold text-primary mb-1">{image ? "Enquire about this camp" : "Get in Touch"}</h3>
             <p className="text-sm text-muted mb-6">
-              Speak with <span className="font-semibold text-foreground">{CONTACT_NAME}</span>, your trek coordinator — call, WhatsApp, or send your details.
+              {subtitle ?? (
+                <>Speak with <span className="font-semibold text-foreground">{CONTACT_NAME}</span>, your trek coordinator — call, WhatsApp, or send your details.</>
+              )}
             </p>
 
             <div className="flex gap-3 mb-6">
@@ -94,7 +118,7 @@ export default function ContactPopup({ open, onClose }: { open: boolean; onClose
                     required
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
                   />
                 </div>
                 <div>
@@ -106,7 +130,7 @@ export default function ContactPopup({ open, onClose }: { open: boolean; onClose
                     required
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
                   />
                 </div>
                 <div>
@@ -117,7 +141,7 @@ export default function ContactPopup({ open, onClose }: { open: boolean; onClose
                     rows={3}
                     value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent resize-none"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent resize-none"
                   />
                 </div>
                 <button

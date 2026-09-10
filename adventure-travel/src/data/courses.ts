@@ -1,3 +1,37 @@
+/** Real Auli course photos (local, in public/assets/skiing). Shared by both skiing courses. */
+const SKIING_LOCAL_GALLERY = [
+  "/assets/skiing/IMG_4853.WEBP",
+  "/assets/skiing/IMG_4963.JPG.jpeg",
+  "/assets/skiing/IMG_4965.JPG.jpeg",
+  "/assets/skiing/IMG_4974.JPG.jpeg",
+  "/assets/skiing/IMG_4976.JPG.jpeg",
+  "/assets/skiing/IMG_4992.JPG.jpeg",
+  "/assets/skiing/IMG_4993.JPG.jpeg",
+  "/assets/skiing/IMG_4994.JPG.jpeg",
+  "/assets/skiing/IMG_4995.JPG.jpeg",
+  "/assets/skiing/IMG_4996.JPG.jpeg",
+  "/assets/skiing/IMG_5006.JPG.jpeg",
+  "/assets/skiing/IMG_5009.JPG.jpeg",
+  "/assets/skiing/IMG_5016.JPG.jpeg",
+  "/assets/skiing/IMG_5017.JPG.jpeg",
+  "/assets/skiing/IMG_5021.JPG.jpeg",
+  "/assets/skiing/IMG_5022.JPG.jpeg",
+  "/assets/skiing/IMG_5028.JPG.jpeg",
+  "/assets/skiing/IMG_5035.JPG.jpeg",
+  "/assets/skiing/IMG_5036.JPG.jpeg",
+  "/assets/skiing/IMG_5038.JPG.jpeg",
+];
+
+/** Real Auli course videos (local, in public/assets/skiing). Shared by both skiing courses. */
+const SKIING_LOCAL_VIDEOS = [
+  "/assets/skiing/IMG_4968.MP4",
+  "/assets/skiing/IMG_4973.MP4",
+  "/assets/skiing/IMG_4975.MP4",
+  "/assets/skiing/IMG_5018.MP4",
+  "/assets/skiing/IMG_5025.MOV",
+  "/assets/skiing/IMG_5037.MP4",
+];
+
 export interface CourseItineraryDay {
   day: number;
   title: string;
@@ -207,15 +241,12 @@ export const courses: Course[] = [
       { name: "Arjun K.", location: "Delhi", text: "Professional setup, great gear, and the guides know every inch of these mountains. The small group size meant I got real attention. Highly recommend for beginners.", rating: 5 },
       { name: "Sneha R.", location: "Bangalore", text: "The Auli cable car ride alone is worth the trip. But the structured progression and the après sessions with other riders made it special. Already booked for next season!", rating: 5 },
     ],
-    image: "https://images.pexels.com/photos/848591/pexels-photo-848591.jpeg?w=800&q=80",
+    image: "/assets/skiing/IMG_5035.JPG.jpeg",
     gallery: [
-      "https://images.pexels.com/photos/848591/pexels-photo-848591.jpeg?w=800&q=80",
-      "https://images.pexels.com/photos/352092/pexels-photo-352092.jpeg?w=800&q=80",
-      "https://images.pexels.com/photos/2404843/pexels-photo-2404843.jpeg?w=800&q=80",
-      "https://images.pexels.com/photos/30309572/pexels-photo-30309572.jpeg?w=800&q=80",
-      "https://images.pexels.com/photos/6815358/pexels-photo-6815358.jpeg?w=800&q=80",
-      "https://images.pexels.com/photos/6575867/pexels-photo-6575867.jpeg?w=800&q=80",
+      ...SKIING_LOCAL_GALLERY,
+      ...SKIING_LOCAL_VIDEOS,
     ],
+    video: "/assets/skiing/IMG_5025.MOV",
   },
   {
     id: 6,
@@ -295,14 +326,12 @@ export const courses: Course[] = [
       { name: "Ishita S.", location: "Mumbai", text: "Worth every rupee. Small groups meant constant feedback, and by week two we were riding lifts and doing proper longer descents. Already signed up for next season.", rating: 5 },
       { name: "Karan V.", location: "Chandigarh", text: "This is a proper snow school, not a holiday camp. Structured days, theory seminars, real assessment at the end. My skiing transformed.", rating: 5 },
     ],
-    image: "https://images.pexels.com/photos/352092/pexels-photo-352092.jpeg?w=800&q=80",
+    image: "/assets/skiing/IMG_5036.JPG.jpeg",
     gallery: [
-      "https://images.pexels.com/photos/352092/pexels-photo-352092.jpeg?w=800&q=80",
-      "https://images.pexels.com/photos/848591/pexels-photo-848591.jpeg?w=800&q=80",
-      "https://images.pexels.com/photos/2404843/pexels-photo-2404843.jpeg?w=800&q=80",
-      "https://images.pexels.com/photos/6815358/pexels-photo-6815358.jpeg?w=800&q=80",
-      "https://images.pexels.com/photos/6575867/pexels-photo-6575867.jpeg?w=800&q=80",
+      ...SKIING_LOCAL_GALLERY,
+      ...SKIING_LOCAL_VIDEOS,
     ],
+    video: "/assets/skiing/IMG_5025.MOV",
   },
   {
     id: 2,
