@@ -282,33 +282,6 @@ export default function ActivitiesPage() {
               </div>
             </div>
 
-            {/* Mountaineering Track */}
-            <div className="group relative overflow-hidden rounded-3xl bg-white shadow-xl ring-1 ring-emerald-100 transition-transform hover:-translate-y-1">
-              <div className="bg-gradient-to-r from-emerald-500 to-teal-400 p-6 text-white">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20">
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3h.008v.008h-.008V10.5zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" /></svg>
-                  </div>
-                  <div>
-                    <h3 className="font-heading text-xl font-bold">Mountaineering</h3>
-                    <p className="text-sm text-white/70">Himalayas · Multi-day expeditions</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex gap-3">
-                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">🟢 Day Hikes</span>
-                  <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-700">🔵 Peak Bidding</span>
-                  <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700">🔴 High Altitude</span>
-                </div>
-                <p className="mt-4 text-sm text-muted">Start with guided day hikes, progress to multi-day treks with technical sections. Rope work, crampon technique, and glacier travel.</p>
-                <div className="mt-5 flex items-center justify-between">
-                  <p className="font-heading text-xl font-bold text-foreground">₹18,000+ <span className="text-xs font-normal text-muted">/ trek</span></p>
-                  <a href={`https://wa.me/917817912062?text=${encodeURIComponent("Hi! I'm interested in mountaineering courses.")}`} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-emerald-600 hover:scale-105">Enquire</a>
-                </div>
-              </div>
-            </div>
-
             {/* Rock Climbing Track */}
             <div className="group relative overflow-hidden rounded-3xl bg-white shadow-xl ring-1 ring-amber-100 transition-transform hover:-translate-y-1">
               <div className="bg-gradient-to-r from-amber-500 to-orange-400 p-6 text-white">
