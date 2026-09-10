@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { createActivityBooking } from "@/lib/auth";
 import type { Course } from "@/data/courses";
 import CourseVideoBackdrop from "@/components/CourseVideoBackdrop";
+import SmartImage from "@/components/SmartImage";
 
 type Tab = "overview" | "dates" | "itinerary" | "gallery" | "included" | "book";
 
@@ -693,38 +694,46 @@ export default function CourseDetailClient({ course }: Props) {
                     <p className="text-gray-600 mb-8">Moments from our skiing and snowboarding courses in Auli.</p>
                   </motion.div>
                   <motion.div variants={inViewStagger} className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {images.map((img, i) => (
+                    {images.map((img, i) => {
+                      const isVideo = /\.(mp4|mov)$/i.test(img);
+                      return (
                       <motion.button
                         key={i}
                         variants={fadeUp}
                         type="button"
                         onClick={() => setLightbox(i)}
-                        aria-label={`View ${/\.(mp4|mov)$/i.test(img) ? "video" : "photo"} ${i + 1} of ${images.length}`}
+                        aria-label={`View ${isVideo ? "video" : "photo"} ${i + 1} of ${images.length}`}
                         className="relative aspect-[4/3] rounded-xl overflow-hidden group cursor-pointer ring-1 ring-gray-900/5"
                       >
-                        {/\.(mp4|mov)$/i.test(img) ? (
-                          <video src={img} muted preload="metadata" className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] group-hover:scale-[1.06]" />
+                        {isVideo ? (
+                          /* ponytail: no <video> here (preload="none" still stalls on 40MB .movs) —
+                             exact-size skeleton + play badge; the file loads only in the lightbox */
+                          <>
+                            <span aria-hidden className="absolute inset-0 skeleton" />
+                            <span className="absolute inset-0 flex items-center justify-center">
+                              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black/45 transition-transform duration-300 group-hover:scale-110">
+                                <svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M8 5v14l11-7z" /></svg>
+                              </span>
+                            </span>
+                          </>
                         ) : (
-                          <img
+                          <SmartImage
                             src={img}
                             alt={`${course.name} — photo ${i + 1}`}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] group-hover:scale-[1.06]"
+                            className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] group-hover:scale-[1.06]"
                           />
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                          {/\.(mp4|mov)$/i.test(img) ? (
-                            <svg className="w-10 h-10 text-white drop-shadow" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                          ) : (
+                        {!isVideo && (
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                             <svg className="w-8 h-8 text-white drop-shadow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
                               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 7.5v6m3-3h-6M21 21l-5.2-5.2" />
                             </svg>
-                          )}
-                        </div>
+                          </div>
+                        )}
                       </motion.button>
-                    ))}
+                      );
+                    })}
                   </motion.div>
 
                   {/* Lightbox — portaled to body so the animating tab panel's

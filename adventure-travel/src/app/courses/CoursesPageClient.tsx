@@ -87,7 +87,7 @@ export default function CoursesPageClient() {
                   muted
                   loop
                   playsInline
-                  preload="auto"
+                  preload="metadata"
                   className="h-full w-full object-cover"
                   aria-hidden
                 />
@@ -367,7 +367,7 @@ export default function CoursesPageClient() {
           </p>
           <video
             controls
-            preload="metadata"
+            preload="none"
             playsInline
             src="/assets/snowboarding/IMG_1477.MOV"
             poster="https://images.pexels.com/photos/848591/pexels-photo-848591.jpeg?w=1200&q=80"

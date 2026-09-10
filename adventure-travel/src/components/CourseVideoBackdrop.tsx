@@ -12,6 +12,17 @@ export default function CourseVideoBackdrop({ video, poster }: { video: string; 
   const reduceMotion = useReducedMotion();
   const vidRef = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false);
+  const [ready, setReady] = useState(false);
+  // ponytail: poster-only on phones — a 44MB .MOV backdrop isn't worth the jank
+  const [smallScreen, setSmallScreen] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    const onChange = (e: MediaQueryListEvent) => setSmallScreen(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   // ponytail: pause when tab hidden — saves battery, one line
   useEffect(() => {
@@ -22,7 +33,7 @@ export default function CourseVideoBackdrop({ video, poster }: { video: string; 
     return () => document.removeEventListener("visibilitychange", onVis);
   }, []);
 
-  const showVideo = !reduceMotion && !failed;
+  const showVideo = !reduceMotion && !failed && !smallScreen;
 
   return (
     <div className="fixed inset-0 z-0" aria-hidden>
@@ -30,8 +41,9 @@ export default function CourseVideoBackdrop({ video, poster }: { video: string; 
       <img src={poster} alt="" className="absolute inset-0 h-full w-full object-cover" decoding="async" />
       {showVideo && (
         <video
+          key={video}
           ref={vidRef}
-          className="absolute inset-0 h-full w-full object-cover"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${ready ? "opacity-100" : "opacity-0"}`}
           src={video}
           poster={poster}
           autoPlay
@@ -39,6 +51,7 @@ export default function CourseVideoBackdrop({ video, poster }: { video: string; 
           loop
           playsInline
           preload="metadata"
+          onCanPlay={() => setReady(true)}
           onError={() => setFailed(true)}
         />
       )}
