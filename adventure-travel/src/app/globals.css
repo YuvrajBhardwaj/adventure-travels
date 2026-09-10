@@ -641,6 +641,15 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* ========== COPY DETERRENTS ========== */
+/* No text-selection or long-press save menu on site media. */
+
+img, video {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
 /* ========== SHINE SWEEP (buttons / cards) ========== */
 /* Add `.shine` to a relatively-positioned element; a light streak sweeps on hover.
    Keep the button's own label in a higher stacking layer (e.g. `relative z-10`). */

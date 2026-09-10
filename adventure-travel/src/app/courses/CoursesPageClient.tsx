@@ -367,6 +367,7 @@ export default function CoursesPageClient() {
           </p>
           <video
             controls
+            controlsList="nodownload"
             preload="none"
             playsInline
             src="/assets/snowboarding/IMG_1477.MOV"

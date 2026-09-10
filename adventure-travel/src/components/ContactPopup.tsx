@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import SmartImage from "./SmartImage";
 
 const PHONE = "917817912062";
 const CONTACT_NAME = "Kuldeep Rawat";
@@ -13,12 +12,16 @@ interface ContactPopupProps {
   title?: string;
   subtitle?: string;
   image?: string;
+  /** Optional swipeable header photos (camping). Falls back to `image`. */
+  gallery?: string[];
   defaultMessage?: string;
 }
 
-export default function ContactPopup({ open, onClose, title, subtitle, image, defaultMessage }: ContactPopupProps) {
+export default function ContactPopup({ open, onClose, title, subtitle, image, gallery, defaultMessage }: ContactPopupProps) {
   const [form, setForm] = useState({ name: "", phone: "", message: defaultMessage ?? "" });
   const [sent, setSent] = useState(false);
+  const photos = gallery && gallery.length > 0 ? gallery : image ? [image] : [];
+  const [photoIdx, setPhotoIdx] = useState(0);
 
   const waText = defaultMessage ?? "Hi Kuldeep! I'd like to know more about your Himalayan adventures.";
   const WA_LINK = `https://wa.me/${PHONE}?text=${encodeURIComponent(waText)}`;
@@ -54,12 +57,49 @@ export default function ContactPopup({ open, onClose, title, subtitle, image, de
               </svg>
             </button>
 
-            {image && (
-              <div className="relative -m-8 mb-6 h-44 overflow-hidden rounded-t-3xl">
-                <SmartImage src={image} alt={title ?? "Camp"} className="h-full w-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+            {photos.length > 0 && (
+              <div key={photos[0]} className="relative -m-8 mb-6 h-52 overflow-hidden rounded-t-3xl bg-gray-100">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.img
+                    key={photoIdx}
+                    src={photos[photoIdx]}
+                    alt={title ?? "Camp"}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.35 }}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    draggable={false}
+                  />
+                </AnimatePresence>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
                 {title && (
                   <p className="absolute bottom-3 left-5 font-heading text-xl font-bold text-white">{title}</p>
+                )}
+                {photos.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setPhotoIdx((i) => (i - 1 + photos.length) % photos.length)}
+                      aria-label="Previous photo"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-1.5 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
+                    >
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPhotoIdx((i) => (i + 1) % photos.length)}
+                      aria-label="Next photo"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-1.5 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
+                    >
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                    <div className="absolute bottom-3 right-4 flex gap-1.5">
+                      {photos.map((_, i) => (
+                        <span key={i} className={`h-1.5 rounded-full transition-all ${i === photoIdx ? "w-5 bg-white" : "w-1.5 bg-white/50"}`} />
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
             )}

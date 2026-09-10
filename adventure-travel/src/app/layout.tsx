@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Poppins, Inter, Fraunces, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Preloader from "@/components/Preloader";
+import AssetProtection from "@/components/AssetProtection";
 import Navbar from "@/components/Navbar";
 import { AuthProvider } from "@/contexts/AuthContext";
 
@@ -168,6 +169,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
+        <AssetProtection />
         <AuthProvider>
           <Preloader />
           <Navbar />

@@ -199,6 +199,7 @@ export default function VideoShowcase() {
                 src={active.video}
                 poster={active.poster}
                 controls
+                controlsList="nodownload"
                 autoPlay
                 playsInline
               />

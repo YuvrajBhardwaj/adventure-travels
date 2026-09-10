@@ -1198,6 +1198,7 @@ function GalleryTab({ trek }: { trek: Trek }) {
                 <video
                   src={images[lightbox]}
                   controls
+                  controlsList="nodownload"
                   autoPlay
                   muted
                   playsInline

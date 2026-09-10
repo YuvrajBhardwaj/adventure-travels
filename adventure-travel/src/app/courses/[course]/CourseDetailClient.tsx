@@ -780,6 +780,7 @@ export default function CourseDetailClient({ course }: Props) {
                             <video
                               src={images[lightbox]}
                               controls
+                              controlsList="nodownload"
                               autoPlay
                               muted
                               playsInline
