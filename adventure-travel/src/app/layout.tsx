@@ -4,6 +4,7 @@ import "./globals.css";
 import Preloader from "@/components/Preloader";
 import AssetProtection from "@/components/AssetProtection";
 import Navbar from "@/components/Navbar";
+import FooterV2 from "@/components/FooterV2";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 const poppins = Poppins({
@@ -174,6 +175,7 @@ export default function RootLayout({
           <Preloader />
           <Navbar />
           {children}
+          <FooterV2 />
         </AuthProvider>
       </body>
     </html>

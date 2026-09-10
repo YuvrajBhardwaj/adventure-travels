@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
 import { courses } from "@/data/courses";
-import TermsConditions from "@/components/TermsConditions";
 
 // Hero media — skiing gallery (images only) + real course videos, mixed carousel
 const SKIING_GALLERY = courses.find((c) => c.slug === "skiing-course")?.gallery ?? [];
@@ -379,13 +378,6 @@ export default function CoursesPageClient() {
             Filmed on our Auli slopes during past courses.
           </p>
         </motion.div>
-      </section>
-
-      {/* Terms & Conditions */}
-      <section className="bg-gray-50 py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <TermsConditions />
-        </div>
       </section>
     </div>
   );
