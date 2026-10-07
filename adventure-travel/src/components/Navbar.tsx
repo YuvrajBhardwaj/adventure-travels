@@ -120,7 +120,7 @@ export default function Navbar() {
           <div className={`flex items-center justify-between transition-all duration-500 ${scrolled ? "h-16" : "h-20"}`}>
             <Link href="/" className="flex items-center gap-3 group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/logo.png" alt="Himalayan Arc Adventure" width={40} height={40} className="h-10 w-10 rounded-full object-cover bg-white shadow-md shadow-black/20 transition-transform group-hover:scale-[1.02]" />
+              <img src="/brand/logo.png" alt="Himalayan Arc Adventure" width={40} height={40} className="h-10 w-10 rounded-full object-cover shadow-md shadow-black/20 transition-transform group-hover:scale-[1.02]" />
               <span className="flex flex-col leading-none">
                 <span className="font-display text-[10px] font-bold uppercase tracking-[0.22em] text-white/60">Himalayan Arc</span>
                 <span className="font-display text-lg sm:text-[22px] font-[800] tracking-[-0.02em] text-white">Adventure</span>

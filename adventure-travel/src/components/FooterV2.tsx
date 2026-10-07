@@ -114,7 +114,7 @@ export default function FooterV2() {
           <StaggerItem className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/logo-gem.png" alt="Himalayan Arc Adventure" width={40} height={40} className="h-10 w-10 rounded-full object-cover bg-white" />
+              <img src="/brand/logo.png" alt="Himalayan Arc Adventure" width={40} height={40} className="h-10 w-10 rounded-full object-cover" />
               <span className="flex flex-col leading-none">
                 <span className="font-nav text-[10px] font-bold uppercase tracking-[0.22em] text-white/60">Himalayan Arc</span>
                 <span className="font-display text-[18px] font-[800] tracking-[-0.02em] text-white">Adventure</span>
@@ -262,6 +262,7 @@ export default function FooterV2() {
                 </svg>
                 <div className="text-sm text-white/50">
                   <p>+91 78179 12062</p>
+                  <p>+91 86505 61564</p>
                 </div>
               </a>
 
@@ -388,7 +389,7 @@ export default function FooterV2() {
           <MobileAccordion title="Contact & Newsletter" id="contact" openId={openSection} setOpenId={setOpenSection}>
             <div className="space-y-3 text-sm text-white/60">
               <p>M3M Marina, Sec 68, Gurugram · Chamoli, Joshimath</p>
-              <a href="tel:+917817912062" className="block text-white/80">+91 78179 12062</a>
+              <a href="tel:+917817912062" className="block text-white/80">+91 78179 12062 · +91 86505 61564</a>
               <a href="mailto:himalayanarcadventure@gmail.com" className="block text-white/60 text-xs break-all">himalayanarcadventure@gmail.com</a>
               <form onSubmit={handleNewsletter} noValidate className="flex gap-2 pt-2">
                 <input value={email} onChange={(e) => { setEmail(e.target.value); if (status !== "idle") setStatus("idle"); }} placeholder="Your email" aria-label="Email" className={`flex-1 min-w-0 rounded-xl bg-white/5 border px-3 py-2.5 text-sm text-white placeholder-white/30 outline-none ${status === "error" ? "border-red-400/60" : "border-white/10"}`} />

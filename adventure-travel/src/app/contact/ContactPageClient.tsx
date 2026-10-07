@@ -127,6 +127,7 @@ export default function ContactPage() {
                 <div>
                   <h4 className="font-semibold text-foreground mb-1">Phone</h4>
                   <a href="tel:+917817912062" className="block text-foreground hover:text-emerald-600 transition-colors">+91 78179 12062</a>
+                  <a href="tel:+918650561564" className="block text-foreground hover:text-emerald-600 transition-colors">+91 86505 61564</a>
                   <p className="text-sm text-muted mt-1">Mon–Fri · 9AM–6PM IST</p>
                 </div>
               </div>

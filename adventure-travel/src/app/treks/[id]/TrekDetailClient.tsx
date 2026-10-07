@@ -677,6 +677,8 @@ function BookingCard({
         </p>
         <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[13px] text-gray-800 dark:text-gray-200">
           <a href="tel:+917817912062" className="font-semibold hover:underline">+91 78179 12062</a>
+          <span className="h-4 w-px bg-black/50 dark:bg-white/30" aria-hidden />
+          <a href="tel:+918650561564" className="font-semibold hover:underline">+91 86505 61564</a>
         </div>
       </div>
 
