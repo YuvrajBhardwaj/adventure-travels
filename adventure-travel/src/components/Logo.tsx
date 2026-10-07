@@ -48,7 +48,7 @@ function Mark({ variant = "default", className = "" }: { variant?: Variant; clas
 export function LogoMark(props: { variant?: Variant; size?: number; className?: string }) {
   const { variant = "default", size = 40, className = "" } = props;
   return (
-    <span style={{ width: size, height: size }} className={`inline-flex shrink-0 ${className}`} aria-label="Expedition Happiness Treks mark">
+    <span style={{ width: size, height: size }} className={`inline-flex shrink-0 ${className}`} aria-label="Himalayan Arc Adventure mark">
       <Mark variant={variant} className="h-full w-full" />
     </span>
   );
@@ -72,14 +72,14 @@ export default function Logo({
       <Mark variant={variant} className="shrink-0" />
       {/* keep style width/height via size prop on wrapper span to avoid layout shift */}
       <span className="hidden sm:flex flex-col leading-none" style={{ gap: 1 }}>
-        <span className={`font-nav text-[10px] font-bold uppercase tracking-[0.22em] ${subColor}`}>Expedition</span>
+        <span className={`font-nav text-[10px] font-bold uppercase tracking-[0.22em] ${subColor}`}>Himalayan Arc</span>
         <span className={`font-display text-[22px] font-[800] tracking-[-0.025em] ${variant === "light" ? "text-white" : "text-foreground"}`} style={{ lineHeight: 1 }}>
-          Happiness Treks
+          Adventure
         </span>
       </span>
       {/* inject size via wrapper for mark */}
       <style>{`/* size hook */`}</style>
-      <span aria-hidden className="sr-only">Expedition Happiness Treks</span>
+      <span aria-hidden className="sr-only">Himalayan Arc Adventure</span>
       {/* size the mark via CSS variable — keeps Logo API simple */}
       <span style={{ display: "none" }} data-size={size} data-wordmark={showWordmark ? "1" : "0"} />
     </span>

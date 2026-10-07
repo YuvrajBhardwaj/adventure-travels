@@ -50,7 +50,7 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white font-heading">Create Account</h1>
-          <p className="text-white/60 mt-2">Join Expedition Happiness Treks</p>
+          <p className="text-white/60 mt-2">Join Himalayan Arc Adventure</p>
         </div>
         <form onSubmit={handleSubmit} noValidate className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 space-y-5">
           {[

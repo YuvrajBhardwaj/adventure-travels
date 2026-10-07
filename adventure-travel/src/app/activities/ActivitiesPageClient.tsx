@@ -508,7 +508,7 @@ export default function ActivitiesPage() {
                 </div>
               </div>
               <a
-                href="https://wa.me/918650561564?text=Hi!%20I'm%20interested%20in%20restricted%20area%20trekking%20(Mana/Niti/Rimkhim)."
+                href="https://wa.me/917817912062?text=Hi!%20I'm%20interested%20in%20restricted%20area%20trekking%20(Mana/Niti/Rimkhim)."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent/25 hover:shadow-xl hover:scale-105 transition-all"

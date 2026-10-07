@@ -40,7 +40,7 @@ export default function TermsConditions() {
               <strong>Cancellation Process &amp; Terms &amp; Conditions</strong> below.
             </p>
             <p>
-              To cancel your booking, email <strong>support@expeditionhappinesstreks.com</strong> with your booking
+              To cancel your booking, email <strong>support@himalayanarcadventure.com</strong> with your booking
               reference number. Cancellation requests cannot be taken over phone calls or messages.
             </p>
             <p><strong>The advance amount is non-refundable.</strong></p>

@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     "Himalayan treks, skiing & snowboarding in Auli, riverside camping, paragliding in Bir Billing, rock climbing and mountaineering courses. Guided adventures in Uttarakhand & Himachal.",
   openGraph: {
-    title: "Activities | Expedition Happiness Treks",
+    title: "Activities | Himalayan Arc Adventure",
     description:
       "Trekking, skiing, camping, paragliding and mountaineering in the Indian Himalayas.",
-    url: "https://expeditionhappiness.com/activities",
+    url: "https://himalayanarcadventure.com/activities",
   },
   alternates: {
-    canonical: "https://expeditionhappiness.com/activities",
+    canonical: "https://himalayanarcadventure.com/activities",
   },
 };
 

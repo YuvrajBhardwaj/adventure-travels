@@ -13,8 +13,8 @@ export async function generateMetadata({ params }: { params: Promise<{ course: s
   if (!course) return { title: "Course Not Found" };
 
   const title = `${course.name} — ${course.duration} | Auli, Uttarakhand`;
-  const description = `${course.shortDescription} ${course.duration} ${course.type.toLowerCase()} course in ${course.location}. From ${course.currency}${course.price.toLocaleString("en-IN")} per person. Book with Expedition Happiness Treks.`;
-  const url = `https://expeditionhappiness.com/courses/${course.slug}`;
+  const description = `${course.shortDescription} ${course.duration} ${course.type.toLowerCase()} course in ${course.location}. From ${course.currency}${course.price.toLocaleString("en-IN")} per person. Book with Himalayan Arc Adventure.`;
+  const url = `https://himalayanarcadventure.com/courses/${course.slug}`;
 
   return {
     title,
@@ -72,12 +72,12 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
             "@type": "Course",
             name: course.name,
             description: course.description,
-            url: `https://expeditionhappiness.com/courses/${course.slug}`,
+            url: `https://himalayanarcadventure.com/courses/${course.slug}`,
             image: course.image,
             provider: {
               "@type": "TravelAgency",
-              name: "Expedition Happiness Treks",
-              url: "https://expeditionhappiness.com",
+              name: "Himalayan Arc Adventure",
+              url: "https://himalayanarcadventure.com",
             },
             offers: {
               "@type": "Offer",

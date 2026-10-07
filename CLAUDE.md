@@ -66,4 +66,4 @@ Trek detail routes resolve by **`slug`, not `id`**. Adding a trek object to `tre
 - Component naming: newer sections use a `V2` suffix (`HeroV2`, `PopularTreksV2`, `FeaturedAdventuresV2`, …).
 
 ### Brand
-"Expedition Happiness Treks" — guided Himalayan treks in Uttarakhand & Himachal Pradesh. Prices are in INR (`Rs.`); copy targets an Indian audience (`en_IN`).
+"Himalayan Arc Adventure" — guided Himalayan treks in Uttarakhand & Himachal Pradesh. Prices are in INR (`Rs.`); copy targets an Indian audience (`en_IN`).

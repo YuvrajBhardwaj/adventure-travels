@@ -750,7 +750,7 @@ export default function FAQPage() {
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <a
-                    href="https://wa.me/918650561564"
+                    href="https://wa.me/917817912062"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2.5 bg-white text-emerald-700 font-semibold px-7 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-lg"
@@ -759,14 +759,14 @@ export default function FAQPage() {
                     WhatsApp Support
                   </a>
                   <a
-                    href="tel:+918650561564"
+                    href="tel:+917817912062"
                     className="inline-flex items-center gap-2.5 bg-white/15 backdrop-blur-sm text-white font-semibold px-7 py-3.5 rounded-xl border border-white/25 hover:bg-white/25 transition-colors"
                   >
                     <PhoneIcon className="w-5 h-5" />
                     Call Us
                   </a>
                   <a
-                    href="mailto:expeditionhappiness07@gmail.com"
+                    href="mailto:himalayanarcadventure@gmail.com"
                     className="inline-flex items-center gap-2.5 bg-white/15 backdrop-blur-sm text-white font-semibold px-7 py-3.5 rounded-xl border border-white/25 hover:bg-white/25 transition-colors"
                   >
                     <MailIcon className="w-5 h-5" />

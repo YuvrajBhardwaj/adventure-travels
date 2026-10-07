@@ -30,9 +30,9 @@ export default function Preloader() {
           className="text-center"
         >
           <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wider mb-1">
-            EXPEDITION HAPPINESS
+            HIMALAYAN ARC
           </h1>
-          <p className="text-emerald-300/60 text-sm tracking-[0.3em] uppercase">Treks</p>
+          <p className="text-emerald-300/60 text-sm tracking-[0.3em] uppercase">Adventure</p>
         </motion.div>
       </motion.div>
     </AnimatePresence>

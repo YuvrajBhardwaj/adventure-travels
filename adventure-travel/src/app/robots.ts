@@ -11,6 +11,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/dashboard", "/login", "/signup"],
       },
     ],
-    sitemap: "https://expeditionhappiness.com/sitemap.xml",
+    sitemap: "https://himalayanarcadventure.com/sitemap.xml",
   };
 }

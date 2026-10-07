@@ -1,5 +1,5 @@
 -- =============================================
--- Expedition Happiness Treks — Supabase Schema
+-- Himalayan Arc Adventure — Supabase Schema
 -- Run this in the Supabase SQL Editor
 -- =============================================
 

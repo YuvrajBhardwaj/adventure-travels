@@ -1,7 +1,7 @@
-# Expedition Happiness Treks — Full Site Reference
+# Himalayan Arc Adventure — Full Site Reference
 
 ## Brand
-- **Name:** Expedition Happiness Treks
+- **Name:** Himalayan Arc Adventure
 - **Tagline:** "Creating unforgettable memories in the Indian mountains since 2010"
 - **Logo:** Green mountain/compass icon
 
@@ -146,7 +146,7 @@ Home | Adventures | Find My Trek | Destinations | Contact
 ## Footer
 
 ### Brand
-- **Name:** Expedition Happiness
+- **Name:** Himalayan Arc Adventure
 - **Tagline:** "Your trusted partner for epic Himalayan trekking adventures. Creating unforgettable memories in the Indian mountains since 2010."
 - **Social:** Facebook, Instagram, Twitter
 
@@ -172,9 +172,8 @@ M3M Marina, Sector 68 - 122101
 **UTTARAKHAND OFFICE**
 Chamoli, Joshimath, near military hospital - 246443
 
-📞 +91 86505 61564
 📞 +91 78179 12062
-✉️ expeditionhappiness07@gmail.com
+✉️ himalayanarcadventure@gmail.com
 
 ### Newsletter
 "Your email" input + "Subscribe" button

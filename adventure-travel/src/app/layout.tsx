@@ -42,10 +42,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://expeditionhappiness.com"),
+  metadataBase: new URL("https://himalayanarcadventure.com"),
   title: {
-    default: "Expedition Happiness Treks | Premium Himalayan Adventures in Uttarakhand & Himachal",
-    template: "%s | Expedition Happiness Treks",
+    default: "Himalayan Arc Adventure | Premium Himalayan Adventures in Uttarakhand & Himachal",
+    template: "%s | Himalayan Arc Adventure",
   },
   description:
     "Book guided Himalayan treks in Uttarakhand and Himachal Pradesh. Certified trek leaders, small groups, safety-first approach. Kedarkantha, Valley of Flowers, Hampta Pass, Brahmatal and more.",
@@ -66,14 +66,14 @@ export const metadata: Metadata = {
     "Beginner treks India",
     "high altitude trekking",
   ],
-  authors: [{ name: "Expedition Happiness" }],
-  creator: "Expedition Happiness",
+  authors: [{ name: "Himalayan Arc Adventure" }],
+  creator: "Himalayan Arc Adventure",
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://expeditionhappiness.com",
-    siteName: "Expedition Happiness Treks",
-    title: "Expedition Happiness Treks | Premium Himalayan Adventures",
+    url: "https://himalayanarcadventure.com",
+    siteName: "Himalayan Arc Adventure",
+    title: "Himalayan Arc Adventure | Premium Himalayan Adventures",
     description:
       "Explore the Himalayas with certified guides, small groups, and unforgettable experiences. Treks in Uttarakhand & Himachal Pradesh.",
     images: [
@@ -87,11 +87,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Expedition Happiness Treks | Himalayan Adventures",
+    title: "Himalayan Arc Adventure | Himalayan Adventures",
     description:
       "Certified guides, small groups, and epic Himalayan treks. Book Kedarkantha, Valley of Flowers, Hampta Pass and more.",
     images: ["https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=80"],
-    creator: "@ExpeditionHappiness",
+    creator: "@himalayan_arc_adventure",
   },
   robots: {
     index: true,
@@ -105,7 +105,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://expeditionhappiness.com",
+    canonical: "https://himalayanarcadventure.com",
   },
   icons: {
     icon: "/favicon.svg",
@@ -124,11 +124,11 @@ export default function RootLayout({
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "TravelAgency",
-    name: "Expedition Happiness Treks",
-    url: "https://expeditionhappiness.com",
-    logo: "https://expeditionhappiness.com/favicon.svg",
+    name: "Himalayan Arc Adventure",
+    url: "https://himalayanarcadventure.com",
+    logo: "https://himalayanarcadventure.com/favicon.svg",
     description: "Premium guided Himalayan treks in Uttarakhand and Himachal Pradesh. Certified trek leaders, small groups, safety-first approach.",
-    email: "expeditionhappiness07@gmail.com",
+    email: "himalayanarcadventure@gmail.com",
     telephone: "+917817912062",
     address: [
       {
@@ -145,8 +145,8 @@ export default function RootLayout({
       },
     ],
     sameAs: [
-      "https://www.instagram.com/expeditionhappiness",
-      "https://www.youtube.com/@expeditionhappiness",
+      "https://www.instagram.com/himalayan_arc_adventure",
+      "https://www.youtube.com/@himalayan_arc_adventure",
     ],
     areaServed: ["Uttarakhand", "Himachal Pradesh"],
     priceRange: "₹5000–₹65000",

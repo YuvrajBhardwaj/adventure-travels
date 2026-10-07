@@ -219,7 +219,7 @@ export default function CampingSection() {
               >
                 <SmartImage
                   src={src}
-                  alt={`Real camp moment ${i + 1} — Himalayan camping with Expedition Happiness`}
+                  alt={`Real camp moment ${i + 1} — Himalayan camping with Himalayan Arc Adventure`}
                   className="absolute inset-0 h-full w-full object-cover"
                 />
                 <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-300 hover:bg-black/25 hover:opacity-100">
@@ -248,7 +248,7 @@ export default function CampingSection() {
               why we want you to experience them.
             </p>
             <p className="mt-4 text-base leading-relaxed text-white/60 sm:text-lg">
-              Expedition Happiness creates carefully planned camping experiences
+              Himalayan Arc Adventure creates carefully planned camping experiences
               around lesser-explored Himalayan landscapes, combining camping,
               local exploration, short hikes, nature, photography, food and
               adventure.
@@ -298,7 +298,7 @@ export default function CampingSection() {
           <img
             key={lightbox}
             src={ALL_MOMENTS[lightbox]}
-            alt={`Camp moment ${lightbox + 1} — Himalayan camping with Expedition Happiness`}
+            alt={`Camp moment ${lightbox + 1} — Himalayan camping with Himalayan Arc Adventure`}
             className="max-h-[85vh] max-w-full rounded-xl object-contain shadow-2xl"
             onClick={(e) => e.stopPropagation()}
             draggable={false}

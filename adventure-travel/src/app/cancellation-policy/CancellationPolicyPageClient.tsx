@@ -149,7 +149,7 @@ export default function CancellationPolicyPage() {
             </h2>
             <p className="mt-4 text-lg text-muted max-w-2xl mx-auto">
               To cancel your booking, email{" "}
-              <strong className="text-foreground">support@expeditionhappinesstreks.com</strong>{" "}
+              <strong className="text-foreground">support@himalayanarcadventure.com</strong>{" "}
               with your booking reference number. Cancellation requests cannot be
               taken over phone calls or messages.
             </p>

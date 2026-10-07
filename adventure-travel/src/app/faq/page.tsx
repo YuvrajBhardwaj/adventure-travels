@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     "Everything you need to know about trekking in Uttarakhand and Himachal Pradesh — booking, fitness, gear, safety, weather, food, accommodation and trail experiences.",
   openGraph: {
-    title: "FAQ | Expedition Happiness Treks",
+    title: "FAQ | Himalayan Arc Adventure",
     description:
       "Everything you need to know about trekking in Uttarakhand and Himachal Pradesh.",
-    url: "https://expeditionhappiness.com/faq",
+    url: "https://himalayanarcadventure.com/faq",
   },
   alternates: {
-    canonical: "https://expeditionhappiness.com/faq",
+    canonical: "https://himalayanarcadventure.com/faq",
   },
 };
 

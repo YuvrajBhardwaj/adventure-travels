@@ -1,7 +1,7 @@
 # Home Page Flow & Conversion Optimization Design
 
 ## Overview
-This design improves the user journey, conversion funnel, social proof placement, and layout stability of the Expedition Happiness Treks homepage (`adventure-travel/src/app/page.tsx`).
+This design improves the user journey, conversion funnel, social proof placement, and layout stability of the Himalayan Arc Adventure homepage (`adventure-travel/src/app/page.tsx`).
 
 ## Proposed Changes
 

@@ -3,7 +3,7 @@ import { treks } from "@/data/treks";
 
 export const dynamic = "force-static";
 
-const BASE = "https://expeditionhappiness.com";
+const BASE = "https://himalayanarcadventure.com";
 
 const STATIC_ROUTES = [
   { url: BASE, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 1.0 },

@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     "Transparent cancellation and refund policy for Himalayan trek bookings. Understand refund tiers, rescheduling options, and no-show scenarios.",
   openGraph: {
-    title: "Cancellation & Refund Policy | Expedition Happiness Treks",
+    title: "Cancellation & Refund Policy | Himalayan Arc Adventure",
     description:
       "Transparent cancellation and refund policy for trek bookings.",
-    url: "https://expeditionhappiness.com/cancellation-policy",
+    url: "https://himalayanarcadventure.com/cancellation-policy",
   },
   alternates: {
-    canonical: "https://expeditionhappiness.com/cancellation-policy",
+    canonical: "https://himalayanarcadventure.com/cancellation-policy",
   },
 };
 

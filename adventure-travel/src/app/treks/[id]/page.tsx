@@ -13,8 +13,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!trek) return { title: "Trek Not Found" };
 
   const title = `${trek.name} Trek — ${trek.days} Days, ${trek.difficulty} | Uttarakhand/Himachal`;
-  const description = `${trek.blurb} ${trek.days}-day ${trek.difficulty.toLowerCase()} trek in ${trek.region}. Max altitude ${trek.maxAltitude}m. From ${trek.currency}${trek.price.toLocaleString("en-IN")} per person. Book with Expedition Happiness Treks.`;
-  const url = `https://expeditionhappiness.com/treks/${trek.slug}`;
+  const description = `${trek.blurb} ${trek.days}-day ${trek.difficulty.toLowerCase()} trek in ${trek.region}. Max altitude ${trek.maxAltitude}m. From ${trek.currency}${trek.price.toLocaleString("en-IN")} per person. Book with Himalayan Arc Adventure.`;
+  const url = `https://himalayanarcadventure.com/treks/${trek.slug}`;
 
   return {
     title,
@@ -72,7 +72,7 @@ export default async function TrekDetailPage({ params }: { params: Promise<{ id:
             "@type": "TouristTrip",
             name: `${trek.name} Trek`,
             description: trek.blurb,
-            url: `https://expeditionhappiness.com/treks/${trek.slug}`,
+            url: `https://himalayanarcadventure.com/treks/${trek.slug}`,
             image: trek.image,
             touristType: "Trekkers",
             itinerary: {
@@ -94,8 +94,8 @@ export default async function TrekDetailPage({ params }: { params: Promise<{ id:
             },
             provider: {
               "@type": "TravelAgency",
-              name: "Expedition Happiness Treks",
-              url: "https://expeditionhappiness.com",
+              name: "Himalayan Arc Adventure",
+              url: "https://himalayanarcadventure.com",
             },
             aggregateRating: trek.rating
               ? {

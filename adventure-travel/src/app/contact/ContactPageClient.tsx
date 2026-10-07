@@ -126,7 +126,6 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-foreground mb-1">Phone</h4>
-                  <a href="tel:+918650561564" className="block text-foreground hover:text-emerald-600 transition-colors">+91 86505 61564</a>
                   <a href="tel:+917817912062" className="block text-foreground hover:text-emerald-600 transition-colors">+91 78179 12062</a>
                   <p className="text-sm text-muted mt-1">Mon–Fri · 9AM–6PM IST</p>
                 </div>
@@ -141,7 +140,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-foreground mb-1">Email</h4>
-                  <a href="mailto:expeditionhappiness07@gmail.com" className="block text-foreground hover:text-emerald-600 transition-colors">expeditionhappiness07@gmail.com</a>
+                  <a href="mailto:himalayanarcadventure@gmail.com" className="block text-foreground hover:text-emerald-600 transition-colors">himalayanarcadventure@gmail.com</a>
                   <p className="text-sm text-muted mt-1">We&apos;ll respond within 24 hours</p>
                 </div>
               </div>
@@ -172,7 +171,7 @@ export default function ContactPage() {
 
             {/* Why Choose Us */}
             <div className="mt-8 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl p-6 border border-emerald-100">
-              <h3 className="font-bold text-foreground mb-4">Why Choose Expedition Happiness?</h3>
+              <h3 className="font-bold text-foreground mb-4">Why Choose Himalayan Arc Adventure?</h3>
               <div className="space-y-3">
                 {[
                   "15+ years of Himalayan trekking expertise",

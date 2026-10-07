@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     "Browse 20+ guided Himalayan treks in Uttarakhand and Himachal Pradesh. Filter by difficulty, duration, and price. Kedarkantha, Valley of Flowers, Hampta Pass, Brahmatal and more.",
   openGraph: {
-    title: "Trek Packages | Expedition Happiness Treks",
+    title: "Trek Packages | Himalayan Arc Adventure",
     description:
       "Browse guided Himalayan treks in Uttarakhand & Himachal Pradesh. Filter by difficulty, duration, and price.",
-    url: "https://expeditionhappiness.com/treks",
+    url: "https://himalayanarcadventure.com/treks",
   },
   alternates: {
-    canonical: "https://expeditionhappiness.com/treks",
+    canonical: "https://himalayanarcadventure.com/treks",
   },
 };
 
