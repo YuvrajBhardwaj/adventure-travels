@@ -4,13 +4,9 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "nodejs";
 export const dynamic = "force-static";
-export const alt = "Himalayan Arc Adventure — guided Himalayan treks and Auli snow school";
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
 
-const logo = await readFile(join(process.cwd(), "public/brand/logo.png"), "base64");
-
-export default function OpenGraphImage() {
+export async function GET() {
+  const logo = await readFile(join(process.cwd(), "public/brand/logo.png"), "base64");
   return new ImageResponse(
     <div
       style={{
@@ -39,13 +35,7 @@ export default function OpenGraphImage() {
       />
       <div style={{ display: "flex", alignItems: "center", gap: 58 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`data:image/png;base64,${logo}`}
-          alt=""
-          width={250}
-          height={250}
-          style={{ borderRadius: 28 }}
-        />
+        <img src={`data:image/png;base64,${logo}`} alt="" width={250} height={250} style={{ borderRadius: 28 }} />
         <div style={{ display: "flex", flexDirection: "column", maxWidth: 700 }}>
           <div style={{ color: "#6EE7B7", fontSize: 20, fontWeight: 700, letterSpacing: 5 }}>
             UTTARAKHAND · HIMACHAL
@@ -63,6 +53,6 @@ export default function OpenGraphImage() {
         </div>
       </div>
     </div>,
-    size,
+    { width: 1200, height: 630 },
   );
 }

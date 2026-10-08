@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const SITE_NAME = "Himalayan Arc Adventure";
 export const SITE_URL = "https://www.himalayanarcadventure.com";
 export const SOCIAL_IMAGE = {
-  url: `${SITE_URL}/opengraph-image.png`,
+  url: `${SITE_URL}/social-share.png`,
   width: 1200,
   height: 630,
   alt: "Himalayan Arc Adventure — guided Himalayan treks and Auli snow school",
