@@ -27,8 +27,7 @@ export default function ContactPage() {
     name: "", email: "", type: "General Inquiry", subject: "", message: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [submitting, setSubmitting] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const setField = (key: keyof typeof form, value: string) => {
@@ -51,17 +50,10 @@ export default function ContactPage() {
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
-    setSubmitting(true);
     const text = encodeURIComponent(
       `Inquiry: ${form.type}\nSubject: ${form.subject}\nName: ${form.name}\nEmail: ${form.email}\nMessage: ${form.message}`
     );
-    // No backend on this static marketing site — hand the message to WhatsApp,
-    // then confirm on-page once the handoff has been triggered.
-    setTimeout(() => {
-      window.open(`https://wa.me/917817912062?text=${text}`, "_blank");
-      setSubmitting(false);
-      setSent(true);
-    }, 900);
+    setWhatsappUrl(`https://wa.me/917817912062?text=${text}`);
   };
 
   const inputClass = (hasError: boolean) =>
@@ -196,18 +188,22 @@ export default function ContactPage() {
           <div className="lg:w-1/2">
             <div className="bg-white dark:bg-card rounded-2xl shadow-lg border border-gray-100 dark:border-white/10 p-8">
               <h2 className="text-2xl font-bold text-foreground mb-6">Send us a Message</h2>
+              <p className="-mt-4 mb-5 text-sm text-muted">We&apos;ll prepare your message in WhatsApp. You can review and send it there.</p>
 
-              {sent ? (
-                <div className="text-center py-12">
+              {whatsappUrl ? (
+                <div role="status" className="text-center py-12">
                   <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-2">Message Sent!</h3>
-                  <p className="text-muted">We&apos;ll get back to you within 24 hours.</p>
-                  <button onClick={() => setSent(false)} className="mt-4 text-emerald-600 font-semibold hover:underline">
-                    Send another message
+                  <h3 className="text-xl font-bold text-foreground mb-2">Your message is ready</h3>
+                  <p className="text-muted">Open WhatsApp and press Send to contact our team.</p>
+                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center justify-center rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-emerald-700">
+                    Open WhatsApp
+                  </a>
+                  <button onClick={() => setWhatsappUrl(null)} className="mt-4 block w-full text-emerald-600 font-semibold hover:underline">
+                    Edit message
                   </button>
                 </div>
               ) : (
@@ -293,25 +289,9 @@ export default function ContactPage() {
 
                   <button
                     type="submit"
-                    disabled={submitting}
-                    className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
                   >
-                    {submitting ? (
-                      <>
-                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden>
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                        </svg>
-                        Sending…
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-                        </svg>
-                        Send Message
-                      </>
-                    )}
+                    Prepare WhatsApp message
                   </button>
                 </form>
               )}

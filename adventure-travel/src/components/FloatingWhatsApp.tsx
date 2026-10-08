@@ -8,7 +8,7 @@ const WHATSAPP_PHONE = "917817912062";
 export default function FloatingWhatsApp() {
   const [showPopup, setShowPopup] = useState(false);
 
-  const whatsappHref = `https://wa.me/${WHATSAPP_PHONE}?text=Hi%20Expedition%20Happiness%20Treks%2C%20I%27d%20like%20to%20know%20more%20about%20your%20treks.`;
+  const whatsappHref = `https://wa.me/${WHATSAPP_PHONE}?text=Hi%20Himalayan%20Arc%20Adventure%2C%20I%27d%20like%20to%20know%20more%20about%20your%20treks.`;
 
   return (
     <>

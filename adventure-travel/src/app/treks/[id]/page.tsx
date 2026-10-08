@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { treks } from "@/data/treks";
+import { pageMetadata } from "@/lib/seo";
 import TrekDetailClient from "./TrekDetailClient";
+
+const trekTitle = (name: string) => (/\btrek$/i.test(name) ? name : `${name} Trek`);
 
 export function generateStaticParams() {
   return treks.map((trek) => ({ id: trek.slug }));
@@ -12,37 +15,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const trek = treks.find((t) => t.slug === id);
   if (!trek) return { title: "Trek Not Found" };
 
-  const title = `${trek.name} Trek — ${trek.days} Days, ${trek.difficulty} | Uttarakhand/Himachal`;
+  const title = `${trekTitle(trek.name)} — ${trek.days} Days, ${trek.difficulty} | ${trek.region}`;
   const description = `${trek.blurb} ${trek.days}-day ${trek.difficulty.toLowerCase()} trek in ${trek.region}. Max altitude ${trek.maxAltitude}m. From ${trek.currency}${trek.price.toLocaleString("en-IN")} per person. Book with Himalayan Arc Adventure.`;
-  const url = `https://himalayanarcadventure.com/treks/${trek.slug}`;
-
-  return {
+  return pageMetadata({
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      url,
-      type: "article",
-      images: [
-        {
-          url: trek.image,
-          width: 1200,
-          height: 630,
-          alt: `${trek.name} Trek — Himalayan adventure in ${trek.region}`,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [trek.image],
-    },
-    alternates: {
-      canonical: url,
-    },
-  };
+    path: `/treks/${trek.slug}`,
+    image: trek.image,
+    imageAlt: `${trekTitle(trek.name)} — Himalayan adventure in ${trek.region}`,
+    type: "article",
+  });
 }
 
 export default async function TrekDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -70,9 +52,9 @@ export default async function TrekDetailPage({ params }: { params: Promise<{ id:
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "TouristTrip",
-            name: `${trek.name} Trek`,
+            name: trekTitle(trek.name),
             description: trek.blurb,
-            url: `https://himalayanarcadventure.com/treks/${trek.slug}`,
+            url: `https://www.himalayanarcadventure.com/treks/${trek.slug}`,
             image: trek.image,
             touristType: "Trekkers",
             itinerary: {
@@ -95,7 +77,7 @@ export default async function TrekDetailPage({ params }: { params: Promise<{ id:
             provider: {
               "@type": "TravelAgency",
               name: "Himalayan Arc Adventure",
-              url: "https://himalayanarcadventure.com",
+              url: "https://www.himalayanarcadventure.com",
             },
             aggregateRating: trek.rating
               ? {

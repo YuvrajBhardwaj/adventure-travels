@@ -6,6 +6,7 @@ import AssetProtection from "@/components/AssetProtection";
 import Navbar from "@/components/Navbar";
 import FooterV2 from "@/components/FooterV2";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SITE_NAME, SITE_URL, SOCIAL_IMAGE, SOCIAL_PROFILES } from "@/lib/seo";
 
 const poppins = Poppins({
   variable: "--font-heading",
@@ -42,7 +43,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://himalayanarcadventure.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Himalayan Arc Adventure | Premium Himalayan Adventures in Uttarakhand & Himachal",
     template: "%s | Himalayan Arc Adventure",
@@ -71,26 +72,19 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://himalayanarcadventure.com",
-    siteName: "Himalayan Arc Adventure",
+    url: SITE_URL,
+    siteName: SITE_NAME,
     title: "Himalayan Arc Adventure | Premium Himalayan Adventures",
     description:
       "Explore the Himalayas with certified guides, small groups, and unforgettable experiences. Treks in Uttarakhand & Himachal Pradesh.",
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=80",
-        width: 1200,
-        height: 630,
-        alt: "Himalayan mountain trek view",
-      },
-    ],
+    images: [SOCIAL_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "Himalayan Arc Adventure | Himalayan Adventures",
     description:
       "Certified guides, small groups, and epic Himalayan treks. Book Kedarkantha, Valley of Flowers, Hampta Pass and more.",
-    images: ["https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=80"],
+    images: [SOCIAL_IMAGE],
     creator: "@himalayan_arc_adventure",
   },
   robots: {
@@ -105,7 +99,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://himalayanarcadventure.com",
+    canonical: "https://www.himalayanarcadventure.com",
   },
   icons: {
     icon: "/favicon.svg",
@@ -125,8 +119,8 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "TravelAgency",
     name: "Himalayan Arc Adventure",
-    url: "https://himalayanarcadventure.com",
-    logo: "https://himalayanarcadventure.com/favicon.svg",
+    url: SITE_URL,
+    logo: `${SITE_URL}/brand/logo.png`,
     description: "Premium guided Himalayan treks in Uttarakhand and Himachal Pradesh. Certified trek leaders, small groups, safety-first approach.",
     email: "himalayanarcadventure@gmail.com",
     telephone: "+917817912062",
@@ -144,10 +138,7 @@ export default function RootLayout({
         addressCountry: "IN",
       },
     ],
-    sameAs: [
-      "https://www.instagram.com/himalayan_arc_adventure",
-      "https://www.youtube.com/@himalayan_arc_adventure",
-    ],
+    sameAs: SOCIAL_PROFILES,
     areaServed: ["Uttarakhand", "Himachal Pradesh"],
     priceRange: "₹5000–₹65000",
     aggregateRating: {

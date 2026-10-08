@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { courses } from "@/data/courses";
+import { pageMetadata } from "@/lib/seo";
 import CourseDetailClient from "./CourseDetailClient";
 
 export function generateStaticParams() {
@@ -14,35 +15,14 @@ export async function generateMetadata({ params }: { params: Promise<{ course: s
 
   const title = `${course.name} — ${course.duration} | Auli, Uttarakhand`;
   const description = `${course.shortDescription} ${course.duration} ${course.type.toLowerCase()} course in ${course.location}. From ${course.currency}${course.price.toLocaleString("en-IN")} per person. Book with Himalayan Arc Adventure.`;
-  const url = `https://himalayanarcadventure.com/courses/${course.slug}`;
-
-  return {
+  return pageMetadata({
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      url,
-      type: "article",
-      images: [
-        {
-          url: course.image,
-          width: 1200,
-          height: 630,
-          alt: `${course.name} — Himalayan snow sports in Auli`,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [course.image],
-    },
-    alternates: {
-      canonical: url,
-    },
-  };
+    path: `/courses/${course.slug}`,
+    image: course.image,
+    imageAlt: `${course.name} — Himalayan snow sports in Auli`,
+    type: "article",
+  });
 }
 
 export default async function CourseDetailPage({ params }: { params: Promise<{ course: string }> }) {
@@ -72,12 +52,12 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
             "@type": "Course",
             name: course.name,
             description: course.description,
-            url: `https://himalayanarcadventure.com/courses/${course.slug}`,
+            url: `https://www.himalayanarcadventure.com/courses/${course.slug}`,
             image: course.image,
             provider: {
               "@type": "TravelAgency",
               name: "Himalayan Arc Adventure",
-              url: "https://himalayanarcadventure.com",
+              url: "https://www.himalayanarcadventure.com",
             },
             offers: {
               "@type": "Offer",

@@ -88,6 +88,7 @@ function TreksCatalogue() {
   const [durationIdx, setDurationIdx] = useState(0);
   const [priceIdx, setPriceIdx] = useState(0);
   const [sort, setSort] = useState("Sort by Popularity");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const filtered = useMemo(() => {
     let result = [...treks];
@@ -159,14 +160,31 @@ function TreksCatalogue() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Sidebar */}
           <div className="lg:w-1/4">
-            <div className="bg-white dark:bg-card rounded-2xl shadow-lg p-6 sticky top-24">
-              <div className="flex items-center space-x-2 mb-6">
+            <div className="bg-white dark:bg-card rounded-2xl shadow-lg p-4 lg:p-6 lg:sticky lg:top-24">
+              <button
+                type="button"
+                onClick={() => setFiltersOpen((open) => !open)}
+                aria-expanded={filtersOpen}
+                aria-controls="trek-filter-controls"
+                className="flex w-full items-center justify-between lg:hidden"
+              >
+                <span className="flex items-center gap-2 font-semibold text-foreground">
+                  <svg className="h-5 w-5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                  </svg>
+                  Filters
+                </span>
+                <svg className={`h-4 w-4 text-muted transition-transform ${filtersOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
+              <div className="mb-6 hidden items-center space-x-2 lg:flex">
                 <svg className="h-5 w-5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
                 </svg>
                 <h3 className="text-lg font-semibold text-foreground">Filters</h3>
               </div>
-              <div className="space-y-6">
+              <div id="trek-filter-controls" className={`${filtersOpen ? "block" : "hidden"} mt-6 space-y-6 lg:mt-0 lg:block`}>
                 <div>
                   <label htmlFor="trek-search" className="block text-sm font-medium text-foreground mb-3">Search</label>
                   <input

@@ -1,20 +1,14 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import FAQPageClient from "./FAQPageClient";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Frequently Asked Questions — Himalayan Trekking",
   description:
     "Everything you need to know about trekking in Uttarakhand and Himachal Pradesh — booking, fitness, gear, safety, weather, food, accommodation and trail experiences.",
-  openGraph: {
-    title: "FAQ | Himalayan Arc Adventure",
-    description:
-      "Everything you need to know about trekking in Uttarakhand and Himachal Pradesh.",
-    url: "https://himalayanarcadventure.com/faq",
-  },
-  alternates: {
-    canonical: "https://himalayanarcadventure.com/faq",
-  },
-};
+  socialTitle: "FAQ | Himalayan Arc Adventure",
+  socialDescription: "Everything you need to know about trekking in Uttarakhand and Himachal Pradesh.",
+  path: "/faq",
+});
 
 const FAQ_DATA = [
   { q: "How does the booking process work for guided treks in Uttarakhand and Himachal?", a: "Booking your Himalayan trekking adventure is seamless. Select your preferred trek and departure batch on our website, fill in your personal and emergency contact details, and proceed to secure online payment." },

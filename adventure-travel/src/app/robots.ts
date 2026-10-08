@@ -11,6 +11,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/dashboard", "/login", "/signup"],
       },
     ],
-    sitemap: "https://himalayanarcadventure.com/sitemap.xml",
+    sitemap: "https://www.himalayanarcadventure.com/sitemap.xml",
   };
 }
