@@ -1,0 +1,9 @@
+{
+  "buildCommand": "cd adventure-travel && npm install && npm run build && node -e \"const fs=require('fs');fs.readdirSync('out').forEach(n=>fs.cpSync('out/'+n,'../'+n,{recursive:true,force:true}));\"",
+  "outputDirectory": ".",
+  "functions": {
+    "api/*.js": {
+      "runtime": "@vercel/node@3"
+    }
+  }
+}
