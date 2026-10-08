@@ -1,4 +1,4 @@
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 
 // ─── LocalStorage helpers (fallback when Supabase isn't configured) ───
 const LS_USERS = "eht_users";
@@ -22,9 +22,17 @@ export interface SafeUser {
 export async function signUp(name: string, email: string, phone: string, password: string) {
   const supabase = createClient();
   if (supabase) {
-    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name, phone } } });
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        data: { full_name: name, phone },
+        emailRedirectTo: `${window.location.origin}/login`,
+      },
+    });
     if (error) throw error;
-    return data.user as SafeUser;
+    if (!data.user) throw new Error("Could not create your account.");
+    return { user: data.user as SafeUser, needsEmailConfirmation: !data.session };
   }
   // localStorage fallback
   const users = lsRead<{ id: string; email: string; password: string; full_name: string; phone: string }>(LS_USERS);
@@ -34,13 +42,13 @@ export async function signUp(name: string, email: string, phone: string, passwor
   lsWrite(LS_USERS, users);
   const safe: SafeUser = { id: user.id, email: user.email, user_metadata: { full_name: name, phone } };
   localStorage.setItem(LS_SESSION, JSON.stringify(safe));
-  return safe;
+  return { user: safe, needsEmailConfirmation: false };
 }
 
 export async function signIn(email: string, password: string) {
   const supabase = createClient();
   if (supabase) {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     if (error) throw error;
     return data.user as SafeUser;
   }
@@ -50,6 +58,18 @@ export async function signIn(email: string, password: string) {
   const safe: SafeUser = { id: found.id, email: found.email, user_metadata: { full_name: found.full_name, phone: found.phone } };
   localStorage.setItem(LS_SESSION, JSON.stringify(safe));
   return safe;
+}
+
+export async function resendSignupConfirmation(email: string) {
+  const supabase = createClient();
+  if (!supabase) throw new Error("Email confirmation is unavailable in local account mode.");
+
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email: email.trim(),
+    options: { emailRedirectTo: `${window.location.origin}/login` },
+  });
+  if (error) throw error;
 }
 
 export async function signOut() {

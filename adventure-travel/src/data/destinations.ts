@@ -8,7 +8,6 @@ export interface Destination {
   description: string;
   popularTreks: { name: string; slug: string }[];
   category: string;
-  trekCount: number;
 }
 
 export const destinations: Destination[] = [
@@ -28,15 +27,24 @@ export const destinations: Destination[] = [
       { name: "Brahmatal", slug: "brahmatal" },
       { name: "Roopkund", slug: "roopkund" },
       { name: "Kuari Pass", slug: "kuari-pass" },
+      { name: "Pangarchula Peak", slug: "pangarchula-peak" },
+      { name: "Nandi Kund", slug: "nandi-kund" },
+      { name: "Kalindi Khal", slug: "kalindi-khal" },
+      { name: "Gupt Khal", slug: "gupt-khal" },
+      { name: "Panpatia Col", slug: "panpatia-col" },
+      { name: "Dronagiri Base Camp", slug: "dronagiri-base-camp" },
+      { name: "Nanda Devi Base Camp", slug: "nanda-devi-base-camp" },
+      { name: "Mana Pass", slug: "mana-pass" },
+      { name: "Niti Pass", slug: "niti-pass" },
+      { name: "Rimkhim", slug: "rimkhim" },
     ],
     category: "Himalayan Range",
-    trekCount: 7,
   },
   {
     id: "2",
     name: "Garhwal Region",
     slug: "garhwal-region",
-    region: "Uttarakhand",
+    region: "Garhwal, Uttarakhand",
     country: "India",
     image: "https://images.unsplash.com/photo-1491555103944-7c647fd857e6?w=800&q=80",
     description: "The heart of the Garhwal Himalayas — home to India's highest peaks and most revered trails. Experience dramatic landscapes from technical summit climbs to accessible ridge walks with 360° mountain panoramas.",
@@ -48,24 +56,48 @@ export const destinations: Destination[] = [
       { name: "Satopanth Lake", slug: "satopanth-lake" },
       { name: "Har Ki Dun", slug: "har-ki-dun" },
       { name: "Kedarkantha", slug: "kedarkantha" },
+      { name: "Brahmatal", slug: "brahmatal" },
+      { name: "Nandi Kund", slug: "nandi-kund" },
+      { name: "Kalindi Khal", slug: "kalindi-khal" },
+      { name: "Gupt Khal", slug: "gupt-khal" },
+      { name: "Panpatia Col", slug: "panpatia-col" },
+      { name: "Dronagiri Base Camp", slug: "dronagiri-base-camp" },
+      { name: "Mana Pass", slug: "mana-pass" },
+      { name: "Niti Pass", slug: "niti-pass" },
+      { name: "Rimkhim", slug: "rimkhim" },
     ],
     category: "Mountain Region",
-    trekCount: 7,
+  },
+  {
+    id: "8",
+    name: "Kumaon Region",
+    slug: "kumaon-region",
+    region: "Kumaon, Uttarakhand",
+    country: "India",
+    image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
+    description: "Explore Uttarakhand's eastern Himalayas from Munsiyari and the Johar Valley to the Nanda Devi East Base Camp.",
+    popularTreks: [
+      { name: "Nanda Devi Base Camp", slug: "nanda-devi-base-camp" },
+    ],
+    category: "Mountain Region",
   },
   {
     id: "3",
     name: "High Altitude Lakes",
     slug: "high-altitude-lakes",
-    region: "Indian Himalayas",
+    region: "Uttarakhand & Himachal Pradesh",
     country: "India",
     image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80",
     description: "Journey to the sacred glacial lakes of the Himalayas — pristine turquoise waters reflecting towering peaks. These high-altitude gems offer some of the most spiritually significant and visually stunning treks in the region.",
     popularTreks: [
       { name: "Satopanth Lake", slug: "satopanth-lake" },
       { name: "Roopkund", slug: "roopkund" },
+      { name: "Brahmatal", slug: "brahmatal" },
+      { name: "Nandi Kund", slug: "nandi-kund" },
+      { name: "Bhrigu Lake", slug: "bhrigu-lake" },
+      { name: "Hampta Pass & Chandratal", slug: "hampta-pass" },
     ],
     category: "Glacial Lakes",
-    trekCount: 2,
   },
   {
     id: "4",
@@ -80,7 +112,6 @@ export const destinations: Destination[] = [
       { name: "Har Ki Dun", slug: "har-ki-dun" },
     ],
     category: "Easy Access",
-    trekCount: 2,
   },
   {
     id: "5",
@@ -93,9 +124,14 @@ export const destinations: Destination[] = [
     popularTreks: [
       { name: "Pangarchula Peak", slug: "pangarchula-peak" },
       { name: "Roopkund", slug: "roopkund" },
+      { name: "Kalindi Khal", slug: "kalindi-khal" },
+      { name: "Gupt Khal", slug: "gupt-khal" },
+      { name: "Panpatia Col", slug: "panpatia-col" },
+      { name: "Nanda Devi Base Camp", slug: "nanda-devi-base-camp" },
+      { name: "Mana Pass", slug: "mana-pass" },
+      { name: "Niti Pass", slug: "niti-pass" },
     ],
     category: "Summit Climbs",
-    trekCount: 2,
   },
   {
     id: "6",
@@ -107,9 +143,9 @@ export const destinations: Destination[] = [
     description: "The adventure capital of India — from the dramatic crossover of Hampta Pass to the serene beauty of Chandratal Lake. Himachal offers diverse landscapes from lush Kullu valleys to stark Lahaul deserts.",
     popularTreks: [
       { name: "Hampta Pass", slug: "hampta-pass" },
+      { name: "Bhrigu Lake", slug: "bhrigu-lake" },
     ],
     category: "State Region",
-    trekCount: 1,
   },
   {
     id: "7",
@@ -121,9 +157,9 @@ export const destinations: Destination[] = [
     description: "Experience the magic of the Himalayas under a blanket of snow. These winter-exclusive treks transform familiar trails into pristine white wonderlands with frozen lakes, snow-covered peaks, and crystal-clear skies.",
     popularTreks: [
       { name: "Kedarkantha", slug: "kedarkantha" },
+      { name: "Brahmatal", slug: "brahmatal" },
     ],
     category: "Seasonal",
-    trekCount: 1,
   },
 ];
 

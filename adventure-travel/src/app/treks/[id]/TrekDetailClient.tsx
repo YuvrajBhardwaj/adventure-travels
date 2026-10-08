@@ -215,7 +215,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
       // Supabase insert failed — still open WhatsApp
     }
     const text = encodeURIComponent(
-      `Trek: ${trek.name}\nDate: ${bookingForm.date}\nGroup: ${bookingForm.groupSize}\nName: ${bookingForm.name}\nPhone: ${bookingForm.phone}\nMessage: ${bookingForm.message}`
+      `Hi! I'm ${bookingForm.name || "a trekker"}. I'd like to book the ${trek.name}.\nDate: ${bookingForm.date}\nGroup: ${bookingForm.groupSize}\nPhone: ${bookingForm.phone}\nMessage: ${bookingForm.message || ""}`
     );
     window.open(`https://wa.me/917817912062?text=${text}`, "_blank");
   };
@@ -474,7 +474,12 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
         </div>
       </div>
 
-      <ContactPopup open={showContact} onClose={() => setShowContact(false)} />
+      <ContactPopup
+        open={showContact}
+        onClose={() => setShowContact(false)}
+        requesterName={bookingForm.name.trim() || user?.user_metadata?.full_name}
+        defaultMessage={`I'd like details about the ${trek.name} trek. Please share available dates and booking details.`}
+      />
 
       <ScrollProgressRing className="bottom-28 right-4 lg:bottom-8 lg:right-6" />
     </div>

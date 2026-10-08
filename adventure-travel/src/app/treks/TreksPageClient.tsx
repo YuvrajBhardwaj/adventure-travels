@@ -4,6 +4,7 @@ import { useState, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { treks, REGIONS } from "@/data/treks";
+import { destinations } from "@/data/destinations";
 import SmartImage from "@/components/SmartImage";
 
 const DIFFICULTIES = ["All Levels", "Easy", "Moderate", "Challenging", "Strenuous"] as const;
@@ -76,6 +77,7 @@ function TreksCatalogue() {
   // deep links from the hero search, destination cards and footer land pre-filtered.
   const regionParam = searchParams.get("region");
   const difficultyParam = searchParams.get("difficulty");
+  const [destination, setDestination] = useState(searchParams.get("destination") ?? "");
   const [search, setSearch] = useState(searchParams.get("search") ?? "");
   const [region, setRegion] = useState(
     regionParam && REGIONS.includes(regionParam) ? regionParam : "All Regions"
@@ -92,6 +94,11 @@ function TreksCatalogue() {
 
   const filtered = useMemo(() => {
     let result = [...treks];
+
+    if (destination) {
+      const slugs = new Set(destinations.find((d) => d.slug === destination)?.popularTreks.map((t) => t.slug) ?? []);
+      result = result.filter((t) => slugs.has(t.slug));
+    }
 
     const q = search.trim().toLowerCase();
     if (q) {
@@ -132,9 +139,10 @@ function TreksCatalogue() {
     }
 
     return result;
-  }, [search, region, difficulty, durationIdx, priceIdx, sort]);
+  }, [destination, search, region, difficulty, durationIdx, priceIdx, sort]);
 
   const clearFilters = () => {
+    setDestination("");
     setSearch("");
     setRegion("All Regions");
     setDifficulty("All Levels");
@@ -195,6 +203,13 @@ function TreksCatalogue() {
                     placeholder="Search treks, regions…"
                     className="w-full p-3 border border-gray-300 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
                   />
+                </div>
+                <div>
+                  <label htmlFor="trek-destination" className="block text-sm font-medium text-foreground mb-3">Destination</label>
+                  <select id="trek-destination" value={destination} onChange={(e) => setDestination(e.target.value)} className="w-full p-3 border border-gray-300 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300">
+                    <option value="">All Destinations</option>
+                    {destinations.map((d) => <option key={d.slug} value={d.slug}>{d.name}</option>)}
+                  </select>
                 </div>
                 <div>
                   <label htmlFor="trek-region" className="block text-sm font-medium text-foreground mb-3">Region</label>

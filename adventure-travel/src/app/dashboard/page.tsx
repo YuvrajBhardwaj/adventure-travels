@@ -25,7 +25,6 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!user) return;
-    setLoadingBookings(true);
     Promise.all([getTrekBookings(user.id), getActivityBookings(user.id)])
       .then(([treks, activities]) => { setTrekBookings(treks); setActivityBookings(activities); })
       .finally(() => setLoadingBookings(false));

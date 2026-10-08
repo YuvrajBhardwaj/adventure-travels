@@ -6,9 +6,10 @@ import { getSession, onAuthStateChange, type SafeUser } from "@/lib/auth";
 interface AuthCtx {
   user: SafeUser | null;
   loading: boolean;
+  setUser: (user: SafeUser | null) => void;
 }
 
-const Ctx = createContext<AuthCtx>({ user: null, loading: true });
+const Ctx = createContext<AuthCtx>({ user: null, loading: true, setUser: () => {} });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<SafeUser | null>(null);
@@ -20,7 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  return <Ctx.Provider value={{ user, loading }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ user, loading, setUser }}>{children}</Ctx.Provider>;
 }
 
 export const useAuth = () => useContext(Ctx);

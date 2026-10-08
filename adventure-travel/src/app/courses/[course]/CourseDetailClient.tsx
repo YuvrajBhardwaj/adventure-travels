@@ -4,8 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
-import { useAuth } from "@/contexts/AuthContext";
-import { createActivityBooking } from "@/lib/auth";
 import type { Course } from "@/data/courses";
 import CourseVideoBackdrop from "@/components/CourseVideoBackdrop";
 import SmartImage from "@/components/SmartImage";
@@ -219,7 +217,6 @@ interface Props {
 }
 
 export default function CourseDetailClient({ course }: Props) {
-  const { user } = useAuth();
   const shouldReduceMotion = useReducedMotion();
   const [tab, setTab] = useState<Tab>("overview");
   const [bookingForm, setBookingForm] = useState({
@@ -340,24 +337,29 @@ export default function CourseDetailClient({ course }: Props) {
 
   const handleBook = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      // new / signed-out visitors go straight to sign-up to create an account
-      window.location.href = "/signup";
-      return;
-    }
+    setBookError("");
     setSubmitting(true);
     try {
-      await createActivityBooking({
-        user_id: user.id,
-        activity_type: "skiing",
-        activity_name: course.name,
-        activity_date: bookingForm.date,
-        group_size: bookingForm.groupSize,
-        message: `${selectedTier ? `Package: ${selectedTier.name} (${STAY_LABELS[stay]}) — Rs.${total.toLocaleString("en-IN")}. ` : ""}Name: ${bookingForm.name}, Email: ${bookingForm.email}, Phone: ${bookingForm.phone}. ${bookingForm.message}`,
+      const response = await fetch("/api/course-bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          courseName: course.name,
+          courseType: course.type,
+          name: bookingForm.name.trim(),
+          email: bookingForm.email.trim(),
+          phone: bookingForm.phone.trim(),
+          date: bookingForm.date,
+          groupSize: bookingForm.groupSize,
+          packageDetails: selectedTier ? `${selectedTier.name} (${STAY_LABELS[stay]}) — Rs.${total.toLocaleString("en-IN")}` : "",
+          message: bookingForm.message.trim(),
+        }),
       });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(result?.error || "We couldn't send your booking request. Please try again.");
       setSent(true);
-    } catch {
-      setBookError("Something went wrong on our end. Please try again, or book instantly on WhatsApp.");
+    } catch (err) {
+      setBookError(err instanceof Error ? err.message : "We couldn't send your booking request. Please try again.");
     } finally {
       setSubmitting(false);
     }

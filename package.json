@@ -5,6 +5,7 @@
     "lint": "cd adventure-travel && npm run lint"
   },
   "dependencies": {
-    "@dietrichgebert/ponytail": "^4.8.4"
+    "@dietrichgebert/ponytail": "^4.8.4",
+    "nodemailer": "^10.0.16"
   }
 }

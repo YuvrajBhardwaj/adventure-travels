@@ -36,7 +36,7 @@ export default function DestinationsPage() {
         result.sort((a, b) => a.name.localeCompare(b.name));
         break;
       case "trekCount":
-        result.sort((a, b) => b.trekCount - a.trekCount);
+        result.sort((a, b) => b.popularTreks.length - a.popularTreks.length);
         break;
       case "popularity":
       default:
@@ -164,7 +164,7 @@ export default function DestinationsPage() {
                     {/* Trek count */}
                     <div className="absolute top-4 right-4 z-10">
                       <span className="rounded-full bg-white/90 backdrop-blur-sm px-3 py-1 text-xs font-bold text-primary">
-                        {dest.trekCount} Treks
+                        {dest.popularTreks.length} Treks
                       </span>
                     </div>
 
@@ -218,10 +218,10 @@ export default function DestinationsPage() {
                     {/* CTA */}
                     <div className="mt-5 pt-4 border-t border-gray-100 dark:border-white/10">
                       <Link
-                        href={dest.popularTreks.length === 1 ? `/treks/${dest.popularTreks[0].slug}` : `/treks?region=${dest.region}`}
+                        href={`/treks?destination=${encodeURIComponent(dest.slug)}`}
                         className="inline-flex items-center gap-2 text-sm font-semibold text-accent hover:text-primary transition-colors"
                       >
-                        View {dest.trekCount} {dest.trekCount === 1 ? 'Trek' : 'Treks'}
+                        View {dest.popularTreks.length} {dest.popularTreks.length === 1 ? 'Trek' : 'Treks'}
                         <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>

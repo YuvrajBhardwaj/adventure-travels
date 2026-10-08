@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Trek } from "@/data/treks";
 import { DIFFICULTY_COLORS } from "@/data/treks";
@@ -464,24 +465,25 @@ function treks50Plus(trek: Trek) {
 
 export function QuickInfoModal({ id, label, trek, onClose }: { id: QuickInfoId; label: string; trek: Trek; onClose: () => void }) {
   useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
     };
   }, [onClose]);
 
   const { title, body } = quickInfoModalBody(id, trek);
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[110] flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center sm:p-6"
+        className="fixed inset-0 z-[150] flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center sm:p-6"
         onClick={onClose}
         role="dialog"
         aria-modal="true"
@@ -511,6 +513,7 @@ export function QuickInfoModal({ id, label, trek, onClose }: { id: QuickInfoId; 
           <div className="pr-1">{body}</div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

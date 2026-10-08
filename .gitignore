@@ -14,3 +14,4 @@
 /_next/
 /_not-found/
 .vercel
+/node_modules/

@@ -15,20 +15,22 @@ interface ContactPopupProps {
   /** Optional swipeable header photos (camping). Falls back to `image`. */
   gallery?: string[];
   defaultMessage?: string;
+  requesterName?: string;
 }
 
-export default function ContactPopup({ open, onClose, title, subtitle, image, gallery, defaultMessage }: ContactPopupProps) {
-  const [form, setForm] = useState({ name: "", phone: "", message: defaultMessage ?? "" });
+export default function ContactPopup({ open, onClose, title, subtitle, image, gallery, defaultMessage, requesterName }: ContactPopupProps) {
+  const requestMessage = (defaultMessage ?? "I'd like to know more about your Himalayan adventures.").replace(/^hi(?:\s+kuldeep)?[!,]\s*/i, "");
+  const [form, setForm] = useState({ name: requesterName ?? "", phone: "", message: requestMessage });
   const [sent, setSent] = useState(false);
   const photos = gallery && gallery.length > 0 ? gallery : image ? [image] : [];
   const [photoIdx, setPhotoIdx] = useState(0);
 
-  const waText = defaultMessage ?? "Hi Kuldeep! I'd like to know more about your Himalayan adventures.";
-  const WA_LINK = `https://wa.me/${PHONE}?text=${encodeURIComponent(waText)}`;
+  const senderName = form.name.trim() || requesterName?.trim() || "[Your Name]";
+  const WA_LINK = `https://wa.me/${PHONE}?text=${encodeURIComponent(`Hi Kuldeep! I'm ${senderName}. ${requestMessage}`)}`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const text = encodeURIComponent(`Hi, I'm ${form.name}. ${form.message} Reach me at ${form.phone}`);
+    const text = encodeURIComponent(`Hi Kuldeep! I'm ${form.name.trim()}. ${form.message.trim() || requestMessage} You can reach me at ${form.phone.trim()}.`);
     window.open(`https://wa.me/${PHONE}?text=${text}`, "_blank");
     setSent(true);
   };
@@ -144,8 +146,8 @@ export default function ContactPopup({ open, onClose, title, subtitle, image, ga
                 <svg className="h-12 w-12 text-green-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="font-semibold text-primary">Opening WhatsApp...</p>
-                <p className="text-sm text-muted mt-1">We&apos;ll get back to you shortly!</p>
+                <p className="font-semibold text-primary">Your message is ready</p>
+                <p className="text-sm text-muted mt-1">Press Send in WhatsApp to reach our team.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-3">
