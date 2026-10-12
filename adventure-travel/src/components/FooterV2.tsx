@@ -114,7 +114,7 @@ export default function FooterV2() {
           <StaggerItem className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/logo.png" alt="Himalayan Arc Adventure" width={40} height={40} className="h-10 w-10 rounded-full object-cover" />
+              <img src="/favicon.jpeg" alt="Himalayan Arc Adventure" width={40} height={40} className="h-10 w-10 rounded-full object-cover" />
               <span className="flex flex-col leading-none">
                 <span className="font-nav text-[10px] font-bold uppercase tracking-[0.22em] text-white/60">Himalayan Arc</span>
                 <span className="font-display text-[18px] font-[800] tracking-[-0.02em] text-white">Adventure</span>

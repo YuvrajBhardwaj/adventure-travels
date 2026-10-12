@@ -250,7 +250,7 @@ export const treks: Trek[] = [
     rating: 4.8,
     reviewCount: 341,
     blurb: "Follow the historic trail of Lord Curzon to one of the most spectacular viewpoints in the Himalayas.",
-    bestSeason: "Mar–Jun & Sept–Nov",
+    bestSeason: "Oct–Feb",
     days: 5,
     maxAltitude: 3815,
     elevationProfile: [1875, 3357, 3815, 1875, 340],

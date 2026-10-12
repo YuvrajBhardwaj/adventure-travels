@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-static";
 
 export async function GET() {
-  const logo = await readFile(join(process.cwd(), "public/brand/logo.png"), "base64");
+  const logo = await readFile(join(process.cwd(), "public/brand/logo.jpeg"), "base64");
   return new ImageResponse(
     <div
       style={{
@@ -35,7 +35,7 @@ export async function GET() {
       />
       <div style={{ display: "flex", alignItems: "center", gap: 58 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`data:image/png;base64,${logo}`} alt="" width={250} height={250} style={{ borderRadius: 28 }} />
+        <img src={`data:image/jpeg;base64,${logo}`} alt="" width={250} height={250} style={{ borderRadius: 28 }} />
         <div style={{ display: "flex", flexDirection: "column", maxWidth: 700 }}>
           <div style={{ color: "#6EE7B7", fontSize: 20, fontWeight: 700, letterSpacing: 5 }}>
             UTTARAKHAND · HIMACHAL

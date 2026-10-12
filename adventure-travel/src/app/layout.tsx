@@ -101,7 +101,7 @@ export const metadata: Metadata = {
     canonical: "https://www.himalayanarcadventure.com",
   },
   icons: {
-    icon: "/favicon.svg",
+    icon: "/favicon.png",
     apple: "/apple-touch-icon.png",
     other: [
       { rel: "manifest", url: "/site.webmanifest" },
@@ -119,7 +119,7 @@ export default function RootLayout({
     "@type": "TravelAgency",
     name: "Himalayan Arc Adventure",
     url: SITE_URL,
-    logo: `${SITE_URL}/brand/logo.png`,
+    logo: `${SITE_URL}/brand/logo.jpeg`,
     description: "Premium guided Himalayan treks in Uttarakhand and Himachal Pradesh. Certified trek leaders, small groups, safety-first approach.",
     email: "himalayanarcadventure@gmail.com",
     telephone: "+917817912062",
