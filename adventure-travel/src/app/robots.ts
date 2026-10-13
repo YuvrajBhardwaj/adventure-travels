@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/dashboard", "/login", "/signup"],
+        disallow: ["/dashboard", "/login", "/signup", "/checkout", "/admin"],
       },
     ],
     sitemap: "https://www.himalayanarcadventure.com/sitemap.xml",

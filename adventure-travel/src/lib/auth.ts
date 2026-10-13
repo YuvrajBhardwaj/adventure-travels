@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import { trackActivity } from "@/lib/activity";
 
 // ─── LocalStorage helpers (fallback when Supabase isn't configured) ───
 const LS_USERS = "eht_users";
@@ -16,6 +17,8 @@ export interface SafeUser {
   id: string;
   email: string;
   user_metadata: { full_name: string; phone: string };
+  /** Server-controlled (unlike user_metadata). Only present with Supabase auth. */
+  app_metadata?: { role?: string };
 }
 
 // ─── Auth ───
@@ -50,6 +53,7 @@ export async function signIn(email: string, password: string) {
   if (supabase) {
     const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     if (error) throw error;
+    trackActivity("LOGIN", { method: "password" });
     return data.user as SafeUser;
   }
   const users = lsRead<{ id: string; email: string; password: string; full_name: string; phone: string }>(LS_USERS);
@@ -119,6 +123,12 @@ export async function createTrekBooking(booking: Omit<TrekBooking, "id" | "statu
   if (supabase) {
     const { data, error } = await supabase.from("trek_bookings").insert(booking).select().single();
     if (error) throw error;
+    trackActivity("BOOKING_CREATED", {
+      booking_id: data.id,
+      trek_name: booking.trek_name,
+      trek_date: booking.trek_date,
+      group_size: booking.group_size,
+    });
     return data;
   }
   const b: TrekBooking = { ...booking, id: crypto.randomUUID(), status: "pending", created_at: new Date().toISOString() };

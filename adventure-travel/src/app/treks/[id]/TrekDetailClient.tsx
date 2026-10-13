@@ -11,6 +11,7 @@ import SmartImage from "@/components/SmartImage";
 import LazyVideo from "@/components/LazyVideo";
 import { useAuth } from "@/contexts/AuthContext";
 import { createTrekBooking } from "@/lib/auth";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { getDepartures, type Departure, type Availability, type MonthGroup } from "./trekContent";
 import ScrollProgressRing from "@/components/ScrollProgressRing";
 
@@ -177,6 +178,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
   const [showContact, setShowContact] = useState(false);
   const [wished, setWished] = useState(false);
   const [shareMsg, setShareMsg] = useState("");
+  const [payBookingId, setPayBookingId] = useState<string | null>(null);
   const [bookingForm, setBookingForm] = useState({
     name: "", email: "", phone: "", date: "", groupSize: "1", message: "",
   });
@@ -203,8 +205,9 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
       window.location.href = "/signup";
       return;
     }
+    setPayBookingId(null);
     try {
-      await createTrekBooking({
+      const created = await createTrekBooking({
         user_id: user.id,
         trek_name: trek.name,
         trek_slug: trek.slug,
@@ -212,6 +215,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
         group_size: bookingForm.groupSize,
         message: bookingForm.message,
       });
+      setPayBookingId(created.id);
     } catch {
       // Supabase insert failed — still open WhatsApp
     }
@@ -422,7 +426,18 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
                 {activeTab === "What's Included" && <IncludedTab />}
                 {activeTab === "Packing List" && <PackingListTab />}
                 {activeTab === "Make Reservation" && (
-                  <ReservationTab trek={trek} form={bookingForm} setForm={setBookingForm} onSubmit={handleBookingSubmit} />
+                  <ReservationTab
+                    trek={trek}
+                    form={bookingForm}
+                    setForm={setBookingForm}
+                    onSubmit={handleBookingSubmit}
+                    // Online payment needs Supabase (the booking row) and a numeric group size to price.
+                    payHref={
+                      payBookingId && isSupabaseConfigured && /^\d+$/.test(bookingForm.groupSize)
+                        ? `/checkout?booking=${payBookingId}`
+                        : undefined
+                    }
+                  />
                 )}
               </motion.div>
             </AnimatePresence>
@@ -1425,12 +1440,13 @@ function PackingListTab() {
 
 /* ─── Reservation Tab ─── */
 function ReservationTab({
-  trek, form, setForm, onSubmit,
+  trek, form, setForm, onSubmit, payHref,
 }: {
   trek: Trek;
   form: { name: string; email: string; phone: string; date: string; groupSize: string; message: string };
   setForm: (f: typeof form) => void;
   onSubmit: () => void;
+  payHref?: string;
 }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -1481,7 +1497,15 @@ function ReservationTab({
         <p className="text-muted max-w-sm mx-auto">
           Thanks{form.name ? `, ${form.name.split(" ")[0]}` : ""} — our team will confirm availability for {trek.name} within 24 hours.
         </p>
-        <button onClick={() => setSent(false)} className="mt-4 text-emerald-600 font-semibold hover:underline">
+        {payHref && (
+          <Link
+            href={payHref}
+            className="mt-5 inline-flex items-center justify-center rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-emerald-700"
+          >
+            Pay online with UPI
+          </Link>
+        )}
+        <button onClick={() => setSent(false)} className="mt-4 block mx-auto text-emerald-600 font-semibold hover:underline">
           Make another request
         </button>
       </motion.div>
