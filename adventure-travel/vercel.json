@@ -1,0 +1,8 @@
+{
+  "outputDirectory": "out",
+  "functions": {
+    "api/*.js": {
+      "runtime": "@vercel/node@3"
+    }
+  }
+}

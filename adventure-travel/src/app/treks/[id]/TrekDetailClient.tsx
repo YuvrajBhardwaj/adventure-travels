@@ -8,6 +8,7 @@ import ContactPopup from "@/components/ContactPopup";
 import TermsConditions from "@/components/TermsConditions";
 import { QuickInfoModal, type QuickInfoId } from "@/components/QuickInfoModal";
 import SmartImage from "@/components/SmartImage";
+import LazyVideo from "@/components/LazyVideo";
 import { useAuth } from "@/contexts/AuthContext";
 import { createTrekBooking } from "@/lib/auth";
 import { getDepartures, type Departure, type Availability, type MonthGroup } from "./trekContent";
@@ -1143,7 +1144,7 @@ function GalleryTab({ trek }: { trek: Trek }) {
             className="relative aspect-[4/3] rounded-xl overflow-hidden group cursor-pointer"
           >
             {/\.(mp4|mov)$/i.test(img) ? (
-              <video src={img} muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <LazyVideo src={img} muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             ) : (
               <SmartImage src={img} alt={`${trek.name} — photo ${i + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             )}
