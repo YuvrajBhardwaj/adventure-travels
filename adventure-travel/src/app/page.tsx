@@ -3,6 +3,9 @@
 import dynamic from "next/dynamic";
 import SeasonSplitHero from "@/components/SeasonSplitHero";
 import StatsStrip from "@/components/StatsStrip";
+import FindYourTrek from "@/components/FindYourTrek";
+import WhyTrekWithUs from "@/components/WhyTrekWithUs";
+import HowItWorks from "@/components/HowItWorks";
 import SummerTreksRail from "@/components/SummerTreksRail";
 import SnowSchool from "@/components/SnowSchool";
 import CampingSection from "@/components/CampingSection";
@@ -32,13 +35,16 @@ export default function Home() {
         <SeasonSplitHero />
         <div className="relative z-10 pb-24 md:pb-0">
           <StatsStrip />
+          <FindYourTrek />
           <SummerTreksRail />
           <SnowSchool />
           <CampingSection />
           <VideoShowcase />
+          <WhyTrekWithUs />
           <StoriesTestimonials />
           <HimalayanMap />
           <UnlockRestrictedUttarakhand />
+          <HowItWorks />
           <FAQV2 />
           <CallToActionV2 />
         </div>
