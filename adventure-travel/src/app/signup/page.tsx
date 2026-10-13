@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { resendSignupConfirmation, signUp } from "@/lib/auth";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 export default function SignupPage() {
   const { user, setUser } = useAuth();
@@ -116,6 +117,7 @@ export default function SignupPage() {
               <button type="submit" disabled={submitting} className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-70">
                 {submitting ? "Creating account…" : "Sign Up"}
               </button>
+              <GoogleSignInButton />
               <p className="text-center text-white/50 text-sm">
                 Already have an account? <Link href="/login" className="text-emerald-400 hover:underline">Log in</Link>
               </p>

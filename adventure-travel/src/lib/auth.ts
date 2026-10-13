@@ -64,6 +64,18 @@ export async function signIn(email: string, password: string) {
   return safe;
 }
 
+// Redirects the browser to Google, then back to /dashboard with a session. New Google
+// users get a profile row (and a SIGNUP activity entry) from the database triggers.
+export async function signInWithGoogle() {
+  const supabase = createClient();
+  if (!supabase) throw new Error("Google sign-in isn't available yet.");
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${window.location.origin}/dashboard` },
+  });
+  if (error) throw error;
+}
+
 export async function resendSignupConfirmation(email: string) {
   const supabase = createClient();
   if (!supabase) throw new Error("Email confirmation is unavailable in local account mode.");
