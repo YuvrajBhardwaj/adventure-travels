@@ -954,7 +954,31 @@ export default function CourseDetailClient({ course }: Props) {
                         />
                       </div>
                       {bookError && (
-                        <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 ring-1 ring-red-100">{bookError}</p>
+                        <div role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 ring-1 ring-red-100">
+                          <p>{bookError}</p>
+                          {/* Never lose the lead: hand the same details to WhatsApp, pre-filled. */}
+                          <a
+                            href={`${WA_BASE}${encodeURIComponent(
+                              [
+                                `Hi! I'd like to book the ${course.name} (${course.type}) in Auli.`,
+                                bookingForm.date && `Preferred date: ${bookingForm.date}`,
+                                `Group size: ${bookingForm.groupSize}`,
+                                selectedTier && `Package: ${selectedTier.name} (${STAY_LABELS[stay]}) — Rs.${total.toLocaleString("en-IN")}`,
+                                bookingForm.name.trim() && `Name: ${bookingForm.name.trim()}`,
+                                bookingForm.phone.trim() && `Phone: ${bookingForm.phone.trim()}`,
+                                bookingForm.email.trim() && `Email: ${bookingForm.email.trim()}`,
+                                bookingForm.message.trim() && `Message: ${bookingForm.message.trim()}`,
+                              ]
+                                .filter(Boolean)
+                                .join("\n")
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-3 inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-emerald-700"
+                          >
+                            Send these details on WhatsApp
+                          </a>
+                        </div>
                       )}
                       <button
                         type="submit"
