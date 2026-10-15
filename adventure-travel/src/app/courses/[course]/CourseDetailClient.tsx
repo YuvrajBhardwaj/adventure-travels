@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, typ
 import type { Course } from "@/data/courses";
 import CourseVideoBackdrop from "@/components/CourseVideoBackdrop";
 import SmartImage from "@/components/SmartImage";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 type Tab = "overview" | "dates" | "itinerary" | "gallery" | "included" | "book";
 
@@ -230,6 +231,8 @@ export default function CourseDetailClient({ course }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [bookError, setBookError] = useState("");
+  // Set once the server has stored the booking — enables "Pay online" and the account hint.
+  const [saved, setSaved] = useState<{ id: string; amount: number | null; signedIn: boolean } | null>(null);
   const [lightbox, setLightbox] = useState<number | null>(null);
 
   // Scroll-linked parallax — hero copy lifts and fades as the footage recedes
@@ -340,10 +343,16 @@ export default function CourseDetailClient({ course }: Props) {
     setBookError("");
     setSubmitting(true);
     try {
+      // Attach the login (if any) so the booking lands in the user's account.
+      const supabase = createClient();
+      const token = supabase ? (await supabase.auth.getSession()).data.session?.access_token : undefined;
       const response = await fetch("/api/course-bookings", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
         body: JSON.stringify({
+          courseSlug: course.slug,
+          tierId: selectedTier?.id,
+          stay: selectedTier ? stay : undefined,
           courseName: course.name,
           courseType: course.type,
           name: bookingForm.name.trim(),
@@ -357,6 +366,7 @@ export default function CourseDetailClient({ course }: Props) {
       });
       const result = await response.json().catch(() => null);
       if (!response.ok) throw new Error(result?.error || "We couldn't send your booking request. Please try again.");
+      setSaved(result?.bookingId ? { id: result.bookingId, amount: result.amount ?? null, signedIn: Boolean(token) } : null);
       setSent(true);
     } catch (err) {
       setBookError(err instanceof Error ? err.message : "We couldn't send your booking request. Please try again.");
@@ -858,7 +868,25 @@ export default function CourseDetailClient({ course }: Props) {
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 mb-2">Request Received!</h3>
                       <p className="text-gray-600 mb-4">We&apos;ll confirm availability for your dates shortly.</p>
-                      <button onClick={() => setSent(false)} className="text-sky-600 hover:underline">
+                      {isSupabaseConfigured && saved?.amount ? (
+                        saved.signedIn ? (
+                          <Link
+                            href={`/checkout?course=${saved.id}`}
+                            className="mb-4 inline-flex items-center justify-center rounded-lg bg-sky-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-sky-600"
+                          >
+                            Pay online with UPI
+                          </Link>
+                        ) : (
+                          <p className="mb-4 text-sm text-gray-600">
+                            Want to pay online and track this booking?{" "}
+                            <Link href="/signup" className="font-semibold text-sky-600 hover:underline">Create an account</Link>
+                            {" "}or{" "}
+                            <Link href="/login" className="font-semibold text-sky-600 hover:underline">log in</Link>
+                            {" "}with <strong>{bookingForm.email}</strong>.
+                          </p>
+                        )
+                      ) : null}
+                      <button onClick={() => { setSent(false); setSaved(null); }} className="text-sky-600 hover:underline">
                         Book another course
                       </button>
                     </div>

@@ -1,12 +1,75 @@
 const Razorpay = require("razorpay");
-const catalog = require("./_lib/catalog");
+const trekCatalog = require("./_lib/catalog");
 const { getAdmin, getUserFromRequest, clientIp } = require("./_lib/supabaseAdmin");
 const { logActivity } = require("./_lib/payments");
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-// POST { bookingId } + Authorization: Bearer <supabase access token>
-// The amount is derived here from the booking + price catalog. The browser never sends it.
+class HttpError extends Error {
+  constructor(status, message) {
+    super(message);
+    this.status = status;
+  }
+}
+
+// Resolves what is being paid for and how much, entirely server-side.
+// Returns { kind, id, label, amount (paise) }.
+async function loadPayable(db, user, body) {
+  if (typeof body.courseBookingId === "string") {
+    if (!UUID.test(body.courseBookingId)) throw new HttpError(400, "Invalid booking.");
+    const { data: b, error } = await db
+      .from("course_bookings")
+      .select("id, user_id, course_name, package_name, group_size, amount, contact_email, status")
+      .eq("id", body.courseBookingId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!b) throw new HttpError(404, "Booking not found.");
+
+    // A booking made while logged out becomes the user's once their *verified* email matches.
+    let owner = b.user_id;
+    if (!owner && user.email_confirmed_at && String(user.email || "").toLowerCase() === b.contact_email.toLowerCase()) {
+      await db.from("course_bookings").update({ user_id: user.id }).eq("id", b.id).is("user_id", null);
+      owner = user.id;
+    }
+    if (owner !== user.id) throw new HttpError(404, "Booking not found.");
+    if (b.status === "cancelled") throw new HttpError(409, "This booking was cancelled.");
+    if (!b.amount) throw new HttpError(422, "This booking needs a custom quote. Please contact us on WhatsApp.");
+
+    return {
+      kind: "course",
+      id: b.id,
+      amount: b.amount,
+      label: `${b.course_name}${b.package_name ? ` · ${b.package_name}` : ""} · ${b.group_size} ${b.group_size === 1 ? "person" : "persons"}`,
+    };
+  }
+
+  const bookingId = typeof body.bookingId === "string" ? body.bookingId : "";
+  if (!UUID.test(bookingId)) throw new HttpError(400, "Invalid booking.");
+  const { data: booking, error } = await db
+    .from("trek_bookings")
+    .select("id, user_id, trek_name, trek_slug, group_size, status")
+    .eq("id", bookingId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (error) throw error;
+  if (!booking) throw new HttpError(404, "Booking not found.");
+  if (booking.status === "cancelled") throw new HttpError(409, "This booking was cancelled.");
+
+  const trek = trekCatalog[booking.trek_slug];
+  const persons = Number(String(booking.group_size).trim());
+  if (!trek || !Number.isInteger(persons) || persons < 1 || persons > 10) {
+    throw new HttpError(422, "This booking needs custom group pricing. Please contact us on WhatsApp.");
+  }
+  return {
+    kind: "trek",
+    id: booking.id,
+    amount: trek.price * persons * 100,
+    label: `${booking.trek_name} · ${persons} ${persons === 1 ? "person" : "persons"}`,
+  };
+}
+
+// POST { bookingId } (trek) or { courseBookingId } (course) + Authorization: Bearer <supabase token>
+// The amount is derived here from the stored booking + price catalog. The browser never sends it.
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -23,31 +86,15 @@ module.exports = async function handler(req, res) {
   if (!user) return res.status(401).json({ error: "Please sign in to continue." });
 
   const body = req.body && typeof req.body === "object" ? req.body : {};
-  const bookingId = typeof body.bookingId === "string" ? body.bookingId : "";
-  if (!UUID.test(bookingId)) return res.status(400).json({ error: "Invalid booking." });
 
   try {
-    const { data: booking, error: bookingError } = await db
-      .from("trek_bookings")
-      .select("id, user_id, trek_name, trek_slug, trek_date, group_size, status")
-      .eq("id", bookingId)
-      .eq("user_id", user.id)
-      .maybeSingle();
-    if (bookingError) throw bookingError;
-    if (!booking) return res.status(404).json({ error: "Booking not found." });
-    if (booking.status === "cancelled") return res.status(409).json({ error: "This booking was cancelled." });
-
-    const trek = catalog[booking.trek_slug];
-    const persons = Number(String(booking.group_size).trim());
-    if (!trek || !Number.isInteger(persons) || persons < 1 || persons > 10) {
-      return res.status(422).json({ error: "This booking needs custom group pricing. Please contact us on WhatsApp." });
-    }
-    const amount = trek.price * persons * 100; // paise
+    const payable = await loadPayable(db, user, body);
+    const bookingColumn = payable.kind === "course" ? "course_booking_id" : "booking_id";
 
     const { data: paid } = await db
       .from("payments")
       .select("id")
-      .eq("booking_id", booking.id)
+      .eq(bookingColumn, payable.id)
       .eq("status", "paid")
       .limit(1);
     if (paid && paid.length > 0) return res.status(409).json({ error: "This booking is already paid." });
@@ -58,42 +105,41 @@ module.exports = async function handler(req, res) {
       contact: user.user_metadata?.phone || "",
     };
 
-    // Reuse an unpaid order for the same amount so refreshes/retries don't pile up orders.
-    const { data: existing } = await db
-      .from("payments")
-      .select("id, razorpay_order_id, amount, currency")
-      .eq("booking_id", booking.id)
-      .neq("status", "paid")
-      .eq("amount", amount)
-      .order("created_at", { ascending: false })
-      .limit(1);
-
     const reply = (row) => ({
       keyId: RAZORPAY_KEY_ID,
       orderId: row.razorpay_order_id,
       amount: row.amount,
       currency: row.currency,
-      description: `${booking.trek_name} · ${persons} ${persons === 1 ? "person" : "persons"}`,
+      description: payable.label,
       prefill: profile,
     });
 
+    // Reuse an unpaid order for the same amount so refreshes/retries don't pile up orders.
+    const { data: existing } = await db
+      .from("payments")
+      .select("id, razorpay_order_id, amount, currency")
+      .eq(bookingColumn, payable.id)
+      .neq("status", "paid")
+      .eq("amount", payable.amount)
+      .order("created_at", { ascending: false })
+      .limit(1);
     if (existing && existing.length > 0) return res.status(200).json(reply(existing[0]));
 
     const razorpay = new Razorpay({ key_id: RAZORPAY_KEY_ID, key_secret: RAZORPAY_KEY_SECRET });
     const order = await razorpay.orders.create({
-      amount,
+      amount: payable.amount,
       currency: "INR",
-      receipt: `bk_${booking.id.slice(0, 8)}_${Date.now().toString(36)}`,
-      notes: { booking_id: booking.id, user_id: user.id, trek: booking.trek_slug },
+      receipt: `${payable.kind === "course" ? "cb" : "bk"}_${payable.id.slice(0, 8)}_${Date.now().toString(36)}`,
+      notes: { booking_id: payable.id, booking_type: payable.kind, user_id: user.id },
     });
 
     const { data: row, error: insertError } = await db
       .from("payments")
       .insert({
         user_id: user.id,
-        booking_id: booking.id,
+        [bookingColumn]: payable.id,
         razorpay_order_id: order.id,
-        amount,
+        amount: payable.amount,
         currency: "INR",
       })
       .select("id, razorpay_order_id, amount, currency")
@@ -102,14 +148,16 @@ module.exports = async function handler(req, res) {
 
     await logActivity(db, user.id, "PAYMENT_INITIATED", {
       order_id: order.id,
-      amount,
-      trek_name: booking.trek_name,
-      booking_id: booking.id,
+      amount: payable.amount,
+      booking_id: payable.id,
+      booking_type: payable.kind,
+      description: payable.label,
       ip: clientIp(req),
     });
 
     return res.status(200).json(reply(row));
   } catch (error) {
+    if (error instanceof HttpError) return res.status(error.status).json({ error: error.message });
     console.error("create-order failed:", error instanceof Error ? error.message : error);
     return res.status(502).json({ error: "We couldn't start the payment. Please try again." });
   }

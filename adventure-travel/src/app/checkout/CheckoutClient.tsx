@@ -7,8 +7,9 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, CalendarDays, Loader2, Lock, Smartphone, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
-import type { TrekBooking } from "@/lib/auth";
+import type { TrekBooking, CourseBooking } from "@/lib/auth";
 import { treks } from "@/data/treks";
+import { courses } from "@/data/courses";
 import { formatPaise } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,10 +70,13 @@ const WHATSAPP = "https://wa.me/917817912062";
 export default function CheckoutClient() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
-  const bookingId = useSearchParams().get("booking");
+  const searchParams = useSearchParams();
+  const bookingId = searchParams.get("booking"); // trek booking
+  const courseId = searchParams.get("course"); // course booking
   const { user, loading: authLoading } = useAuth();
 
   const [booking, setBooking] = useState<TrekBooking | null>(null);
+  const [courseBooking, setCourseBooking] = useState<CourseBooking | null>(null);
   const [phase, setPhase] = useState<Phase>("loading");
   const [error, setError] = useState<string | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
@@ -82,6 +86,28 @@ export default function CheckoutClient() {
   const persons = booking && /^\d+$/.test(booking.group_size.trim()) ? Number(booking.group_size) : null;
   // Display only — the server recomputes the amount from the same catalog and ignores the browser.
   const totalPaise = trek && persons && persons >= 1 && persons <= 10 ? trek.price * persons * 100 : null;
+
+  // One shape for the summary card, whichever kind of booking this is.
+  const course = useMemo(() => courses.find((c) => c.slug === courseBooking?.course_slug), [courseBooking]);
+  const summary = courseBooking
+    ? {
+        title: courseBooking.course_name + (courseBooking.package_name ? ` · ${courseBooking.package_name}` : ""),
+        dateISO: courseBooking.preferred_date,
+        persons: courseBooking.group_size,
+        image: course?.image,
+        totalPaise: courseBooking.amount,
+        unitPaise: courseBooking.amount ? courseBooking.amount / courseBooking.group_size : null,
+      }
+    : booking
+      ? {
+          title: booking.trek_name,
+          dateISO: booking.trek_date,
+          persons,
+          image: trek?.image,
+          totalPaise,
+          unitPaise: trek ? trek.price * 100 : null,
+        }
+      : null;
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/login");
@@ -96,12 +122,42 @@ export default function CheckoutClient() {
       setPhase("unavailable");
       return;
     }
-    if (!bookingId) {
+    if (!bookingId && !courseId) {
       setPhase("notfound");
       return;
     }
     let cancelled = false;
     (async () => {
+      if (courseId) {
+        // A course booked while logged out becomes ours once the verified email matches.
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (token) {
+          await fetch("/api/claim-bookings", { method: "POST", headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
+        }
+        const { data: courseRow } = await supabase.from("course_bookings").select("*").eq("id", courseId).maybeSingle();
+        if (cancelled) return;
+        if (!courseRow) {
+          setPhase("notfound");
+          return;
+        }
+        const { data: coursePaid } = await supabase
+          .from("payments")
+          .select("id")
+          .eq("course_booking_id", courseId)
+          .eq("status", "paid")
+          .limit(1);
+        if (cancelled) return;
+        setCourseBooking(courseRow as CourseBooking);
+        if (coursePaid && coursePaid.length > 0) {
+          setAlreadyPaid(true);
+          setPhase("success");
+        } else {
+          setPhase("ready");
+          void loadRazorpay().catch(() => {});
+        }
+        return;
+      }
       const { data: row } = await supabase.from("trek_bookings").select("*").eq("id", bookingId).maybeSingle();
       if (cancelled) return;
       if (!row) {
@@ -127,7 +183,7 @@ export default function CheckoutClient() {
     return () => {
       cancelled = true;
     };
-  }, [authLoading, user, bookingId]);
+  }, [authLoading, user, bookingId, courseId]);
 
   const accessToken = async () => {
     const supabase = createClient();
@@ -166,14 +222,14 @@ export default function CheckoutClient() {
   }, []);
 
   const startPayment = async () => {
-    if (!booking) return;
+    if (!booking && !courseBooking) return;
     setError(null);
     setPhase("creating");
     try {
       const res = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${await accessToken()}` },
-        body: JSON.stringify({ bookingId: booking.id }),
+        body: JSON.stringify(courseBooking ? { courseBookingId: courseBooking.id } : { bookingId: booking!.id }),
       });
       const order = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(order.error || "We couldn't start the payment. Please try again.");
@@ -267,12 +323,12 @@ export default function CheckoutClient() {
                 </div>
               )}
 
-              {booking && (
+              {summary && (
                 <div className="flex gap-4">
-                  {trek?.image && (
+                  {summary.image && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={trek.image}
+                      src={summary.image}
                       alt=""
                       loading="lazy"
                       decoding="async"
@@ -280,10 +336,10 @@ export default function CheckoutClient() {
                     />
                   )}
                   <div className="min-w-0">
-                    <p className="truncate font-heading text-base font-bold">{booking.trek_name}</p>
+                    <p className="truncate font-heading text-base font-bold">{summary.title}</p>
                     <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
                       <CalendarDays className="h-4 w-4 shrink-0" aria-hidden />
-                      {new Date(booking.trek_date).toLocaleDateString("en-IN", {
+                      {new Date(summary.dateISO).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
@@ -291,7 +347,7 @@ export default function CheckoutClient() {
                     </p>
                     <p className="mt-0.5 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
                       <Users className="h-4 w-4 shrink-0" aria-hidden />
-                      {booking.group_size} {booking.group_size === "1" ? "person" : "persons"}
+                      {summary.persons ?? "—"} {summary.persons === 1 ? "person" : "persons"}
                     </p>
                   </div>
                 </div>
@@ -339,18 +395,18 @@ export default function CheckoutClient() {
                       exit={reduceMotion ? undefined : { opacity: 0 }}
                       className="space-y-6"
                     >
-                      {totalPaise ? (
+                      {summary?.totalPaise ? (
                         <>
                           <dl className="space-y-2 rounded-xl bg-slate-100/70 p-4 text-sm dark:bg-white/5">
                             <div className="flex justify-between text-slate-600 dark:text-slate-300">
                               <dt>
-                                {formatPaise((trek?.price ?? 0) * 100)} × {persons} {persons === 1 ? "person" : "persons"}
+                                {formatPaise(summary.unitPaise ?? 0)} × {summary.persons} {summary.persons === 1 ? "person" : "persons"}
                               </dt>
-                              <dd>{formatPaise(totalPaise)}</dd>
+                              <dd>{formatPaise(summary.totalPaise)}</dd>
                             </div>
                             <div className="flex justify-between border-t border-slate-200 pt-2 text-base font-bold dark:border-white/10">
                               <dt>Total</dt>
-                              <dd>{formatPaise(totalPaise)}</dd>
+                              <dd>{formatPaise(summary.totalPaise)}</dd>
                             </div>
                           </dl>
 
@@ -371,14 +427,14 @@ export default function CheckoutClient() {
                             ) : (
                               <>
                                 <Smartphone className="h-5 w-5" aria-hidden />
-                                Pay {formatPaise(totalPaise)} with UPI
+                                Pay {formatPaise(summary.totalPaise)} with UPI
                               </>
                             )}
                           </Button>
                         </>
                       ) : (
                         <div className="space-y-3 text-center text-sm text-slate-600 dark:text-slate-300">
-                          <p>Group bookings of 10+ are priced individually.</p>
+                          <p>This booking is priced individually — we&apos;ll send you a quote.</p>
                           <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: "outline" })}>
                             Get a group quote on WhatsApp
                           </a>

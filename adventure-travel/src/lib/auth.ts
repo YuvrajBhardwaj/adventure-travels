@@ -176,3 +176,144 @@ export async function createActivityBooking(booking: Omit<ActivityBooking, "id" 
   const all = lsRead<ActivityBooking>(LS_ACT_BOOKINGS); all.push(b); lsWrite(LS_ACT_BOOKINGS, all);
   return b;
 }
+
+// ─── Profile ───
+export interface Profile {
+  id: string;
+  full_name: string;
+  phone: string;
+  email: string | null;
+  city: string;
+  emergency_contact_name: string;
+  emergency_contact_phone: string;
+}
+
+export type ProfileChanges = Partial<
+  Pick<Profile, "full_name" | "phone" | "city" | "emergency_contact_name" | "emergency_contact_phone">
+>;
+
+export async function getProfile(userId: string): Promise<Profile | null> {
+  const supabase = createClient();
+  if (supabase) {
+    const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
+    if (error) throw error;
+    return (data as Profile | null) ?? null;
+  }
+  const found = lsRead<{ id: string; email: string; full_name: string; phone: string }>(LS_USERS).find((u) => u.id === userId);
+  return found
+    ? { id: found.id, full_name: found.full_name, phone: found.phone, email: found.email, city: "", emergency_contact_name: "", emergency_contact_phone: "" }
+    : null;
+}
+
+export async function updateProfile(userId: string, changes: ProfileChanges): Promise<Profile | null> {
+  const supabase = createClient();
+  if (supabase) {
+    const { data, error } = await supabase.from("profiles").update(changes).eq("id", userId).select().single();
+    if (error) throw error;
+    // Keep the session's own copy in step so the rest of the site shows the new name/phone.
+    if (changes.full_name !== undefined || changes.phone !== undefined) {
+      await supabase.auth.updateUser({
+        data: {
+          ...(changes.full_name !== undefined && { full_name: changes.full_name }),
+          ...(changes.phone !== undefined && { phone: changes.phone }),
+        },
+      });
+    }
+    trackActivity("SETTINGS_UPDATE", { fields: Object.keys(changes) });
+    return data as Profile;
+  }
+  const users = lsRead<{ id: string; email: string; password: string; full_name: string; phone: string }>(LS_USERS);
+  const idx = users.findIndex((u) => u.id === userId);
+  if (idx === -1) return null;
+  users[idx] = {
+    ...users[idx],
+    ...(changes.full_name !== undefined && { full_name: changes.full_name }),
+    ...(changes.phone !== undefined && { phone: changes.phone }),
+  };
+  lsWrite(LS_USERS, users);
+  return getProfile(userId);
+}
+
+// ─── Course bookings (stored server-side by /api/course-bookings) ───
+export interface CourseBooking {
+  id: string;
+  course_slug: string;
+  course_name: string;
+  course_type: string;
+  package_name: string;
+  stay: "" | "base" | "full";
+  preferred_date: string;
+  group_size: number;
+  /** Paise, priced on the server. */
+  amount: number | null;
+  status: "pending" | "confirmed" | "cancelled";
+  created_at: string;
+}
+
+export async function getCourseBookings(userId: string): Promise<CourseBooking[]> {
+  const supabase = createClient();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("course_bookings")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as CourseBooking[];
+}
+
+// ─── Payments ───
+export interface PaymentRecord {
+  id: string;
+  amount: number; // paise
+  currency: string;
+  status: "created" | "paid" | "failed";
+  method: string | null;
+  created_at: string;
+  paid_at: string | null;
+  booking_id: string | null;
+  course_booking_id: string | null;
+  /** Human label for the booking this payment is for. */
+  for_label: string;
+}
+
+export async function getPayments(userId: string): Promise<PaymentRecord[]> {
+  const supabase = createClient();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("payments")
+    .select("id,amount,currency,status,method,created_at,paid_at,booking_id,course_booking_id,trek_bookings(trek_name),course_bookings(course_name)")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  const one = <T,>(v: T | T[] | null | undefined) => (Array.isArray(v) ? v[0] : v) ?? null;
+  return (data ?? []).map((row: Record<string, unknown>) => {
+    const trek = one(row.trek_bookings as { trek_name: string } | { trek_name: string }[] | null);
+    const course = one(row.course_bookings as { course_name: string } | { course_name: string }[] | null);
+    return {
+      id: row.id as string,
+      amount: row.amount as number,
+      currency: row.currency as string,
+      status: row.status as PaymentRecord["status"],
+      method: (row.method as string | null) ?? null,
+      created_at: row.created_at as string,
+      paid_at: (row.paid_at as string | null) ?? null,
+      booking_id: (row.booking_id as string | null) ?? null,
+      course_booking_id: (row.course_booking_id as string | null) ?? null,
+      for_label: trek?.trek_name ?? course?.course_name ?? "Booking",
+    };
+  });
+}
+
+/** Cancels the user's own booking while it is still pending (enforced by RLS). */
+export async function cancelTrekBooking(bookingId: string) {
+  const supabase = createClient();
+  if (!supabase) {
+    const all = lsRead<TrekBooking>(LS_TREK_BOOKINGS);
+    const idx = all.findIndex((b) => b.id === bookingId);
+    if (idx !== -1) { all[idx] = { ...all[idx], status: "cancelled" }; lsWrite(LS_TREK_BOOKINGS, all); }
+    return;
+  }
+  const { error } = await supabase.from("trek_bookings").update({ status: "cancelled" }).eq("id", bookingId);
+  if (error) throw error;
+}

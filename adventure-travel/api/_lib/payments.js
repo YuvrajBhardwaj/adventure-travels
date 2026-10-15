@@ -62,10 +62,12 @@ async function markPaid(db, { orderId, paymentId, amount, method, ip }) {
   if (updateError) throw updateError;
   if (!updated) return { ok: true, already: true, row }; // another call won the race
 
+  // Confirm whichever booking this payment belongs to.
+  const bookingTable = row.course_booking_id ? "course_bookings" : "trek_bookings";
   await db
-    .from("trek_bookings")
+    .from(bookingTable)
     .update({ status: "confirmed" })
-    .eq("id", row.booking_id)
+    .eq("id", row.course_booking_id || row.booking_id)
     .neq("status", "cancelled");
 
   await logActivity(db, row.user_id, "PAYMENT_SUCCESS", {
@@ -73,7 +75,8 @@ async function markPaid(db, { orderId, paymentId, amount, method, ip }) {
     payment_id: paymentId,
     amount: row.amount,
     method: method || null,
-    booking_id: row.booking_id,
+    booking_id: row.booking_id || row.course_booking_id,
+    booking_type: row.course_booking_id ? "course" : "trek",
     ip,
   });
   return { ok: true, row: updated };
