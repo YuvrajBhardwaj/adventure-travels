@@ -81,8 +81,16 @@ async function applyPayment(db, { orderId, paymentId, amount, method }) {
   return { ok, already: state.result === "already", reason: ok ? undefined : state.result, state };
 }
 
-// Kept so verify-payment/webhook keep working until they call applyPayment directly (tasks T035/T036).
-const markPaid = applyPayment;
+/** Current payment state and status of a booking, e.g. to answer a repeat report of a payment. */
+async function bookingState(db, bookingType, bookingId) {
+  const { data, error } = await db
+    .from(bookingType === "course" ? "course_bookings" : "trek_bookings")
+    .select("payment_state, status")
+    .eq("id", bookingId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? { paymentState: data.payment_state, bookingStatus: data.status } : { paymentState: null, bookingStatus: null };
+}
 
 async function markFailed(db, { orderId, reason, ip }) {
   const { data: updated, error } = await db
@@ -104,4 +112,4 @@ async function markFailed(db, { orderId, reason, ip }) {
   return { ok: true };
 }
 
-module.exports = { hmacHex, safeEqual, logActivity, applyPayment, markPaid, markFailed };
+module.exports = { hmacHex, safeEqual, logActivity, applyPayment, bookingState, markFailed };

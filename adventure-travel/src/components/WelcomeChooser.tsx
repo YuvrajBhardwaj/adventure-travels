@@ -10,6 +10,7 @@ import { destinations } from "@/data/destinations";
 import Price from "@/components/Price";
 import SmartImage from "@/components/SmartImage";
 import NoPhoto from "@/components/NoPhoto";
+import { LEGACY_CHECKED_KEY } from "@/components/LegacyDataNotice";
 
 const SEEN_KEY = "hac_welcome_seen";
 
@@ -89,6 +90,8 @@ export default function WelcomeChooser() {
     if (pathname !== "/") return;
     try {
       if (sessionStorage.getItem(SEEN_KEY)) return;
+      // The one-time legacy-accounts notice takes priority; don't stack a second overlay on it.
+      if (sessionStorage.getItem(LEGACY_CHECKED_KEY) === "notice") return;
     } catch {
       return; // storage blocked → don't risk showing it on every page load
     }

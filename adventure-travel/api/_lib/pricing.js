@@ -85,6 +85,39 @@ function balanceDueDate(startIso) {
   return addDays(startIso, -BALANCE_DUE_DAYS_BEFORE);
 }
 
+const PAYMENT_KINDS = ["advance", "balance", "full"];
+
+/**
+ * How much a new Razorpay order of `kind` should be for a stored booking, from the
+ * booking's own locked `amount` (never the catalog). Returns { amount } or
+ * { status, error } with the HTTP status the API should answer (contracts/http-api.md).
+ * booking: { status, paymentState, quoteRequired, amount, amountPaid, startDate }
+ */
+function orderAmount(booking, kind, now = new Date()) {
+  if (booking.status === "cancelled") return { status: 409, error: "This booking was cancelled." };
+  if (booking.paymentState === "fully_paid") return { status: 409, error: "This booking is already paid in full." };
+  if (booking.paymentState === "refunded") return { status: 409, error: "This booking was refunded." };
+  if (booking.quoteRequired || !Number.isInteger(booking.amount) || booking.amount <= 0) {
+    return { status: 422, error: "This booking needs a custom quote. Please contact us on WhatsApp." };
+  }
+  if (!PAYMENT_KINDS.includes(kind)) return { status: 400, error: "Choose how much to pay." };
+
+  const paid = booking.amountPaid || 0;
+  if (kind === "advance") {
+    if (paid > 0) return { status: 400, error: "An advance is already paid. Pay the balance instead." };
+    if (!isAdvanceAllowed(booking.startDate, paid, now)) {
+      return { status: 400, error: "Your trip starts within 15 days, so full payment is needed." };
+    }
+    return { amount: advanceAmount(booking.amount) };
+  }
+  if (kind === "balance") {
+    if (booking.paymentState !== "advance_paid") return { status: 400, error: "There's no balance to pay on this booking yet." };
+    return { amount: balanceAmount(booking.amount, paid) };
+  }
+  if (booking.paymentState !== "unpaid") return { status: 400, error: "An advance is already paid. Pay the balance instead." };
+  return { amount: balanceAmount(booking.amount, paid) };
+}
+
 module.exports = {
   ADVANCE_CUTOFF_DAYS,
   MAX_TREK_GROUP,
@@ -100,4 +133,6 @@ module.exports = {
   isFutureStart,
   isAdvanceAllowed,
   balanceDueDate,
+  PAYMENT_KINDS,
+  orderAmount,
 };

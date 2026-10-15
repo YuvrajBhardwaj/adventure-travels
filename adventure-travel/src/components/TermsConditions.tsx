@@ -90,7 +90,7 @@ export default function TermsConditions() {
         )}
         {activeTab === "payments" && (
           <ul className="list-disc pl-6 space-y-2">
-            <li><strong>Full amount</strong> to be paid to confirm booking.</li>
+            <li>Pay a <strong>30% advance</strong> (non-refundable) or the <strong>full amount</strong> online. The balance is due 15 days before departure.</li>
             <li>Booking confirmations are subject to availability of accommodation.</li>
             <li>Cheques not accepted.</li>
             <li>Payments accepted via UPI, credit card, and net banking (3% extra charged on credit cards).</li>

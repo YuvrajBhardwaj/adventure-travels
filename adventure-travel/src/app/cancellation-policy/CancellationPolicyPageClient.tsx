@@ -80,6 +80,7 @@ const REFUND_TIERS = [
 ];
 
 const REFUND_NOTE = [
+  { text: "You can pay a 30% advance or the full amount online. After an advance, the balance is due 15 days before departure." },
   { text: "The advance amount is non-refundable." },
   { text: "Trek Vouchers are issued only when the full amount has been paid." },
   { text: "No refund applies if only the advance amount was paid." },

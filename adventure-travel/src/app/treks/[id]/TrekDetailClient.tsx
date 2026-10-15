@@ -780,7 +780,7 @@ function BookingCard({
         </div>
         <div className="flex items-start gap-2">
           <span aria-hidden className="text-emerald-600">✓</span>
-          <span>Book by paying only 30% advance</span>
+          <span>Pay 30% advance or in full</span>
         </div>
       </div>
 

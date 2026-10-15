@@ -111,3 +111,55 @@ describe("dates in India time", () => {
     expect(balanceDueDate("2027-03-01")).toBe("2027-02-14");
   });
 });
+
+describe("orderAmount (create-order rules)", () => {
+  const { orderAmount } = pricing;
+  const now = new Date("2026-10-16T06:00:00Z"); // 16 Oct in India
+  const booking = (over = {}) => ({
+    status: "pending",
+    paymentState: "unpaid",
+    quoteRequired: false,
+    amount: 1099800, // Rs.10,998
+    amountPaid: 0,
+    startDate: "2026-12-01",
+    ...over,
+  });
+
+  it("charges 30% (rounded up to a rupee) for an advance more than 15 days out", () => {
+    expect(orderAmount(booking(), "advance", now)).toEqual({ amount: 330000 });
+  });
+
+  it("refuses an advance 15 days or less before the start", () => {
+    expect(orderAmount(booking({ startDate: "2026-10-31" }), "advance", now).status).toBe(400); // 15 days
+    expect(orderAmount(booking({ startDate: "2026-11-01" }), "advance", now)).toEqual({ amount: 330000 }); // 16 days
+  });
+
+  it("charges the whole amount for full, and only while unpaid", () => {
+    expect(orderAmount(booking(), "full", now)).toEqual({ amount: 1099800 });
+    expect(orderAmount(booking({ paymentState: "advance_paid", amountPaid: 330000 }), "full", now).status).toBe(400);
+  });
+
+  it("charges what's left for a balance, and only after an advance", () => {
+    expect(orderAmount(booking({ paymentState: "advance_paid", amountPaid: 330000 }), "balance", now)).toEqual({ amount: 769800 });
+    expect(orderAmount(booking(), "balance", now).status).toBe(400);
+  });
+
+  it("refuses a second advance", () => {
+    expect(orderAmount(booking({ paymentState: "advance_paid", amountPaid: 330000 }), "advance", now).status).toBe(400);
+  });
+
+  it("answers 409 for cancelled, fully paid and refunded bookings", () => {
+    expect(orderAmount(booking({ status: "cancelled" }), "full", now).status).toBe(409);
+    expect(orderAmount(booking({ paymentState: "fully_paid", amountPaid: 1099800 }), "full", now).status).toBe(409);
+    expect(orderAmount(booking({ paymentState: "refunded" }), "balance", now).status).toBe(409);
+  });
+
+  it("answers 422 for quotes and unpriced bookings", () => {
+    expect(orderAmount(booking({ quoteRequired: true, amount: null }), "full", now).status).toBe(422);
+    expect(orderAmount(booking({ amount: null }), "full", now).status).toBe(422);
+  });
+
+  it("rejects an unknown kind", () => {
+    expect(orderAmount(booking(), "everything", now).status).toBe(400);
+  });
+});

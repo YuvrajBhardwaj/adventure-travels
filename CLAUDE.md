@@ -21,9 +21,11 @@ npm run dev      # next dev — local dev server at http://localhost:3000
 npm run build    # next build — production build + static generation
 npm start        # serve the production build
 npm run lint     # eslint (next/core-web-vitals + next/typescript)
+npm test         # vitest — unit tests for the server money/email logic in api/_lib only
+npm run catalog  # regenerate api/_lib/catalog.js + courseCatalog.js from src/data (prices the API charges)
 ```
 
-There is **no test framework** configured — do not assume `npm test` exists. Verify changes with `npm run build` and `npm run lint`.
+`npm test` covers only `api/_lib/__tests__/` (Vitest); there are no UI tests. Verify UI changes with `npx tsc --noEmit` and `npm run lint`, and don't run `npm run build` while `npm run dev` is running (they share `.next/`).
 
 ## Stack
 
@@ -38,15 +40,24 @@ Next.js 16 (App Router) · React 19 · TypeScript (strict) · Tailwind CSS v4 ·
 ### Rendering model — nearly everything is a client component
 Every section component **and every page (including the home `page.tsx`) is `"use client"`** and animates with inline framer-motion. The one meaningful server component is `src/app/treks/[id]/page.tsx`, which runs `generateStaticParams()` + a slug lookup, then delegates rendering to `TrekDetailClient.tsx`. Follow this split when adding data-driven detail pages: server component for data resolution, a `*Client.tsx` for the interactive UI.
 
-### Data is the single source of truth (`src/data/`)
-Content is hardcoded in TypeScript modules — there is **no backend, database, or API**.
+### Backend: Supabase + Vercel functions (`api/`)
+Accounts, bookings and payments live in **Supabase** (RLS is the only access authority). Anything that needs a secret or must be trusted runs in **Vercel Node functions** in `adventure-travel/api/` (CommonJS; shared code in `api/_lib/`, which isn't deployed as functions). They don't run under `next dev` — use `npx vercel dev`.
+- `api/bookings.js` creates trek and course bookings and locks the price from the generated catalog (it replaced `course-bookings.js`); `api/account.js` handles `claim` and `delete` (it replaced `claim-bookings.js`); `api/cron.js` sends balance reminders and retries failed emails daily (`vercel.json`).
+- Payments: `create-order` (advance / balance / full), `verify-payment` and `razorpay-webhook` all apply payments through the `apply_payment` database function, which is exactly-once.
+- Emails go through the `notifications` outbox (`api/_lib/notify.js`), always **after** the database write.
+- Database changes are SQL files in `adventure-travel/`, run in this order: `supabase-schema.sql`, `supabase-activity-payments.sql`, `supabase-backend.sql`, `supabase-room-sharing.sql`, `supabase-payments-v2.sql`.
+- Money is integer **paise**; the browser never sends an amount. Design docs: `specs/001-persistent-backend/`.
+- Admin screens are under `/admin/*` (activity, bookings, customers, payments) for accounts with `app_metadata.role = "admin"`.
+
+### Content is the single source of truth (`src/data/`)
+Site content (treks, courses, destinations) is hardcoded in TypeScript modules, not the database. Prices the API charges come from these files via `npm run catalog`.
 - `treks.ts` — the `Trek` interface plus the `treks[]` array, and also exports `processSteps`, `testimonials`, `faqItems`, `stats`, `REGIONS`, `DIFFICULTIES`, `DIFFICULTY_COLORS`, and a `slugify()` helper.
 - `destinations.ts`, `stories.ts` — analogous content modules.
 
 Trek detail routes resolve by **`slug`, not `id`**. Adding a trek object to `treks[]` automatically generates its static route (`/treks/<slug>`) via `generateStaticParams`; the list page (`/treks`) filters/sorts this same array client-side (`useMemo`). Keep each trek's `elevationProfile`, `itinerary` altitudes, and `maxAltitude` internally consistent — several UI pieces chart them directly.
 
 ### Routes (`src/app/`)
-`/` (home — composes ~18 section components in order) · `/treks` (filterable list) · `/treks/[id]` (SSG detail by slug) · `/destinations` · `/activities` · `/contact` · `/faq` · `/cancellation-policy`.
+`/` (home — composes ~18 section components in order) · `/treks` (filterable list) · `/treks/[id]` (SSG detail by slug) · `/destinations` · `/activities` · `/courses` · `/contact` · `/faq` · `/cancellation-policy` · account pages `/login`, `/signup`, `/reset-password`, `/dashboard`, `/checkout` · `/admin/*`.
 
 ### Design system — use the tokens and utilities, don't hardcode
 `globals.css` defines the whole visual language. Prefer these over ad-hoc values:
@@ -61,7 +72,7 @@ Trek detail routes resolve by **`slug`, not `id`**. Adding a trek object to `tre
 
 ### Conventions worth matching
 - Images are plain `<img loading="lazy" decoding="async">` with Unsplash URLs — **not** `next/image** (despite `next.config.ts` allowing `images.unsplash.com`). Match the existing pattern unless deliberately migrating.
-- Lead capture is done via **WhatsApp deep links** (`wa.me/...`), not form submission to a server. `ContactPopup.tsx` holds a placeholder phone number marked `// ponytail: replace with real number`.
+- Enquiries go through **WhatsApp deep links** (`wa.me/...`). Bookings are saved on the server, and when the backend is unavailable the forms fall back to WhatsApp (`WhatsAppFallback.tsx`) — never a fake success. `ContactPopup.tsx` holds a placeholder phone number marked `// ponytail: replace with real number`.
 - Many components carry `dark:` Tailwind variants, but no dark-mode toggle/`.dark` class is wired up, so they are currently inert.
 - Component naming: newer sections use a `V2` suffix (`HeroV2`, `PopularTreksV2`, `FeaturedAdventuresV2`, …).
 

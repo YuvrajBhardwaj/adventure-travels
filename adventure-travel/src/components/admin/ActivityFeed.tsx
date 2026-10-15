@@ -10,6 +10,7 @@ import {
   LogIn,
   RefreshCw,
   Settings,
+  ShieldCheck,
   UserPlus,
   type LucideIcon,
 } from "lucide-react";
@@ -61,6 +62,22 @@ const ACTIONS: Record<
     describe: (m) => `had a failed payment${str(m.reason) ? ` — ${m.reason}` : ""}`,
   },
   SETTINGS_UPDATE: { label: "Settings", tone: "slate", icon: Settings, describe: () => "updated their settings" },
+  COURSE_BOOKING_CREATED: {
+    label: "Course booking",
+    tone: "slate",
+    icon: CalendarCheck,
+    describe: (m) => `booked ${str(m.course_name) ?? "a course"}`,
+  },
+  // Logged against the booking's owner, so the sentence describes what happened to their booking.
+  ADMIN_STATUS_CHANGE: {
+    label: "Status change",
+    tone: "slate",
+    icon: ShieldCheck,
+    describe: (m) =>
+      m.from !== m.to
+        ? `had a booking changed from ${str(m.from) ?? "—"} to ${str(m.to) ?? "—"} by an admin`
+        : `had a booking's payment marked ${str(m.to_payment_state)?.replace(/_/g, " ") ?? "changed"} by an admin`,
+  },
 };
 
 const FALLBACK = { label: "Activity", tone: "slate" as Tone, icon: Settings, describe: () => "did something" };

@@ -258,10 +258,14 @@ export async function getCourseBookings(userId: string): Promise<CourseBooking[]
 }
 
 // ─── Payments ───
+export type PaymentKind = "advance" | "balance" | "full";
+
 export interface PaymentRecord {
   id: string;
   amount: number; // paise
   currency: string;
+  /** Which part of the booking this payment covered. */
+  kind: PaymentKind;
   status: "created" | "paid" | "failed";
   method: string | null;
   created_at: string;
@@ -276,7 +280,7 @@ export async function getPayments(userId: string): Promise<PaymentRecord[]> {
   const supabase = requireClient();
   const { data, error } = await supabase
     .from("payments")
-    .select("id,amount,currency,status,method,created_at,paid_at,booking_id,course_booking_id,trek_bookings(trek_name),course_bookings(course_name)")
+    .select("id,amount,currency,kind,status,method,created_at,paid_at,booking_id,course_booking_id,trek_bookings(trek_name),course_bookings(course_name)")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
   if (error) throw error;
@@ -288,6 +292,7 @@ export async function getPayments(userId: string): Promise<PaymentRecord[]> {
       id: row.id as string,
       amount: row.amount as number,
       currency: row.currency as string,
+      kind: (row.kind as PaymentKind | undefined) ?? "full",
       status: row.status as PaymentRecord["status"],
       method: (row.method as string | null) ?? null,
       created_at: row.created_at as string,
@@ -299,9 +304,66 @@ export async function getPayments(userId: string): Promise<PaymentRecord[]> {
   });
 }
 
-/** Cancels the user's own booking while it is still pending and unpaid (enforced by RLS). */
-export async function cancelTrekBooking(bookingId: string) {
+// RLS lets a customer cancel only their own pending, unpaid booking (FR-015). A refused
+// update isn't an error to PostgREST — it just matches no rows — so check a row came back.
+async function cancelOwnBooking(table: "trek_bookings" | "course_bookings", bookingId: string) {
   const supabase = requireClient();
-  const { error } = await supabase.from("trek_bookings").update({ status: "cancelled" }).eq("id", bookingId);
+  const { data, error } = await supabase.from(table).update({ status: "cancelled" }).eq("id", bookingId).select("id").maybeSingle();
   if (error) throw error;
+  if (!data) throw new Error("This booking can't be cancelled online any more. Please contact us.");
+}
+
+export const cancelTrekBooking = (bookingId: string) => cancelOwnBooking("trek_bookings", bookingId);
+export const cancelCourseBooking = (bookingId: string) => cancelOwnBooking("course_bookings", bookingId);
+
+// ─── Password reset (FR-004) ───
+/** Sends a reset link if the email has an account. Callers show the same message either way. */
+export async function requestPasswordReset(email: string) {
+  const supabase = requireClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+    redirectTo: `${window.location.origin}/reset-password`,
+  });
+  if (error) throw error;
+}
+
+/** Sets a new password for the signed-in (or password-recovery) session. */
+export async function updatePassword(password: string) {
+  const supabase = requireClient();
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) throw error;
+}
+
+// ─── Account actions (POST /api/account) ───
+async function accountAction<T>(body: Record<string, unknown>): Promise<T> {
+  const supabase = requireClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error("Please sign in again.");
+  let res: Response;
+  try {
+    res = await fetch("/api/account", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    throw new BackendUnavailableError();
+  }
+  const json = await res.json().catch(() => ({}));
+  if (res.status === 503) throw new BackendUnavailableError(json.error);
+  if (!res.ok) throw new Error(json.error || "That didn't work. Please try again.");
+  return json as T;
+}
+
+/** Attaches course bookings made while signed out with this account's verified email (FR-012). */
+export function claimBookings() {
+  return accountAction<{ claimed: number }>({ action: "claim" });
+}
+
+/**
+ * Deletes the account: the profile and booking contacts are anonymised, payment records
+ * are kept for legal reasons, and the sign-in is removed (FR-070). Signs out afterwards.
+ */
+export async function deleteAccount() {
+  await accountAction<{ deleted: boolean }>({ action: "delete", confirm: "DELETE" });
+  await signOut();
 }

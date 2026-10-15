@@ -180,7 +180,7 @@ Additive and idempotent: use `if not exists`, `drop â€¦ if exists`, and `do $$ â
 
 **Independent Test**: quickstart **V12, V13, V16**.
 
-- [ ] T026 [P] [US2] Create `adventure-travel/src/lib/admin.ts` (browser Supabase client, RLS-enforced) exporting:
+- [X] T026 [P] [US2] Create `adventure-travel/src/lib/admin.ts` (browser Supabase client, RLS-enforced) exporting:
   - `listBookings({ type?: "trek"|"course"|"activity"; status?; paymentState?; from?; to?; q?; overdueOnly? })`. Searches `ilike` on contact name, email or phone and on the booking id prefix. Overdue means `payment_state === "advance_paid"` and `balance_due_date` < today in IST.
   - `updateBookingStatus(type, id, status)`
   - `recordRefund(type, id)`, which sets `payment_state: "refunded"`
@@ -189,17 +189,17 @@ Additive and idempotent: use `if not exists`, `drop â€¦ if exists`, and `do $$ â
   - `listPayments(filters)`
   - `listFailedNotifications()`
   - `getBookingEvents(type, id)`
-- [ ] T027 [US2] Create `adventure-travel/src/components/admin/AdminGate.tsx`. It wraps children in `ThemeScope`, redirects signed-out users to `/login`, and shows "Admin access required" unless `user.app_metadata?.role === "admin"`. Refactor `adventure-travel/src/app/admin/activity/AdminActivityClient.tsx` to use it.
-- [ ] T028 [P] [US2] Create `adventure-travel/src/components/admin/AdminNav.tsx`, with tabs Activity, Bookings, Customers and Payments linking to `/admin/activity`, `/admin/bookings`, `/admin/customers` and `/admin/payments`. Render it inside `AdminGate`.
-- [ ] T029 [P] [US2] Create `adventure-travel/src/app/admin/bookings/page.tsx` (server component: `metadata.robots = { index: false, follow: false }`) and `adventure-travel/src/app/admin/bookings/BookingsAdminClient.tsx`. The client has:
+- [X] T027 [US2] Create `adventure-travel/src/components/admin/AdminGate.tsx`. It wraps children in `ThemeScope`, redirects signed-out users to `/login`, and shows "Admin access required" unless `user.app_metadata?.role === "admin"`. Refactor `adventure-travel/src/app/admin/activity/AdminActivityClient.tsx` to use it.
+- [X] T028 [P] [US2] Create `adventure-travel/src/components/admin/AdminNav.tsx`, with tabs Activity, Bookings, Customers and Payments linking to `/admin/activity`, `/admin/bookings`, `/admin/customers` and `/admin/payments`. Render it inside `AdminGate`.
+- [X] T029 [P] [US2] Create `adventure-travel/src/app/admin/bookings/page.tsx` (server component: `metadata.robots = { index: false, follow: false }`) and `adventure-travel/src/app/admin/bookings/BookingsAdminClient.tsx`. The client has:
   - a search box and filters (type, status, payment state, date range, "overdue only")
   - a table: reference, customer, item, start date, group size, amount, paid, payment state, an overdue badge and status
   - a status `<select>` calling `updateBookingStatus`
   - a "Record refund" action with a confirm step
   - a drawer listing `getBookingEvents`
-- [ ] T030 [P] [US2] Create `adventure-travel/src/app/admin/customers/page.tsx` and `adventure-travel/src/app/admin/customers/CustomersAdminClient.tsx`. A searchable customer list; selecting one shows the profile (including emergency contact), bookings and payments from `getCustomer`.
-- [ ] T031 [P] [US2] Create `adventure-travel/src/app/admin/payments/page.tsx` and `adventure-travel/src/app/admin/payments/PaymentsAdminClient.tsx`. A payments table (date, customer, booking, kind, amount, method, status) and a "Failed emails" panel from `listFailedNotifications`.
-- [ ] T032 [US2] Add `"ADMIN_STATUS_CHANGE"` and `"COURSE_BOOKING_CREATED"` to `ActivityAction` in `adventure-travel/src/lib/activity.ts`, and to the `ACTIONS` map in `adventure-travel/src/components/admin/ActivityFeed.tsx`. Labels are "Status change" (tone `slate`, describes "changed a booking from X to Y") and "Course booking" (tone `slate`).
+- [X] T030 [P] [US2] Create `adventure-travel/src/app/admin/customers/page.tsx` and `adventure-travel/src/app/admin/customers/CustomersAdminClient.tsx`. A searchable customer list; selecting one shows the profile (including emergency contact), bookings and payments from `getCustomer`.
+- [X] T031 [P] [US2] Create `adventure-travel/src/app/admin/payments/page.tsx` and `adventure-travel/src/app/admin/payments/PaymentsAdminClient.tsx`. A payments table (date, customer, booking, kind, amount, method, status) and a "Failed emails" panel from `listFailedNotifications`.
+- [X] T032 [US2] Add `"ADMIN_STATUS_CHANGE"` and `"COURSE_BOOKING_CREATED"` to `ActivityAction` in `adventure-travel/src/lib/activity.ts`, and to the `ACTIONS` map in `adventure-travel/src/components/admin/ActivityFeed.tsx`. Labels are "Status change" (tone `slate`, describes "changed a booking from X to Y") and "Course booking" (tone `slate`).
 - [ ] T033 [US2] Run quickstart **V12, V13 and V16** and record the results in `specs/001-persistent-backend/quickstart.md`.
 
 **Checkpoint**: The business can act on every stored booking.
@@ -212,7 +212,7 @@ Additive and idempotent: use `if not exists`, `drop â€¦ if exists`, and `do $$ â
 
 **Independent Test**: quickstart **V6, V7, V8, V9, V10, V17**.
 
-- [ ] T034 [US3] Rewrite `adventure-travel/api/create-order.js` to the contract in `specs/001-persistent-backend/contracts/http-api.md`. The body is `{ bookingType: "trek"|"course", bookingId, kind: "advance"|"balance"|"full" }`.
+- [X] T034 [US3] Rewrite `adventure-travel/api/create-order.js` to the contract in `specs/001-persistent-backend/contracts/http-api.md`. The body is `{ bookingType: "trek"|"course", bookingId, kind: "advance"|"balance"|"full" }`.
   - Load the booking with the service role and require ownership. Keep the existing verified-email claim for signed-out course bookings.
   - Return **409** if the booking is `cancelled`, or `payment_state` is `fully_paid` or `refunded`. Return **422** if `quote_required`.
   - Compute the order amount from the booking's **stored** `amount` (never the catalog):
@@ -222,14 +222,14 @@ Additive and idempotent: use `if not exists`, `drop â€¦ if exists`, and `do $$ â
   - Reuse an unpaid `payments` row with the same booking, `kind` and amount. Otherwise create the Razorpay order and insert `payments` with `kind`.
   - Log `PAYMENT_INITIATED`.
   - Respond with `summary: { total, paid, dueAfterThis, balanceDueDate }`.
-- [ ] T035 [US3] Update `adventure-travel/api/verify-payment.js` to call `payments.applyPayment(db, { orderId, paymentId })`, passing `amount` from the stored payments row. Respond `{ status: "paid", paymentState, bookingStatus }`. Treat `already` as success, and `unknown_order`/`amount_mismatch` as 409.
-- [ ] T036 [US3] Update `adventure-travel/api/razorpay-webhook.js`. For `payment.captured`/`order.paid`, call `payments.applyPayment(db, { orderId: payment.order_id, paymentId: payment.id, amount: payment.amount, method: payment.method })`. Keep `markFailed` for `payment.failed`, and keep the raw-body signature check unchanged.
-- [ ] T037 [P] [US3] Create `adventure-travel/src/components/PaymentChoice.tsx`. Props `{ total: number; advance: number; advanceAllowed: boolean; balanceDueDate: string | null; value: "advance"|"full"; onChange }`. Two radio cards:
+- [X] T035 [US3] Update `adventure-travel/api/verify-payment.js` to call `payments.applyPayment(db, { orderId, paymentId })`, passing `amount` from the stored payments row. Respond `{ status: "paid", paymentState, bookingStatus }`. Treat `already` as success, and `unknown_order`/`amount_mismatch` as 409.
+- [X] T036 [US3] Update `adventure-travel/api/razorpay-webhook.js`. For `payment.captured`/`order.paid`, call `payments.applyPayment(db, { orderId: payment.order_id, paymentId: payment.id, amount: payment.amount, method: payment.method })`. Keep `markFailed` for `payment.failed`, and keep the raw-body signature check unchanged.
+- [X] T037 [P] [US3] Create `adventure-travel/src/components/PaymentChoice.tsx`. Props `{ total: number; advance: number; advanceAllowed: boolean; balanceDueDate: string | null; value: "advance"|"full"; onChange }`. Two radio cards:
   - "Pay 30% advance": Rs.X now, Rs.Y due by <date>, with "The advance is non-refundable" and a link to `/cancellation-policy`.
   - "Pay in full": Rs.total.
   
   When `!advanceAllowed`, disable the advance card with the text "Your trek starts within 15 days, so full payment is needed." Use `formatPaise` from `adventure-travel/src/lib/utils.ts`. Always show INR.
-- [ ] T038 [US3] Update `adventure-travel/src/app/checkout/CheckoutClient.tsx`:
+- [X] T038 [US3] Update `adventure-travel/src/app/checkout/CheckoutClient.tsx`:
   - Read `amount`, `amount_paid`, `payment_state`, `quote_required` and the start date from the booking row.
   - When `unpaid`, render `<PaymentChoice>`. When `advance_paid`, show "Pay balance Rs.Y (due <date>)".
   - Honour the `?kind=balance` query param (from reminder emails).
@@ -237,11 +237,11 @@ Additive and idempotent: use `if not exists`, `drop â€¦ if exists`, and `do $$ â
   - Poll `payment_state` (not just `payments.status`) while confirming.
   - Success copy distinguishes "Advance received, balance Rs.Y due <date>" from "Paid in full".
   - Keep the INR notice and `Price` behaviour.
-- [ ] T039 [US3] Update `adventure-travel/src/app/dashboard/page.tsx`. For each trek and course booking, show Total, Paid, Balance + due date, and an "Overdue" tag (derived in IST).
+- [X] T039 [US3] Update `adventure-travel/src/app/dashboard/page.tsx`. For each trek and course booking, show Total, Paid, Balance + due date, and an "Overdue" tag (derived in IST).
   - Buttons: "Pay now" (`unpaid` and not `quote_required`, links to `/checkout?booking=<id>` or `?course=<id>`) and "Pay balance" (`advance_paid`, appends `&kind=balance`).
   - "Quote requested" text when `quote_required`.
   - Add a `kind` column to the payments list.
-- [ ] T040 [US3] In `adventure-travel/src/lib/auth.ts`, add `kind: "advance"|"balance"|"full"` to `PaymentRecord` and select `kind` in `getPayments`.
+- [X] T040 [US3] In `adventure-travel/src/lib/auth.ts`, add `kind: "advance"|"balance"|"full"` to `PaymentRecord` and select `kind` in `getPayments`.
 - [ ] T041 [US3] Run quickstart **V6â€“V10 and V17** in Razorpay **test mode**, and record the results in `specs/001-persistent-backend/quickstart.md`.
 
 **Checkpoint**: Advance/full/balance payments work, and the webhook and browser can't double-apply.
@@ -254,7 +254,7 @@ Additive and idempotent: use `if not exists`, `drop â€¦ if exists`, and `do $$ â
 
 **Independent Test**: quickstart **V14, V15**.
 
-- [ ] T042 [US4] Create `adventure-travel/api/cron.js` implementing `GET /api/cron` per `specs/001-persistent-backend/contracts/http-api.md`:
+- [X] T042 [US4] Create `adventure-travel/api/cron.js` implementing `GET /api/cron` per `specs/001-persistent-backend/contracts/http-api.md`:
   - Require `req.headers.authorization === "Bearer " + process.env.CRON_SECRET` (401 otherwise, including when `CRON_SECRET` is unset).
   - Using `pricing.istDate()`:
     1. Queue `balance_reminder_7d` for `advance_paid` bookings with `balance_due_date = today + 7`.
@@ -262,7 +262,7 @@ Additive and idempotent: use `if not exists`, `drop â€¦ if exists`, and `do $$ â
     3. Retry `notifications` with `status = 'failed' and attempts < 3` via `notify.sendOne`.
     4. Count overdue bookings.
   - Respond `{ reminders, retried, overdue }`.
-- [ ] T043 [US4] Confirm the immediate-send paths: `adventure-travel/api/bookings.js` (T019) and `adventure-travel/api/_lib/payments.js` (T014) must call `notify.enqueueAndSend` **after** the database write commits, and must never return an error to the customer because of email. Add a code comment at each call site citing FR-032.
+- [X] T043 [US4] Confirm the immediate-send paths: `adventure-travel/api/bookings.js` (T019) and `adventure-travel/api/_lib/payments.js` (T014) must call `notify.enqueueAndSend` **after** the database write commits, and must never return an error to the customer because of email. Add a code comment at each call site citing FR-032.
 - [ ] T044 [US4] Configure Supabase Auth for production email, following quickstart Â§2.2. In `specs/001-persistent-backend/quickstart.md` "Results", record that custom SMTP is set, Confirm email is on, and the redirect URLs include `/dashboard` and `/reset-password`. This is a manual dashboard step with no code.
 - [ ] T045 [US4] Run quickstart **V14 and V15** (call the cron with `curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron` under `npx vercel dev`), and record the results in `specs/001-persistent-backend/quickstart.md`.
 
@@ -276,24 +276,24 @@ Additive and idempotent: use `if not exists`, `drop â€¦ if exists`, and `do $$ â
 
 **Independent Test**: quickstart **V20, V21**, plus editing the profile on browser A and seeing it on browser B.
 
-- [ ] T046 [US5] In `adventure-travel/src/app/dashboard/page.tsx`:
+- [X] T046 [US5] In `adventure-travel/src/app/dashboard/page.tsx`:
   - Show "Cancel" only for bookings with `status === "pending"` and `payment_state === "unpaid"` (trek **and** course).
   - Add `cancelCourseBooking(id)` beside `cancelTrekBooking` in `adventure-travel/src/lib/auth.ts`.
   - For confirmed or paid bookings, show "Need to cancel? See our cancellation policy" linking to `/cancellation-policy` and WhatsApp.
-- [ ] T047 [P] [US5] Show a dismissible banner in `adventure-travel/src/app/dashboard/page.tsx` when the profile has no `emergency_contact_name` and the customer has a confirmed booking starting in the next 30 days: "Add an emergency contact before your trek". It opens the existing profile editor.
-- [ ] T048 [P] [US5] Add a "Forgot password?" link to `adventure-travel/src/app/login/page.tsx`. It calls a new `requestPasswordReset(email)` in `adventure-travel/src/lib/auth.ts` (`supabase.auth.resetPasswordForEmail(email, { redirectTo: origin + "/reset-password" })`) and always shows "If that email has an account, a reset link is on its way."
-- [ ] T049 [P] [US5] Create `adventure-travel/src/app/reset-password/page.tsx` (`"use client"`, matching the dark style of `/login`):
+- [X] T047 [P] [US5] Show a dismissible banner in `adventure-travel/src/app/dashboard/page.tsx` when the profile has no `emergency_contact_name` and the customer has a confirmed booking starting in the next 30 days: "Add an emergency contact before your trek". It opens the existing profile editor.
+- [X] T048 [P] [US5] Add a "Forgot password?" link to `adventure-travel/src/app/login/page.tsx`. It calls a new `requestPasswordReset(email)` in `adventure-travel/src/lib/auth.ts` (`supabase.auth.resetPasswordForEmail(email, { redirectTo: origin + "/reset-password" })`) and always shows "If that email has an account, a reset link is on its way."
+- [X] T049 [P] [US5] Create `adventure-travel/src/app/reset-password/page.tsx` (`"use client"`, matching the dark style of `/login`):
   - Wait for the Supabase recovery session (`onAuthStateChange` event `PASSWORD_RECOVERY`, or an existing session).
   - Show new-password and confirm fields (at least 8 characters, must match).
   - Call a new `updatePassword(pw)` in `adventure-travel/src/lib/auth.ts` (`supabase.auth.updateUser({ password })`), then redirect to `/dashboard`.
   - Add `/reset-password` to the `disallow` list in `adventure-travel/src/app/robots.ts`.
-- [ ] T050 [US5] Create `adventure-travel/api/account.js` handling `POST { action }` per `specs/001-persistent-backend/contracts/http-api.md`. Implement `delete` now (requires `confirm: "DELETE"`), with the service role:
+- [X] T050 [US5] Create `adventure-travel/api/account.js` handling `POST { action }` per `specs/001-persistent-backend/contracts/http-api.md`. Implement `delete` now (requires `confirm: "DELETE"`), with the service role:
   1. Set the profile's `full_name = ''`, `phone = ''`, `city = ''`, emergency contact fields to `''`, `email = null` and `deleted_at = now()`.
   2. Set `contact_name = 'Deleted user'`, `contact_email = ''` and `contact_phone = ''` on their course bookings.
   3. `db.auth.admin.deleteUser(user.id)`. The FKs from T006 keep the bookings and payments with `user_id = null`.
   
   Respond `{ deleted: true }`. Return 400 for an unknown action.
-- [ ] T051 [US5] Add a "Delete my account" section at the bottom of `adventure-travel/src/app/dashboard/page.tsx`. It explains that payment records are kept for legal reasons, requires typing `DELETE`, calls `deleteAccount()` (new in `adventure-travel/src/lib/auth.ts`, which POSTs `/api/account { action: "delete", confirm: "DELETE" }`), then signs out and redirects to `/`.
+- [X] T051 [US5] Add a "Delete my account" section at the bottom of `adventure-travel/src/app/dashboard/page.tsx`. It explains that payment records are kept for legal reasons, requires typing `DELETE`, calls `deleteAccount()` (new in `adventure-travel/src/lib/auth.ts`, which POSTs `/api/account { action: "delete", confirm: "DELETE" }`), then signs out and redirects to `/`.
 - [ ] T052 [US5] Run quickstart **V20 and V21** and record the results in `specs/001-persistent-backend/quickstart.md`.
 
 **Checkpoint**: Customers can manage themselves without contacting the business.
@@ -306,8 +306,8 @@ Additive and idempotent: use `if not exists`, `drop â€¦ if exists`, and `do $$ â
 
 **Independent Test**: quickstart **V11**.
 
-- [ ] T053 [US6] Add `action: "claim"` to `adventure-travel/api/account.js`. Move the logic from `adventure-travel/api/claim-bookings.js`: a verified email only (`user.email_confirmed_at`), with `.eq("contact_email", user.email.toLowerCase()).is("user_id", null)`, never `ilike`. Respond `{ claimed }`.
-- [ ] T054 [US6] Delete `adventure-travel/api/claim-bookings.js`. Change both callers, `adventure-travel/src/app/dashboard/page.tsx` and `adventure-travel/src/app/checkout/CheckoutClient.tsx`, to `POST /api/account` with body `{ "action": "claim" }`.
+- [X] T053 [US6] Add `action: "claim"` to `adventure-travel/api/account.js`. Move the logic from `adventure-travel/api/claim-bookings.js`: a verified email only (`user.email_confirmed_at`), with `.eq("contact_email", user.email.toLowerCase()).is("user_id", null)`, never `ilike`. Respond `{ claimed }`.
+- [X] T054 [US6] Delete `adventure-travel/api/claim-bookings.js`. Change both callers, `adventure-travel/src/app/dashboard/page.tsx` and `adventure-travel/src/app/checkout/CheckoutClient.tsx`, to `POST /api/account` with body `{ "action": "claim" }`.
 - [ ] T055 [US6] Run quickstart **V11** and record the result in `specs/001-persistent-backend/quickstart.md`.
 
 **Checkpoint**: No orphaned course bookings.
@@ -320,7 +320,7 @@ Additive and idempotent: use `if not exists`, `drop â€¦ if exists`, and `do $$ â
 
 **Independent Test**: quickstart **V19**.
 
-- [ ] T056 [US7] Create `adventure-travel/src/components/LegacyDataNotice.tsx` (`"use client"`).
+- [X] T056 [US7] Create `adventure-travel/src/components/LegacyDataNotice.tsx` (`"use client"`).
   - On mount, inside a `try`/`catch`, check `localStorage` for any of `eht_users`, `eht_session`, `eht_bookings`, `eht_trek_bookings` or `eht_activity_bookings` (`eht_bookings` came from the deleted `src/lib/auth-store.ts`).
   - If one is present, **remove all five keys immediately** (FR-051) and show a dismissible modal: "We've upgraded accounts. Please sign up again to keep your bookings safe across devices. Booked with us before? Message us on WhatsApp and we'll sort it out." Buttons: "Sign up" (`/signup`), "WhatsApp" (`https://wa.me/917817912062`) and "Close".
   - Respect reduced motion.
@@ -333,15 +333,15 @@ Additive and idempotent: use `if not exists`, `drop â€¦ if exists`, and `do $$ â
 
 ## Phase 10: Polish & Cross-Cutting Concerns
 
-- [ ] T058 [P] Align the payment-terms copy with FR-020 in `adventure-travel/src/app/treks/[id]/TrekDetailClient.tsx`, `adventure-travel/src/components/TermsConditions.tsx` and `adventure-travel/src/app/cancellation-policy/CancellationPolicyPageClient.tsx`, so the site no longer contradicts itself:
+- [X] T058 [P] Align the payment-terms copy with FR-020 in `adventure-travel/src/app/treks/[id]/TrekDetailClient.tsx`, `adventure-travel/src/components/TermsConditions.tsx` and `adventure-travel/src/app/cancellation-policy/CancellationPolicyPageClient.tsx`, so the site no longer contradicts itself:
   - In `adventure-travel/src/app/treks/[id]/TrekDetailClient.tsx`, change "Book by paying only 30% advance" to "Pay 30% advance or in full".
   - In the Payments tab of `adventure-travel/src/components/TermsConditions.tsx`, replace "Full amount to be paid to confirm booking" with "Pay a 30% advance (non-refundable) or the full amount online. The balance is due 15 days before departure."
   - Check `adventure-travel/src/app/cancellation-policy/CancellationPolicyPageClient.tsx` for the same terms.
-- [ ] T059 [P] Update `adventure-travel/.env.example` and `CLAUDE.md` (repo root):
+- [X] T059 [P] Update `adventure-travel/.env.example` and `CLAUDE.md` (repo root):
   - Document that `api/bookings`, `api/account` and `api/cron` replaced `course-bookings` and `claim-bookings`.
   - List the five SQL files in run order.
   - Note that `npm test` now exists (Vitest, `api/_lib` only).
-- [ ] T060 Run `npm run catalog`, `npx tsc --noEmit`, `npm run lint` and `npm test` in `adventure-travel/`. Then, **only after confirming that no dev server is running on :3000**, run `npm run build`. Fix any failures.
+- [X] T060 Run `npm run catalog`, `npx tsc --noEmit`, `npm run lint` and `npm test` in `adventure-travel/`. Then, **only after confirming that no dev server is running on :3000**, run `npm run build`. Fix any failures.
 - [ ] T061 Run the full quickstart **V1â€“V22** end to end on a Vercel preview deployment connected to the dev Supabase project and Razorpay test mode, and record every result in `specs/001-persistent-backend/quickstart.md`.
 - [ ] T062 Walk through the go-live checklist in `specs/001-persistent-backend/quickstart.md` Â§5 with the business owner: live keys, production migrations, env vars, international payments decision, and a â‚¹1 live test plus refund.
 

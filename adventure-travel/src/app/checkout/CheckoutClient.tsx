@@ -8,16 +8,18 @@ import { ArrowLeft, CalendarDays, Loader2, Lock, Smartphone, Users } from "lucid
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
-import type { TrekBooking, CourseBooking } from "@/lib/auth";
+import { claimBookings, type BookingStatus, type PaymentKind, type PaymentState } from "@/lib/auth";
 import { treks, pricePerPerson } from "@/data/treks";
 import { courses } from "@/data/courses";
 import { formatPaise } from "@/lib/utils";
+import { advanceAmount, balanceDueDate, isAdvanceAllowed } from "@/lib/paymentRules";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeScope } from "@/components/ui/theme-scope";
 import { PaymentStatus, type PaymentPhase } from "@/components/checkout/PaymentStatus";
 import { TrustSection } from "@/components/checkout/TrustSection";
+import { PaymentChoice, type PaymentChoiceValue } from "@/components/PaymentChoice";
 
 /* ─── Razorpay Checkout (loaded from their CDN, see loadRazorpay) ─── */
 interface RazorpaySuccess {
@@ -56,6 +58,8 @@ function loadRazorpay(): Promise<void> {
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const longDate = (iso: string) =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 
 type Phase =
   | "loading"
@@ -63,10 +67,71 @@ type Phase =
   | "creating"
   | "awaiting" // Razorpay window is open
   | PaymentPhase
+  | "closed" // cancelled or refunded: nothing to pay
   | "unavailable"
   | "notfound";
 
 const WHATSAPP = "https://wa.me/917817912062";
+
+/** One shape for trek and course bookings. Amounts are paise. */
+interface Payable {
+  type: "trek" | "course";
+  id: string;
+  title: string;
+  startDate: string;
+  persons: number | null;
+  image?: string;
+  /** Locked when booked. Null = a quote is needed. */
+  total: number | null;
+  amountPaid: number;
+  paymentState: PaymentState;
+  status: BookingStatus;
+  balanceDueDate: string | null;
+}
+
+function toPayable(type: "trek" | "course", row: Record<string, unknown>): Payable {
+  const base = {
+    type,
+    id: row.id as string,
+    amountPaid: Number(row.amount_paid ?? 0),
+    paymentState: ((row.payment_state as PaymentState | undefined) ?? "unpaid") as PaymentState,
+    status: row.status as BookingStatus,
+    balanceDueDate: (row.balance_due_date as string | null | undefined) ?? null,
+  };
+  if (type === "course") {
+    const course = courses.find((c) => c.slug === row.course_slug);
+    return {
+      ...base,
+      title: `${row.course_name}${row.package_name ? ` · ${row.package_name}` : ""}`,
+      startDate: row.preferred_date as string,
+      persons: Number(row.group_size),
+      image: course?.image,
+      total: (row.amount as number | null) ?? null,
+    };
+  }
+  const trek = treks.find((t) => t.slug === row.trek_slug);
+  const groupSize = String(row.group_size ?? "").trim();
+  const persons = /^\d+$/.test(groupSize) ? Number(groupSize) : null;
+  // Bookings made before prices were locked at booking time have no amount yet; the server
+  // prices them from the catalog on the first payment, so show the same estimate here.
+  const unit = trek ? pricePerPerson(trek, row.room_sharing as string | null | undefined) : undefined;
+  const legacy = row.amount == null && !row.quote_required && unit && persons && persons <= 10 ? unit * persons * 100 : null;
+  return {
+    ...base,
+    title: `${row.trek_name}${row.room_sharing ? ` · ${row.room_sharing}` : ""}`,
+    startDate: row.trek_date as string,
+    persons,
+    image: trek?.image,
+    total: (row.amount as number | null) ?? legacy,
+  };
+}
+
+/** Where the booking stands after a payment, read from the booking row itself. */
+function describePaid(p: Payable) {
+  return p.paymentState === "advance_paid" && p.total !== null
+    ? `Advance received. The balance of ${formatPaise(p.total - p.amountPaid)} is due by ${longDate(p.balanceDueDate ?? balanceDueDate(p.startDate))}.`
+    : "Paid in full. See you in the mountains!";
+}
 
 export default function CheckoutClient() {
   const router = useRouter();
@@ -75,48 +140,29 @@ export default function CheckoutClient() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("booking"); // trek booking
   const courseId = searchParams.get("course"); // course booking
+  const kindParam = searchParams.get("kind"); // "balance" from reminder emails, or a preselected choice
   const { user, loading: authLoading } = useAuth();
 
-  const [booking, setBooking] = useState<TrekBooking | null>(null);
-  const [courseBooking, setCourseBooking] = useState<CourseBooking | null>(null);
+  const [payable, setPayable] = useState<Payable | null>(null);
   const [phase, setPhase] = useState<Phase>("loading");
+  const [choice, setChoice] = useState<PaymentChoiceValue>("full");
   const [error, setError] = useState<string | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
-  const [alreadyPaid, setAlreadyPaid] = useState(false);
+  const [successDetail, setSuccessDetail] = useState<string | null>(null);
 
-  const trek = useMemo(() => treks.find((t) => t.slug === booking?.trek_slug), [booking]);
-  const persons = booking && /^\d+$/.test(booking.group_size.trim()) ? Number(booking.group_size) : null;
-  const unitInr = trek ? pricePerPerson(trek, booking?.room_sharing) : undefined;
-  // Display only — the server recomputes the amount from the same catalog and ignores the browser.
-  const totalPaise = unitInr && persons && persons >= 1 && persons <= 10 ? unitInr * persons * 100 : null;
-
-  // One shape for the summary card, whichever kind of booking this is.
-  const course = useMemo(() => courses.find((c) => c.slug === courseBooking?.course_slug), [courseBooking]);
-  const summary = courseBooking
-    ? {
-        title: courseBooking.course_name + (courseBooking.package_name ? ` · ${courseBooking.package_name}` : ""),
-        dateISO: courseBooking.preferred_date,
-        persons: courseBooking.group_size,
-        image: course?.image,
-        totalPaise: courseBooking.amount,
-        unitPaise: courseBooking.amount ? courseBooking.amount / courseBooking.group_size : null,
-      }
-    : booking
-      ? {
-          title: booking.trek_name + (booking.room_sharing ? ` · ${booking.room_sharing}` : ""),
-          dateISO: booking.trek_date,
-          persons,
-          image: trek?.image,
-          totalPaise,
-          unitPaise: unitInr ? unitInr * 100 : null,
-        }
-      : null;
+  const loadPayable = useCallback(async (): Promise<Payable | null> => {
+    const supabase = createClient();
+    if (!supabase) return null;
+    const table = courseId ? "course_bookings" : "trek_bookings";
+    const { data } = await supabase.from(table).select("*").eq("id", courseId ?? bookingId).maybeSingle();
+    return data ? toPayable(courseId ? "course" : "trek", data) : null;
+  }, [bookingId, courseId]);
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/login");
   }, [authLoading, user, router]);
 
-  // Load the booking (RLS guarantees it's the signed-in user's) and any prior payment.
+  // Load the booking (RLS guarantees it's the signed-in user's).
   useEffect(() => {
     if (authLoading || !user) return;
     const supabase = createClient();
@@ -131,54 +177,23 @@ export default function CheckoutClient() {
     }
     let cancelled = false;
     (async () => {
-      if (courseId) {
-        // A course booked while logged out becomes ours once the verified email matches.
-        const { data: sessionData } = await supabase.auth.getSession();
-        const token = sessionData.session?.access_token;
-        if (token) {
-          await fetch("/api/claim-bookings", { method: "POST", headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
-        }
-        const { data: courseRow } = await supabase.from("course_bookings").select("*").eq("id", courseId).maybeSingle();
-        if (cancelled) return;
-        if (!courseRow) {
-          setPhase("notfound");
-          return;
-        }
-        const { data: coursePaid } = await supabase
-          .from("payments")
-          .select("id")
-          .eq("course_booking_id", courseId)
-          .eq("status", "paid")
-          .limit(1);
-        if (cancelled) return;
-        setCourseBooking(courseRow as CourseBooking);
-        if (coursePaid && coursePaid.length > 0) {
-          setAlreadyPaid(true);
-          setPhase("success");
-        } else {
-          setPhase("ready");
-          void loadRazorpay().catch(() => {});
-        }
-        return;
-      }
-      const { data: row } = await supabase.from("trek_bookings").select("*").eq("id", bookingId).maybeSingle();
+      // A course booked while signed out becomes ours once the verified email matches.
+      if (courseId) await claimBookings().catch(() => {});
+      const p = await loadPayable();
       if (cancelled) return;
-      if (!row) {
+      if (!p) {
         setPhase("notfound");
         return;
       }
-      const { data: paid } = await supabase
-        .from("payments")
-        .select("id")
-        .eq("booking_id", bookingId)
-        .eq("status", "paid")
-        .limit(1);
-      if (cancelled) return;
-      setBooking(row as TrekBooking);
-      if (paid && paid.length > 0) {
-        setAlreadyPaid(true);
+      setPayable(p);
+      if (p.paymentState === "fully_paid") {
+        setSuccessDetail("This booking is paid in full. See you in the mountains!");
         setPhase("success");
+      } else if (p.status === "cancelled" || p.paymentState === "refunded") {
+        setPhase("closed");
       } else {
+        const advanceOk = p.total !== null && isAdvanceAllowed(p.startDate, p.amountPaid);
+        setChoice(kindParam === "full" || !advanceOk ? "full" : "advance");
         setPhase("ready");
         void loadRazorpay().catch(() => {}); // warm up so the first click is instant
       }
@@ -186,7 +201,17 @@ export default function CheckoutClient() {
     return () => {
       cancelled = true;
     };
-  }, [authLoading, user, bookingId, courseId]);
+  }, [authLoading, user, bookingId, courseId, kindParam, loadPayable]);
+
+  // What this payment is, and how much it charges now.
+  const plan = useMemo(() => {
+    if (!payable || payable.total === null) return null;
+    const total = payable.total;
+    const advanceAllowed = isAdvanceAllowed(payable.startDate, payable.amountPaid);
+    const kind: PaymentKind = payable.paymentState === "advance_paid" ? "balance" : choice === "advance" && advanceAllowed ? "advance" : "full";
+    const now = kind === "advance" ? advanceAmount(total) : total - payable.amountPaid;
+    return { total, kind, now, advanceAllowed, advance: advanceAmount(total), dueDate: balanceDueDate(payable.startDate) };
+  }, [payable, choice]);
 
   const accessToken = async () => {
     const supabase = createClient();
@@ -194,50 +219,54 @@ export default function CheckoutClient() {
     return data.session?.access_token ?? "";
   };
 
-  const pollForPaid = async (orderId: string) => {
-    const supabase = createClient();
-    for (let i = 0; i < 6; i++) {
-      const { data } = await supabase!.from("payments").select("status").eq("razorpay_order_id", orderId).maybeSingle();
-      if (data?.status === "paid") return true;
-      await sleep(2500);
-    }
-    return false;
-  };
-
-  const confirmPayment = useCallback(async (resp: RazorpaySuccess) => {
-    setPhase("processing");
-    const startedAt = Date.now();
-    let confirmed = false;
-    try {
-      const res = await fetch("/api/verify-payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${await accessToken()}` },
-        body: JSON.stringify(resp),
-      });
-      confirmed = res.ok;
-    } catch {
-      /* network blip — the webhook may still confirm it; fall through to polling */
-    }
-    if (!confirmed) confirmed = await pollForPaid(resp.razorpay_order_id);
-    // Keep the spinner up long enough to read as a deliberate step, not a flicker.
-    await sleep(Math.max(0, 900 - (Date.now() - startedAt)));
-    setPhase(confirmed ? "success" : "pending");
-  }, []);
+  const confirmPayment = useCallback(
+    async (resp: RazorpaySuccess, paidBefore: number) => {
+      setPhase("processing");
+      const startedAt = Date.now();
+      try {
+        await fetch("/api/verify-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${await accessToken()}` },
+          body: JSON.stringify(resp),
+        });
+      } catch {
+        /* network blip — the webhook still confirms it; we watch the booking below */
+      }
+      // The booking's payment state is the truth, whichever of verify-payment or the webhook applied it.
+      let latest: Payable | null = null;
+      for (let i = 0; i < 8; i++) {
+        latest = await loadPayable();
+        if (latest && latest.amountPaid > paidBefore) break;
+        await sleep(2500);
+      }
+      // Keep the spinner up long enough to read as a deliberate step, not a flicker.
+      await sleep(Math.max(0, 900 - (Date.now() - startedAt)));
+      if (latest && latest.amountPaid > paidBefore) {
+        setPayable(latest);
+        setSuccessDetail(describePaid(latest));
+        setPhase("success");
+      } else {
+        setPhase("pending");
+      }
+    },
+    [loadPayable]
+  );
 
   const startPayment = async () => {
-    if (!booking && !courseBooking) return;
+    if (!payable || !plan) return;
     setError(null);
     setPhase("creating");
     try {
       const res = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${await accessToken()}` },
-        body: JSON.stringify(courseBooking ? { courseBookingId: courseBooking.id } : { bookingId: booking!.id }),
+        body: JSON.stringify({ bookingType: payable.type, bookingId: payable.id, kind: plan.kind }),
       });
       const order = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(order.error || "We couldn't start the payment. Please try again.");
       await loadRazorpay();
 
+      const paidBefore = payable.amountPaid;
       const rzp = new window.Razorpay!({
         key: order.keyId,
         order_id: order.orderId,
@@ -257,7 +286,7 @@ export default function CheckoutClient() {
           },
         },
         modal: { ondismiss: () => setPhase((p) => (p === "awaiting" ? "ready" : p)) },
-        handler: (resp: RazorpaySuccess) => void confirmPayment(resp),
+        handler: (resp: RazorpaySuccess) => void confirmPayment(resp, paidBefore),
       });
       rzp.on("payment.failed", (r) => {
         setFailure(r.error?.description || r.error?.reason || null);
@@ -313,44 +342,38 @@ export default function CheckoutClient() {
                 </div>
               )}
 
-              {(phase === "unavailable" || phase === "notfound") && (
+              {(phase === "unavailable" || phase === "notfound" || phase === "closed") && (
                 <div className="space-y-4 py-4 text-center">
                   <p className="text-sm text-slate-600 dark:text-slate-300">
                     {phase === "unavailable"
                       ? "Online payments aren't available right now."
-                      : "We couldn't find that booking."}
+                      : phase === "notfound"
+                        ? "We couldn't find that booking."
+                        : payable?.paymentState === "refunded"
+                          ? "This booking was refunded, so there's nothing to pay."
+                          : "This booking was cancelled, so there's nothing to pay."}
                   </p>
                   <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: "outline" })}>
-                    Pay via WhatsApp instead
+                    {phase === "closed" ? "Questions? Message us on WhatsApp" : "Pay via WhatsApp instead"}
                   </a>
                 </div>
               )}
 
-              {summary && (
+              {payable && (
                 <div className="flex gap-4">
-                  {summary.image && (
+                  {payable.image && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={summary.image}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      className="h-20 w-20 shrink-0 rounded-xl object-cover"
-                    />
+                    <img src={payable.image} alt="" loading="lazy" decoding="async" className="h-20 w-20 shrink-0 rounded-xl object-cover" />
                   )}
                   <div className="min-w-0">
-                    <p className="truncate font-heading text-base font-bold">{summary.title}</p>
+                    <p className="truncate font-heading text-base font-bold">{payable.title}</p>
                     <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
                       <CalendarDays className="h-4 w-4 shrink-0" aria-hidden />
-                      {new Date(summary.dateISO).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
+                      {longDate(payable.startDate)}
                     </p>
                     <p className="mt-0.5 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
                       <Users className="h-4 w-4 shrink-0" aria-hidden />
-                      {summary.persons ?? "—"} {summary.persons === 1 ? "person" : "persons"}
+                      {payable.persons ?? "—"} {payable.persons === 1 ? "person" : "persons"}
                     </p>
                   </div>
                 </div>
@@ -366,13 +389,7 @@ export default function CheckoutClient() {
                   >
                     <PaymentStatus
                       phase={phase as PaymentPhase}
-                      detail={
-                        phase === "success" && alreadyPaid
-                          ? "This booking has already been paid. See you in the mountains!"
-                          : phase === "failed"
-                            ? failure
-                            : undefined
-                      }
+                      detail={phase === "success" ? successDetail : phase === "failed" ? failure : undefined}
                       onRetry={() => {
                         setFailure(null);
                         setPhase("ready");
@@ -390,7 +407,8 @@ export default function CheckoutClient() {
                     )}
                   </motion.div>
                 ) : (
-                  (phase === "ready" || busy) && (
+                  (phase === "ready" || busy) &&
+                  payable && (
                     <motion.div
                       key="pay"
                       initial={reduceMotion ? false : { opacity: 0 }}
@@ -398,20 +416,46 @@ export default function CheckoutClient() {
                       exit={reduceMotion ? undefined : { opacity: 0 }}
                       className="space-y-6"
                     >
-                      {summary?.totalPaise ? (
+                      {plan ? (
                         <>
                           <dl className="space-y-2 rounded-xl bg-slate-100/70 p-4 text-sm dark:bg-white/5">
-                            <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                              <dt>
-                                {formatPaise(summary.unitPaise ?? 0)} × {summary.persons} {summary.persons === 1 ? "person" : "persons"}
-                              </dt>
-                              <dd>{formatPaise(summary.totalPaise)}</dd>
-                            </div>
+                            {payable.persons ? (
+                              <div className="flex justify-between text-slate-600 dark:text-slate-300">
+                                <dt>
+                                  {formatPaise(plan.total / payable.persons)} × {payable.persons} {payable.persons === 1 ? "person" : "persons"}
+                                </dt>
+                                <dd>{formatPaise(plan.total)}</dd>
+                              </div>
+                            ) : null}
+                            {payable.amountPaid > 0 && (
+                              <div className="flex justify-between text-slate-600 dark:text-slate-300">
+                                <dt>Advance paid</dt>
+                                <dd>− {formatPaise(payable.amountPaid)}</dd>
+                              </div>
+                            )}
                             <div className="flex justify-between border-t border-slate-200 pt-2 text-base font-bold dark:border-white/10">
-                              <dt>Total</dt>
-                              <dd>{formatPaise(summary.totalPaise)}</dd>
+                              <dt>{plan.kind === "balance" ? "Balance to pay" : "Total"}</dt>
+                              <dd>{formatPaise(plan.total - payable.amountPaid)}</dd>
                             </div>
                           </dl>
+
+                          {plan.kind === "balance" ? (
+                            <p className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-100">
+                              Pay the balance of {formatPaise(plan.now)}
+                              {payable.balanceDueDate ? ` by ${longDate(payable.balanceDueDate)}` : ""} to complete your booking.
+                            </p>
+                          ) : (
+                            <PaymentChoice
+                              total={plan.total}
+                              advance={plan.advance}
+                              advanceAllowed={plan.advanceAllowed}
+                              balanceDueDate={plan.dueDate}
+                              value={plan.kind === "advance" ? "advance" : "full"}
+                              onChange={setChoice}
+                              noun={payable.type}
+                            />
+                          )}
+
                           {converted && (
                             <p className="text-xs leading-snug text-slate-500 dark:text-slate-400">
                               The rest of the site shows estimates in {displayCurrency}. This is the exact amount you&apos;re
@@ -436,7 +480,7 @@ export default function CheckoutClient() {
                             ) : (
                               <>
                                 <Smartphone className="h-5 w-5" aria-hidden />
-                                Pay {formatPaise(summary.totalPaise)} with UPI
+                                Pay {formatPaise(plan.now)} with UPI
                               </>
                             )}
                           </Button>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { resendSignupConfirmation, signIn } from "@/lib/auth";
+import { BackendUnavailableError, requestPasswordReset, resendSignupConfirmation, signIn } from "@/lib/auth";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 export default function LoginPage() {
@@ -16,8 +16,30 @@ export default function LoginPage() {
   const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
   const [resending, setResending] = useState(false);
+  const [resetMessage, setResetMessage] = useState("");
+  const [sendingReset, setSendingReset] = useState(false);
 
   if (user) { router.push("/dashboard"); return null; }
+
+  // Same answer whether or not the email has an account, so the form can't be used to
+  // find out who is registered.
+  const sendReset = async () => {
+    setError("");
+    setResetMessage("");
+    if (!form.email.trim()) { setError("Enter your email above, then tap “Forgot password?”."); return; }
+    setSendingReset(true);
+    try {
+      await requestPasswordReset(form.email);
+    } catch (err) {
+      if (err instanceof BackendUnavailableError) {
+        setError(err.message);
+        setSendingReset(false);
+        return;
+      }
+    }
+    setResetMessage("If that email has an account, a reset link is on its way.");
+    setSendingReset(false);
+  };
 
   const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
@@ -54,10 +76,16 @@ export default function LoginPage() {
               className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none placeholder:text-white/30" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1.5">Password</label>
-            <input type="password" autoComplete="current-password" value={form.password} onChange={(e) => { setForm({ ...form, password: e.target.value }); setError(""); }}
+            <div className="flex items-baseline justify-between mb-1.5">
+              <label htmlFor="login-password" className="block text-sm font-medium text-white/80">Password</label>
+              <button type="button" onClick={() => void sendReset()} disabled={sendingReset} className="text-xs font-semibold text-emerald-400 hover:underline disabled:opacity-60">
+                {sendingReset ? "Sending…" : "Forgot password?"}
+              </button>
+            </div>
+            <input id="login-password" type="password" autoComplete="current-password" value={form.password} onChange={(e) => { setForm({ ...form, password: e.target.value }); setError(""); }}
               className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none placeholder:text-white/30" />
           </div>
+          {resetMessage && <p className="text-sm text-emerald-300 text-center" aria-live="polite">{resetMessage}</p>}
           {error && <p className="text-red-400 text-sm text-center">{error}</p>}
           {needsEmailConfirmation && (
             <div className="space-y-2 text-center">

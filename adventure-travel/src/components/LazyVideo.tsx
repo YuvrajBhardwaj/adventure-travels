@@ -16,6 +16,8 @@ export default function LazyVideo({
     const el = ref.current;
     if (!el || near) return;
     if (!("IntersectionObserver" in window)) {
+      // Very old browsers: no way to wait for the viewport, so load straight away.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNear(true);
       return;
     }

@@ -1,5 +1,5 @@
 const { getAdmin, clientIp } = require("./_lib/supabaseAdmin");
-const { hmacHex, safeEqual, markPaid, markFailed } = require("./_lib/payments");
+const { hmacHex, safeEqual, applyPayment, markFailed } = require("./_lib/payments");
 
 // Razorpay signs the exact bytes it sends, so we need the raw body. Read the stream
 // before anything touches req.body (Vercel parses it lazily on first access).
@@ -48,12 +48,13 @@ async function handler(req, res) {
 
   try {
     if ((event.event === "payment.captured" || event.event === "order.paid") && payment?.order_id) {
-      await markPaid(db, {
+      // Idempotent: a replayed event, or one the browser already reported, changes nothing.
+      // A captured amount that differs from the order is refused and logged by apply_payment.
+      await applyPayment(db, {
         orderId: payment.order_id,
         paymentId: payment.id,
         amount: payment.amount,
         method: payment.method,
-        ip,
       });
     } else if (event.event === "payment.failed" && payment?.order_id) {
       await markFailed(db, {

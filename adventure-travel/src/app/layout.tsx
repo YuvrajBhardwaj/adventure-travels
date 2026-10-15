@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { SITE_NAME, SITE_URL, SOCIAL_IMAGE, SOCIAL_PROFILES } from "@/lib/seo";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import WelcomeChooser from "@/components/WelcomeChooser";
+import LegacyDataNotice from "@/components/LegacyDataNotice";
 
 const poppins = Poppins({
   variable: "--font-heading",
@@ -165,6 +166,8 @@ export default function RootLayout({
         <AuthProvider>
           <CurrencyProvider>
             <Preloader />
+            {/* Before WelcomeChooser, so its check has run when the chooser decides whether to open. */}
+            <LegacyDataNotice />
             <WelcomeChooser />
             <Navbar />
             {children}

@@ -7,7 +7,9 @@ export type ActivityAction =
   | "PAYMENT_INITIATED"
   | "PAYMENT_SUCCESS"
   | "PAYMENT_FAILED"
-  | "SETTINGS_UPDATE";
+  | "SETTINGS_UPDATE"
+  | "COURSE_BOOKING_CREATED"
+  | "ADMIN_STATUS_CHANGE";
 
 /** The only events a browser may write (enforced by RLS). SIGNUP and PAYMENT_* are server-side. */
 export type ClientActivityAction = "LOGIN" | "BOOKING_CREATED" | "SETTINGS_UPDATE";
