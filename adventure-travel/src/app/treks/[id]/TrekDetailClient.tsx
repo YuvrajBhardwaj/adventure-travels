@@ -519,8 +519,8 @@ function BookingCard({
 }) {
   const oldPrice = Math.round((trek.price / 0.9) / 10) * 10;
   const discount = Math.round((1 - trek.price / oldPrice) * 100);
-  const rating = trek.rating ?? 4.8;
-  const reviews = trek.reviewCount ?? 692;
+  const rating = trek.rating;
+  const reviews = trek.reviewCount ?? 0;
   const shownDepartures = departures.flatMap((g) => g.departures).filter((d) => d.availability !== "sold").slice(0, 3);
   const [showIncludedInfo, setShowIncludedInfo] = useState<QuickInfoId | null>(null);
 
@@ -590,11 +590,15 @@ function BookingCard({
 
       {/* Trust + rating */}
       <div className="relative z-10 mt-4 space-y-2">
-        <p className="flex items-center gap-1.5 text-sm font-semibold text-emerald-700">
-          <span className="flex" aria-hidden>{[...Array(5)].map((_, i) => <span key={i}>{icon("star", "h-4 w-4 text-amber-400")}</span>)}</span>
-          <span>{rating}</span>
-          <span className="font-medium text-muted">· {reviews >= 1000 ? `${(reviews / 1000).toFixed(1)}k+` : `${reviews}+`} people rated this trek</span>
-        </p>
+        {rating != null && (
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-emerald-700">
+            <span className="flex" aria-hidden>{[...Array(5)].map((_, i) => <span key={i}>{icon("star", "h-4 w-4 text-amber-400")}</span>)}</span>
+            <span>{rating}</span>
+            {reviews > 0 && (
+              <span className="font-medium text-muted">· {reviews >= 1000 ? `${(reviews / 1000).toFixed(1)}k+` : `${reviews}+`} people rated this trek</span>
+            )}
+          </p>
+        )}
         <p className="text-xs text-muted">All-inclusive · No-cost EMI · Free Trek Date Change</p>
       </div>
 

@@ -645,6 +645,53 @@ export const treks: Trek[] = [
     image: "/assets/birgu-lake/22e5257b-854d-4722-9ad9-4f63715455e0.jpeg",
     groupSize: 12,
   },
+  {
+    id: 28,
+    name: "Tungnath Trek",
+    slug: "tungnath",
+    region: "Uttarakhand",
+    country: "India",
+    location: "Chopta, Uttarakhand, India",
+    difficulty: "Easy",
+    price: 5499,
+    currency: "Rs.",
+    blurb: "Walk up from the meadows of Chopta to Tungnath, the highest of the Panch Kedar temples, then on to the Chandrashila summit for a sunrise over Chaukhamba, Nanda Devi and the Kedarnath peaks.",
+    bestSeason: "Sep–Jun (snow Dec–Mar)",
+    days: 4,
+    maxAltitude: 4000,
+    elevationProfile: [2680, 4000, 2438, 640],
+    itinerary: [
+      { day: 1, title: "Dehradun → Chopta (Drive – 220 km, 8-9 hrs)", altitude: 2680, hours: 9, description: "Drive along the Ganga and Alaknanda through Devprayag, Rudraprayag and Ukhimath, then climb through oak and rhododendron forest to the camp at Chopta. Evening briefing and gear check.", meals: "Dinner" },
+      { day: 2, title: "Chopta → Tungnath → Chandrashila → Chopta (10 km, 6-7 hrs)", altitude: 4000, hours: 7, description: "A paved trail zig-zags up through meadows to the Tungnath temple. A steeper final stretch leads to the Chandrashila summit and a wide view of the Garhwal range. Return to Chopta by afternoon.", meals: "B/L/D", note: "The summit push starts early; in heavy snow the trek leader may turn the group at Tungnath for safety." },
+      { day: 3, title: "Chopta → Sari → Deoria Tal → Sari (Drive 25 km + 6 km hike, 4 hrs)", altitude: 2438, hours: 4, description: "Short drive to Sari village and an easy forest climb to Deoria Tal, a lake that mirrors the Chaukhamba massif on a still day. Overnight in Sari.", meals: "B/L/D" },
+      { day: 4, title: "Sari → Dehradun (Drive – 220 km, 8-9 hrs)", altitude: 640, hours: 9, description: "Breakfast in the village, then the drive back to Dehradun, reaching by evening.", meals: "Breakfast" },
+    ],
+    // ponytail: placeholder photo — replace with a real Tungnath / Chandrashila image in public/assets
+    image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=800&q=80",
+  },
+  {
+    id: 29,
+    name: "Madhyamaheshwar Trek",
+    slug: "madhyamaheshwar",
+    region: "Uttarakhand",
+    country: "India",
+    location: "Ransi, Uttarakhand, India",
+    difficulty: "Moderate",
+    price: 6999,
+    currency: "Rs.",
+    blurb: "One of the Panch Kedar shrines, Madhyamaheshwar sits in a high bowl of meadows above Ransi village. Three days of forest trail, a stone temple at 3,497 m and close-up views of the Chaukhamba massif.",
+    bestSeason: "May–Jun, Sep–Nov",
+    days: 3,
+    maxAltitude: 3497,
+    elevationProfile: [3497, 3497, 2200],
+    itinerary: [
+      { day: 1, title: "Ransi → Gaundar → Madhyamaheshwar (16 km, 7-8 hrs)", altitude: 3497, hours: 8, description: "Start early from Ransi and drop to the river at Gaundar before a long, steady climb through forest and terraced fields to the temple meadows. Overnight near the temple.", meals: "B/L/D", note: "Reach Ransi the evening before — it is about 200 km (8-9 hrs) from Rishikesh. Ask us if you want the drive arranged." },
+      { day: 2, title: "Madhyamaheshwar & Budha Madhyamaheshwar (4 km round trip, 3 hrs)", altitude: 3497, hours: 3, description: "Sunrise walk to the meadow of Budha Madhyamaheshwar above the temple for an open view of Chaukhamba, then an unhurried day at the temple and in the surrounding meadows.", meals: "B/L/D" },
+      { day: 3, title: "Madhyamaheshwar → Ransi (16 km, 6-7 hrs)", altitude: 2200, hours: 7, description: "Retrace the trail down through the forest to Ransi, where the trek ends.", meals: "B/L" },
+    ],
+    // ponytail: placeholder photo — replace with a real Madhyamaheshwar image in public/assets
+    image: "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800&q=80",
+  },
 ];
 
 export const processSteps = [

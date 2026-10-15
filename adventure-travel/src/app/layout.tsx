@@ -7,6 +7,7 @@ import FooterV2 from "@/components/FooterV2";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SITE_NAME, SITE_URL, SOCIAL_IMAGE, SOCIAL_PROFILES } from "@/lib/seo";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import WelcomeChooser from "@/components/WelcomeChooser";
 
 const poppins = Poppins({
   variable: "--font-heading",
@@ -164,6 +165,7 @@ export default function RootLayout({
         <AuthProvider>
           <CurrencyProvider>
             <Preloader />
+            <WelcomeChooser />
             <Navbar />
             {children}
             <FooterV2 />

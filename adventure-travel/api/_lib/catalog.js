@@ -76,5 +76,13 @@ module.exports = {
   "bhrigu-lake": {
     "name": "Bhrigu Lake Trek",
     "price": 5000
+  },
+  "tungnath": {
+    "name": "Tungnath Trek",
+    "price": 5499
+  },
+  "madhyamaheshwar": {
+    "name": "Madhyamaheshwar Trek",
+    "price": 6999
   }
 };
