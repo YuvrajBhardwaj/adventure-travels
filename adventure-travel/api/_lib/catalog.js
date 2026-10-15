@@ -79,7 +79,12 @@ module.exports = {
   },
   "tungnath": {
     "name": "Tungnath Trek",
-    "price": 5499
+    "price": 5499,
+    "roomSharing": {
+      "Quad sharing": 5499,
+      "Triple sharing": 5999,
+      "Double sharing": 6499
+    }
   },
   "madhyamaheshwar": {
     "name": "Madhyamaheshwar Trek",

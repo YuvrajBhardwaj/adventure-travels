@@ -27,11 +27,27 @@ export interface Trek {
   maxAltitude: number;
   elevationProfile: number[];
   itinerary: ItineraryDay[];
-  image: string;
+  /** Omit until real photos exist; pages show a branded "no photo" panel instead. */
+  image?: string;
   featured?: boolean;
   groupSize?: number;
   /** ILP-restricted India–Tibet frontier zone offered as a permit-facilitated tour (not an open trek). */
   permitTour?: boolean;
+  /**
+   * Per-person price by room sharing, cheapest first; `price` must equal the first tier
+   * (the "from" price). The order API charges the tier stored on the booking.
+   */
+  roomSharing?: { label: string; perRoom: number; price: number }[];
+  /** Where the group sleeps, when it isn't the default twin-sharing tents. */
+  stay?: { label: string; detail: string };
+  /** City the package picks up from and returns to, when that isn't the trailhead town. */
+  startsFrom?: string;
+}
+
+/** Per-person price for a booked room tier; the base price when no tier was chosen, undefined for an unknown tier. */
+export function pricePerPerson(trek: Trek, roomSharing?: string | null): number | undefined {
+  if (!roomSharing) return trek.price;
+  return trek.roomSharing?.find((r) => r.label === roomSharing)?.price;
 }
 
 export function slugify(str: string): string {
@@ -655,19 +671,27 @@ export const treks: Trek[] = [
     difficulty: "Easy",
     price: 5499,
     currency: "Rs.",
-    blurb: "Walk up from the meadows of Chopta to Tungnath, the highest of the Panch Kedar temples, then on to the Chandrashila summit for a sunrise over Chaukhamba, Nanda Devi and the Kedarnath peaks.",
+    blurb: "A three-day trip from Delhi: the Devprayag sangam and Dhari Devi on the way up, then Tungnath, the highest of the Panch Kedar temples, and the Chandrashila summit above it for a view of Chaukhamba, Nanda Devi and Trishul. A morning walk to Deoria Tal before the drive home.",
     bestSeason: "Sep–Jun (snow Dec–Mar)",
-    days: 4,
+    days: 3,
     maxAltitude: 4000,
-    elevationProfile: [2680, 4000, 2438, 640],
+    elevationProfile: [216, 2680, 4000, 2438],
     itinerary: [
-      { day: 1, title: "Dehradun → Chopta (Drive – 220 km, 8-9 hrs)", altitude: 2680, hours: 9, description: "Drive along the Ganga and Alaknanda through Devprayag, Rudraprayag and Ukhimath, then climb through oak and rhododendron forest to the camp at Chopta. Evening briefing and gear check.", meals: "Dinner" },
-      { day: 2, title: "Chopta → Tungnath → Chandrashila → Chopta (10 km, 6-7 hrs)", altitude: 4000, hours: 7, description: "A paved trail zig-zags up through meadows to the Tungnath temple. A steeper final stretch leads to the Chandrashila summit and a wide view of the Garhwal range. Return to Chopta by afternoon.", meals: "B/L/D", note: "The summit push starts early; in heavy snow the trek leader may turn the group at Tungnath for safety." },
-      { day: 3, title: "Chopta → Sari → Deoria Tal → Sari (Drive 25 km + 6 km hike, 4 hrs)", altitude: 2438, hours: 4, description: "Short drive to Sari village and an easy forest climb to Deoria Tal, a lake that mirrors the Chaukhamba massif on a still day. Overnight in Sari.", meals: "B/L/D" },
-      { day: 4, title: "Sari → Dehradun (Drive – 220 km, 8-9 hrs)", altitude: 640, hours: 9, description: "Breakfast in the village, then the drive back to Dehradun, reaching by evening.", meals: "Breakfast" },
+      { day: 0, title: "Delhi → overnight drive to Devprayag (report 10-11 PM)", altitude: 216, hours: 0, description: "Meet your trek leader and the group at Akshardham Metro Station, Delhi, between 10 and 11 PM for a short briefing. The tempo traveller leaves the same night and drives through to Devprayag.", meals: "None (overnight drive)", note: "The dates on the Dates tab are Day 1 to Day 3. You leave Delhi the night before Day 1 and are back early on the morning after Day 3, so keep four calendar days free." },
+      { day: 1, title: "Devprayag Sangam & Dhari Devi → Chopta (Drive – 150 km, 5-6 hrs)", altitude: 2680, hours: 0, description: "Reach Devprayag around dawn and walk down to the sangam, where the Bhagirathi and the Alaknanda meet and become the Ganga. Further up the Alaknanda, stop at Dhari Devi, the river temple to the goddess many in Garhwal call the guardian of Uttarakhand. Drive on through Rudraprayag and Ukhimath to the camp or cottage near Chopta and take the rest of the day easy.", meals: "Dinner" },
+      { day: 2, title: "Chopta → Tungnath → Chandrashila → Chopta (Trek – 10 km, 6-7 hrs)", altitude: 4000, hours: 7, description: "After an early breakfast, a paved trail zig-zags up through meadows to the Tungnath temple. A steeper final stretch leads to the Chandrashila summit and a wide view of Nanda Devi, Trishul and Chaukhamba. Back down to Chopta before sunset for the second night at the same stay.", meals: "Breakfast & Dinner", note: "The summit push starts early; in heavy snow the trek leader may turn the group at Tungnath for safety." },
+      { day: 3, title: "Sari → Deoria Tal → Ukhimath → overnight drive to Delhi", altitude: 2438, hours: 4, description: "Check out after breakfast and drive to Sari village for the forest walk up to Deoria Tal, about 3 km each way, a lake that mirrors the Chaukhamba massif on a still morning. On the way out, stop at the Omkareshwar temple in Ukhimath, the winter seat of Kedarnath, then drive back to Delhi through the night, arriving early the next morning.", meals: "Breakfast" },
     ],
-    // ponytail: placeholder photo — replace with a real Tungnath / Chandrashila image in public/assets
-    image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=800&q=80",
+    roomSharing: [
+      { label: "Quad sharing", perRoom: 4, price: 5499 },
+      { label: "Triple sharing", perRoom: 3, price: 5999 },
+      { label: "Double sharing", perRoom: 2, price: 6499 },
+    ],
+    stay: {
+      label: "Camp or Cottage Stay",
+      detail: "2 nights in a camp or cottage near Chopta, in the room sharing you book",
+    },
+    startsFrom: "Delhi",
   },
   {
     id: 29,
@@ -689,8 +713,6 @@ export const treks: Trek[] = [
       { day: 2, title: "Madhyamaheshwar & Budha Madhyamaheshwar (4 km round trip, 3 hrs)", altitude: 3497, hours: 3, description: "Sunrise walk to the meadow of Budha Madhyamaheshwar above the temple for an open view of Chaukhamba, then an unhurried day at the temple and in the surrounding meadows.", meals: "B/L/D" },
       { day: 3, title: "Madhyamaheshwar → Ransi (16 km, 6-7 hrs)", altitude: 2200, hours: 7, description: "Retrace the trail down through the forest to Ransi, where the trek ends.", meals: "B/L" },
     ],
-    // ponytail: placeholder photo — replace with a real Madhyamaheshwar image in public/assets
-    image: "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800&q=80",
   },
 ];
 

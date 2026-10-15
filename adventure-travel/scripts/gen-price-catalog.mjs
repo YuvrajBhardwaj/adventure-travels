@@ -21,6 +21,12 @@ for (const trek of mod.exports.treks ?? []) {
     throw new Error(`Trek "${trek.name}" has no valid integer price.`);
   }
   catalog[trek.slug] = { name: trek.name, price: trek.price };
+  if (trek.roomSharing) {
+    if (trek.roomSharing[0]?.price !== trek.price) {
+      throw new Error(`Trek "${trek.name}": price must equal its cheapest room tier.`);
+    }
+    catalog[trek.slug].roomSharing = Object.fromEntries(trek.roomSharing.map((r) => [r.label, r.price]));
+  }
 }
 if (Object.keys(catalog).length === 0) throw new Error("No treks found in src/data/treks.ts");
 

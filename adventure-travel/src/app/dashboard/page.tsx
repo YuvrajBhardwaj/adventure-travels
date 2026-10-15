@@ -260,6 +260,7 @@ export default function DashboardPage() {
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/50">
                         <span>Date: {day(b.trek_date)}</span>
                         <span>Group: {b.group_size}</span>
+                        {b.room_sharing && <span>Room: {b.room_sharing}</span>}
                         <span>Booked: {new Date(b.created_at).toLocaleDateString("en-IN")}</span>
                       </div>
                       {b.message && <p className="text-white/40 text-sm mt-2 truncate">{b.message}</p>}

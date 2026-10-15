@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { treks, REGIONS } from "@/data/treks";
 import { destinations } from "@/data/destinations";
 import SmartImage from "@/components/SmartImage";
+import NoPhoto from "@/components/NoPhoto";
 import Price from "@/components/Price";
 
 const DIFFICULTIES = ["All Levels", "Easy", "Moderate", "Challenging", "Strenuous"] as const;
@@ -280,11 +281,15 @@ function TrekCard({ trek }: { trek: (typeof treks)[0] }) {
       className="relative block overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 group"
     >
       {/* Full-bleed image */}
-      <SmartImage
-        src={trek.image}
-        alt={trek.name}
-        className="w-full h-80 sm:h-96 object-cover transition-transform duration-700 group-hover:scale-105"
-      />
+      {trek.image ? (
+        <SmartImage
+          src={trek.image}
+          alt={trek.name}
+          className="w-full h-80 sm:h-96 object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      ) : (
+        <NoPhoto className="w-full h-80 sm:h-96" />
+      )}
 
       {/* Readability gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10 transition-opacity duration-300" />

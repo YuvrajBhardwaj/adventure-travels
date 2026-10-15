@@ -26,7 +26,7 @@ export function getTrekPackage(trek: Trek): TrekPackage {
 
   const facts: TrekPackage["facts"] = [
     { label: "Duration", value: `${trek.days} days` },
-    { label: "Day 1", value: trek.itinerary[0]?.title ?? "As per itinerary" },
+    { label: `Day ${trek.itinerary[0]?.day ?? 1}`, value: trek.itinerary[0]?.title ?? "As per itinerary" },
     { label: "Highest point", value: `${trek.maxAltitude.toLocaleString("en-IN")} m` },
     { label: "Group size", value: `Up to ${trek.groupSize ?? 15} trekkers` },
   ];
@@ -37,9 +37,11 @@ export function getTrekPackage(trek: Trek): TrekPackage {
     trek.permitTour
       ? "Inner Line Permit processing and frontier-zone paperwork"
       : "Forest, park and entry permits for the route",
-    trek.permitTour
-      ? "Accommodation as listed in the day-wise itinerary"
-      : "Twin-sharing tent accommodation on the trail",
+    trek.stay
+      ? trek.stay.detail
+      : trek.permitTour
+        ? "Accommodation as listed in the day-wise itinerary"
+        : "Twin-sharing tent accommodation on the trail",
     totalMeals > 0
       ? `${totalMeals} meals, marked day by day in the itinerary`
       : "Meals as listed in the day-wise itinerary",

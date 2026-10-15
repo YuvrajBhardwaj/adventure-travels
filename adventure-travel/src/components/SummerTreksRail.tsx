@@ -4,6 +4,7 @@ import Link from "next/link";
 import { treks, DIFFICULTY_COLORS } from "@/data/treks";
 import { FadeUp, StaggerContainer, StaggerItem } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
+import NoPhoto from "./NoPhoto";
 import Price from "@/components/Price";
 
 export default function SummerTreksRail() {
@@ -60,11 +61,15 @@ export default function SummerTreksRail() {
                 className="group block overflow-hidden rounded-3xl border border-foreground/10 bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-black/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
-                  <SmartImage
-                    src={trek.image}
-                    alt={trek.name}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
+                  {trek.image ? (
+                    <SmartImage
+                      src={trek.image}
+                      alt={trek.name}
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  ) : (
+                    <NoPhoto className="absolute inset-0 h-full w-full" />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                   <span
                     className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold text-white"

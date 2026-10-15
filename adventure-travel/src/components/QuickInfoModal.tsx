@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Trek } from "@/data/treks";
 import { DIFFICULTY_COLORS } from "@/data/treks";
+import Price from "@/components/Price";
 
 export type QuickInfoId =
   | "difficulty" | "duration" | "altitude" | "season" | "group"
@@ -298,6 +299,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
       };
 
     case "accommodation":
+      if (trek.stay) return stayBody(trek, "Where you'll sleep");
       return {
         title: "Where you'll sleep",
         body: (
@@ -377,6 +379,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
       };
 
     case "inc-tent":
+      if (trek.stay) return stayBody(trek, trek.stay.label);
       return {
         title: "Twin Sharing Tent Accommodation",
         body: (
@@ -446,7 +449,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
               and the cost is included in your trek price.
             </P>
             <UL items={[
-              "Breakfast, packed lunch, evening tea & snacks, and dinner every trekking day.",
+              "The meals marked for each day in the itinerary — on most trekking days that's breakfast, packed lunch, evening tea & snacks, and dinner.",
               "High-carb, high-energy meals — rotis, dal, rice, sabzi, soups, and more.",
               "Hot beverages (tea, coffee, lemon tea, hot water) served through the day.",
               "Dinner and breakfast are prepared to order in our on-trail kitchen, not pre-packaged.",
@@ -457,6 +460,25 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
         ),
       };
   }
+}
+
+/** Rooms instead of tents: the trek's own stay, with its room-sharing prices when it has them. */
+function stayBody(trek: Trek, title: string) {
+  return {
+    title,
+    body: (
+      <>
+        <P>{trek.stay?.detail}. The cost of the stay is included in your trek price.</P>
+        {trek.roomSharing && (
+          <UL items={trek.roomSharing.map((r) => (
+            <span key={r.label}>
+              <strong>{r.label}</strong>, {r.perRoom} to a room: <Price inr={r.price} /> per person
+            </span>
+          ))} />
+        )}
+      </>
+    ),
+  };
 }
 
 function treks50Plus(trek: Trek) {

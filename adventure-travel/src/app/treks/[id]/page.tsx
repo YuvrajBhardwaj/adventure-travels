@@ -21,8 +21,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     title,
     description,
     path: `/treks/${trek.slug}`,
-    image: trek.image,
-    imageAlt: `${trekTitle(trek.name)} — Himalayan adventure in ${trek.region}`,
+    // No trek photo → the site's default share image (and its own alt text).
+    ...(trek.image && {
+      image: trek.image,
+      imageAlt: `${trekTitle(trek.name)} — Himalayan adventure in ${trek.region}`,
+    }),
     type: "article",
   });
 }
@@ -60,9 +63,9 @@ export default async function TrekDetailPage({ params }: { params: Promise<{ id:
             itinerary: {
               "@type": "ItemList",
               numberOfItems: trek.days,
-              itemListElement: trek.itinerary.map((day) => ({
+              itemListElement: trek.itinerary.map((day, i) => ({
                 "@type": "ListItem",
-                position: day.day,
+                position: i + 1,
                 name: day.title,
                 description: day.description,
               })),

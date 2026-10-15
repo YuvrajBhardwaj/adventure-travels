@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import type { TrekBooking, CourseBooking } from "@/lib/auth";
-import { treks } from "@/data/treks";
+import { treks, pricePerPerson } from "@/data/treks";
 import { courses } from "@/data/courses";
 import { formatPaise } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -86,8 +86,9 @@ export default function CheckoutClient() {
 
   const trek = useMemo(() => treks.find((t) => t.slug === booking?.trek_slug), [booking]);
   const persons = booking && /^\d+$/.test(booking.group_size.trim()) ? Number(booking.group_size) : null;
+  const unitInr = trek ? pricePerPerson(trek, booking?.room_sharing) : undefined;
   // Display only — the server recomputes the amount from the same catalog and ignores the browser.
-  const totalPaise = trek && persons && persons >= 1 && persons <= 10 ? trek.price * persons * 100 : null;
+  const totalPaise = unitInr && persons && persons >= 1 && persons <= 10 ? unitInr * persons * 100 : null;
 
   // One shape for the summary card, whichever kind of booking this is.
   const course = useMemo(() => courses.find((c) => c.slug === courseBooking?.course_slug), [courseBooking]);
@@ -102,12 +103,12 @@ export default function CheckoutClient() {
       }
     : booking
       ? {
-          title: booking.trek_name,
+          title: booking.trek_name + (booking.room_sharing ? ` · ${booking.room_sharing}` : ""),
           dateISO: booking.trek_date,
           persons,
           image: trek?.image,
           totalPaise,
-          unitPaise: trek ? trek.price * 100 : null,
+          unitPaise: unitInr ? unitInr * 100 : null,
         }
       : null;
 

@@ -45,9 +45,10 @@ async function loadPayable(db, user, body) {
 
   const bookingId = typeof body.bookingId === "string" ? body.bookingId : "";
   if (!UUID.test(bookingId)) throw new HttpError(400, "Invalid booking.");
+  // "*" rather than a column list: room_sharing only exists once supabase-room-sharing.sql has run.
   const { data: booking, error } = await db
     .from("trek_bookings")
-    .select("id, user_id, trek_name, trek_slug, group_size, status")
+    .select("*")
     .eq("id", bookingId)
     .eq("user_id", user.id)
     .maybeSingle();
@@ -60,11 +61,24 @@ async function loadPayable(db, user, body) {
   if (!trek || !Number.isInteger(persons) || persons < 1 || persons > 10) {
     throw new HttpError(422, "This booking needs custom group pricing. Please contact us on WhatsApp.");
   }
+
+  // Room-tier treks charge the stored tier; no room stored → the base (cheapest) tier.
+  const room = booking.room_sharing;
+  let unit = trek.price;
+  if (trek.roomSharing) {
+    // Column missing: the room may only be in the free-text message, so don't guess a price.
+    if (room === undefined) throw new HttpError(422, "Please confirm your room choice with us on WhatsApp.");
+    if (room) unit = Object.hasOwn(trek.roomSharing, room) ? trek.roomSharing[room] : undefined;
+  } else if (room) {
+    unit = undefined;
+  }
+  if (!Number.isInteger(unit)) throw new HttpError(422, "This booking needs a custom quote. Please contact us on WhatsApp.");
+
   return {
     kind: "trek",
     id: booking.id,
-    amount: trek.price * persons * 100,
-    label: `${booking.trek_name} · ${persons} ${persons === 1 ? "person" : "persons"}`,
+    amount: unit * persons * 100,
+    label: `${booking.trek_name}${room ? ` · ${room}` : ""} · ${persons} ${persons === 1 ? "person" : "persons"}`,
   };
 }
 

@@ -117,6 +117,8 @@ export function onAuthStateChange(callback: (user: SafeUser | null) => void) {
 export interface TrekBooking {
   id: string; user_id: string; trek_name: string; trek_slug: string;
   trek_date: string; group_size: string; message: string;
+  /** Room tier label from `Trek.roomSharing`; undefined when the column isn't in the database yet. */
+  room_sharing?: string | null;
   status: "pending" | "confirmed" | "cancelled"; created_at: string;
 }
 
@@ -133,7 +135,17 @@ export async function getTrekBookings(userId: string): Promise<TrekBooking[]> {
 export async function createTrekBooking(booking: Omit<TrekBooking, "id" | "status" | "created_at">): Promise<TrekBooking> {
   const supabase = createClient();
   if (supabase) {
-    const { data, error } = await supabase.from("trek_bookings").insert(booking).select().single();
+    let { data, error } = await supabase.from("trek_bookings").insert(booking).select().single();
+    // room_sharing column not added yet (supabase-room-sharing.sql): keep the room in the message instead.
+    // The row then has no room_sharing, so the order API won't price it online.
+    if (error?.code === "PGRST204" && booking.room_sharing) {
+      const { room_sharing, ...rest } = booking;
+      ({ data, error } = await supabase
+        .from("trek_bookings")
+        .insert({ ...rest, message: `Room: ${room_sharing}${rest.message ? `\n${rest.message}` : ""}` })
+        .select()
+        .single());
+    }
     if (error) throw error;
     trackActivity("BOOKING_CREATED", {
       booking_id: data.id,

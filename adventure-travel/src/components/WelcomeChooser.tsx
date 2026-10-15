@@ -9,6 +9,7 @@ import { courses } from "@/data/courses";
 import { destinations } from "@/data/destinations";
 import Price from "@/components/Price";
 import SmartImage from "@/components/SmartImage";
+import NoPhoto from "@/components/NoPhoto";
 
 const SEEN_KEY = "hac_welcome_seen";
 
@@ -16,7 +17,7 @@ interface PreviewItem {
   key: string;
   name: string;
   href: string;
-  image: string;
+  image?: string;
   meta: string;
   price?: number;
 }
@@ -26,7 +27,7 @@ interface Tile {
   label: string;
   sub: string;
   href: string;
-  image: string;
+  image?: string;
   items: PreviewItem[];
 }
 
@@ -62,7 +63,7 @@ function buildTiles(): Tile[] {
   }));
 
   return [
-    { id: "treks", label: "Treks", sub: `${treks.length} routes`, href: "/treks", image: trekItems[0].image, items: trekItems },
+    { id: "treks", label: "Treks", sub: `${treks.length} routes`, href: "/treks", image: trekItems.find((t) => t.image)?.image, items: trekItems },
     { id: "courses", label: "Courses", sub: `${courses.length} courses`, href: "/courses", image: courseItems[0].image, items: courseItems },
     { id: "destinations", label: "Destinations", sub: `${destinations.length} regions`, href: "/destinations", image: destinationItems[0].image, items: destinationItems },
   ];
@@ -201,7 +202,11 @@ export default function WelcomeChooser() {
                         isActive ? "scale-105 ring-4 ring-white" : "ring-0 ring-white/0 opacity-80"
                       }`}
                     >
-                      <SmartImage src={tile.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                      {tile.image ? (
+                        <SmartImage src={tile.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                      ) : (
+                        <NoPhoto className="absolute inset-0 h-full w-full" />
+                      )}
                       <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                     </span>
                     <span>
@@ -246,11 +251,15 @@ export default function WelcomeChooser() {
                         className="group block overflow-hidden rounded-xl bg-white/5 ring-1 ring-white/10 transition-all hover:-translate-y-1 hover:bg-white/10 hover:ring-white/30 focus-visible:ring-2 focus-visible:ring-white motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                       >
                         <span className="relative block aspect-[16/10] overflow-hidden">
-                          <SmartImage
-                            src={item.image}
-                            alt=""
-                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
-                          />
+                          {item.image ? (
+                            <SmartImage
+                              src={item.image}
+                              alt=""
+                              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
+                            />
+                          ) : (
+                            <NoPhoto className="absolute inset-0 h-full w-full" />
+                          )}
                         </span>
                         <span className="block p-3">
                           <span className="block truncate text-sm font-semibold text-white">{item.name}</span>

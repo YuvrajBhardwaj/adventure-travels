@@ -15,6 +15,8 @@ import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { getDepartures, type Departure, type Availability, type MonthGroup } from "./trekContent";
 import { getTrekPackage } from "@/data/trekPackage";
 import ScholarshipsTab from "./ScholarshipsTab";
+import { printItinerary } from "./printItinerary";
+import NoPhoto from "@/components/NoPhoto";
 import ScrollProgressRing from "@/components/ScrollProgressRing";
 import Price, { PriceNote } from "@/components/Price";
 
@@ -181,6 +183,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
   const [payBookingId, setPayBookingId] = useState<string | null>(null);
   const [bookingForm, setBookingForm] = useState({
     name: "", email: "", phone: "", date: "", groupSize: "1", message: "",
+    sharing: trek.roomSharing?.[0].label ?? "",
   });
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -206,6 +209,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
       return;
     }
     setPayBookingId(null);
+    const room = bookingForm.sharing ? `Room: ${bookingForm.sharing}\n` : "";
     try {
       const created = await createTrekBooking({
         user_id: user.id,
@@ -214,13 +218,15 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
         trek_date: bookingForm.date,
         group_size: bookingForm.groupSize,
         message: bookingForm.message,
+        ...(bookingForm.sharing && { room_sharing: bookingForm.sharing }),
       });
-      setPayBookingId(created.id);
+      // A room-tier trek is only priceable online once the row actually stores the room.
+      if (!trek.roomSharing || created.room_sharing) setPayBookingId(created.id);
     } catch {
       // Supabase insert failed — still open WhatsApp
     }
     const text = encodeURIComponent(
-      `Hi! I'm ${bookingForm.name || "a trekker"}. I'd like to book the ${trek.name}.\nDate: ${bookingForm.date}\nGroup: ${bookingForm.groupSize}\nPhone: ${bookingForm.phone}\nMessage: ${bookingForm.message || ""}`
+      `Hi! I'm ${bookingForm.name || "a trekker"}. I'd like to book the ${trek.name}.\nDate: ${bookingForm.date}\nGroup: ${bookingForm.groupSize}\n${room}Phone: ${bookingForm.phone}\nMessage: ${bookingForm.message || ""}`
     );
     window.open(`https://wa.me/917817912062?text=${text}`, "_blank");
   };
@@ -274,8 +280,12 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
 
       {/* Hero Banner */}
       <section className="relative h-[50vh] min-h-[350px]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={trek.image} alt={trek.name} className="w-full h-full object-cover" />
+        {trek.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={trek.image} alt={trek.name} className="w-full h-full object-cover" />
+        ) : (
+          <NoPhoto className="w-full h-full" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
 
         {/* Wishlist & Share */}
@@ -331,12 +341,17 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
               )}
             </div>
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-2">{trek.name}</h1>
-            <p className="flex items-center gap-2 text-white/80">
+            <p className="flex flex-wrap items-center gap-2 text-white/80">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               {trek.location || trek.region}
+              {trek.startsFrom && (
+                <span className="ml-1 rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
+                  Starts from {trek.startsFrom}
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -532,7 +547,7 @@ function BookingCard({
         : { label: "Dates Open", cls: "bg-emerald-600" };
 
   const INCLUDED_UI = [
-    { icon: "tent", label: "Twin Sharing Tent Accommodation", info: "inc-tent" as QuickInfoId },
+    { icon: "tent", label: trek.stay?.label ?? "Twin Sharing Tent Accommodation", info: "inc-tent" as QuickInfoId },
     { icon: "card", label: "All Permits & Entry Fees", info: "inc-permits" as QuickInfoId },
     { icon: "med", label: "Daily Medical & Safety Check-ups", info: "inc-medical" as QuickInfoId },
     { icon: "meal", label: "Freshly Cooked Meals on Trail", info: "inc-meals" as QuickInfoId },
@@ -582,10 +597,23 @@ function BookingCard({
           <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-bold text-rose-600">{discount}% OFF</span>
         </div>
         <div className="mt-1 flex items-baseline gap-1.5">
+          {trek.roomSharing && <span className="text-sm text-muted">From</span>}
           <span className="text-4xl font-bold tracking-tight text-foreground"><Price inr={trek.price} /></span>
           <span className="text-sm text-muted">/ person</span>
         </div>
         <PriceNote inr={trek.price} className="mt-2 text-muted" />
+        {trek.roomSharing && (
+          <ul className="mt-3 divide-y divide-gray-100 rounded-xl border border-gray-200 text-sm dark:divide-white/10 dark:border-white/10">
+            {trek.roomSharing.map((r) => (
+              <li key={r.label} className="flex items-center justify-between gap-3 px-3 py-2">
+                <span className="text-gray-700 dark:text-gray-200">
+                  {r.label} <span className="text-xs text-muted">· {r.perRoom} per room</span>
+                </span>
+                <span className="font-bold text-foreground"><Price inr={r.price} /></span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Trust + rating */}
@@ -863,7 +891,7 @@ function QuickInfo({ trek }: { trek: Trek }) {
     {
       id: "accommodation",
       label: "Accommodation",
-      value: "Tents & Mountain Lodges",
+      value: trek.stay?.label ?? "Tents & Mountain Lodges",
       icon: (
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <path d="M4 20L12 4l8 16H4zM12 4v6" />
@@ -1101,9 +1129,27 @@ function DepartureRow({ d, onRegister }: { d: Departure; onRegister: (iso: strin
 
 /* ─── Day by Day Tab ─── */
 function ItineraryTab({ trek }: { trek: Trek }) {
+  const [blocked, setBlocked] = useState(false);
   return (
     <div>
-      <h2 className="text-2xl font-bold text-foreground mb-6">Day-by-Day Itinerary</h2>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-2xl font-bold text-foreground">Day-by-Day Itinerary</h2>
+        <button
+          type="button"
+          onClick={() => setBlocked(!printItinerary(trek))}
+          className="inline-flex items-center gap-2 rounded-xl border border-emerald-600/40 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-300 dark:hover:bg-emerald-500/20"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          Save itinerary as PDF
+        </button>
+        {blocked && (
+          <p role="status" className="w-full text-sm text-amber-700 dark:text-amber-300">
+            Your browser blocked the itinerary window. Allow pop-ups for this site and try again.
+          </p>
+        )}
+      </div>
       <div className="space-y-4">
         {trek.itinerary.map((day) => (
           <div key={day.day} className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-white/10 p-5 hover:border-emerald-200 dark:hover:border-emerald-700 hover:shadow-md transition-all">
@@ -1118,10 +1164,12 @@ function ItineraryTab({ trek }: { trek: Trek }) {
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
                     {day.altitude.toLocaleString()}m
                   </span>
-                  <span className="flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {day.hours} hrs
-                  </span>
+                  {day.hours > 0 && (
+                    <span className="flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      {day.hours} hrs
+                    </span>
+                  )}
                 </div>
                 <p className="text-muted text-sm leading-relaxed">{day.description}</p>
                 {day.note && (
@@ -1147,7 +1195,8 @@ function ItineraryTab({ trek }: { trek: Trek }) {
 /* ─── Photo Gallery Tab (with lightbox) ─── */
 function GalleryTab({ trek }: { trek: Trek }) {
   const trekGallery = TREK_GALLERIES[trek.slug];
-  const images = trekGallery || [trek.image, ...GALLERY_IMAGES.slice(0, 7)];
+  // No photos of its own → no stand-in stock gallery either.
+  const images = trekGallery || (trek.image ? [trek.image, ...GALLERY_IMAGES.slice(0, 7)] : []);
   const [lightbox, setLightbox] = useState<number | null>(null);
 
   useEffect(() => {
@@ -1168,6 +1217,12 @@ function GalleryTab({ trek }: { trek: Trek }) {
   return (
     <div>
       <h2 className="text-2xl font-bold text-foreground mb-6">Photo Gallery</h2>
+      {images.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-12 text-center dark:border-white/10 dark:bg-card">
+          <p className="font-semibold text-foreground">Photos from this trek are coming soon.</p>
+          <p className="mt-1 text-sm text-muted">Ask us on WhatsApp and we&apos;ll send pictures from our recent batches.</p>
+        </div>
+      )}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {images.map((img, i) => (
           <button
@@ -1479,7 +1534,7 @@ function ReservationTab({
   trek, form, setForm, onSubmit, payHref,
 }: {
   trek: Trek;
-  form: { name: string; email: string; phone: string; date: string; groupSize: string; message: string };
+  form: { name: string; email: string; phone: string; date: string; groupSize: string; message: string; sharing: string };
   setForm: (f: typeof form) => void;
   onSubmit: () => void;
   payHref?: string;
@@ -1531,7 +1586,8 @@ function ReservationTab({
         </div>
         <h3 className="text-xl font-bold text-foreground mb-2">Reservation Request Sent!</h3>
         <p className="text-muted max-w-sm mx-auto">
-          Thanks{form.name ? `, ${form.name.split(" ")[0]}` : ""} — our team will confirm availability for {trek.name} within 24 hours.
+          Thanks{form.name ? `, ${form.name.split(" ")[0]}` : ""} — our team will confirm availability
+          {form.sharing ? ` and your ${form.sharing.toLowerCase()} room` : ""} for {trek.name} within 24 hours.
         </p>
         {payHref && (
           <Link
@@ -1573,6 +1629,26 @@ function ReservationTab({
             <option value="10+">10+ Persons (Group)</option>
           </select>
         </div>
+        {trek.roomSharing && (
+          <div>
+            <label htmlFor="res-sharing" className="block text-sm font-medium text-muted mb-1.5">Room Sharing</label>
+            <select
+              id="res-sharing"
+              value={form.sharing}
+              onChange={(e) => update("sharing", e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+            >
+              {trek.roomSharing.map((r) => (
+                <option key={r.label} value={r.label}>{r.label} ({r.perRoom} per room)</option>
+              ))}
+            </select>
+            <p className="mt-1.5 text-xs text-muted">
+              Per person: {trek.roomSharing.map((r, i) => (
+                <span key={r.label}>{i > 0 && " · "}{r.label.replace(/ sharing$/i, "")} <Price inr={r.price} /></span>
+              ))}
+            </p>
+          </div>
+        )}
         <div>
           <label htmlFor="res-message" className="block text-sm font-medium text-muted mb-1.5">Additional Message</label>
           <textarea
@@ -1743,10 +1819,10 @@ function MiniElevationChart({ profile, itinerary }: { profile: number[]; itinera
           {max.toLocaleString()}m
         </text>
         <text x={w - padR - 2} y={h - padB + 14} textAnchor="end" className="fill-gray-400 text-[7px]">
-          Day {pts.length}
+          Day {pts[pts.length - 1].day?.day ?? pts.length}
         </text>
         <text x={padL + 2} y={h - padB + 14} className="fill-gray-400 text-[7px]">
-          Day 1
+          Day {pts[0].day?.day ?? 1}
         </text>
       </svg>
 
