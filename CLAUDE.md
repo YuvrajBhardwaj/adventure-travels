@@ -12,6 +12,12 @@ Other root-level artifacts are reference/generated material, not source to edit:
 - `REFERENCE_SITE.md` + `reference-*.png` + `screenshot.js` — the site is a visual reproduction of the reference at `trekking-pied.vercel.app`; these document the target and (via Playwright) capture screenshots of it.
 - `graphify-out/` — generated code-graph analysis output.
 
+## Keep CHANGELOG.md and TODO.md current
+
+The owner tracks the project through two root files. With every change, in the same piece of work:
+- Add an entry to [`CHANGELOG.md`](CHANGELOG.md) under **[Unreleased]**: the date, where the change lives (branch + commit, or "uncommitted"), and what changed for visitors, the business and the backend. Mark backend work **Backend**, and update the **Backend tracker** tables (migrations, API functions, env vars, testing status) when they change.
+- Update [`TODO.md`](TODO.md): tick off what's done, and add new open items or decisions the owner needs to make.
+
 ## Commands (run from `adventure-travel/`)
 
 ```bash
