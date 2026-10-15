@@ -1,486 +1,641 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { signOut } from "@/lib/auth";
+import { treks, DIFFICULTY_COLORS } from "@/data/treks";
 import DesktopSearch from "@/components/DesktopSearch";
 import CurrencySwitcher from "@/components/CurrencySwitcher";
+import Price from "@/components/Price";
+import NoPhoto from "@/components/NoPhoto";
 
-const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "🏔️ Adventures", href: "/treks" },
+const EASE = [0.16, 1, 0.3, 1] as const;
+const WHATSAPP = "https://wa.me/917817912062";
+
+type MenuId = "treks" | "activities" | "account";
+
+const NAV: { label: string; href: string; menu?: MenuId }[] = [
+  { label: "Treks", href: "/treks", menu: "treks" },
   { label: "Destinations", href: "/destinations" },
-  { label: "⛷️ Courses", href: "/courses" },
+  { label: "Courses", href: "/courses" },
+  { label: "Activities", href: "/activities", menu: "activities" },
+  { label: "Contact", href: "/contact" },
 ];
+
+// Shown in the Treks menu: treks with our own photos, so the menu shows real trails.
+const MENU_TREK_SLUGS = ["kedarkantha", "valley-of-flowers", "har-ki-dun", "kuari-pass"];
+const MENU_TREKS = MENU_TREK_SLUGS.map((s) => treks.find((t) => t.slug === s)).filter((t): t is (typeof treks)[number] => Boolean(t));
+const REGION_LINKS = ["Uttarakhand", "Himachal Pradesh"].map((region) => ({
+  region,
+  count: treks.filter((t) => t.region === region).length,
+}));
+const DIFFICULTY_LINKS = (["Easy", "Moderate", "Challenging", "Strenuous"] as const).map((difficulty) => ({
+  difficulty,
+  count: treks.filter((t) => t.difficulty === difficulty).length,
+}));
+
+const icon = (d: string) => (
+  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6} aria-hidden>
+    <path strokeLinecap="round" strokeLinejoin="round" d={d} />
+  </svg>
+);
 
 const activities = [
   {
     label: "Trekking",
     href: "/treks",
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-      </svg>
-    ),
-    description: "Himalayan trekking expeditions",
+    description: "Guided Himalayan treks",
+    icon: icon("M3 20l6.5-11 4 6.5 2.5-4L21 20H3zM14 6a2 2 0 100-4 2 2 0 000 4z"),
   },
   {
-    label: "⛷️ Skiing & 🏂 Snowboarding",
+    label: "Skiing & Snowboarding",
     href: "/activities#skiing",
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-      </svg>
-    ),
     description: "7-day courses in Auli",
+    icon: icon("M4 20l16-6M7 4l4 9M9.5 7.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM13 13l3 3"),
   },
   {
     label: "Camping",
     href: "/activities#camping",
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
-      </svg>
-    ),
     description: "Riverside & mountain camps",
+    icon: icon("M2 20h20M12 4L4 20M12 4l8 16M12 4v16M9.5 20L12 15l2.5 5"),
   },
   {
     label: "Paragliding",
     href: "/activities#paragliding",
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6.115 5.19l.319 1.913A6 6 0 008.11 10.36L9.75 12l-.387.775c-.217.433-.132.956.21 1.298l1.348 1.348c.21.21.329.497.329.795v1.089c0 .426.24.815.622 1.006l.153.076c.433.217.956.132 1.298-.21l.723-.723a8.7 8.7 0 002.288-4.042 1.087 1.087 0 00-.358-1.099l-1.33-1.108c-.251-.21-.582-.299-.905-.245l-1.17.195a1.125 1.125 0 01-.98-.314l-.295-.295a1.125 1.125 0 010-1.591l.13-.132a1.125 1.125 0 011.3-.21l.603.302a.809.809 0 001.086-1.086L14.25 7.5l1.256-.837a4.5 4.5 0 001.528-1.732l.146-.292M6.115 5.19A9 9 0 1017.18 4.64M6.115 5.19A8.965 8.965 0 0112 3c1.929 0 3.72.608 5.18 1.64" />
-      </svg>
-    ),
     description: "Tandem flights in Bir Billing",
+    icon: icon("M3 9c3-4 15-4 18 0M3 9l9 8 9-8M12 17v3M8 9.5l4 7.5M16 9.5l-4 7.5"),
   },
 ];
 
+const ChevronDown = ({ open }: { open: boolean }) => (
+  <svg
+    className={`h-3.5 w-3.5 opacity-60 transition-transform duration-200 motion-reduce:transition-none ${open ? "rotate-180" : ""}`}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2.2}
+    aria-hidden
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+  </svg>
+);
+
+const ArrowRight = ({ className = "h-4 w-4" }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+  </svg>
+);
+
+const WhatsAppIcon = ({ className = "h-4 w-4" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.47-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.04 21.5h-.01a9.45 9.45 0 01-4.82-1.32l-.35-.2-3.58.94.96-3.49-.23-.36a9.43 9.43 0 01-1.45-5.03C2.56 6.83 6.8 2.6 12.05 2.6a9.4 9.4 0 016.69 2.78 9.4 9.4 0 012.77 6.7c0 5.23-4.25 9.42-9.47 9.42zm8.05-17.48A11.32 11.32 0 0012.04.7C5.77.7.66 5.8.66 12.08c0 2 .52 3.96 1.52 5.69L.57 23.3l5.67-1.49a11.35 11.35 0 005.43 1.38h.01c6.27 0 11.38-5.1 11.38-11.38 0-3.04-1.18-5.9-3.33-8.05z" />
+  </svg>
+);
+
+/** Fade-and-settle for the desktop menus; a plain fade for reduced motion. */
+function MenuPanel({ reduce, className, children, id, label }: { reduce: boolean; className: string; children: ReactNode; id: string; label: string }) {
+  return (
+    <motion.div
+      id={id}
+      role="region"
+      aria-label={label}
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: -8, filter: "blur(4px)" }}
+      animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0, filter: "blur(0px)" }}
+      exit={reduce ? { opacity: 0 } : { opacity: 0, y: -6, filter: "blur(2px)" }}
+      transition={{ duration: reduce ? 0.12 : 0.22, ease: EASE }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 export default function Navbar() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
-  const shouldReduceMotion = useReducedMotion();
+  const reduce = Boolean(useReducedMotion());
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activityOpen, setActivityOpen] = useState(false);
   const [mobileActivityOpen, setMobileActivityOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
+  const [openMenu, setOpenMenu] = useState<MenuId | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const navRef = useRef<HTMLElement>(null);
+
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  const isAdmin = user?.app_metadata?.role === "admin";
+  const firstName = user?.user_metadata?.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "";
+  const initial = (firstName[0] || "U").toUpperCase();
 
-  const handleLogout = async () => { await signOut(); router.push("/"); };
+  const handleLogout = async () => {
+    setOpenMenu(null);
+    await signOut();
+    router.push("/");
+  };
+
+  // Hover opens a menu straight away; leaving waits a beat so the pointer can travel
+  // from the trigger into the panel without it snapping shut.
+  const cancelClose = useCallback(() => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = null;
+  }, []);
+  const openNow = (id: MenuId) => {
+    cancelClose();
+    setOpenMenu(id);
+  };
+  const closeSoon = () => {
+    cancelClose();
+    closeTimer.current = setTimeout(() => setOpenMenu(null), 160);
+  };
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Close everything on navigation.
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setActivityOpen(false);
-      }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setOpenMenu(null);
+    setMobileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!openMenu) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      const trigger = document.getElementById(`nav-trigger-${openMenu}`);
+      setOpenMenu(null);
+      trigger?.focus();
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    const onDown = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpenMenu(null);
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onDown);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onDown);
+    };
+  }, [openMenu]);
 
   useEffect(() => {
     if (!mobileOpen) return;
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMobileOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMobileOpen(false);
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
     };
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
   }, [mobileOpen]);
 
-  // Lock scroll when mobile menu is open
-  useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [mobileOpen]);
+  useEffect(() => cancelClose, [cancelClose]);
+
+  const solid = scrolled || openMenu !== null;
 
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 backdrop-blur-xl border-b ${
-          scrolled ? "bg-[#0F172A]/95 border-white/10 shadow-lg shadow-black/20" : "bg-[#0F172A]/90 border-white/5"
-        }`}
+        ref={navRef}
+        aria-label="Main"
+        onPointerLeave={(e) => e.pointerType === "mouse" && closeSoon()}
+        className="fixed inset-x-0 top-0 z-50"
       >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className={`flex items-center justify-between transition-all duration-500 ${scrolled ? "h-16" : "h-20"}`}>
-            <Link href="/" className="flex items-center group">
+        <div
+          className={`relative border-b backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-300 motion-reduce:transition-none ${
+            solid ? "border-white/10 bg-[#0B1222]/95 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)]" : "border-white/[0.06] bg-[#0F172A]/80"
+          }`}
+        >
+          <div className={`mx-auto flex max-w-7xl items-center gap-4 px-4 transition-[height] duration-300 motion-reduce:transition-none sm:px-6 lg:px-8 ${scrolled ? "h-16" : "h-[72px]"}`}>
+            {/* Brand */}
+            <Link href="/" className="group flex shrink-0 items-center gap-3 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400" aria-label="Himalayan Arc Adventure — home">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/badge.png" alt="Himalayan Arc Adventure" width={1254} height={1254} className="h-12 sm:h-14 w-auto rounded-full transition-transform group-hover:scale-[1.02]" />
+              <img
+                src="/brand/badge.png"
+                alt=""
+                width={1254}
+                height={1254}
+                className={`w-auto rounded-full ring-1 ring-white/15 transition-[height,transform] duration-300 group-hover:scale-[1.03] motion-reduce:transition-none ${scrolled ? "h-10" : "h-11 sm:h-12"}`}
+              />
+              <span className="hidden flex-col leading-none sm:flex lg:hidden xl:flex">
+                <span className="font-nav text-[17px] font-bold tracking-[-0.02em] text-white">Himalayan Arc</span>
+                <span className="mt-1 font-nav text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-300/90">Adventure</span>
+              </span>
             </Link>
 
-            {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  aria-current={isActive(link.href) ? "page" : undefined}
-                  className={`font-nav relative px-4 py-2 text-[13px] font-semibold uppercase tracking-[0.08em] transition-colors group ${
-                    isActive(link.href) ? "text-white" : "text-white/70 hover:text-white"
-                  }`}
-                >
-                  {link.label}
-                  <span
-                    className={`absolute bottom-0 h-0.5 bg-cyan-400 transition-all duration-300 ${
-                      isActive(link.href)
-                        ? "left-4 w-[calc(100%-2rem)]"
-                        : "left-1/2 w-0 group-hover:left-4 group-hover:w-[calc(100%-2rem)]"
-                    }`}
-                  />
-                </Link>
-              ))}
-
-              {/* Activities Dropdown */}
-              <div ref={dropdownRef} className="relative">
-                <button
-                  onClick={() => setActivityOpen(!activityOpen)}
-                  aria-expanded={activityOpen}
-                  aria-haspopup="true"
-                  className={`font-nav relative flex items-center gap-1 px-4 py-2 text-[13px] font-semibold uppercase tracking-[0.08em] transition-colors group ${
-                    isActive("/activities") ? "text-white" : "text-white/70 hover:text-white"
-                  }`}
-                >
-                  Activities
-                  <svg
-                    className={`h-3.5 w-3.5 transition-transform duration-200 ${activityOpen ? "rotate-180" : ""}`}
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+            {/* Desktop links */}
+            {/* Not positioned, so the Treks panel spans the whole bar rather than this list. */}
+            <ul className="ml-2 hidden items-center lg:flex" onPointerLeave={() => setHovered(null)}>
+              {NAV.map((item) => {
+                const active = isActive(item.href);
+                const open = item.menu ? openMenu === item.menu : false;
+                const highlight = hovered === item.label || open;
+                const label = (
+                  <>
+                    {highlight && (
+                      <motion.span
+                        layoutId={reduce ? undefined : "nav-hover"}
+                        transition={{ type: "spring", stiffness: 520, damping: 42 }}
+                        className="absolute inset-0 -z-10 rounded-full bg-white/[0.08]"
+                        aria-hidden
+                      />
+                    )}
+                    {item.label}
+                    {item.menu && <ChevronDown open={open} />}
+                    {active && <span aria-hidden className="absolute -bottom-[3px] left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)]" />}
+                  </>
+                );
+                const linkClass = `relative z-0 flex items-center gap-1.5 rounded-full px-3.5 py-2 font-nav text-[15px] font-medium tracking-[-0.01em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${
+                  active || highlight ? "text-white" : "text-white/70"
+                }`;
+                return (
+                  <li
+                    key={item.label}
+                    onPointerEnter={(e) => {
+                      if (e.pointerType !== "mouse") return;
+                      setHovered(item.label);
+                      if (item.menu) openNow(item.menu);
+                      else closeSoon();
+                    }}
+                    className={item.menu === "activities" ? "relative" : undefined}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                  </svg>
-                  <span className="absolute bottom-0 left-1/2 h-0.5 w-0 bg-cyan-400 transition-all duration-300 group-hover:left-4 group-hover:w-[calc(100%-2rem)]" />
-                </button>
-
-                {activityOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-80 rounded-2xl bg-white shadow-2xl shadow-black/10 border border-gray-100 py-2 overflow-hidden">
-                    {activities.map((act) => (
-                      <Link
-                        key={act.label}
-                        href={act.href}
-                        onClick={() => setActivityOpen(false)}
-                        className="flex items-center gap-4 px-5 py-3 hover:bg-cyan-50 transition-colors group"
+                    {item.menu ? (
+                      <button
+                        id={`nav-trigger-${item.menu}`}
+                        type="button"
+                        aria-expanded={open}
+                        aria-controls={`nav-menu-${item.menu}`}
+                        onClick={() => setOpenMenu(open ? null : item.menu!)}
+                        className={linkClass}
                       >
-                        <div className="flex-shrink-0 h-10 w-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-colors">
-                          {act.icon}
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-primary group-hover:text-cyan-500 transition-colors">{act.label}</p>
-                          <p className="text-xs text-muted">{act.description}</p>
-                        </div>
+                        {label}
+                      </button>
+                    ) : (
+                      <Link href={item.href} aria-current={active ? "page" : undefined} className={linkClass}>
+                        {label}
                       </Link>
-                    ))}
-                    <div className="border-t border-gray-100 mt-1 pt-1">
-                      <Link
-                        href="/activities"
-                        onClick={() => setActivityOpen(false)}
-                        className="flex items-center gap-2 px-5 py-3 text-sm font-semibold text-cyan-500 hover:bg-cyan-50 transition-colors"
-                      >
-                        View All Activities
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
+                    )}
 
-              <Link
-                href="/contact"
-                aria-current={isActive("/contact") ? "page" : undefined}
-                className={`font-nav relative px-4 py-2 text-[13px] font-semibold uppercase tracking-[0.08em] transition-colors group ${
-                  isActive("/contact") ? "text-white" : "text-white/70 hover:text-white"
-                }`}
-              >
-                Contact
-<span
-                    className={`absolute bottom-0 h-0.5 bg-cyan-400 transition-all duration-300 ${
-                      isActive("/contact")
-                        ? "left-4 w-[calc(100%-2rem)]"
-                        : "left-1/2 w-0 group-hover:left-4 group-hover:w-[calc(100%-2rem)]"
-                    }`}
-                  />
-              </Link>
-            </div>
+                    {/* Activities: a compact menu under its own trigger */}
+                    {item.menu === "activities" && (
+                      <AnimatePresence>
+                        {open && (
+                          <MenuPanel
+                            reduce={reduce}
+                            id="nav-menu-activities"
+                            label="Activities"
+                            className="absolute left-1/2 top-full mt-3 w-[340px] -translate-x-1/2 overflow-hidden rounded-2xl border border-white/10 bg-[#0B1222] p-2 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.75)]"
+                          >
+                            {activities.map((act) => (
+                              <Link
+                                key={act.label}
+                                href={act.href}
+                                onClick={() => setOpenMenu(null)}
+                                className="group flex items-center gap-3.5 rounded-xl px-3 py-2.5 transition-colors hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-none"
+                              >
+                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-400/10 text-emerald-300 ring-1 ring-inset ring-emerald-300/15 transition-colors group-hover:bg-emerald-400 group-hover:text-[#0B1222]">
+                                  {act.icon}
+                                </span>
+                                <span className="min-w-0">
+                                  <span className="block text-sm font-semibold text-white">{act.label}</span>
+                                  <span className="block text-xs text-white/55">{act.description}</span>
+                                </span>
+                              </Link>
+                            ))}
+                            <Link
+                              href="/activities"
+                              onClick={() => setOpenMenu(null)}
+                              className="mt-1 flex items-center justify-between rounded-xl border-t border-white/[0.06] px-3 py-3 text-sm font-semibold text-emerald-300 transition-colors hover:bg-white/[0.04]"
+                            >
+                              All activities
+                              <ArrowRight />
+                            </Link>
+                          </MenuPanel>
+                        )}
+                      </AnimatePresence>
+                    )}
 
-            {/* Desktop CTA */}
-            <div className="hidden md:flex items-center gap-4">
+                    {/* Treks: full-width menu built from the trek catalogue */}
+                    {item.menu === "treks" && (
+                      <AnimatePresence>
+                        {open && (
+                          <MenuPanel
+                            reduce={reduce}
+                            id="nav-menu-treks"
+                            label="Treks"
+                            className="absolute inset-x-0 top-full border-b border-white/10 bg-[#0B1222] shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)]"
+                          >
+                            <div className="mx-auto grid max-w-7xl grid-cols-[220px_1fr] gap-10 px-8 py-8 xl:grid-cols-[240px_1fr]">
+                              <div className="space-y-7">
+                                <div>
+                                  <p className="mb-2.5 font-nav text-xs font-semibold text-white/45">By region</p>
+                                  <ul className="space-y-0.5">
+                                    {REGION_LINKS.map((r) => (
+                                      <li key={r.region}>
+                                        <Link
+                                          href={`/treks?region=${encodeURIComponent(r.region)}`}
+                                          onClick={() => setOpenMenu(null)}
+                                          className="-mx-2 flex items-center justify-between rounded-lg px-2 py-1.5 text-[15px] font-medium text-white/85 transition-colors hover:bg-white/[0.06] hover:text-white"
+                                        >
+                                          {r.region}
+                                          <span className="text-xs tabular-nums text-white/40">{r.count}</span>
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                                <div>
+                                  <p className="mb-2.5 font-nav text-xs font-semibold text-white/45">By difficulty</p>
+                                  <ul className="space-y-0.5">
+                                    {DIFFICULTY_LINKS.map((d) => (
+                                      <li key={d.difficulty}>
+                                        <Link
+                                          href={`/treks?difficulty=${d.difficulty}`}
+                                          onClick={() => setOpenMenu(null)}
+                                          className="-mx-2 flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[15px] font-medium text-white/85 transition-colors hover:bg-white/[0.06] hover:text-white"
+                                        >
+                                          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: DIFFICULTY_COLORS[d.difficulty] }} aria-hidden />
+                                          {d.difficulty}
+                                          <span className="ml-auto text-xs tabular-nums text-white/40">{d.count}</span>
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div className="mb-3 flex items-baseline justify-between">
+                                  <p className="font-nav text-xs font-semibold text-white/45">Featured treks</p>
+                                  <Link
+                                    href="/treks"
+                                    onClick={() => setOpenMenu(null)}
+                                    className="group/all flex items-center gap-1.5 text-sm font-semibold text-emerald-300 hover:text-emerald-200"
+                                  >
+                                    All {treks.length} treks
+                                    <ArrowRight className="h-4 w-4 transition-transform group-hover/all:translate-x-0.5 motion-reduce:transition-none" />
+                                  </Link>
+                                </div>
+                                <ul className="grid grid-cols-4 gap-4">
+                                  {MENU_TREKS.map((t) => (
+                                    <li key={t.slug}>
+                                      <Link href={`/treks/${t.slug}`} onClick={() => setOpenMenu(null)} className="group/card block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">
+                                        <span className="relative block aspect-[4/3] overflow-hidden rounded-xl bg-white/5">
+                                          {t.image ? (
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img
+                                              src={t.image}
+                                              alt=""
+                                              loading="lazy"
+                                              decoding="async"
+                                              className="h-full w-full object-cover transition-transform duration-500 group-hover/card:scale-[1.05] motion-reduce:transition-none"
+                                            />
+                                          ) : (
+                                            <NoPhoto className="h-full w-full" />
+                                          )}
+                                          <span className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent" aria-hidden />
+                                          <span
+                                            className="absolute left-2 top-2 rounded-full px-2 py-0.5 text-[11px] font-semibold text-white"
+                                            style={{ backgroundColor: DIFFICULTY_COLORS[t.difficulty] }}
+                                          >
+                                            {t.difficulty}
+                                          </span>
+                                        </span>
+                                        <span className="mt-2.5 block text-[15px] font-semibold leading-snug text-white group-hover/card:text-emerald-200">{t.name}</span>
+                                        <span className="mt-0.5 block text-[13px] text-white/55">
+                                          {t.days} days · {t.maxAltitude.toLocaleString("en-IN")} m · from <Price inr={t.price} />
+                                        </span>
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                                <a
+                                  href={WHATSAPP}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="mt-6 flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/75 transition-colors hover:border-emerald-400/30 hover:bg-emerald-400/[0.06] hover:text-white"
+                                >
+                                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+                                    <WhatsAppIcon />
+                                  </span>
+                                  <span>
+                                    <span className="font-semibold text-white">Not sure which trek suits you?</span> Ask our mountain experts on WhatsApp.
+                                  </span>
+                                  <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-white/40" />
+                                </a>
+                              </div>
+                            </div>
+                          </MenuPanel>
+                        )}
+                      </AnimatePresence>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* Right side */}
+            <div className="ml-auto flex items-center gap-2 sm:gap-3">
               <DesktopSearch />
               <CurrencySwitcher />
-              {user ? (
-                <>
-                  <Link href="/dashboard" className="font-nav text-[13px] font-medium tracking-wide text-white/70 hover:text-white transition-colors">
-                    {user.user_metadata?.full_name?.split(" ")[0] || user.email}
-                  </Link>
-                  <button onClick={handleLogout} className="font-nav text-[13px] font-medium tracking-wide text-white/50 hover:text-white transition-colors">
-                    Log Out
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link href="/login" className="font-nav text-[13px] font-semibold tracking-wide text-white/70 hover:text-white transition-colors">
-                    Log In
-                  </Link>
-                  <Link href="/signup" className="font-nav rounded-full bg-white px-5 py-2.5 text-[13px] font-bold tracking-wide text-[#0F172A] transition-all hover:bg-white/90 hover:shadow-lg active:scale-[0.98]">
-                    Sign Up
-                  </Link>
-                </>
-              )}
-            </div>
 
-            {/* Mobile Toggle — morphing hamburger */}
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label={mobileOpen ? "Close menu" : "Open menu"}
-              aria-expanded={mobileOpen}
-              className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white backdrop-blur-sm transition-colors hover:bg-white/10 active:scale-95 md:hidden"
-            >
-              <span className="relative block h-4 w-5">
-                <motion.span
-                  className="absolute left-0 top-0 block h-0.5 w-5 rounded-full bg-white"
-                  animate={
-                    shouldReduceMotion
-                      ? {}
-                      : mobileOpen
-                        ? { rotate: 45, y: 7 }
-                        : { rotate: 0, y: 0 }
-                  }
-                  transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
-                />
-                <motion.span
-                  className="absolute left-0 top-[7px] block h-0.5 w-5 rounded-full bg-white"
-                  animate={
-                    shouldReduceMotion
-                      ? {}
-                      : mobileOpen
-                        ? { opacity: 0, scaleX: 0 }
-                        : { opacity: 1, scaleX: 1 }
-                  }
-                  transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
-                  style={{ transformOrigin: "center" }}
-                />
-                <motion.span
-                  className="absolute left-0 top-[14px] block h-0.5 w-5 rounded-full bg-white"
-                  animate={
-                    shouldReduceMotion
-                      ? {}
-                      : mobileOpen
-                        ? { rotate: -45, y: -7 }
-                        : { rotate: 0, y: 0 }
-                  }
-                  transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
-                />
-              </span>
-            </button>
+              {user ? (
+                <div className="relative hidden lg:block" onPointerEnter={(e) => e.pointerType === "mouse" && openNow("account")}>
+                  <button
+                    id="nav-trigger-account"
+                    type="button"
+                    aria-expanded={openMenu === "account"}
+                    aria-controls="nav-menu-account"
+                    onClick={() => setOpenMenu(openMenu === "account" ? null : "account")}
+                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] py-1 pl-1 pr-3 text-sm font-semibold text-white transition-colors hover:bg-white/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                  >
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 font-nav text-sm font-bold text-[#0B1222]">{initial}</span>
+                    <span className="max-w-[9rem] truncate">{firstName}</span>
+                    <ChevronDown open={openMenu === "account"} />
+                  </button>
+                  <AnimatePresence>
+                    {openMenu === "account" && (
+                      <MenuPanel
+                        reduce={reduce}
+                        id="nav-menu-account"
+                        label="Account"
+                        className="absolute right-0 top-full mt-3 w-56 overflow-hidden rounded-2xl border border-white/10 bg-[#0B1222] p-1.5 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.75)]"
+                      >
+                        <p className="truncate px-3 pb-2 pt-2 text-xs text-white/45">{user.email}</p>
+                        <Link href="/dashboard" onClick={() => setOpenMenu(null)} className="block rounded-xl px-3 py-2.5 text-sm font-medium text-white/85 hover:bg-white/[0.06] hover:text-white">
+                          My bookings
+                        </Link>
+                        {isAdmin && (
+                          <Link href="/admin/bookings" onClick={() => setOpenMenu(null)} className="block rounded-xl px-3 py-2.5 text-sm font-medium text-white/85 hover:bg-white/[0.06] hover:text-white">
+                            Admin
+                          </Link>
+                        )}
+                        <button type="button" onClick={() => void handleLogout()} className="block w-full rounded-xl px-3 py-2.5 text-left text-sm font-medium text-white/60 hover:bg-white/[0.06] hover:text-white">
+                          Log out
+                        </button>
+                      </MenuPanel>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <div className="hidden items-center gap-1 lg:flex">
+                  <Link href="/login" className="whitespace-nowrap rounded-full px-3.5 py-2 font-nav text-[15px] font-medium text-white/75 transition-colors hover:bg-white/[0.06] hover:text-white">
+                    Log in
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="whitespace-nowrap rounded-full bg-emerald-500 px-5 py-2.5 font-nav text-[15px] font-semibold text-[#0B1222] shadow-[0_6px_20px_-6px_rgba(16,185,129,0.65)] transition-[background-color,transform,box-shadow] hover:bg-emerald-400 hover:shadow-[0_8px_26px_-6px_rgba(16,185,129,0.8)] active:scale-[0.97] motion-reduce:transition-none"
+                  >
+                    Sign up
+                  </Link>
+                </div>
+              )}
+
+              {/* Mobile toggle — morphing hamburger */}
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                aria-expanded={mobileOpen}
+                className="relative z-50 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 active:scale-95 lg:hidden"
+              >
+                <span className="relative block h-4 w-5">
+                  <motion.span
+                    className="absolute left-0 top-0 block h-0.5 w-5 rounded-full bg-white"
+                    animate={reduce ? {} : mobileOpen ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }}
+                    transition={{ duration: 0.22, ease: EASE }}
+                  />
+                  <motion.span
+                    className="absolute left-0 top-[7px] block h-0.5 w-5 rounded-full bg-white"
+                    animate={reduce ? {} : mobileOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
+                    transition={{ duration: 0.18, ease: EASE }}
+                    style={{ transformOrigin: "center" }}
+                  />
+                  <motion.span
+                    className="absolute left-0 top-[14px] block h-0.5 w-5 rounded-full bg-white"
+                    animate={reduce ? {} : mobileOpen ? { rotate: -45, y: -7 } : { rotate: 0, y: 0 }}
+                    transition={{ duration: 0.22, ease: EASE }}
+                  />
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* Mobile Menu — spring drawer with stagger */}
+      {/* Mobile menu — spring drawer with stagger */}
       <AnimatePresence>
         {mobileOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
-              initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0 }}
+              initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={
-                shouldReduceMotion
-                  ? { duration: 0.15 }
-                  : { duration: 0.25, ease: [0.23, 1, 0.32, 1] }
-              }
+              transition={{ duration: reduce ? 0.15 : 0.25, ease: EASE }}
               onClick={() => setMobileOpen(false)}
-              className="fixed inset-0 z-40 bg-[#020617]/60 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 bg-[#020617]/60 backdrop-blur-sm lg:hidden"
               aria-hidden
             />
 
-            {/* Panel */}
             <motion.div
-              initial={
-                shouldReduceMotion
-                  ? { opacity: 0 }
-                  : { transform: "translateX(100%)", opacity: 0 }
-              }
-              animate={
-                shouldReduceMotion
-                  ? { opacity: 1 }
-                  : { transform: "translateX(0%)", opacity: 1 }
-              }
-              exit={
-                shouldReduceMotion
-                  ? { opacity: 0 }
-                  : { transform: "translateX(100%)", opacity: 0 }
-              }
-              transition={
-                shouldReduceMotion
-                  ? { duration: 0.15 }
-                  : {
-                      type: "spring",
-                      duration: 0.45,
-                      bounce: 0.15,
-                    }
-              }
-              drag={shouldReduceMotion ? false : "x"}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Menu"
+              initial={reduce ? { opacity: 0 } : { transform: "translateX(100%)" }}
+              animate={reduce ? { opacity: 1 } : { transform: "translateX(0%)" }}
+              exit={reduce ? { opacity: 0 } : { transform: "translateX(100%)" }}
+              transition={reduce ? { duration: 0.15 } : { type: "spring", duration: 0.45, bounce: 0.12 }}
+              drag={reduce ? false : "x"}
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
               onDragEnd={(_, info) => {
-                if (info.offset.x > 80 || info.velocity.x > 300) {
-                  setMobileOpen(false);
-                }
+                if (info.offset.x > 80 || info.velocity.x > 300) setMobileOpen(false);
               }}
-              className="fixed inset-y-0 right-0 z-40 flex w-[88%] max-w-[360px] flex-col overflow-y-auto bg-[#0F172A] px-5 pb-8 pt-[72px] shadow-2xl shadow-black/50 md:hidden"
+              className="fixed inset-y-0 right-0 z-40 flex w-[88%] max-w-[380px] flex-col overflow-y-auto bg-[#0B1222] px-5 pb-8 pt-[88px] shadow-2xl shadow-black/50 lg:hidden"
               style={{ willChange: "transform" }}
             >
-              {/* Drag handle hint */}
-              <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/15 md:hidden" />
-
               <motion.div
                 initial="hidden"
                 animate="show"
                 exit="hidden"
-                variants={{
-                  hidden: {},
-                  show: {
-                    transition: {
-                      staggerChildren: shouldReduceMotion ? 0 : 0.045,
-                      delayChildren: shouldReduceMotion ? 0 : 0.08,
-                    },
-                  },
-                }}
+                variants={{ hidden: {}, show: { transition: { staggerChildren: reduce ? 0 : 0.04, delayChildren: reduce ? 0 : 0.06 } } }}
                 className="flex flex-col"
               >
-                {navLinks.map((link) => (
-                  <motion.div
-                    key={link.href}
-                    variants={{
-                      hidden: shouldReduceMotion
-                        ? { opacity: 0 }
-                        : { opacity: 0, transform: "translateY(10px)" },
-                      show: shouldReduceMotion
-                        ? { opacity: 1 }
-                        : { opacity: 1, transform: "translateY(0px)" },
-                    }}
-                    transition={{
-                      duration: 0.3,
-                      ease: [0.23, 1, 0.32, 1] as const,
-                    }}
-                  >
+                {[{ label: "Home", href: "/" }, ...NAV.filter((n) => n.menu !== "activities" && n.href !== "/contact")].map((link) => (
+                  <MobileItem key={link.href} reduce={reduce}>
                     <Link
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center justify-between border-b border-white/10 py-4 text-[22px] font-heading font-bold tracking-tight transition-colors ${
-                        isActive(link.href)
-                          ? "text-white"
-                          : "text-white/90 hover:text-white"
+                      aria-current={isActive(link.href) ? "page" : undefined}
+                      className={`flex items-center justify-between border-b border-white/10 py-4 font-nav text-[22px] font-semibold tracking-[-0.02em] transition-colors ${
+                        isActive(link.href) ? "text-white" : "text-white/85 hover:text-white"
                       }`}
                     >
                       <span className="flex items-center gap-3">
-                        {isActive(link.href) && (
-                          <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]" />
-                        )}
+                        {isActive(link.href) && <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" aria-hidden />}
                         {link.label}
                       </span>
-                      <svg
-                        className="h-4 w-4 text-white/30"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        aria-hidden
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 5l7 7-7 7"
-                        />
+                      <svg className="h-4 w-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                       </svg>
                     </Link>
-                  </motion.div>
+                    {link.href === "/treks" && (
+                      <div className="flex flex-wrap gap-2 border-b border-white/10 py-3">
+                        {REGION_LINKS.map((r) => (
+                          <Link
+                            key={r.region}
+                            href={`/treks?region=${encodeURIComponent(r.region)}`}
+                            onClick={() => setMobileOpen(false)}
+                            className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm font-medium text-white/80 active:scale-[0.97]"
+                          >
+                            {r.region}
+                          </Link>
+                        ))}
+                        {DIFFICULTY_LINKS.slice(0, 2).map((d) => (
+                          <Link
+                            key={d.difficulty}
+                            href={`/treks?difficulty=${d.difficulty}`}
+                            onClick={() => setMobileOpen(false)}
+                            className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm font-medium text-white/80 active:scale-[0.97]"
+                          >
+                            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: DIFFICULTY_COLORS[d.difficulty] }} aria-hidden />
+                            {d.difficulty}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </MobileItem>
                 ))}
 
-                {/* Mobile Activities — collapsible */}
-                <motion.div
-                  variants={{
-                    hidden: shouldReduceMotion
-                      ? { opacity: 0 }
-                      : { opacity: 0, transform: "translateY(10px)" },
-                    show: shouldReduceMotion
-                      ? { opacity: 1 }
-                      : { opacity: 1, transform: "translateY(0px)" },
-                  }}
-                  transition={{
-                    duration: 0.3,
-                    ease: [0.23, 1, 0.32, 1] as const,
-                  }}
-                  className="border-b border-white/10 py-1"
-                >
+                {/* Activities — collapsible */}
+                <MobileItem reduce={reduce} className="border-b border-white/10 py-1">
                   <button
                     onClick={() => setMobileActivityOpen((v) => !v)}
                     aria-expanded={mobileActivityOpen}
-                    className="flex w-full items-center justify-between py-4 text-left"
+                    className="flex w-full items-center justify-between py-3 text-left"
                   >
-                    <span className="text-[22px] font-heading font-bold tracking-tight text-white/90">
-                      Activities
-                    </span>
+                    <span className="font-nav text-[22px] font-semibold tracking-[-0.02em] text-white/85">Activities</span>
                     <motion.span
                       animate={{ rotate: mobileActivityOpen ? 180 : 0 }}
-                      transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                      transition={{ duration: reduce ? 0 : 0.22, ease: EASE }}
                       className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white"
                     >
-                      <svg
-                        className="h-3.5 w-3.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        aria-hidden
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                        />
-                      </svg>
+                      <ChevronDown open={false} />
                     </motion.span>
                   </button>
                   <AnimatePresence initial={false}>
                     {mobileActivityOpen && (
                       <motion.div
-                        initial={
-                          shouldReduceMotion
-                            ? { opacity: 0 }
-                            : { opacity: 0, height: 0 }
-                        }
-                        animate={
-                          shouldReduceMotion
-                            ? { opacity: 1 }
-                            : { opacity: 1, height: "auto" }
-                        }
-                        exit={
-                          shouldReduceMotion
-                            ? { opacity: 0 }
-                            : { opacity: 0, height: 0 }
-                        }
-                        transition={{
-                          duration: shouldReduceMotion ? 0.15 : 0.28,
-                          ease: [0.23, 1, 0.32, 1] as const,
-                        }}
+                        initial={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                        animate={reduce ? { opacity: 1 } : { opacity: 1, height: "auto" }}
+                        exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                        transition={{ duration: reduce ? 0.15 : 0.28, ease: EASE }}
                         className="overflow-hidden"
                       >
                         <div className="flex flex-col gap-1 pb-3">
@@ -491,209 +646,117 @@ export default function Navbar() {
                               onClick={() => setMobileOpen(false)}
                               className="flex items-center gap-3 rounded-xl bg-white/[0.04] px-3 py-3 text-sm font-medium text-white/80 transition-colors hover:bg-white/[0.08] hover:text-white active:scale-[0.98]"
                             >
-                              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400">
-                                {act.icon}
-                              </span>
+                              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-400/10 text-emerald-300">{act.icon}</span>
                               <span className="flex flex-col">
-                                <span className="font-semibold leading-none">
-                                  {act.label}
-                                </span>
-                                <span className="text-xs text-white/50">
-                                  {act.description}
-                                </span>
+                                <span className="font-semibold">{act.label}</span>
+                                <span className="text-xs text-white/50">{act.description}</span>
                               </span>
                             </Link>
                           ))}
                           <Link
                             href="/activities"
                             onClick={() => setMobileOpen(false)}
-                            className="mt-1 flex items-center justify-center gap-2 rounded-xl bg-cyan-500 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-cyan-400 active:scale-[0.98]"
+                            className="mt-1 flex items-center justify-center gap-2 rounded-xl border border-emerald-400/30 px-4 py-3 text-sm font-semibold text-emerald-300 active:scale-[0.98]"
                           >
-                            View all activities
-                            <svg
-                              className="h-4 w-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              aria-hidden
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M17 8l4 4m0 0l-4 4m4-4H3"
-                              />
-                            </svg>
+                            All activities
+                            <ArrowRight />
                           </Link>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </motion.div>
+                </MobileItem>
 
-                <motion.div
-                  variants={{
-                    hidden: shouldReduceMotion
-                      ? { opacity: 0 }
-                      : { opacity: 0, transform: "translateY(10px)" },
-                    show: shouldReduceMotion
-                      ? { opacity: 1 }
-                      : { opacity: 1, transform: "translateY(0px)" },
-                  }}
-                  transition={{
-                    duration: 0.3,
-                    ease: [0.23, 1, 0.32, 1] as const,
-                  }}
-                >
+                <MobileItem reduce={reduce}>
                   <Link
                     href="/contact"
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-between border-b border-white/10 py-4 text-[22px] font-heading font-bold tracking-tight text-white/90 hover:text-white"
+                    aria-current={isActive("/contact") ? "page" : undefined}
+                    className="flex items-center justify-between border-b border-white/10 py-4 font-nav text-[22px] font-semibold tracking-[-0.02em] text-white/85 transition-colors hover:text-white"
                   >
                     Contact
-                    <svg
-                      className="h-4 w-4 text-white/30"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      aria-hidden
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M9 5l7 7-7 7"
-                      />
+                    <svg className="h-4 w-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
                   </Link>
-                </motion.div>
+                </MobileItem>
 
-                <motion.div
-                  variants={{
-                    hidden: shouldReduceMotion
-                      ? { opacity: 0 }
-                      : { opacity: 0, transform: "translateY(10px)" },
-                    show: shouldReduceMotion
-                      ? { opacity: 1 }
-                      : { opacity: 1, transform: "translateY(0px)" },
-                  }}
-                  transition={{
-                    duration: 0.3,
-                    ease: [0.23, 1, 0.32, 1] as const,
-                  }}
-                  className="mt-6"
-                >
-                  <Link
-                    href="/contact"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-sky-500 px-6 py-4 text-base font-bold text-white shadow-lg shadow-cyan-500/20 transition-all hover:shadow-cyan-500/30 active:scale-[0.98]"
+                <MobileItem reduce={reduce} className="mt-6">
+                  <a
+                    href={WHATSAPP}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-full items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-4 text-base font-semibold text-[#0B1222] shadow-[0_10px_30px_-10px_rgba(16,185,129,0.7)] active:scale-[0.98]"
                   >
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      aria-hidden
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.36-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"
-                      />
-                    </svg>
-                    Contact Us
-                  </Link>
-                </motion.div>
+                    <WhatsAppIcon className="h-5 w-5" />
+                    Talk to our mountain experts
+                  </a>
+                </MobileItem>
 
                 {user ? (
-                  <motion.div
-                    variants={{
-                      hidden: shouldReduceMotion
-                        ? { opacity: 0 }
-                        : { opacity: 0, transform: "translateY(10px)" },
-                      show: shouldReduceMotion
-                        ? { opacity: 1 }
-                        : { opacity: 1, transform: "translateY(0px)" },
-                    }}
-                    transition={{
-                      duration: 0.3,
-                      ease: [0.23, 1, 0.32, 1] as const,
-                    }}
-                    className="mt-4 flex flex-col gap-2"
-                  >
+                  <MobileItem reduce={reduce} className="mt-4 flex flex-col gap-2">
                     <Link
                       href="/dashboard"
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white"
+                      className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white"
                     >
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-sm">
-                        {(user.user_metadata?.full_name?.[0] || user.email?.[0] || "U").toUpperCase()}
-                      </span>
-                      My Dashboard
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 font-nav text-sm font-bold text-[#0B1222]">{initial}</span>
+                      My bookings
                     </Link>
+                    {isAdmin && (
+                      <Link href="/admin/bookings" onClick={() => setMobileOpen(false)} className="rounded-2xl border border-white/10 px-4 py-3 text-sm font-semibold text-white/80">
+                        Admin
+                      </Link>
+                    )}
                     <button
                       onClick={() => {
-                        handleLogout();
+                        void handleLogout();
                         setMobileOpen(false);
                       }}
-                      className="rounded-xl border border-white/10 px-4 py-3 text-sm font-semibold text-white/60"
+                      className="rounded-2xl border border-white/10 px-4 py-3 text-sm font-semibold text-white/60"
                     >
-                      Log Out
+                      Log out
                     </button>
-                  </motion.div>
+                  </MobileItem>
                 ) : (
-                  <motion.div
-                    variants={{
-                      hidden: shouldReduceMotion
-                        ? { opacity: 0 }
-                        : { opacity: 0, transform: "translateY(10px)" },
-                      show: shouldReduceMotion
-                        ? { opacity: 1 }
-                        : { opacity: 1, transform: "translateY(0px)" },
-                    }}
-                    transition={{
-                      duration: 0.3,
-                      ease: [0.23, 1, 0.32, 1] as const,
-                    }}
-                    className="mt-4 flex gap-3"
-                  >
+                  <MobileItem reduce={reduce} className="mt-3 flex gap-3">
                     <Link
                       href="/login"
                       onClick={() => setMobileOpen(false)}
-                      className="flex flex-1 items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/10 active:scale-[0.98]"
+                      className="flex flex-1 items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-3.5 text-sm font-semibold text-white active:scale-[0.98]"
                     >
-                      Log In
+                      Log in
                     </Link>
                     <Link
                       href="/signup"
                       onClick={() => setMobileOpen(false)}
-                      className="flex flex-1 items-center justify-center rounded-full bg-white px-5 py-3.5 text-sm font-bold text-[#0F172A] shadow-lg transition-colors hover:bg-white/90 active:scale-[0.98]"
+                      className="flex flex-1 items-center justify-center rounded-full bg-white px-5 py-3.5 text-sm font-semibold text-[#0B1222] active:scale-[0.98]"
                     >
-                      Sign Up
+                      Sign up
                     </Link>
-                  </motion.div>
+                  </MobileItem>
                 )}
 
-                {/* Footer hint — swipe to close */}
-                <motion.p
-                  variants={{
-                    hidden: { opacity: 0 },
-                    show: { opacity: 1 },
-                  }}
-                  transition={{
-                    duration: 0.3,
-                    delay: shouldReduceMotion ? 0 : 0.4,
-                  }}
-                  className="mt-8 text-center text-[11px] font-medium uppercase tracking-widest text-white/25"
-                >
-                  Swipe right to close
-                </motion.p>
               </motion.div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+function MobileItem({ reduce, className, children }: { reduce: boolean; className?: string; children: ReactNode }) {
+  return (
+    <motion.div
+      variants={{
+        hidden: reduce ? { opacity: 0 } : { opacity: 0, transform: "translateY(10px)" },
+        show: reduce ? { opacity: 1 } : { opacity: 1, transform: "translateY(0px)" },
+      }}
+      transition={{ duration: 0.3, ease: EASE }}
+      className={className}
+    >
+      {children}
+    </motion.div>
   );
 }

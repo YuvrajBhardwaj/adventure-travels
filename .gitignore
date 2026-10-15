@@ -16,6 +16,11 @@
 .vercel
 /node_modules/
 
+# AI tooling, not part of the site: Spec Kit's scripts/templates and Claude Code skills.
+# (The specs it writes, in specs/, stay tracked — the code links to them as design docs.)
+.specify/
+.claude/
+
 # env files (secrets) — keep examples only
 .env*
 !.env.example

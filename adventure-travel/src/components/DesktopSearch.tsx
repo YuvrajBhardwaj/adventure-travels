@@ -47,7 +47,7 @@ export default function DesktopSearch() {
   };
 
   return (
-    <div ref={wrapRef} className="relative hidden md:block">
+    <div ref={wrapRef} className="relative hidden lg:block">
       {!open ? (
         <button
           onClick={() => setOpen(true)}
@@ -76,12 +76,12 @@ export default function DesktopSearch() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search treks, courses…"
               autoComplete="off"
-              className="w-full rounded-full border border-white/15 bg-white/10 py-2.5 pl-4 pr-10 text-sm text-white placeholder-white/40 outline-none backdrop-blur-sm focus:border-cyan-400/60 focus:bg-white/15"
+              className="w-full rounded-full border border-white/15 bg-white/10 py-2.5 pl-4 pr-10 text-sm text-white placeholder-white/40 outline-none backdrop-blur-sm focus:border-emerald-400/60 focus:bg-white/15"
             />
             <button
               type="submit"
               aria-label="Search"
-              className="absolute right-1.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-cyan-500 text-white transition-colors hover:bg-cyan-400"
+              className="absolute right-1.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-emerald-500 text-white transition-colors hover:bg-emerald-400"
             >
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
