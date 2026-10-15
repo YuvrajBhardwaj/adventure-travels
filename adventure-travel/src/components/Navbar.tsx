@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { signOut } from "@/lib/auth";
 import DesktopSearch from "@/components/DesktopSearch";
+import CurrencySwitcher from "@/components/CurrencySwitcher";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -220,6 +221,7 @@ export default function Navbar() {
             {/* Desktop CTA */}
             <div className="hidden md:flex items-center gap-4">
               <DesktopSearch />
+              <CurrencySwitcher />
               {user ? (
                 <>
                   <Link href="/dashboard" className="font-nav text-[13px] font-medium tracking-wide text-white/70 hover:text-white transition-colors">

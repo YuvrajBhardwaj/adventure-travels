@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, CalendarDays, Loader2, Lock, Smartphone, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import type { TrekBooking, CourseBooking } from "@/lib/auth";
 import { treks } from "@/data/treks";
@@ -70,6 +71,7 @@ const WHATSAPP = "https://wa.me/917817912062";
 export default function CheckoutClient() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
+  const { converted, currency: displayCurrency } = useCurrency();
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("booking"); // trek booking
   const courseId = searchParams.get("course"); // course booking
@@ -409,6 +411,12 @@ export default function CheckoutClient() {
                               <dd>{formatPaise(summary.totalPaise)}</dd>
                             </div>
                           </dl>
+                          {converted && (
+                            <p className="text-xs leading-snug text-slate-500 dark:text-slate-400">
+                              The rest of the site shows estimates in {displayCurrency}. This is the exact amount you&apos;re
+                              charged, in INR — your card issuer converts it at their own rate.
+                            </p>
+                          )}
 
                           {error && (
                             <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-400/10 dark:text-red-300">

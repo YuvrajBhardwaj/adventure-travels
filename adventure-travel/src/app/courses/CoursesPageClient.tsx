@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
 import { courses } from "@/data/courses";
+import Price from "@/components/Price";
 
 // Hero media — skiing gallery (images only) + real course videos, mixed carousel
 const SKIING_GALLERY = courses.find((c) => c.slug === "skiing-course")?.gallery ?? [];
@@ -233,7 +234,7 @@ export default function CoursesPageClient() {
                     </div>
                     <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                       <div>
-                        <span className="text-2xl font-bold text-gray-900">{course.tiers ? "From " : ""}Rs.{displayPrice.toLocaleString("en-IN")}</span>
+                        <span className="text-2xl font-bold text-gray-900">{course.tiers ? "From " : ""}<Price inr={displayPrice} /></span>
                         <span className="text-sm text-gray-500 ml-1">/ person</span>
                       </div>
                       <span className="text-sky-600 font-semibold group-hover:translate-x-1 transition-transform duration-300 inline-flex items-center gap-1">

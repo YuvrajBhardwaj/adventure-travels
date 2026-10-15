@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { treks, REGIONS } from "@/data/treks";
 import { destinations } from "@/data/destinations";
 import SmartImage from "@/components/SmartImage";
+import Price from "@/components/Price";
 
 const DIFFICULTIES = ["All Levels", "Easy", "Moderate", "Challenging", "Strenuous"] as const;
 const DURATION_OPTIONS = [
@@ -336,7 +337,7 @@ function TrekCard({ trek }: { trek: (typeof treks)[0] }) {
 
         <div className="flex items-center justify-between gap-3 border-t border-white/20 pt-3">
           <div className="flex min-w-0 flex-col">
-            <span className="text-2xl font-bold text-white leading-tight">{trek.currency}{trek.price.toLocaleString("en-IN")}</span>
+            <span className="text-2xl font-bold text-white leading-tight"><Price inr={trek.price} /></span>
             <span className="text-xs text-white/70 whitespace-nowrap">per person</span>
           </div>
           <span className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-emerald-600 text-white px-4 py-2 text-sm font-semibold transition-colors group-hover:bg-emerald-700">

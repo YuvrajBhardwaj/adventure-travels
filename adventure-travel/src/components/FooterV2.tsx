@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
+import CurrencySwitcher from "./CurrencySwitcher";
 
 
 const quickLinks = [
@@ -405,7 +406,8 @@ export default function FooterV2() {
             <p className="text-xs text-white/30">
               &copy; {new Date().getFullYear()} Himalayan Arc Adventure. All rights reserved.
             </p>
-            <div className="flex gap-6 text-xs text-white/30">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-white/30">
+              <CurrencySwitcher />
               {legalLinks.map((link) => (
                 <Link key={link.label} href={link.href} className="hover:text-white transition-colors">
                   {link.label}

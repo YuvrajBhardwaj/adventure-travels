@@ -4,6 +4,7 @@ import Link from "next/link";
 import { treks, DIFFICULTY_COLORS } from "@/data/treks";
 import { FadeUp, StaggerContainer, StaggerItem } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
+import Price from "@/components/Price";
 
 const PERKS = [
   "ILP / permit handled by us",
@@ -116,8 +117,7 @@ export default function UnlockRestrictedUttarakhand() {
                   </p>
                   <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
                     <span className="text-sm font-bold text-white">
-                      {trek.currency}
-                      {trek.price.toLocaleString("en-IN")}
+                      <Price inr={trek.price} />
                       <span className="font-normal text-white/50"> / person</span>
                     </span>
                     <span className="text-xs font-semibold text-emerald-400 group-hover:underline">

@@ -8,6 +8,7 @@ import type { Course } from "@/data/courses";
 import CourseVideoBackdrop from "@/components/CourseVideoBackdrop";
 import SmartImage from "@/components/SmartImage";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import Price, { PriceNote } from "@/components/Price";
 
 type Tab = "overview" | "dates" | "itinerary" | "gallery" | "included" | "book";
 
@@ -143,7 +144,7 @@ function getCourseBatches(course: Course, priceOverride?: number): CourseBatch[]
   return out;
 }
 
-function AvailabilityView({ batches, currency, onBook }: { batches: CourseBatch[]; currency: string; onBook: (iso: string) => void }) {
+function AvailabilityView({ batches, onBook }: { batches: CourseBatch[]; onBook: (iso: string) => void }) {
   const reduce = useReducedMotion();
   const fadeUp: Variants = {
     hidden: { opacity: 0, y: reduce ? 0 : 18 },
@@ -170,7 +171,7 @@ function AvailabilityView({ batches, currency, onBook }: { batches: CourseBatch[
       <div className="space-y-2.5">
         {batches.map((b) => (
           <motion.div key={b.id} variants={fadeUp}>
-            <CourseBatchRow b={b} currency={currency} onBook={onBook} />
+            <CourseBatchRow b={b} onBook={onBook} />
           </motion.div>
         ))}
       </div>
@@ -178,7 +179,7 @@ function AvailabilityView({ batches, currency, onBook }: { batches: CourseBatch[
   );
 }
 
-function CourseBatchRow({ b, currency, onBook }: { b: CourseBatch; currency: string; onBook: (iso: string) => void }) {
+function CourseBatchRow({ b, onBook }: { b: CourseBatch; onBook: (iso: string) => void }) {
   const a = CAVAIL[b.availability];
   const sold = b.availability === "sold";
   return (
@@ -195,7 +196,7 @@ function CourseBatchRow({ b, currency, onBook }: { b: CourseBatch; currency: str
       </div>
       <div className="flex items-center justify-between sm:justify-end gap-3">
         <div className="text-right">
-          <div className="font-bold text-gray-900 text-sm">{currency}{b.price.toLocaleString("en-IN")}</div>
+          <div className="font-bold text-gray-900 text-sm"><Price inr={b.price} /></div>
           <div className="text-[11px] text-gray-500">/ person</div>
         </div>
         <button
@@ -526,7 +527,7 @@ export default function CourseDetailClient({ course }: Props) {
                                 </span>
                               )}
                               <span className={`inline-block self-start rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${tier.id === "premium" ? "bg-violet-100 text-violet-700" : "bg-sky-100 text-sky-700"}`}>{tier.name}</span>
-                              <span className="mt-2 font-heading text-2xl font-bold text-gray-900">Rs.{price.toLocaleString("en-IN")}</span>
+                              <span className="mt-2 font-heading text-2xl font-bold text-gray-900"><Price inr={price} /></span>
                               <span className="text-xs text-gray-400">per person · {STAY_LABELS[s]}</span>
                               <ul className="mt-3 w-full space-y-1.5 border-t border-gray-100 pt-3">
                                 {pkgBullets(tier, s).map((b) => (
@@ -608,7 +609,7 @@ export default function CourseDetailClient({ course }: Props) {
               )}
 
               {tab === "dates" && (
-                <AvailabilityView batches={getCourseBatches(course, selectedTier?.priceBase)} currency={course.currency} onBook={registerForBatch} />
+                <AvailabilityView batches={getCourseBatches(course, selectedTier?.priceBase)} onBook={registerForBatch} />
               )}
 
               {tab === "itinerary" && (
@@ -639,7 +640,7 @@ export default function CourseDetailClient({ course }: Props) {
                     <>
                       <p className="text-gray-600 mb-2">{selectedTier.blurb}</p>
                       <p className="mb-6 text-sm text-gray-500">
-                        Rs.{selectedTier.priceBase.toLocaleString("en-IN")} without stay &amp; meals · Rs.{selectedTier.priceFull.toLocaleString("en-IN")} with lodging &amp; all meals. Certificate and graduation ceremony included in both.
+                        <Price inr={selectedTier.priceBase} /> without stay &amp; meals · <Price inr={selectedTier.priceFull} /> with lodging &amp; all meals. Certificate and graduation ceremony included in both.
                       </p>
                       <motion.div
                         initial="hidden"
@@ -899,7 +900,8 @@ export default function CourseDetailClient({ course }: Props) {
                             <p className="text-xs text-gray-500">Picked from the package cards on the Overview tab.</p>
                           </div>
                           <div className="text-right">
-                            <p className="font-heading text-xl font-bold text-gray-900">Rs.{total.toLocaleString("en-IN")}</p>
+                            <p className="font-heading text-xl font-bold text-gray-900"><Price inr={total} /></p>
+                            <PriceNote inr={total} className="mt-1 max-w-[16rem] text-gray-500" />
                             <button type="button" onClick={() => goToTab("overview")} className="text-xs font-semibold text-sky-600 hover:underline">
                               Change package
                             </button>
@@ -1042,7 +1044,7 @@ export default function CourseDetailClient({ course }: Props) {
                 {tiers.length > 0 ? (
                   <>
                     <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400">From</span>
-                    <span className="text-3xl font-bold text-gray-900">Rs.{Math.min(...tiers.map((t) => t.priceBase)).toLocaleString("en-IN")}</span>
+                    <span className="text-3xl font-bold text-gray-900"><Price inr={Math.min(...tiers.map((t) => t.priceBase))} /></span>
                     <span className="text-gray-500 ml-1">/ person</span>
                     <table className="mt-3 w-full text-left text-xs">
                       <thead>
@@ -1056,8 +1058,8 @@ export default function CourseDetailClient({ course }: Props) {
                         {tiers.map((t) => (
                           <tr key={t.id} className={`border-t border-gray-100 ${selectedTier?.id === t.id ? "text-sky-700 font-semibold" : ""}`}>
                             <td className="py-1.5">{t.name}</td>
-                            <td className="py-1.5 text-right">Rs.{t.priceBase.toLocaleString("en-IN")}</td>
-                            <td className="py-1.5 text-right">Rs.{t.priceFull.toLocaleString("en-IN")}</td>
+                            <td className="py-1.5 text-right"><Price inr={t.priceBase} /></td>
+                            <td className="py-1.5 text-right"><Price inr={t.priceFull} /></td>
                           </tr>
                         ))}
                       </tbody>
@@ -1065,7 +1067,7 @@ export default function CourseDetailClient({ course }: Props) {
                   </>
                 ) : (
                   <>
-                    <span className="text-3xl font-bold text-gray-900">Rs.{course.price.toLocaleString("en-IN")}</span>
+                    <span className="text-3xl font-bold text-gray-900"><Price inr={course.price} /></span>
                     <span className="text-gray-500 ml-1">/ person</span>
                   </>
                 )}
@@ -1116,7 +1118,7 @@ export default function CourseDetailClient({ course }: Props) {
           <div className="flex-shrink-0">
             <div className="text-[11px] leading-none text-gray-500">From</div>
             <div className="text-lg font-bold leading-tight text-gray-900">
-              Rs.{Math.min(...tiers.map((t) => t.priceBase), course.price).toLocaleString("en-IN")}
+              <Price inr={Math.min(...tiers.map((t) => t.priceBase), course.price)} />
             </div>
           </div>
           <a

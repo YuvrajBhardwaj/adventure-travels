@@ -16,6 +16,7 @@ import { getDepartures, type Departure, type Availability, type MonthGroup } fro
 import { getTrekPackage } from "@/data/trekPackage";
 import ScholarshipsTab from "./ScholarshipsTab";
 import ScrollProgressRing from "@/components/ScrollProgressRing";
+import Price, { PriceNote } from "@/components/Price";
 
 const DIFFICULTY_COLORS: Record<string, string> = {
   Easy: "#22c55e",
@@ -418,7 +419,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
                 className="scroll-mt-36 focus:outline-none"
               >
                 {activeTab === "Overview" && <OverviewTab trek={trek} />}
-                {activeTab === "Dates" && <DatesTab departures={departures} currency={trek.currency} onRegister={registerForDate} />}
+                {activeTab === "Dates" && <DatesTab departures={departures} onRegister={registerForDate} />}
                 {activeTab === "Itinerary" && <ItineraryTab trek={trek} />}
                 {activeTab === "T&C" && <TermsConditions />}
                 {activeTab === "Photo Gallery" && <GalleryTab trek={trek} />}
@@ -473,7 +474,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
         <div className="flex items-center gap-3 px-4 py-3">
           <div className="flex-shrink-0 leading-tight">
             <div className="text-[11px] leading-none text-muted mb-0.5">From</div>
-            <div className="text-base sm:text-lg font-bold leading-none text-foreground">{trek.currency}{trek.price.toLocaleString("en-IN")}</div>
+            <div className="text-base sm:text-lg font-bold leading-none text-foreground"><Price inr={trek.price} /></div>
           </div>
           <button
             onClick={() => setShowContact(true)}
@@ -576,14 +577,15 @@ function BookingCard({
       <div className="relative z-10 mt-2">
         <div className="flex items-baseline gap-2">
           <span className="text-md font-semibold text-slate-500 line-through decoration-2 decoration-rose-500/80">
-            {trek.currency}{oldPrice.toLocaleString("en-IN")}
+            <Price inr={oldPrice} />
           </span>
           <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-bold text-rose-600">{discount}% OFF</span>
         </div>
         <div className="mt-1 flex items-baseline gap-1.5">
-          <span className="text-4xl font-bold tracking-tight text-foreground">{trek.currency}{trek.price.toLocaleString("en-IN")}</span>
+          <span className="text-4xl font-bold tracking-tight text-foreground"><Price inr={trek.price} /></span>
           <span className="text-sm text-muted">/ person</span>
         </div>
+        <PriceNote inr={trek.price} className="mt-2 text-muted" />
       </div>
 
       {/* Trust + rating */}
@@ -992,11 +994,9 @@ function OverviewTab({ trek }: { trek: Trek }) {
 /* ─── Dates / Availability Tab ─── */
 function DatesTab({
   departures,
-  currency,
   onRegister,
 }: {
   departures: MonthGroup[];
-  currency: string;
   onRegister: (iso: string) => void;
 }) {
   const [open, setOpen] = useState<string | null>(departures[0]?.key ?? null);
@@ -1046,7 +1046,7 @@ function DatesTab({
                   >
                     <div className="px-4 pb-4 pt-1 space-y-2.5 border-t border-gray-100 dark:border-white/5">
                       {m.departures.map((d) => (
-                        <DepartureRow key={d.id} d={d} currency={currency} onRegister={onRegister} />
+                        <DepartureRow key={d.id} d={d} onRegister={onRegister} />
                       ))}
                     </div>
                   </motion.div>
@@ -1060,7 +1060,7 @@ function DatesTab({
   );
 }
 
-function DepartureRow({ d, currency, onRegister }: { d: Departure; currency: string; onRegister: (iso: string) => void }) {
+function DepartureRow({ d, onRegister }: { d: Departure; onRegister: (iso: string) => void }) {
   const a = AVAIL[d.availability];
   const sold = d.availability === "sold";
   return (
@@ -1077,7 +1077,7 @@ function DepartureRow({ d, currency, onRegister }: { d: Departure; currency: str
       </div>
       <div className="flex items-center justify-between sm:justify-end gap-3">
         <div className="text-right">
-          <div className="font-bold text-foreground text-sm">{currency}{d.price.toLocaleString("en-IN")}</div>
+          <div className="font-bold text-foreground text-sm"><Price inr={d.price} /></div>
           <div className="text-[11px] text-muted">/ person</div>
         </div>
         <button

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { treks, DIFFICULTY_COLORS } from "@/data/treks";
 import { FadeUp, StaggerContainer, StaggerItem } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
+import Price from "@/components/Price";
 
 export default function SummerTreksRail() {
   return (
@@ -85,8 +86,7 @@ export default function SummerTreksRail() {
                   </p>
                   <div className="mt-4 flex items-center justify-between border-t border-foreground/10 pt-3">
                     <span className="text-sm font-bold text-foreground">
-                      {trek.currency}
-                      {trek.price.toLocaleString("en-IN")}
+                      <Price inr={trek.price} />
                       <span className="font-normal text-muted"> / person</span>
                     </span>
                     <span className="text-xs font-semibold text-primary group-hover:underline">

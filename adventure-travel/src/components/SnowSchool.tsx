@@ -4,6 +4,7 @@ import Link from "next/link";
 import { courses } from "@/data/courses";
 import { FadeUp, StaggerContainer, StaggerItem, ScaleIn } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
+import Price from "@/components/Price";
 
 export default function SnowSchool() {
   const featured = courses.find((c) => c.featured) ?? courses[0];
@@ -95,8 +96,7 @@ export default function SnowSchool() {
                     From
                   </p>
                   <p className="font-semibold">
-                    {featured.currency}
-                    {featured.price.toLocaleString("en-IN")}
+                    <Price inr={featured.price} />
                   </p>
                 </div>
               </div>
@@ -169,8 +169,7 @@ export default function SnowSchool() {
                     </p>
                     <div className="mt-auto flex items-center justify-between border-t border-foreground/10 pt-3">
                       <span className="text-sm font-bold text-foreground">
-                        {course.currency}
-                        {course.price.toLocaleString("en-IN")}
+                        <Price inr={course.price} />
                       </span>
                       <span className="text-xs font-semibold text-secondary group-hover:underline">
                         View →

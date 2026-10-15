@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { Trek } from "@/data/treks";
+import Price from "@/components/Price";
 
 /* ── The offer. Change a number here and every trek page updates. ─────────────────
    These are commitments to customers — only publish numbers the business will honour. */
@@ -23,7 +24,6 @@ const OTHER_PERKS = [
 ];
 
 export default function ScholarshipsTab({ trek }: { trek: Trek }) {
-  const money = (n: number) => `${trek.currency}${Math.round(n).toLocaleString("en-IN")}`;
   const childEligible = CHILD_ELIGIBLE.includes(trek.difficulty);
   const childPays = (trek.price * (100 - CHILD_OFF_PCT)) / 100;
   const groupSaves = (trek.price * GROUP_OFF_PCT) / 100;
@@ -54,8 +54,8 @@ export default function ScholarshipsTab({ trek }: { trek: Trek }) {
                 Is your child {CHILD_MAX_AGE} years old or younger? They get {CHILD_OFF_PCT}% off the trek fee.
               </p>
               <p className="mt-3 rounded-xl bg-white/70 dark:bg-white/5 px-4 py-3 text-sm text-foreground">
-                On this trek: the fee is {money(trek.price)} per person, so a child pays{" "}
-                <strong>{money(childPays)}</strong>.
+                On this trek: the fee is <Price inr={trek.price} /> per person, so a child pays{" "}
+                <strong><Price inr={childPays} /></strong>.
               </p>
             </>
           ) : (
@@ -83,7 +83,7 @@ export default function ScholarshipsTab({ trek }: { trek: Trek }) {
               ` With ${adultsForFullFee} adults, the savings add up to one full trek fee.`}
           </p>
           <p className="mt-3 rounded-xl bg-white/70 dark:bg-white/5 px-4 py-3 text-sm text-foreground">
-            On this trek: a group of {GROUP_EVERY} adults saves <strong>{money(groupSaves)}</strong>. We send that
+            On this trek: a group of {GROUP_EVERY} adults saves <strong><Price inr={groupSaves} /></strong>. We send that
             amount back to you after you finish the trek.
           </p>
         </section>

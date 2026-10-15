@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { treks, DIFFICULTY_COLORS, REGIONS } from "@/data/treks";
 import { FadeUp, StaggerContainer, StaggerItem } from "./MotionWrapper";
+import Price from "@/components/Price";
 
 // Copy mirrors the FAQ: Easy/Moderate need no prior experience; Challenging/Strenuous
 // cross passes above 4,500 m and want multi-day hiking experience.
@@ -12,8 +13,6 @@ const LEVELS = [
   { difficulty: "Challenging", label: "Confident trekker", blurb: "High passes above 4,500 m. Multi-day hiking experience recommended." },
   { difficulty: "Strenuous", label: "High-altitude veteran", blurb: "Our hardest routes. Strong multi-day hiking experience expected." },
 ] as const;
-
-const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 // Everything below is derived from the same data as the trek pages, so it can't drift.
 const levelStats = LEVELS.map((level) => {
@@ -85,7 +84,7 @@ export default function FindYourTrek() {
 
                   <p className="mt-4 flex items-center justify-between text-sm font-semibold text-primary">
                     <span>
-                      {l.count} {l.count === 1 ? "trek" : "treks"} · from {inr(l.fromPrice)}
+                      {l.count} {l.count === 1 ? "trek" : "treks"} · from <Price inr={l.fromPrice} />
                     </span>
                     <span aria-hidden className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
                       →

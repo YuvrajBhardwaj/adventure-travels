@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import FooterV2 from "@/components/FooterV2";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SITE_NAME, SITE_URL, SOCIAL_IMAGE, SOCIAL_PROFILES } from "@/lib/seo";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 
 const poppins = Poppins({
   variable: "--font-heading",
@@ -161,10 +162,12 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <AuthProvider>
-          <Preloader />
-          <Navbar />
-          {children}
-          <FooterV2 />
+          <CurrencyProvider>
+            <Preloader />
+            <Navbar />
+            {children}
+            <FooterV2 />
+          </CurrencyProvider>
         </AuthProvider>
       </body>
     </html>
