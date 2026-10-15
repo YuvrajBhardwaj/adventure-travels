@@ -1,74 +1,63 @@
 import { createClient } from "@/lib/supabase/client";
 import { trackActivity } from "@/lib/activity";
 
-// ─── LocalStorage helpers (fallback when Supabase isn't configured) ───
-const LS_USERS = "eht_users";
-const LS_SESSION = "eht_session";
-const LS_TREK_BOOKINGS = "eht_trek_bookings";
-const LS_ACT_BOOKINGS = "eht_activity_bookings";
+// Accounts and bookings live only in Supabase. There is deliberately no browser-storage
+// fallback any more: it looked like it worked while silently losing data and keeping
+// readable passwords in the browser (specs/001-persistent-backend, FR-061 / research R10).
 
-function lsRead<T>(key: string): T[] {
-  if (typeof window === "undefined") return [];
-  try { return JSON.parse(localStorage.getItem(key) || "[]"); } catch { return []; }
+/** Thrown whenever the backend isn't reachable/configured, so callers can offer WhatsApp instead. */
+export class BackendUnavailableError extends Error {
+  constructor(message = "Accounts are temporarily unavailable. Please contact us on WhatsApp.") {
+    super(message);
+    this.name = "BackendUnavailableError";
+  }
 }
-function lsWrite<T>(key: string, data: T[]) { localStorage.setItem(key, JSON.stringify(data)); }
+
+function requireClient() {
+  const supabase = createClient();
+  if (!supabase) throw new BackendUnavailableError();
+  return supabase;
+}
 
 export interface SafeUser {
   id: string;
   email: string;
   user_metadata: { full_name: string; phone: string };
-  /** Server-controlled (unlike user_metadata). Only present with Supabase auth. */
+  /** Server-controlled (unlike user_metadata). */
   app_metadata?: { role?: string };
 }
 
+export type PaymentState = "unpaid" | "advance_paid" | "fully_paid" | "refunded";
+export type BookingStatus = "pending" | "confirmed" | "cancelled";
+
 // ─── Auth ───
 export async function signUp(name: string, email: string, phone: string, password: string) {
-  const supabase = createClient();
-  if (supabase) {
-    const { data, error } = await supabase.auth.signUp({
-      email: email.trim(),
-      password,
-      options: {
-        data: { full_name: name, phone },
-        emailRedirectTo: `${window.location.origin}/login`,
-      },
-    });
-    if (error) throw error;
-    if (!data.user) throw new Error("Could not create your account.");
-    return { user: data.user as SafeUser, needsEmailConfirmation: !data.session };
-  }
-  // localStorage fallback
-  const users = lsRead<{ id: string; email: string; password: string; full_name: string; phone: string }>(LS_USERS);
-  if (users.find((u) => u.email.toLowerCase() === email.toLowerCase())) throw new Error("Email already registered.");
-  const user = { id: crypto.randomUUID(), email, password, full_name: name, phone };
-  users.push(user);
-  lsWrite(LS_USERS, users);
-  const safe: SafeUser = { id: user.id, email: user.email, user_metadata: { full_name: name, phone } };
-  localStorage.setItem(LS_SESSION, JSON.stringify(safe));
-  return { user: safe, needsEmailConfirmation: false };
+  const supabase = requireClient();
+  const { data, error } = await supabase.auth.signUp({
+    email: email.trim(),
+    password,
+    options: {
+      data: { full_name: name, phone },
+      emailRedirectTo: `${window.location.origin}/login`,
+    },
+  });
+  if (error) throw error;
+  if (!data.user) throw new Error("Could not create your account.");
+  return { user: data.user as SafeUser, needsEmailConfirmation: !data.session };
 }
 
 export async function signIn(email: string, password: string) {
-  const supabase = createClient();
-  if (supabase) {
-    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-    if (error) throw error;
-    trackActivity("LOGIN", { method: "password" });
-    return data.user as SafeUser;
-  }
-  const users = lsRead<{ id: string; email: string; password: string; full_name: string; phone: string }>(LS_USERS);
-  const found = users.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-  if (!found) throw new Error("Invalid email or password.");
-  const safe: SafeUser = { id: found.id, email: found.email, user_metadata: { full_name: found.full_name, phone: found.phone } };
-  localStorage.setItem(LS_SESSION, JSON.stringify(safe));
-  return safe;
+  const supabase = requireClient();
+  const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+  if (error) throw error;
+  trackActivity("LOGIN", { method: "password" });
+  return data.user as SafeUser;
 }
 
 // Redirects the browser to Google, then back to /dashboard with a session. New Google
 // users get a profile row (and a SIGNUP activity entry) from the database triggers.
 export async function signInWithGoogle() {
-  const supabase = createClient();
-  if (!supabase) throw new Error("Google sign-in isn't available yet.");
+  const supabase = requireClient();
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo: `${window.location.origin}/dashboard` },
@@ -77,9 +66,7 @@ export async function signInWithGoogle() {
 }
 
 export async function resendSignupConfirmation(email: string) {
-  const supabase = createClient();
-  if (!supabase) throw new Error("Email confirmation is unavailable in local account mode.");
-
+  const supabase = requireClient();
   const { error } = await supabase.auth.resend({
     type: "signup",
     email: email.trim(),
@@ -90,27 +77,22 @@ export async function resendSignupConfirmation(email: string) {
 
 export async function signOut() {
   const supabase = createClient();
-  if (supabase) { await supabase.auth.signOut(); return; }
-  localStorage.removeItem(LS_SESSION);
+  if (supabase) await supabase.auth.signOut();
 }
 
 export async function getSession(): Promise<SafeUser | null> {
   const supabase = createClient();
-  if (supabase) {
-    const { data: { session } } = await supabase.auth.getSession();
-    return (session?.user as SafeUser) ?? null;
-  }
-  if (typeof window === "undefined") return null;
-  try { return JSON.parse(localStorage.getItem(LS_SESSION) || "null"); } catch { return null; }
+  if (!supabase) return null;
+  const { data: { session } } = await supabase.auth.getSession();
+  return (session?.user as SafeUser) ?? null;
 }
 
 export function onAuthStateChange(callback: (user: SafeUser | null) => void) {
   const supabase = createClient();
-  if (supabase) {
-    return supabase.auth.onAuthStateChange((_event: string, session: { user: SafeUser } | null) => { callback(session?.user ?? null); });
-  }
-  // No-op subscription for localStorage mode
-  return { data: { subscription: { unsubscribe: () => {} } } };
+  if (!supabase) return { data: { subscription: { unsubscribe: () => {} } } };
+  return supabase.auth.onAuthStateChange((_event: string, session: { user: SafeUser } | null) => {
+    callback(session?.user ?? null);
+  });
 }
 
 // ─── Trek Bookings ───
@@ -119,74 +101,64 @@ export interface TrekBooking {
   trek_date: string; group_size: string; message: string;
   /** Room tier label from `Trek.roomSharing`; undefined when the column isn't in the database yet. */
   room_sharing?: string | null;
-  status: "pending" | "confirmed" | "cancelled"; created_at: string;
+  /** Paise, locked when the booking is made; null means a quote is required. */
+  amount?: number | null;
+  quote_required?: boolean;
+  amount_paid?: number;
+  payment_state?: PaymentState;
+  balance_due_date?: string | null;
+  status: BookingStatus; created_at: string;
 }
 
 export async function getTrekBookings(userId: string): Promise<TrekBooking[]> {
-  const supabase = createClient();
-  if (supabase) {
-    const { data, error } = await supabase.from("trek_bookings").select("*").eq("user_id", userId).order("created_at", { ascending: false });
-    if (error) throw error;
-    return data ?? [];
-  }
-  return lsRead<TrekBooking>(LS_TREK_BOOKINGS).filter((b) => b.user_id === userId).sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const supabase = requireClient();
+  const { data, error } = await supabase.from("trek_bookings").select("*").eq("user_id", userId).order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
 }
 
 export async function createTrekBooking(booking: Omit<TrekBooking, "id" | "status" | "created_at">): Promise<TrekBooking> {
-  const supabase = createClient();
-  if (supabase) {
-    let { data, error } = await supabase.from("trek_bookings").insert(booking).select().single();
-    // room_sharing column not added yet (supabase-room-sharing.sql): keep the room in the message instead.
-    // The row then has no room_sharing, so the order API won't price it online.
-    if (error?.code === "PGRST204" && booking.room_sharing) {
-      const { room_sharing, ...rest } = booking;
-      ({ data, error } = await supabase
-        .from("trek_bookings")
-        .insert({ ...rest, message: `Room: ${room_sharing}${rest.message ? `\n${rest.message}` : ""}` })
-        .select()
-        .single());
-    }
-    if (error) throw error;
-    trackActivity("BOOKING_CREATED", {
-      booking_id: data.id,
-      trek_name: booking.trek_name,
-      trek_date: booking.trek_date,
-      group_size: booking.group_size,
-    });
-    return data;
+  const supabase = requireClient();
+  let { data, error } = await supabase.from("trek_bookings").insert(booking).select().single();
+  // room_sharing column not added yet (supabase-room-sharing.sql): keep the room in the message instead.
+  // The row then has no room_sharing, so the order API won't price it online.
+  if (error?.code === "PGRST204" && booking.room_sharing) {
+    const { room_sharing, ...rest } = booking;
+    ({ data, error } = await supabase
+      .from("trek_bookings")
+      .insert({ ...rest, message: `Room: ${room_sharing}${rest.message ? `\n${rest.message}` : ""}` })
+      .select()
+      .single());
   }
-  const b: TrekBooking = { ...booking, id: crypto.randomUUID(), status: "pending", created_at: new Date().toISOString() };
-  const all = lsRead<TrekBooking>(LS_TREK_BOOKINGS); all.push(b); lsWrite(LS_TREK_BOOKINGS, all);
-  return b;
+  if (error) throw error;
+  trackActivity("BOOKING_CREATED", {
+    booking_id: data.id,
+    trek_name: booking.trek_name,
+    trek_date: booking.trek_date,
+    group_size: booking.group_size,
+  });
+  return data;
 }
 
 // ─── Activity Bookings ───
 export interface ActivityBooking {
   id: string; user_id: string; activity_name: string; activity_type: string;
   activity_date: string; group_size: string; message: string;
-  status: "pending" | "confirmed" | "cancelled"; created_at: string;
+  status: BookingStatus; created_at: string;
 }
 
 export async function getActivityBookings(userId: string): Promise<ActivityBooking[]> {
-  const supabase = createClient();
-  if (supabase) {
-    const { data, error } = await supabase.from("activity_bookings").select("*").eq("user_id", userId).order("created_at", { ascending: false });
-    if (error) throw error;
-    return data ?? [];
-  }
-  return lsRead<ActivityBooking>(LS_ACT_BOOKINGS).filter((b) => b.user_id === userId).sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const supabase = requireClient();
+  const { data, error } = await supabase.from("activity_bookings").select("*").eq("user_id", userId).order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
 }
 
 export async function createActivityBooking(booking: Omit<ActivityBooking, "id" | "status" | "created_at">): Promise<ActivityBooking> {
-  const supabase = createClient();
-  if (supabase) {
-    const { data, error } = await supabase.from("activity_bookings").insert(booking).select().single();
-    if (error) throw error;
-    return data;
-  }
-  const b: ActivityBooking = { ...booking, id: crypto.randomUUID(), status: "pending", created_at: new Date().toISOString() };
-  const all = lsRead<ActivityBooking>(LS_ACT_BOOKINGS); all.push(b); lsWrite(LS_ACT_BOOKINGS, all);
-  return b;
+  const supabase = requireClient();
+  const { data, error } = await supabase.from("activity_bookings").insert(booking).select().single();
+  if (error) throw error;
+  return data;
 }
 
 // ─── Profile ───
@@ -205,48 +177,30 @@ export type ProfileChanges = Partial<
 >;
 
 export async function getProfile(userId: string): Promise<Profile | null> {
-  const supabase = createClient();
-  if (supabase) {
-    const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
-    if (error) throw error;
-    return (data as Profile | null) ?? null;
-  }
-  const found = lsRead<{ id: string; email: string; full_name: string; phone: string }>(LS_USERS).find((u) => u.id === userId);
-  return found
-    ? { id: found.id, full_name: found.full_name, phone: found.phone, email: found.email, city: "", emergency_contact_name: "", emergency_contact_phone: "" }
-    : null;
+  const supabase = requireClient();
+  const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
+  if (error) throw error;
+  return (data as Profile | null) ?? null;
 }
 
 export async function updateProfile(userId: string, changes: ProfileChanges): Promise<Profile | null> {
-  const supabase = createClient();
-  if (supabase) {
-    const { data, error } = await supabase.from("profiles").update(changes).eq("id", userId).select().single();
-    if (error) throw error;
-    // Keep the session's own copy in step so the rest of the site shows the new name/phone.
-    if (changes.full_name !== undefined || changes.phone !== undefined) {
-      await supabase.auth.updateUser({
-        data: {
-          ...(changes.full_name !== undefined && { full_name: changes.full_name }),
-          ...(changes.phone !== undefined && { phone: changes.phone }),
-        },
-      });
-    }
-    trackActivity("SETTINGS_UPDATE", { fields: Object.keys(changes) });
-    return data as Profile;
+  const supabase = requireClient();
+  const { data, error } = await supabase.from("profiles").update(changes).eq("id", userId).select().single();
+  if (error) throw error;
+  // Keep the session's own copy in step so the rest of the site shows the new name/phone.
+  if (changes.full_name !== undefined || changes.phone !== undefined) {
+    await supabase.auth.updateUser({
+      data: {
+        ...(changes.full_name !== undefined && { full_name: changes.full_name }),
+        ...(changes.phone !== undefined && { phone: changes.phone }),
+      },
+    });
   }
-  const users = lsRead<{ id: string; email: string; password: string; full_name: string; phone: string }>(LS_USERS);
-  const idx = users.findIndex((u) => u.id === userId);
-  if (idx === -1) return null;
-  users[idx] = {
-    ...users[idx],
-    ...(changes.full_name !== undefined && { full_name: changes.full_name }),
-    ...(changes.phone !== undefined && { phone: changes.phone }),
-  };
-  lsWrite(LS_USERS, users);
-  return getProfile(userId);
+  trackActivity("SETTINGS_UPDATE", { fields: Object.keys(changes) });
+  return data as Profile;
 }
 
-// ─── Course bookings (stored server-side by /api/course-bookings) ───
+// ─── Course bookings (stored server-side by the bookings API) ───
 export interface CourseBooking {
   id: string;
   course_slug: string;
@@ -258,13 +212,16 @@ export interface CourseBooking {
   group_size: number;
   /** Paise, priced on the server. */
   amount: number | null;
-  status: "pending" | "confirmed" | "cancelled";
+  quote_required?: boolean;
+  amount_paid?: number;
+  payment_state?: PaymentState;
+  balance_due_date?: string | null;
+  status: BookingStatus;
   created_at: string;
 }
 
 export async function getCourseBookings(userId: string): Promise<CourseBooking[]> {
-  const supabase = createClient();
-  if (!supabase) return [];
+  const supabase = requireClient();
   const { data, error } = await supabase
     .from("course_bookings")
     .select("*")
@@ -290,8 +247,7 @@ export interface PaymentRecord {
 }
 
 export async function getPayments(userId: string): Promise<PaymentRecord[]> {
-  const supabase = createClient();
-  if (!supabase) return [];
+  const supabase = requireClient();
   const { data, error } = await supabase
     .from("payments")
     .select("id,amount,currency,status,method,created_at,paid_at,booking_id,course_booking_id,trek_bookings(trek_name),course_bookings(course_name)")
@@ -317,15 +273,9 @@ export async function getPayments(userId: string): Promise<PaymentRecord[]> {
   });
 }
 
-/** Cancels the user's own booking while it is still pending (enforced by RLS). */
+/** Cancels the user's own booking while it is still pending and unpaid (enforced by RLS). */
 export async function cancelTrekBooking(bookingId: string) {
-  const supabase = createClient();
-  if (!supabase) {
-    const all = lsRead<TrekBooking>(LS_TREK_BOOKINGS);
-    const idx = all.findIndex((b) => b.id === bookingId);
-    if (idx !== -1) { all[idx] = { ...all[idx], status: "cancelled" }; lsWrite(LS_TREK_BOOKINGS, all); }
-    return;
-  }
+  const supabase = requireClient();
   const { error } = await supabase.from("trek_bookings").update({ status: "cancelled" }).eq("id", bookingId);
   if (error) throw error;
 }

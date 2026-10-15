@@ -15,3 +15,7 @@
 /_not-found/
 .vercel
 /node_modules/
+
+# env files (secrets) — keep examples only
+.env*
+!.env.example

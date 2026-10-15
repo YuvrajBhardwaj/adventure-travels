@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const notify = require("./notify");
 
 function hmacHex(secret, data) {
   return crypto.createHmac("sha256", secret).update(data).digest("hex");
@@ -17,70 +18,71 @@ async function logActivity(db, userId, actionType, metadata) {
   if (error) console.error("activity log failed:", error.message);
 }
 
-// Idempotent: the webhook and /api/verify-payment can both call this for the same
-// order. Only the call that actually flips the row to "paid" confirms the booking
-// and writes the PAYMENT_SUCCESS entry.
-async function markPaid(db, { orderId, paymentId, amount, method, ip }) {
-  const { data: row, error } = await db
-    .from("payments")
-    .select("*")
-    .eq("razorpay_order_id", orderId)
-    .maybeSingle();
-  if (error) throw error;
-  if (!row) return { ok: false, reason: "unknown_order" };
-
-  // The amount comes from the order we created server-side; refuse anything that disagrees.
-  if (amount != null && Number(amount) !== row.amount) {
-    await logActivity(db, row.user_id, "PAYMENT_FAILED", {
-      reason: "amount_mismatch",
-      order_id: orderId,
-      expected: row.amount,
-      received: Number(amount),
-      ip,
+// Receipt to the customer + alert to the business, after the payment is committed.
+// Dedupe keys make a second report of the same payment (webhook + browser) a no-op.
+async function notifyPaymentApplied(db, state, { paymentId, method }) {
+  try {
+    let ctx;
+    if (state.booking_type === "course") {
+      const { data: b } = await db
+        .from("course_bookings")
+        .select("course_name, package_name, contact_name, contact_email")
+        .eq("id", state.booking_id)
+        .maybeSingle();
+      ctx = { item: b?.course_name, option: b?.package_name, name: b?.contact_name, email: b?.contact_email };
+    } else {
+      const { data: b } = await db
+        .from("trek_bookings")
+        .select("trek_name, room_sharing, user_id")
+        .eq("id", state.booking_id)
+        .maybeSingle();
+      const { data: p } = b?.user_id
+        ? await db.from("profiles").select("full_name, email").eq("id", b.user_id).maybeSingle()
+        : { data: null };
+      ctx = { item: b?.trek_name, option: b?.room_sharing, name: p?.full_name, email: p?.email };
+    }
+    Object.assign(ctx, {
+      bookingType: state.booking_type,
+      bookingId: state.booking_id,
+      kind: state.kind,
+      paid: state.payment_amount,
+      method,
+      total: state.amount,
+      totalPaid: state.amount_paid,
+      balanceDueDate: state.balance_due_date,
+      paymentState: state.payment_state,
     });
-    return { ok: false, reason: "amount_mismatch" };
+    const key = paymentId || state.payment_id;
+    const link = { bookingType: state.booking_type, bookingId: state.booking_id, paymentId: state.payment_id };
+    // Runs only after apply_payment has committed — an email failure can't undo the payment (FR-032).
+    await notify.enqueueAndSend(db, [
+      { kind: "payment_receipt", dedupeKey: `payment_receipt:${key}`, recipient: ctx.email, ctx, replyTo: notify.businessInbox(), ...link },
+      { kind: "payment_alert", dedupeKey: `payment_alert:${key}`, recipient: notify.businessInbox(), ctx, replyTo: ctx.email, ...link },
+    ]);
+  } catch (error) {
+    console.error("payment notification failed:", error instanceof Error ? error.message : error);
   }
-
-  if (row.status === "paid") {
-    if (method && !row.method) await db.from("payments").update({ method }).eq("id", row.id);
-    return { ok: true, already: true, row };
-  }
-
-  const { data: updated, error: updateError } = await db
-    .from("payments")
-    .update({
-      status: "paid",
-      razorpay_payment_id: paymentId || row.razorpay_payment_id,
-      method: method || row.method,
-      failure_reason: null,
-      paid_at: new Date().toISOString(),
-    })
-    .eq("id", row.id)
-    .neq("status", "paid")
-    .select()
-    .maybeSingle();
-  if (updateError) throw updateError;
-  if (!updated) return { ok: true, already: true, row }; // another call won the race
-
-  // Confirm whichever booking this payment belongs to.
-  const bookingTable = row.course_booking_id ? "course_bookings" : "trek_bookings";
-  await db
-    .from(bookingTable)
-    .update({ status: "confirmed" })
-    .eq("id", row.course_booking_id || row.booking_id)
-    .neq("status", "cancelled");
-
-  await logActivity(db, row.user_id, "PAYMENT_SUCCESS", {
-    order_id: orderId,
-    payment_id: paymentId,
-    amount: row.amount,
-    method: method || null,
-    booking_id: row.booking_id || row.course_booking_id,
-    booking_type: row.course_booking_id ? "course" : "trek",
-    ip,
-  });
-  return { ok: true, row: updated };
 }
+
+// Applies a captured payment through the database's apply_payment(), which locks the
+// payment and booking rows so the webhook and /api/verify-payment can both report the
+// same payment without double-counting it (research R5, FR-025).
+async function applyPayment(db, { orderId, paymentId, amount, method }) {
+  const { data, error } = await db.rpc("apply_payment", {
+    p_order_id: orderId,
+    p_payment_id: paymentId || null,
+    p_amount: amount == null ? null : Number(amount),
+    p_method: method || null,
+  });
+  if (error) throw error;
+  const state = data || {};
+  if (state.result === "applied") await notifyPaymentApplied(db, state, { paymentId, method });
+  const ok = state.result === "applied" || state.result === "already";
+  return { ok, already: state.result === "already", reason: ok ? undefined : state.result, state };
+}
+
+// Kept so verify-payment/webhook keep working until they call applyPayment directly (tasks T035/T036).
+const markPaid = applyPayment;
 
 async function markFailed(db, { orderId, reason, ip }) {
   const { data: updated, error } = await db
@@ -102,4 +104,4 @@ async function markFailed(db, { orderId, reason, ip }) {
   return { ok: true };
 }
 
-module.exports = { hmacHex, safeEqual, logActivity, markPaid, markFailed };
+module.exports = { hmacHex, safeEqual, logActivity, applyPayment, markPaid, markFailed };
