@@ -347,25 +347,27 @@ export default function CourseDetailClient({ course }: Props) {
       // Attach the login (if any) so the booking lands in the user's account.
       const supabase = createClient();
       const token = supabase ? (await supabase.auth.getSession()).data.session?.access_token : undefined;
-      const response = await fetch("/api/course-bookings", {
+      // The server prices the package and stores the booking (specs/001-persistent-backend, FR-011/016).
+      const response = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
         body: JSON.stringify({
-          courseSlug: course.slug,
+          type: "course",
+          slug: course.slug,
           tierId: selectedTier?.id,
           stay: selectedTier ? stay : undefined,
-          courseName: course.name,
-          courseType: course.type,
-          name: bookingForm.name.trim(),
-          email: bookingForm.email.trim(),
-          phone: bookingForm.phone.trim(),
           date: bookingForm.date,
-          groupSize: bookingForm.groupSize,
-          packageDetails: selectedTier ? `${selectedTier.name} (${STAY_LABELS[stay]}) — Rs.${total.toLocaleString("en-IN")}` : "",
+          groupSize: Number(bookingForm.groupSize),
+          contact: {
+            name: bookingForm.name.trim(),
+            email: bookingForm.email.trim(),
+            phone: bookingForm.phone.trim(),
+          },
           message: bookingForm.message.trim(),
         }),
       });
       const result = await response.json().catch(() => null);
+      // 503 = nothing was saved; the error banner below offers the pre-filled WhatsApp fallback (FR-061).
       if (!response.ok) throw new Error(result?.error || "We couldn't send your booking request. Please try again.");
       setSaved(result?.bookingId ? { id: result.bookingId, amount: result.amount ?? null, signedIn: Boolean(token) } : null);
       setSent(true);

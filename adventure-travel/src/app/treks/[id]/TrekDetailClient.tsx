@@ -3,20 +3,22 @@
 import { useState, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Link from "next/link";
-import type { Trek } from "@/data/treks";
+import { priceRoute, type Trek } from "@/data/treks";
 import ContactPopup from "@/components/ContactPopup";
 import TermsConditions from "@/components/TermsConditions";
 import { QuickInfoModal, type QuickInfoId } from "@/components/QuickInfoModal";
 import SmartImage from "@/components/SmartImage";
 import LazyVideo from "@/components/LazyVideo";
 import { useAuth } from "@/contexts/AuthContext";
-import { createTrekBooking } from "@/lib/auth";
+import { BackendUnavailableError, createTrekBooking } from "@/lib/auth";
+import WhatsAppFallback from "@/components/WhatsAppFallback";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { getDepartures, type Departure, type Availability, type MonthGroup } from "./trekContent";
 import { getTrekPackage } from "@/data/trekPackage";
 import ScholarshipsTab from "./ScholarshipsTab";
 import { printItinerary } from "./printItinerary";
 import NoPhoto from "@/components/NoPhoto";
+import WallpaperCarousel, { type WallpaperSlide } from "@/components/WallpaperCarousel";
 import ScrollProgressRing from "@/components/ScrollProgressRing";
 import Price, { PriceNote } from "@/components/Price";
 
@@ -173,6 +175,21 @@ const TREK_GALLERIES: Record<string, string[]> = {
   ],
 };
 
+/** The Photo Gallery tab's media: the trek's own photos and videos, or its cover plus stock shots when it has none. */
+function galleryMedia(trek: Trek): string[] {
+  return TREK_GALLERIES[trek.slug] || (trek.image ? [trek.image, ...GALLERY_IMAGES.slice(0, 7)] : []);
+}
+
+// Saved sideways, so kept out of the hero; rotate the files and remove them from this list.
+const SIDEWAYS_PHOTOS = new Set(["/assets/panpatia-col-trek/IMG_6013.jpeg", "/assets/panpatia-col-trek/IMG_6015.jpeg"]);
+
+/** Hero wallpaper: the gallery's photos (no videos), cover first, stock shots fetched at full-screen width. */
+function getHeroSlides(trek: Trek): WallpaperSlide[] {
+  const photos = galleryMedia(trek).filter((src) => !/\.(mp4|mov)$/i.test(src) && !SIDEWAYS_PHOTOS.has(src));
+  const ordered = trek.image ? [trek.image, ...photos.filter((src) => src !== trek.image)] : photos;
+  return ordered.map((src) => ({ src: src.includes("images.unsplash.com") ? src.replace(/([?&])w=\d+/, "$1w=1920") : src }));
+}
+
 export default function TrekDetailClient({ trek }: { trek: Trek }) {
   const { user } = useAuth();
   const shouldReduceMotion = useReducedMotion();
@@ -181,6 +198,8 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
   const [wished, setWished] = useState(false);
   const [shareMsg, setShareMsg] = useState("");
   const [payBookingId, setPayBookingId] = useState<string | null>(null);
+  // Set when the booking could not be saved, so the tab shows a WhatsApp fallback instead of "Sent!".
+  const [bookingIssue, setBookingIssue] = useState<string | null>(null);
   const [bookingForm, setBookingForm] = useState({
     name: "", email: "", phone: "", date: "", groupSize: "1", message: "",
     sharing: trek.roomSharing?.[0].label ?? "",
@@ -188,6 +207,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const departures = useMemo(() => getDepartures(trek), [trek]);
+  const heroSlides = useMemo(() => getHeroSlides(trek), [trek]);
 
   const goToTab = (tab: Tab) => {
     setActiveTab(tab);
@@ -210,20 +230,26 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
     }
     setPayBookingId(null);
     const room = bookingForm.sharing ? `Room: ${bookingForm.sharing}\n` : "";
+    setBookingIssue(null);
     try {
+      // The server prices and stores the booking (specs/001-persistent-backend, FR-016).
       const created = await createTrekBooking({
-        user_id: user.id,
-        trek_name: trek.name,
-        trek_slug: trek.slug,
-        trek_date: bookingForm.date,
-        group_size: bookingForm.groupSize,
+        trekSlug: trek.slug,
+        date: bookingForm.date,
+        groupSize: bookingForm.groupSize,
+        roomSharing: bookingForm.sharing || undefined,
         message: bookingForm.message,
-        ...(bookingForm.sharing && { room_sharing: bookingForm.sharing }),
       });
-      // A room-tier trek is only priceable online once the row actually stores the room.
-      if (!trek.roomSharing || created.room_sharing) setPayBookingId(created.id);
-    } catch {
-      // Supabase insert failed — still open WhatsApp
+      if (!created.quoteRequired) setPayBookingId(created.bookingId);
+    } catch (err) {
+      // Not saved — never show a false success (FR-061). The WhatsApp hand-off below still opens.
+      setBookingIssue(
+        err instanceof BackendUnavailableError
+          ? "We couldn't save your request online right now."
+          : err instanceof Error
+            ? err.message
+            : "We couldn't save your request online."
+      );
     }
     const text = encodeURIComponent(
       `Hi! I'm ${bookingForm.name || "a trekker"}. I'd like to book the ${trek.name}.\nDate: ${bookingForm.date}\nGroup: ${bookingForm.groupSize}\n${room}Phone: ${bookingForm.phone}\nMessage: ${bookingForm.message || ""}`
@@ -278,16 +304,15 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
         </div>
       </div>
 
-      {/* Hero Banner */}
-      <section className="relative h-[50vh] min-h-[350px]">
-        {trek.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={trek.image} alt={trek.name} className="w-full h-full object-cover" />
-        ) : (
-          <NoPhoto className="w-full h-full" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
-
+      {/* Hero Banner — wallpaper slideshow of the trek's photos */}
+      <WallpaperCarousel
+        slides={heroSlides}
+        label={`Photos from the ${trek.name}`}
+        controls="top"
+        className="h-[50vh] min-h-[350px]"
+        scrimClassName="bg-gradient-to-t from-black/80 via-black/40 to-black/20"
+        fallback={<NoPhoto className="w-full h-full" />}
+      >
         {/* Wishlist & Share */}
         <div className="absolute top-6 right-6 flex items-center gap-3">
           {shareMsg && (
@@ -355,7 +380,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
             </p>
           </div>
         </div>
-      </section>
+      </WallpaperCarousel>
 
       {/* Trek Statistics Cards */}
       <section className="bg-white dark:bg-background border-b border-gray-100 dark:border-white/10">
@@ -447,6 +472,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
                     form={bookingForm}
                     setForm={setBookingForm}
                     onSubmit={handleBookingSubmit}
+                    bookingIssue={bookingIssue}
                     // Online payment needs Supabase (the booking row) and a numeric group size to price.
                     payHref={
                       payBookingId && isSupabaseConfigured && /^\d+$/.test(bookingForm.groupSize)
@@ -504,6 +530,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
             View Dates &amp; Register →
           </button>
         </div>
+        <PriceRoute trek={trek} className="-mt-2 px-4 pb-2 text-[11px] font-medium text-muted" />
       </div>
 
       <ContactPopup
@@ -515,6 +542,22 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
 
       <ScrollProgressRing className="bottom-28 right-4 lg:bottom-8 lg:right-6" />
     </div>
+  );
+}
+
+/* What the price covers, Indiahikes-style ("Joshimath to Joshimath"); nothing when the trek has no pickup town. */
+function PriceRoute({ trek, className }: { trek: Trek; className: string }) {
+  const route = priceRoute(trek);
+  if (!route) return null;
+  return (
+    <p className={`flex items-center gap-1 ${className}`}>
+      <svg className="h-3.5 w-3.5 shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span className="sr-only">Price covers </span>
+      {route}
+    </p>
   );
 }
 
@@ -601,6 +644,7 @@ function BookingCard({
           <span className="text-4xl font-bold tracking-tight text-foreground"><Price inr={trek.price} /></span>
           <span className="text-sm text-muted">/ person</span>
         </div>
+        <PriceRoute trek={trek} className="mt-1 text-sm font-semibold text-gray-700 dark:text-gray-200" />
         <PriceNote inr={trek.price} className="mt-2 text-muted" />
         {trek.roomSharing && (
           <ul className="mt-3 divide-y divide-gray-100 rounded-xl border border-gray-200 text-sm dark:divide-white/10 dark:border-white/10">
@@ -1194,9 +1238,8 @@ function ItineraryTab({ trek }: { trek: Trek }) {
 
 /* ─── Photo Gallery Tab (with lightbox) ─── */
 function GalleryTab({ trek }: { trek: Trek }) {
-  const trekGallery = TREK_GALLERIES[trek.slug];
   // No photos of its own → no stand-in stock gallery either.
-  const images = trekGallery || (trek.image ? [trek.image, ...GALLERY_IMAGES.slice(0, 7)] : []);
+  const images = galleryMedia(trek);
   const [lightbox, setLightbox] = useState<number | null>(null);
 
   useEffect(() => {
@@ -1531,13 +1574,14 @@ function PackingListTab() {
 
 /* ─── Reservation Tab ─── */
 function ReservationTab({
-  trek, form, setForm, onSubmit, payHref,
+  trek, form, setForm, onSubmit, payHref, bookingIssue,
 }: {
   trek: Trek;
   form: { name: string; email: string; phone: string; date: string; groupSize: string; message: string; sharing: string };
   setForm: (f: typeof form) => void;
   onSubmit: () => void;
   payHref?: string;
+  bookingIssue?: string | null;
 }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -1575,6 +1619,28 @@ function ReservationTab({
       setSent(true);
     }, 900);
   };
+
+  if (sent && bookingIssue) {
+    return (
+      <div className="py-8">
+        <WhatsAppFallback
+          message={`${bookingIssue} Your details are ready to send to us on WhatsApp so we can book it for you.`}
+          details={[
+            `Hi! I'd like to book the ${trek.name}.`,
+            form.date && `Date: ${form.date}`,
+            `Group: ${form.groupSize}`,
+            form.sharing && `Room: ${form.sharing}`,
+            form.name && `Name: ${form.name}`,
+            form.phone && `Phone: ${form.phone}`,
+            form.message && `Message: ${form.message}`,
+          ].filter((line): line is string => Boolean(line))}
+        />
+        <button onClick={() => setSent(false)} className="mt-4 block text-emerald-600 font-semibold hover:underline">
+          Try again
+        </button>
+      </div>
+    );
+  }
 
   if (sent) {
     return (

@@ -147,7 +147,7 @@ Additive and idempotent: use `if not exists`, `drop … if exists`, and `do $$ �
 
 **Independent Test**: quickstart **V1, V2, V3, V4, V5, V18, V22**. Book on browser A, see it on browser B; the price stays locked after a catalog change; tampering is ignored.
 
-- [ ] T019 [US1] Create `adventure-travel/api/bookings.js` implementing `POST /api/bookings` exactly as in `specs/001-persistent-backend/contracts/http-api.md`:
+- [X] T019 [US1] Create `adventure-travel/api/bookings.js` implementing `POST /api/bookings` exactly as in `specs/001-persistent-backend/contracts/http-api.md`:
   - `type: "trek"` requires a session (401 otherwise). `type: "course"` takes an optional session.
   - Validate the slug against `api/_lib/catalog.js` or `api/_lib/courseCatalog.js` (400 if unknown). Validate the date with `pricing.isFutureStart`, and `groupSize` (trek 1–10 priced, larger → `quote_required = true`, `amount = null`; course 1–20).
   - Compute `amount` with `pricing.trekAmount` or `pricing.courseAmount`, **ignoring any amount in the body**.
@@ -155,15 +155,15 @@ Additive and idempotent: use `if not exists`, `drop … if exists`, and `do $$ �
   - Log `BOOKING_CREATED` or `COURSE_BOOKING_CREATED`.
   - **After** the insert commits, `notify.enqueueAndSend` `booking_received` (customer) and `booking_alert` (business), with dedupe keys `booking_received:<id>` and `booking_alert:<id>`.
   - Respond 201 `{ bookingId, type, amount, quoteRequired, advanceAllowed, advanceAmount, emailQueued }`. Return 503 when `getAdmin()` is null (do **not** fall back to email-only).
-- [ ] T020 [US1] Delete `adventure-travel/api/course-bookings.js`. Confirm with `grep -rn "course-bookings" adventure-travel/src` that nothing still calls it.
-- [ ] T021 [US1] In `adventure-travel/src/lib/auth.ts`, rewrite `createTrekBooking(input: { trekSlug; date; groupSize; roomSharing?; message })` to POST `/api/bookings` with `Authorization: Bearer <session access token>`. Return the response JSON, and throw `BackendUnavailableError` on 503 or a network failure. Remove the client-side `trackActivity("BOOKING_CREATED")` call (the server logs it now).
-- [ ] T022 [US1] Update `handleBookingSubmit` in `adventure-travel/src/app/treks/[id]/TrekDetailClient.tsx`:
+- [X] T020 [US1] Delete `adventure-travel/api/course-bookings.js`. Confirm with `grep -rn "course-bookings" adventure-travel/src` that nothing still calls it.
+- [X] T021 [US1] In `adventure-travel/src/lib/auth.ts`, rewrite `createTrekBooking(input: { trekSlug; date; groupSize; roomSharing?; message })` to POST `/api/bookings` with `Authorization: Bearer <session access token>`. Return the response JSON, and throw `BackendUnavailableError` on 503 or a network failure. Remove the client-side `trackActivity("BOOKING_CREATED")` call (the server logs it now).
+- [X] T022 [US1] Update `handleBookingSubmit` in `adventure-travel/src/app/treks/[id]/TrekDetailClient.tsx`:
   - Call the new `createTrekBooking` with the selected room tier (`bookingForm` / room-sharing state already in the file).
   - Store `bookingId` for the existing "Pay online with UPI" link.
   - On `BackendUnavailableError`, render `<WhatsAppFallback>` with the booking details instead of a success state.
   - Keep the existing WhatsApp hand-off message.
-- [ ] T023 [US1] Update `handleBook` in `adventure-travel/src/app/courses/[course]/CourseDetailClient.tsx` to POST `/api/bookings` with `{ type: "course", slug: course.slug, tierId, stay, date, groupSize: Number(...), contact: { name, email, phone }, message }`. Keep the existing bearer-token attachment and the `saved` / pay-link behaviour. Map a 503 to the existing WhatsApp fallback banner.
-- [ ] T024 [P] [US1] Add a "Request this activity" form to `adventure-travel/src/app/activities/ActivitiesPageClient.tsx`:
+- [X] T023 [US1] Update `handleBook` in `adventure-travel/src/app/courses/[course]/CourseDetailClient.tsx` to POST `/api/bookings` with `{ type: "course", slug: course.slug, tierId, stay, date, groupSize: Number(...), contact: { name, email, phone }, message }`. Keep the existing bearer-token attachment and the `saved` / pay-link behaviour. Map a 503 to the existing WhatsApp fallback banner.
+- [X] T024 [P] [US1] Add a "Request this activity" form to `adventure-travel/src/app/activities/ActivitiesPageClient.tsx`:
   - Fields: activity, preferred date, group size, message.
   - It calls the existing `createActivityBooking` in `adventure-travel/src/lib/auth.ts` (Supabase insert under RLS).
   - Signed-out users are sent to `/login`. No price and no pay button (FR-013).

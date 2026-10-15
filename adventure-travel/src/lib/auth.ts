@@ -117,27 +117,53 @@ export async function getTrekBookings(userId: string): Promise<TrekBooking[]> {
   return data ?? [];
 }
 
-export async function createTrekBooking(booking: Omit<TrekBooking, "id" | "status" | "created_at">): Promise<TrekBooking> {
+/** What /api/bookings returns (specs/001-persistent-backend/contracts/http-api.md). Amounts in paise. */
+export interface CreatedBooking {
+  bookingId: string;
+  type: "trek" | "course";
+  amount: number | null;
+  quoteRequired: boolean;
+  advanceAllowed: boolean;
+  advanceAmount: number | null;
+  emailQueued: boolean;
+}
+
+/**
+ * Trek bookings are created by the server, which locks the price from the catalog
+ * (FR-016) and logs the booking. The browser can no longer insert them directly.
+ */
+export async function createTrekBooking(input: {
+  trekSlug: string;
+  date: string;
+  groupSize: string;
+  roomSharing?: string;
+  message?: string;
+}): Promise<CreatedBooking> {
   const supabase = requireClient();
-  let { data, error } = await supabase.from("trek_bookings").insert(booking).select().single();
-  // room_sharing column not added yet (supabase-room-sharing.sql): keep the room in the message instead.
-  // The row then has no room_sharing, so the order API won't price it online.
-  if (error?.code === "PGRST204" && booking.room_sharing) {
-    const { room_sharing, ...rest } = booking;
-    ({ data, error } = await supabase
-      .from("trek_bookings")
-      .insert({ ...rest, message: `Room: ${room_sharing}${rest.message ? `\n${rest.message}` : ""}` })
-      .select()
-      .single());
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error("Please sign in to book a trek.");
+
+  let res: Response;
+  try {
+    res = await fetch("/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify({
+        type: "trek",
+        slug: input.trekSlug,
+        date: input.date,
+        groupSize: input.groupSize === "10+" ? "10+" : Number(input.groupSize),
+        roomSharing: input.roomSharing || undefined,
+        message: input.message || "",
+      }),
+    });
+  } catch {
+    throw new BackendUnavailableError();
   }
-  if (error) throw error;
-  trackActivity("BOOKING_CREATED", {
-    booking_id: data.id,
-    trek_name: booking.trek_name,
-    trek_date: booking.trek_date,
-    group_size: booking.group_size,
-  });
-  return data;
+  const json = await res.json().catch(() => ({}));
+  if (res.status === 503) throw new BackendUnavailableError(json.error);
+  if (!res.ok) throw new Error(json.error || "We couldn't save your booking. Please try again.");
+  return json as CreatedBooking;
 }
 
 // ─── Activity Bookings ───

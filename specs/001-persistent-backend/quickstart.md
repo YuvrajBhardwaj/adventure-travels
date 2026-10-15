@@ -81,3 +81,12 @@ Use two browsers (A and B) or one normal and one private window. Use Razorpay te
 - Set **Production** env vars on Vercel, then redeploy.
 - Make one real ₹1 test booking and payment end to end, then refund it in the Razorpay dashboard.
 - Update the trek pages, Terms & Conditions and cancellation policy to the same advance/full terms (spec Assumptions).
+
+## Results
+
+| Run | Date | Scenarios | Outcome |
+|---|---|---|---|
+| Offline (no database) | 2026-10-16 | Unit tests | `npx vitest run`: 37/37 passed (pricing incl. room tiers and the IST/15-day rules, notification templates, signature helpers). |
+| Offline (no database) | 2026-10-16 | Parse migration | `supabase-payments-v2.sql`: 57 statements and all PL/pgSQL bodies parse with PostgreSQL's parser (libpg-query). Not yet executed against a database. |
+| Offline (fake database) | 2026-10-16 | V5 (tampering) and the US1 booking rules | `api/bookings.js` against a recording stub: browser-sent `amount` ignored (stored 1,200,000 paise); room tier priced (Tungnath double × 2 = 1,299,800); unknown room → 400; "10+" → quote; start in 10 days → no advance; past date → 400; signed-out trek → 401; course email stored lower-cased; contact defaults to the profile. |
+| **T025: V1–V5, V18, V22** | — | — | **Blocked**: needs a dev Supabase project with the five SQL files applied, plus `npx vercel dev`. Not run yet. |

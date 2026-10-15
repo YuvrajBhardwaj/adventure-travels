@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
 import SmartImage from "@/components/SmartImage";
 import CampingSection from "@/components/CampingSection";
+import ActivityRequestForm from "@/components/ActivityRequestForm";
 const activities = [
   {
     id: "trekking",
@@ -544,6 +545,9 @@ export default function ActivitiesPage() {
           </div>
         </div>
       </section>
+
+      {/* Saved to the customer's account; priced and confirmed by the team (FR-013) */}
+      <ActivityRequestForm />
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-br from-primary via-primary/90 to-accent/80">

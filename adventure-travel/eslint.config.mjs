@@ -15,6 +15,11 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "screenshot.js",
   ]),
+  // api/*.js are Vercel Node functions and are CommonJS by design (require/module.exports).
+  {
+    files: ["api/**/*.js"],
+    rules: { "@typescript-eslint/no-require-imports": "off" },
+  },
 ]);
 
 export default eslintConfig;
