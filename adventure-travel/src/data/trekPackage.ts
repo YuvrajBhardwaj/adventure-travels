@@ -45,7 +45,9 @@ export function getTrekPackage(trek: Trek): TrekPackage {
     totalMeals > 0
       ? `${totalMeals} meals, marked day by day in the itinerary`
       : "Meals as listed in the day-wise itinerary",
-    "Road transfers along the route, as listed in the itinerary",
+    trek.startsFrom
+      ? `Road transfers from ${trek.startsFrom} and back, as listed in the itinerary`
+      : "Road transfers along the route, as listed in the itinerary",
     "Daily medical and safety check-ups on the trail",
     "First-aid kit and group camping equipment",
   ];
@@ -53,7 +55,9 @@ export function getTrekPackage(trek: Trek): TrekPackage {
   if (demanding) included.push("Gamow bag and pulse oximeter carried with the team");
 
   const excluded = [
-    "Getting to the starting town (flights, trains, buses)",
+    trek.startsFrom
+      ? `Getting to ${trek.startsFrom} and back home (flights, trains, buses)`
+      : "Getting to the starting town (flights, trains, buses)",
     "Personal trekking gear — see the Packing List tab",
     "Travel and medical insurance",
     "Emergency evacuation and hospital costs",

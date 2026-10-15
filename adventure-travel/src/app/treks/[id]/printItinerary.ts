@@ -1,4 +1,4 @@
-import type { Trek } from "@/data/treks";
+import { priceRoute, type Trek } from "@/data/treks";
 import { getTrekPackage } from "@/data/trekPackage";
 
 const esc = (s: string) =>
@@ -25,9 +25,11 @@ export function printItinerary(trek: Trek): boolean {
     trek.startsFrom ? `Starts from ${trek.startsFrom}` : trek.location ?? trek.region,
     `Best season: ${trek.bestSeason}`,
   ];
+  const route = priceRoute(trek);
+  const covers = route ? `, ${esc(route)}` : "";
   const prices = trek.roomSharing
-    ? trek.roomSharing.map((r) => `<li>${esc(r.label)} (${r.perRoom} per room): <b>${inr(r.price)}</b> per person</li>`).join("")
-    : `<li><b>${inr(trek.price)}</b> per person</li>`;
+    ? trek.roomSharing.map((r) => `<li>${esc(r.label)} (${r.perRoom} per room): <b>${inr(r.price)}</b> per person${covers}</li>`).join("")
+    : `<li><b>${inr(trek.price)}</b> per person${covers}</li>`;
   const days = trek.itinerary
     .map(
       (d) => `

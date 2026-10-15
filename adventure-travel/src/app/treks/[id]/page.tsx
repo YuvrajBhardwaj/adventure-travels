@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { treks } from "@/data/treks";
+import { treks, priceRoute } from "@/data/treks";
 import { pageMetadata } from "@/lib/seo";
 import TrekDetailClient from "./TrekDetailClient";
 
@@ -16,7 +16,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!trek) return { title: "Trek Not Found" };
 
   const title = `${trekTitle(trek.name)} — ${trek.days} Days, ${trek.difficulty} | ${trek.region}`;
-  const description = `${trek.blurb} ${trek.days}-day ${trek.difficulty.toLowerCase()} trek in ${trek.region}. Max altitude ${trek.maxAltitude}m. From ${trek.currency}${trek.price.toLocaleString("en-IN")} per person. Book with Himalayan Arc Adventure.`;
+  const route = priceRoute(trek);
+  const description = `${trek.blurb} ${trek.days}-day ${trek.difficulty.toLowerCase()} trek in ${trek.region}. Max altitude ${trek.maxAltitude}m. From ${trek.currency}${trek.price.toLocaleString("en-IN")} per person${route ? ` (${route})` : ""}. Book with Himalayan Arc Adventure.`;
   return pageMetadata({
     title,
     description,

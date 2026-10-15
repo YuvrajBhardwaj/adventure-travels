@@ -3,11 +3,30 @@
 import { useState, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { treks, REGIONS } from "@/data/treks";
+import { treks, REGIONS, priceRoute } from "@/data/treks";
 import { destinations } from "@/data/destinations";
 import SmartImage from "@/components/SmartImage";
 import NoPhoto from "@/components/NoPhoto";
 import Price from "@/components/Price";
+import WallpaperCarousel from "@/components/WallpaperCarousel";
+
+// Hero wallpaper: our own photos from these treks. Landscape shots only — portrait ones crop badly this wide.
+const HERO_PHOTOS = [
+  { slug: "pangarchula-peak", src: "/assets/pangarchula-peak-trek/IMG_3734.jpeg" },
+  { slug: "satopanth-lake", src: "/assets/satopanth-lake/IMG_5914.JPG.jpeg" },
+  { slug: "bhrigu-lake", src: "/assets/birgu-lake/d4044abb-3f2d-4334-a52a-4048f82b359c.jpeg" },
+  { slug: "kedarkantha", src: "/assets/kedarkantha-trek/IMG_4143.JPG.jpeg" },
+  { slug: "har-ki-dun", src: "/assets/har-ki-dun/e9a6b4b0-145b-4ce1-ba6c-7cd151231700.jpeg" },
+  { slug: "valley-of-flowers", src: "/assets/valley-of-flowers/IMG_1532.JPG.jpeg" },
+  { slug: "dronagiri-base-camp", src: "/assets/dronagiri/7155162a-d858-4534-901f-e67b9acfe491.jpeg" },
+  { slug: "nandi-kund", src: "/assets/nandi-kund-trek/2c72f839-1d03-4194-829a-0cb0e953eb8a.jpeg" },
+  { slug: "kuari-pass", src: "/assets/kuari-pass-trek/017bfe93-d6e9-4c29-841d-e55ba276be2b.jpeg" },
+];
+const HERO_SLIDES = HERO_PHOTOS.flatMap(({ slug, src }) => {
+  const trek = treks.find((t) => t.slug === slug);
+  return trek ? [{ src, caption: trek.name, href: `/treks/${slug}` }] : [];
+});
+const HERO_HEIGHT = "h-[58vh] min-h-[400px] max-h-[640px]";
 
 const DIFFICULTIES = ["All Levels", "Easy", "Moderate", "Challenging", "Strenuous"] as const;
 const DURATION_OPTIONS = [
@@ -54,12 +73,7 @@ export default function TreksPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-white dark:bg-background pt-20">
-        <section className="bg-gradient-to-r from-emerald-50 to-blue-50 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="h-10 skeleton rounded w-1/3 mx-auto mb-4" />
-            <div className="h-5 skeleton rounded w-1/2 mx-auto" />
-          </div>
-        </section>
+        <section className={`bg-[#0F172A] ${HERO_HEIGHT}`} />
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {Array.from({ length: 6 }).map((_, i) => <TrekSkeleton key={i} />)}
@@ -156,14 +170,14 @@ function TreksCatalogue() {
   return (
     <div className="min-h-screen bg-white dark:bg-background pt-20">
       {/* Hero Banner */}
-      <section className="bg-gradient-to-r from-emerald-50 to-blue-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-foreground mb-4">All Trekking Adventures</h1>
-          <p className="text-xl text-muted max-w-2xl mx-auto">
+      <WallpaperCarousel slides={HERO_SLIDES} label="Photos from our treks" className={HERO_HEIGHT}>
+        <div className="mx-auto flex h-full max-w-7xl flex-col items-center justify-center px-4 pb-20 text-center sm:px-6 sm:pb-12 lg:px-8">
+          <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl [text-shadow:0_2px_24px_rgba(0,0,0,0.55)]">All Trekking Adventures</h1>
+          <p className="mx-auto max-w-2xl text-lg text-white/90 sm:text-xl [text-shadow:0_1px_12px_rgba(0,0,0,0.7)]">
             Explore our complete collection of world-class trekking itineraries, from beginner-friendly walks to extreme mountain expeditions.
           </p>
         </div>
-      </section>
+      </WallpaperCarousel>
 
       {/* Main Content */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -344,6 +358,7 @@ function TrekCard({ trek }: { trek: (typeof treks)[0] }) {
           <div className="flex min-w-0 flex-col">
             <span className="text-2xl font-bold text-white leading-tight"><Price inr={trek.price} /></span>
             <span className="text-xs text-white/70 whitespace-nowrap">per person</span>
+            {priceRoute(trek) && <span className="truncate text-xs font-medium text-white/90">{priceRoute(trek)}</span>}
           </div>
           <span className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-emerald-600 text-white px-4 py-2 text-sm font-semibold transition-colors group-hover:bg-emerald-700">
             Reserve Spot

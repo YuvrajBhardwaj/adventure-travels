@@ -40,8 +40,16 @@ export interface Trek {
   roomSharing?: { label: string; perRoom: number; price: number }[];
   /** Where the group sleeps, when it isn't the default twin-sharing tents. */
   stay?: { label: string; detail: string };
-  /** City the package picks up from and returns to, when that isn't the trailhead town. */
+  /**
+   * Town the package picks up from and returns to, when that isn't the trailhead town.
+   * The price covers this town and back, shown Indiahikes-style as "Joshimath to Joshimath".
+   */
   startsFrom?: string;
+}
+
+/** What the price covers, e.g. "Joshimath to Joshimath"; undefined when the trek has no pickup town. */
+export function priceRoute(trek: Trek): string | undefined {
+  return trek.startsFrom && `${trek.startsFrom} to ${trek.startsFrom}`;
 }
 
 /** Per-person price for a booked room tier; the base price when no tier was chosen, undefined for an unknown tier. */
@@ -105,6 +113,7 @@ export const treks: Trek[] = [
     image: "/assets/valley-of-flowers/IMG_1532.JPG.jpeg",
     featured: true,
     groupSize: 20,
+    startsFrom: "Joshimath",
   },
   {
     id: 10,
@@ -252,6 +261,7 @@ export const treks: Trek[] = [
     ],
     image: "/assets/pangarchula-peak-trek/IMG_3734.jpeg",
     groupSize: 10,
+    startsFrom: "Joshimath",
   },
   {
     id: 15,
@@ -279,6 +289,7 @@ export const treks: Trek[] = [
     ],
     image: "/assets/kuari-pass-trek/017bfe93-d6e9-4c29-841d-e55ba276be2b.jpeg",
     groupSize: 15,
+    startsFrom: "Joshimath",
   },
   {
     id: 16,
@@ -439,6 +450,7 @@ export const treks: Trek[] = [
     ],
     image: "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800&q=80",
     groupSize: 6,
+    startsFrom: "Joshimath",
   },
   {
     id: 21,
@@ -505,6 +517,7 @@ export const treks: Trek[] = [
     ],
     image: "/assets/dronagiri/c3de05f4-7486-4ad7-bd72-ee923d6f6831.jpeg",
     groupSize: 12,
+    startsFrom: "Joshimath",
   },
   {
     id: 23,
@@ -572,6 +585,7 @@ export const treks: Trek[] = [
     ],
     image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
     groupSize: 8,
+    startsFrom: "Joshimath",
   },
   {
     id: 25,
@@ -604,6 +618,7 @@ export const treks: Trek[] = [
     ],
     image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=800&q=80",
     groupSize: 8,
+    startsFrom: "Joshimath",
   },
   {
     id: 26,
@@ -635,6 +650,7 @@ export const treks: Trek[] = [
     ],
     image: "https://images.unsplash.com/photo-1491555103944-7c647fd857e6?w=800&q=80",
     groupSize: 10,
+    startsFrom: "Joshimath",
   },
   {
     id: 27,
