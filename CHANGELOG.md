@@ -1,4 +1,4 @@
-# Changelog
+ ☑ 19 Oct | ☑ 19 Oct | ☑ 19 Oct | ☑ 19 Oct | ☑ 19 Oct |# Changelog
 
 Every change to the Himalayan Arc Adventure site, newest first. Backend changes (database, API functions, environment variables) are marked **Backend** and also summarised in the [Backend tracker](#backend-tracker) at the bottom, which shows what is built, what is deployed and what still has to be set up.
 
@@ -16,6 +16,20 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 ---
 
 ## [Unreleased]
+
+### 19 Oct 2026: **Backend** database set up on Supabase — script change uncommitted (branch `preview/trek-slideshows`)
+- **Database:** ran `scripts/setup-backend.mjs` against Supabase project `sdhtgmlkzcknmeakxgdz`. All 5 SQL files applied and were verified: 8 tables with row-level security, 23 policies, payment and audit triggers, `apply_payment()` callable only by the server.
+- **Sign-in settings (Supabase Auth):**
+  - "Confirm email" is on.
+  - The site URL is `https://www.himalayanarcadventure.com`.
+  - Sign-in links may return to the live site's `/dashboard`, `/reset-password` and `/login`, to `localhost:3000` for local work, and to this project's Vercel previews only.
+  - **Custom email (SMTP) is not set yet.** Until it is, Supabase's built-in mailer sends sign-up and reset emails only to members of your Supabase team, and only a few per hour.
+- **Keys:** the Supabase keys and a generated `CRON_SECRET` are in `adventure-travel/.env.local`, which is git-ignored. **Vercel has none yet**, because no Vercel token was given.
+- **Script changes** (`scripts/setup-backend.mjs`):
+  - `VERCEL_TOKEN` is now optional; without it, the Vercel step is skipped and can be run later.
+  - The redirect list includes localhost and this project's preview URLs.
+  - A re-run keeps the same `CRON_SECRET` instead of making a new one.
+- **Security:** the Supabase access token used for this was pasted in chat. Delete it in Supabase → Account → Access Tokens when setup is finished.
 
 ### 19 Oct 2026: Two new landing pages: "Treks from Joshimath" and "Winter Treks in Uttarakhand" — `b17ebd1` (branch `preview/trek-slideshows`, pushed)
 - **Visitors:** two new pages, each with:
@@ -229,15 +243,20 @@ Three quick boxes on the trek cost card, per-trek inclusions, and the scholarshi
 ## Backend tracker
 
 ### Database migrations
-Run in this order in the Supabase SQL Editor. **Status: none has been run on any database yet; no Supabase project is connected.**
+Run in this order, either with `node scripts/setup-backend.mjs` or in the Supabase SQL Editor. **Status: all 5 ran on 19 Oct 2026 on Supabase project `sdhtgmlkzcknmeakxgdz`**, the only project so far; the owner hasn't said yet whether it's dev or production. Verified afterwards:
+- 8 tables, all with row-level security, and 23 policies
+- `apply_payment()` callable only by the server, not by browsers
+- browsers can no longer insert trek bookings directly.
 
-| # | File | What it sets up | Dev DB | Prod DB |
-|---|---|---|---|---|
-| 1 | `adventure-travel/supabase-schema.sql` | Profiles, trek and activity bookings, row-level security | ☐ | ☐ |
-| 2 | `adventure-travel/supabase-activity-payments.sql` | `is_admin()`, activity log, payments | ☐ | ☐ |
-| 3 | `adventure-travel/supabase-backend.sql` | Profile fields, course bookings, admin policies | ☐ | ☐ |
-| 4 | `adventure-travel/supabase-room-sharing.sql` | Room tier on trek bookings | ☐ | ☐ |
-| 5 | `adventure-travel/supabase-payments-v2.sql` | Advance/balance payments, audit trail, email outbox, `apply_payment()` | ☐ | ☐ |
+Below, ☑ marks the files run on that project.
+
+| # | File | What it sets up | `sdhtgmlkzcknmeakxgdz` |
+|---|---|---|---|
+| 1 | `adventure-travel/supabase-schema.sql` | Profiles, trek and activity bookings, row-level security | ☑ 19 Oct |
+| 2 | `adventure-travel/supabase-activity-payments.sql` | `is_admin()`, activity log, payments | ☑ 19 Oct |
+| 3 | `adventure-travel/supabase-backend.sql` | Profile fields, course bookings, admin policies | ☑ 19 Oct |
+| 4 | `adventure-travel/supabase-room-sharing.sql` | Room tier on trek bookings | ☑ 19 Oct |
+| 5 | `adventure-travel/supabase-payments-v2.sql` | Advance/balance payments, audit trail, email outbox, `apply_payment()` | ☑ 19 Oct |
 
 After running them, give the business account admin rights (snippet at the top of file 2), then sign out and back in.
 
@@ -256,11 +275,11 @@ After running them, give the business account admin rights (snippet at the top o
 ### Environment variables (Vercel → Settings, and `adventure-travel/.env.local` for local work)
 | Variable | Needed for | Set? |
 |---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Accounts, bookings, dashboard. Production build refuses to run without them | ☐ local · ☐ Vercel |
-| `SUPABASE_SERVICE_ROLE_KEY` | Every API function | ☐ local · ☐ Vercel |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Accounts, bookings, dashboard. Production build refuses to run without them | ☑ local · ☐ Vercel |
+| `SUPABASE_SERVICE_ROLE_KEY` | Every API function | ☑ local · ☐ Vercel |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | Online payments | ☐ local · ☐ Vercel |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `BOOKING_TO_EMAIL` | Booking, payment and reminder emails | ☐ local · ☐ Vercel |
-| `CRON_SECRET` | Daily reminder job | ☐ Vercel |
+| `CRON_SECRET` | Daily reminder job | ☑ local · ☐ Vercel |
 
 ### Testing status
 | Check | Result |

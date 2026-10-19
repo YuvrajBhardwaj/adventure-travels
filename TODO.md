@@ -22,18 +22,15 @@ Until this is done, login and sign-up show "Accounts are temporarily unavailable
 
 That covers most of the items below. The manual steps are listed in case you prefer the dashboards.
 
-- [ ] **You:** Create a Supabase project (a separate dev and production project is best). *19 Oct: a project exists (ref `sdhtgmlkzcknmeakxgdz`), and the Supabase MCP server is added for Claude in `.mcp.json`. Next: in Claude Code run `/mcp` → supabase → sign in, so Claude can run the SQL setup with you. Is this project the production one or a dev one?*
-- [ ] **You:** Run the 5 SQL files in order in the Supabase SQL Editor (list in the [Backend tracker](CHANGELOG.md#backend-tracker)), then give your own account admin rights.
-- [ ] **You:** Supabase → Authentication:
-  - turn on "Confirm email"
-  - set up custom SMTP
-  - set the Site URL
-  - add `/dashboard` and `/reset-password` as redirect URLs
-  - turn on the Google provider.
-- [ ] **You:** Razorpay in **Test mode**: copy the keys, and add a webhook to `https://<site>/api/razorpay-webhook` for `payment.captured`, `order.paid` and `payment.failed`.
-- [ ] **You:** Create an email App Password for the business mailbox (for SMTP).
-- [ ] **You:** Make up a long random `CRON_SECRET`.
-- [ ] **You or Dev:** Put all of the above in `adventure-travel/.env.local` and in Vercel (Development, Preview and Production), then restart the dev server. Full list in [.env.example](adventure-travel/.env.example).
+- [x] ~~Create a Supabase project~~ (ref `sdhtgmlkzcknmeakxgdz`). **You:** is this the production project or a dev one?
+- [x] ~~Run the 5 SQL files~~ (done 19 Oct by the setup script, and verified).
+- [x] ~~Supabase Auth: confirm email, site URL, redirect URLs~~ (done 19 Oct by the setup script).
+- [ ] **You: admin rights.** Sign up on the site with your email, put that email in `ADMIN_EMAIL` in `adventure-travel/.env.setup`, and run `node scripts/setup-backend.mjs` again (or tell Claude the email).
+- [ ] **You: Gmail App Password** into `.env.setup` (`SMTP_USER`, `SMTP_PASS`), then re-run the script. Until then Supabase only emails your own team, a few per hour, so customers can't confirm their sign-ups.
+- [ ] **You (optional):** Supabase → Authentication → Providers → Google, for "Continue with Google". It needs a Google Cloud OAuth client.
+- [ ] **You:** Razorpay in **Test mode**: copy the keys into `.env.setup` and re-run the script. Then add a webhook to `https://<site>/api/razorpay-webhook` for `payment.captured`, `order.paid` and `payment.failed`.
+- [x] ~~Make up a `CRON_SECRET`~~ (the setup script generated one, 19 Oct).
+- [ ] **You: Vercel token** into `VERCEL_TOKEN` in `.env.setup`, then re-run the script. It loads every key into Vercel (Development, Preview and Production). *The local `.env.local` is done (19 Oct); restart `npm run dev` to use it.*
 
 ## 2. Test it end to end (after step 1)
 - [ ] **Dev:** Run checks V1–V22 from [quickstart.md](specs/001-persistent-backend/quickstart.md) with `npx vercel dev` or on a preview, and record the results there. These are spec tasks T025, T033, T041, T045, T052, T055, T057 and T061. They cover:

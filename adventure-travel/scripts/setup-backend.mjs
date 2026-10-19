@@ -90,7 +90,9 @@ async function main() {
   } catch {
     throw new Error("Missing adventure-travel/.env.setup. Copy scripts/setup-backend.example.env to .env.setup and fill it in.");
   }
-  const missing = ["SUPABASE_ACCESS_TOKEN", "SUPABASE_PROJECT_REF", "VERCEL_TOKEN"].filter((k) => !cfg[k]);
+  // VERCEL_TOKEN is optional: without it the database and .env.local are set up, and a later
+  // run with the token loads the same keys into Vercel.
+  const missing = ["SUPABASE_ACCESS_TOKEN", "SUPABASE_PROJECT_REF"].filter((k) => !cfg[k]);
   if (missing.length) throw new Error(`Fill in ${missing.join(", ")} in .env.setup`);
   const rzp = ["RAZORPAY_KEY_ID", "RAZORPAY_KEY_SECRET", "RAZORPAY_WEBHOOK_SECRET"];
   if (rzp.some((k) => cfg[k]) && !rzp.every((k) => cfg[k])) throw new Error(`Fill in all of ${rzp.join(", ")}, or none`);
@@ -106,7 +108,9 @@ async function main() {
     ...SQL_FILES.map((f) => `run ${f}`),
     `Auth: confirm email on, site URL ${site}, redirects /dashboard /reset-password /login${smtp ? ", custom SMTP" : " (no SMTP given: Supabase's limited built-in mailer stays)"}`,
     cfg.ADMIN_EMAIL ? `make ${cfg.ADMIN_EMAIL} admin` : "no ADMIN_EMAIL: skip admin",
-    `Vercel project ${vercelProject.projectName}: write env vars to Production, Preview, Development; also .env.local`,
+    cfg.VERCEL_TOKEN
+      ? `Vercel project ${vercelProject.projectName}: write env vars to Production, Preview, Development; also .env.local`
+      : "no VERCEL_TOKEN: write .env.local only (run again with the token to load Vercel)",
   ];
   console.log(`${DRY ? "DRY RUN — nothing will change.\n" : ""}Plan:\n- ${plan.join("\n- ")}`);
   if (DRY) {
@@ -135,7 +139,12 @@ async function main() {
       method: "PATCH",
       body: {
         site_url: site,
-        uri_allow_list: ["/dashboard", "/reset-password", "/login"].map((p) => site + p).join(","),
+        // Live site pages, plus local dev and this project's Vercel previews (not every *.vercel.app site).
+        uri_allow_list: [
+          ...["/dashboard", "/reset-password", "/login"].map((p) => site + p),
+          "http://localhost:3000/**",
+          "https://adventure-travels-*-yuvrajbhardwaj2s-projects.vercel.app/**",
+        ].join(","),
         mailer_autoconfirm: false,
         ...(smtp && {
           smtp_host: cfg.SMTP_HOST || "smtp.gmail.com",
@@ -163,25 +172,27 @@ async function main() {
   }
 
   // 5. Environment variables
+  const localPath = path.join(APP, ".env.local");
+  const local = await readFile(localPath, "utf8").catch(() => "");
   const vars = {
     NEXT_PUBLIC_SUPABASE_URL: `https://${ref}.supabase.co`,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: anon,
     SUPABASE_SERVICE_ROLE_KEY: service,
-    CRON_SECRET: cfg.CRON_SECRET || randomBytes(32).toString("hex"),
+    // Reuse the secret from an earlier run so .env.local and Vercel keep agreeing.
+    CRON_SECRET: cfg.CRON_SECRET || parseEnv(local).CRON_SECRET || randomBytes(32).toString("hex"),
     ...Object.fromEntries(rzp.filter((k) => cfg[k]).map((k) => [k, cfg[k]])),
     ...(smtp && { SMTP_HOST: cfg.SMTP_HOST || "smtp.gmail.com", SMTP_PORT: String(cfg.SMTP_PORT || 465), SMTP_USER: cfg.SMTP_USER, SMTP_PASS: cfg.SMTP_PASS }),
     ...(cfg.BOOKING_TO_EMAIL && { BOOKING_TO_EMAIL: cfg.BOOKING_TO_EMAIL }),
   };
   const team = vercelProject.orgId?.startsWith("team_") ? `&teamId=${vercelProject.orgId}` : "";
-  for (const [k, value] of Object.entries(vars)) {
+  for (const [k, value] of cfg.VERCEL_TOKEN ? Object.entries(vars) : []) {
     await api(`https://api.vercel.com/v10/projects/${vercelProject.projectId}/env?upsert=true${team}`, cfg.VERCEL_TOKEN, {
       method: "POST",
       body: { key: k, value, type: "encrypted", target: ["production", "preview", "development"] },
     });
     console.log(`✓ Vercel ${k} = ${mask(value)}`);
   }
-  const localPath = path.join(APP, ".env.local");
-  const local = await readFile(localPath, "utf8").catch(() => "");
+  if (!cfg.VERCEL_TOKEN) console.log("! Vercel skipped (no VERCEL_TOKEN). Add it to .env.setup and run again before deploying.");
   await writeFile(localPath, mergeEnv(local, vars));
   console.log("✓ .env.local (restart `npm run dev` / `npx vercel dev` to pick it up)");
 
