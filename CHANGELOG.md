@@ -10,14 +10,14 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 |---|---|---|
 | **Live site** (`main` on GitHub) | `a630559` | Everything up to "three quick boxes on trek cost card" (15 Oct). None of the 16 Oct work below. |
 | **Preview** (`preview/trek-slideshows` on GitHub) | `1be764a` | Everything in [Unreleased] except this changelog and TODO. Last preview link seen: https://adventure-travels-2ds2d9ltc-yuvrajbhardwaj2s-projects.vercel.app (built from `c56f595`, before the navbar). Bookings and payments need Supabase, which isn't set up yet. |
-| **This computer, not committed** | — | Everything under "19 Oct 2026" below, plus `CHANGELOG.md`, `TODO.md` and the CLAUDE.md note about keeping them current. |
+| **Committed, not pushed** | `8c9832f` | The 19 Oct work below (SEO fixes, web-sized photos, AI-bot block, backend setup script). Push to get a Vercel preview. |
 | Local `main` | `9b522d5` | 6 commits ahead of GitHub `main`; all of them are also in the preview branch. |
 
 ---
 
 ## [Unreleased]
 
-### 19 Oct 2026: Why the site doesn't rank yet, and SEO fixes *(uncommitted)*
+### 19 Oct 2026: Why the site doesn't rank yet, and SEO fixes — `f8f83d3`, `cd4c2cf`, `6a82a5c` (branch `preview/trek-slideshows`, not pushed yet)
 **Findings**
 - **The site isn't indexed yet.** The domain was registered on 30 Sep 2026, so it is 19 days old with no links pointing to it. Searching for the brand or `site:himalayanarcadventure.com` returns nothing. This is normal for a new domain, not a penalty.
 - **Search Console:** Google Search Console is already verified (DNS record), and pages have real pre-rendered text.
