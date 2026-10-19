@@ -256,7 +256,8 @@ export default function TreksPage() {
   );
 }
 
-function TrekCard({ trek }: { trek: (typeof treks)[0] }) {
+/** Also used by the trek hub pages (src/components/TrekHub.tsx). */
+export function TrekCard({ trek }: { trek: (typeof treks)[0] }) {
   const badge = DIFF_BADGE[trek.difficulty] || DIFF_BADGE.Moderate;
 
   return (

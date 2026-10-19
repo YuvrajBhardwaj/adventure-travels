@@ -16,6 +16,8 @@ const ownImages = (...srcs: (string | undefined)[]) => {
 const STATIC_ROUTES = [
   { url: BASE, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 1.0 },
   { url: `${BASE}/treks`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
+  { url: `${BASE}/treks-from-joshimath`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+  { url: `${BASE}/winter-treks-uttarakhand`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
   { url: `${BASE}/courses`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
   { url: `${BASE}/destinations`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
   { url: `${BASE}/activities`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },

@@ -23,10 +23,15 @@ const quickLinks = [
 // Joshimath base first (Dronagiri and Panpatia Col had no other crawlable links).
 // Picked by slug from the data, so a renamed or removed trek can't leave a dead link.
 const POPULAR_TREK_SLUGS = ["kuari-pass", "pangarchula-peak", "dronagiri-base-camp", "valley-of-flowers", "panpatia-col", "kedarkantha"];
-const popularTreks = POPULAR_TREK_SLUGS.flatMap((slug) => {
-  const trek = treks.find((t) => t.slug === slug);
-  return trek ? [{ name: trek.name, href: `/treks/${trek.slug}` }] : [];
-});
+const popularTreks = [
+  ...POPULAR_TREK_SLUGS.flatMap((slug) => {
+    const trek = treks.find((t) => t.slug === slug);
+    return trek ? [{ name: trek.name, href: `/treks/${trek.slug}` }] : [];
+  }),
+  // The two hub pages, so they're linked from every page too.
+  { name: "Treks from Joshimath", href: "/treks-from-joshimath" },
+  { name: "Winter treks in Uttarakhand", href: "/winter-treks-uttarakhand" },
+];
 
 const destinations = [
   "Uttarakhand Himalayas",

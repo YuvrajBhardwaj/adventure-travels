@@ -17,6 +17,20 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 19 Oct 2026: Two new landing pages: "Treks from Joshimath" and "Winter Treks in Uttarakhand" — uncommitted (branch `preview/trek-slideshows`)
+- **Visitors:** two new pages, each with:
+  - a comparison table (days, highest point, grade, best season, price and what the price covers)
+  - a month-by-month "when to go" planner
+  - the trek cards
+  - links on to the Auli courses, the other hub, and WhatsApp.
+- **Treks from Joshimath** (`/treks-from-joshimath`): the 8 treks that start and end at our Joshimath base, how to get there (245–270 km and 9–10 hours from Rishikesh, as in the itineraries), and the Mana, Niti and Rimkhim permit tours, where we handle the Inner Line Permit.
+- **Winter Treks in Uttarakhand** (`/winter-treks-uttarakhand`): every Uttarakhand trek whose season includes January (Kedarkantha, Brahmatal, Pangarchula, Kuari Pass, Tungnath).
+- **Why:** no operator owns these searches yet; the results are blogs and listings (SEO plan items #6 and #7). Every fact on both pages is generated from the trek data, so the pages can't drift from the trek pages.
+- **Search engines:** both pages are server-rendered, listed in the sitemap, linked from the footer on every page, and carry ItemList and Breadcrumb structured data.
+- **Season accuracy:** the planner uses a new season parser (`src/lib/season.ts`) with unit tests. The old one in `QuickInfoModal.tsx` got some ranges wrong (e.g. "Mar–Jun & Sept–Dec" lost Apr, May, Oct and Nov) and isn't changed yet; see TODO.
+- **Files:** new `src/components/TrekHub.tsx`, `src/app/treks-from-joshimath/page.tsx`, `src/app/winter-treks-uttarakhand/page.tsx`, `src/lib/season.ts` and `src/lib/__tests__/season.test.ts`. Changed: `src/app/sitemap.ts`, `src/components/FooterV2.tsx`, `src/app/treks/TreksPageClient.tsx` (exports the trek card) and `vitest.config.mjs` (also runs `src/lib` tests).
+- **Checks:** type-check clean, lint 0 errors, 48/48 unit tests. On a 390px phone both pages are exactly screen-wide with no sideways scroll, and the desktop header runs under the navbar with no gap.
+
 ### 19 Oct 2026: "Where to today?" is a home-page section, not a pop-up — `910d4bb` (branch `preview/trek-slideshows`, pushed)
 - **Visitors:** the Treks / Courses / Destinations chooser used to cover the whole screen on a first visit to the home page. It now sits right under the hero. Tapping a tile shows what's inside it; "See all" and each card link through. There's no scroll lock or "Skip" button any more.
 - **Why:** the home page is what Google shows for the brand name, and Google discourages full-screen pop-ups for visitors arriving from search. The chooser's links are now also in the page HTML that search engines read.

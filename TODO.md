@@ -71,7 +71,9 @@ That covers most of the items below. The manual steps are listed in case you pre
 - [x] ~~Favicon missing in Google results~~ (done 19 Oct). `apple-touch-icon.png` was a camping photo, not a square icon. Live via hotfix `a42c960` on `main`, and committed on `preview/trek-slideshows` too.
 - [ ] **Dev:** Still waiting for JavaScript before showing: card and gallery photos (`SmartImage` starts invisible), the home hero slides and several home sections, and the home FAQ, which arrives as a hidden streamed block. Same fix pattern as the trek pages; this mainly helps load speed.
 - [x] ~~Run the SEO/SMO agent~~ (done 19 Oct). The report is `adventure-travel/docs/seo/2026-10-19-audit-and-plan.md`.
-- [ ] **Dev:** Work through the report's prioritised actions. Done 19 Oct: #9 link-preview images, #10 logo badge, #14 noindex on account pages. Next up: #6 "Treks from Joshimath" and #7 "Winter treks in Uttarakhand" hub pages, then the Inner Line Permit guide.
+- [ ] **Dev:** Work through the report's prioritised actions. Done 19 Oct: #6 and #7 hub pages, #9 link-preview images, #10 logo badge, #14 noindex on account pages. Next up: the Inner Line Permit guide (needs your facts: documents, office, processing days), a "related treks" block on trek pages, and #15 a home-page h1 that says what we do.
+- [ ] **Dev:** Switch `QuickInfoModal.tsx` to the new season parser (`src/lib/season.ts`). Its own parser mis-reads ranges like "Mar–Jun & Sept–Dec" in the "Best season" pop-up.
+- [ ] **You:** After the next deploy, request indexing in Search Console for `/treks-from-joshimath` and `/winter-treks-uttarakhand`.
 - [x] ~~"Where to today?" pop-up on the home page~~ (done 19 Oct). It is now a normal section under the home hero instead of a full-screen gate. Not live until the branch is merged.
 - [ ] **Dev:** The preloader covers every page until the site's JavaScript has loaded, plus 600 ms. It slows down when pages appear (load speed is a Google ranking signal). Shorten it, or skip it after the first visit.
 - [ ] **Dev:** Downsize and watermark the 35 trek videos as well. This needs `ffmpeg`, which isn't installed here.
