@@ -1,12 +1,10 @@
-import { pageMetadata } from "@/lib/seo";
+import { fitTitle, pageMetadata } from "@/lib/seo";
 import FAQPageClient from "./FAQPageClient";
 
 export const metadata = pageMetadata({
-  title: "Frequently Asked Questions — Himalayan Trekking",
+  title: fitTitle("Himalayan Trekking FAQs"),
   description:
-    "Everything you need to know about trekking in Uttarakhand and Himachal Pradesh — booking, fitness, gear, safety, weather, food, accommodation and trail experiences.",
-  socialTitle: "FAQ | Himalayan Arc Adventure",
-  socialDescription: "Everything you need to know about trekking in Uttarakhand and Himachal Pradesh.",
+    "Booking, fitness, gear, AMS and safety, weather, food and campsites: answers for trekking in Uttarakhand and Himachal Pradesh from our Joshimath team.",
   path: "/faq",
 });
 

@@ -1,8 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { courses } from "@/data/courses";
-import { pageMetadata } from "@/lib/seo";
+import { courses, type Course } from "@/data/courses";
+import { absoluteUrl, fitDescription, fitTitle, ORGANIZATION_ID, pageMetadata, SITE_URL } from "@/lib/seo";
 import CourseDetailClient from "./CourseDetailClient";
+
+const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+
+/** "From …" sentence that matches the tiers: their base price excludes stay and meals. */
+function priceSentence(course: Course): string {
+  if (!course.tiers?.length) return `From ${inr(course.price)} per person.`;
+  const base = Math.min(...course.tiers.map((t) => t.priceBase));
+  const full = Math.min(...course.tiers.map((t) => t.priceFull));
+  return `From ${inr(base)} for training only, or ${inr(full)} with stay and meals.`;
+}
 
 export function generateStaticParams() {
   return courses.map((course) => ({ course: course.slug }));
@@ -13,11 +23,13 @@ export async function generateMetadata({ params }: { params: Promise<{ course: s
   const course = courses.find((c) => c.slug === slug);
   if (!course) return { title: "Course Not Found" };
 
-  const title = `${course.name} — ${course.duration} | Auli, Uttarakhand`;
-  const description = `${course.shortDescription} ${course.duration} ${course.type.toLowerCase()} course in ${course.location}. From ${course.currency}${course.price.toLocaleString("en-IN")} per person. Book with Himalayan Arc Adventure.`;
   return pageMetadata({
-    title,
-    description,
+    title: fitTitle(`${course.name} in Auli`),
+    description: fitDescription([
+      course.shortDescription,
+      priceSentence(course),
+      `${course.duration} in ${course.location}, ${course.dates}.`,
+    ]),
     path: `/courses/${course.slug}`,
     image: course.image,
     imageAlt: `${course.name} — Himalayan snow sports in Auli`,
@@ -42,38 +54,56 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ c
     );
   }
 
+  const url = absoluteUrl(`/courses/${course.slug}`);
+  const days = Number.parseInt(course.duration, 10);
+  // Our own Auli photos only (local files), cover first.
+  const images = [course.image, ...(course.gallery ?? [])]
+    .filter((src, i, all) => src.startsWith("/") && all.indexOf(src) === i)
+    .slice(0, 6)
+    .map(absoluteUrl);
+  // No aggregateRating: the old fixed 4.9 / 150 on every course had no collected reviews behind it.
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Course",
+        "@id": `${url}#course`,
+        name: course.name,
+        description: course.description,
+        url,
+        image: images,
+        educationalLevel: course.level,
+        provider: { "@id": ORGANIZATION_ID },
+        offers: {
+          "@type": "Offer",
+          url,
+          category: "Paid",
+          price: course.price,
+          priceCurrency: "INR",
+          availability: "https://schema.org/InStock",
+          validFrom: new Date().toISOString(),
+        },
+        hasCourseInstance: {
+          "@type": "CourseInstance",
+          courseMode: "Onsite",
+          location: { "@type": "Place", name: course.location },
+          ...(Number.isFinite(days) && { courseWorkload: `P${days}D` }),
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Courses", item: absoluteUrl("/courses") },
+          { "@type": "ListItem", position: 3, name: course.name, item: url },
+        ],
+      },
+    ],
+  };
+
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Course",
-            name: course.name,
-            description: course.description,
-            url: `https://www.himalayanarcadventure.com/courses/${course.slug}`,
-            image: course.image,
-            provider: {
-              "@type": "TravelAgency",
-              name: "Himalayan Arc Adventure",
-              url: "https://www.himalayanarcadventure.com",
-            },
-            offers: {
-              "@type": "Offer",
-              price: course.price,
-              priceCurrency: "INR",
-              availability: "https://schema.org/InStock",
-              validFrom: new Date().toISOString(),
-            },
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: 4.9,
-              reviewCount: 150,
-            },
-          }),
-        }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <CourseDetailClient course={course} />
     </>
   );

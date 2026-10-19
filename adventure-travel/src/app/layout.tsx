@@ -5,7 +5,9 @@ import Preloader from "@/components/Preloader";
 import Navbar from "@/components/Navbar";
 import FooterV2 from "@/components/FooterV2";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { SITE_NAME, SITE_URL, SOCIAL_IMAGE, SOCIAL_PROFILES } from "@/lib/seo";
+import { absoluteUrl, ORGANIZATION_ID, SITE_NAME, SITE_URL, SOCIAL_IMAGE, SOCIAL_PROFILES, WEBSITE_ID } from "@/lib/seo";
+import { treks } from "@/data/treks";
+import { courses } from "@/data/courses";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import WelcomeChooser from "@/components/WelcomeChooser";
 import LegacyDataNotice from "@/components/LegacyDataNotice";
@@ -47,11 +49,12 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Himalayan Arc Adventure | Premium Himalayan Adventures in Uttarakhand & Himachal",
+    // The home page's title (page.tsx is a client component, so it can't export its own).
+    default: "Himalayan Arc Adventure | Treks from Joshimath & Auli Skiing",
     template: "%s | Himalayan Arc Adventure",
   },
   description:
-    "Book guided Himalayan treks in Uttarakhand and Himachal Pradesh. Certified trek leaders, small groups, safety-first approach. Kedarkantha, Valley of Flowers, Hampta Pass, Brahmatal and more.",
+    "Guided Himalayan treks from our Joshimath base: Kuari Pass, Pangarchula, Dronagiri, Valley of Flowers and Kedarkantha, plus skiing courses in Auli.",
   keywords: [
     "Himalayan trekking",
     "Uttarakhand treks",
@@ -76,18 +79,19 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "Himalayan Arc Adventure | Premium Himalayan Adventures",
+    title: "Himalayan Arc Adventure | Treks from Joshimath & Auli Skiing",
     description:
-      "Explore the Himalayas with certified guides, small groups, and unforgettable experiences. Treks in Uttarakhand & Himachal Pradesh.",
+      "Kuari Pass, Pangarchula, Dronagiri and Valley of Flowers, led by our Joshimath team and priced Joshimath to Joshimath. Plus skiing in Auli.",
     images: [SOCIAL_IMAGE],
   },
+  // No `creator`: "@himalayan_arc_adventure" is 23 characters and X handles max out at 15,
+  // so it can't be a real account. Add the real handle once the owner has one.
   twitter: {
     card: "summary_large_image",
-    title: "Himalayan Arc Adventure | Himalayan Adventures",
+    title: "Himalayan Arc Adventure | Treks from Joshimath & Auli Skiing",
     description:
-      "Certified guides, small groups, and epic Himalayan treks. Book Kedarkantha, Valley of Flowers, Hampta Pass and more.",
+      "Kuari Pass, Pangarchula, Dronagiri and Valley of Flowers, led by our Joshimath team and priced Joshimath to Joshimath. Plus skiing in Auli.",
     images: [SOCIAL_IMAGE],
-    creator: "@himalayan_arc_adventure",
   },
   robots: {
     index: true,
@@ -117,37 +121,73 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Price range from the same data the pages and the payment API use, so it can't drift.
+  const prices = [...treks.map((t) => t.price), ...courses.map((c) => c.price)];
+  const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+  // Name, address and phones match the footer (FooterV2) and contact page, so the NAP is consistent.
+  // No aggregateRating: the old 4.8 / 692 had no collected reviews behind it, and Google
+  // ignores self-served ratings on an Organization anyway. Add geo coordinates only once
+  // they match the Google Business Profile pin.
   const organizationSchema = {
     "@context": "https://schema.org",
-    "@type": "TravelAgency",
-    name: "Himalayan Arc Adventure",
-    url: SITE_URL,
-    logo: `${SITE_URL}/brand/logo.jpeg`,
-    description: "Premium guided Himalayan treks in Uttarakhand and Himachal Pradesh. Certified trek leaders, small groups, safety-first approach.",
-    email: "himalayanarcadventure@gmail.com",
-    telephone: "+917817912062",
-    address: [
+    "@graph": [
       {
-        "@type": "PostalAddress",
-        addressLocality: "Gurugram",
-        addressRegion: "Haryana",
-        addressCountry: "IN",
+        "@type": "TravelAgency",
+        "@id": ORGANIZATION_ID,
+        name: SITE_NAME,
+        alternateName: "Himalayan Arc",
+        url: `${SITE_URL}/`,
+        logo: { "@type": "ImageObject", url: absoluteUrl("/brand/logo.jpeg"), width: 457, height: 354 },
+        image: SOCIAL_IMAGE.url,
+        description:
+          "Guided Himalayan treks in Uttarakhand and Himachal Pradesh and a ski and snowboard school in Auli, run from our office in Joshimath.",
+        email: "himalayanarcadventure@gmail.com",
+        telephone: "+91-78179-12062",
+        address: {
+          "@type": "PostalAddress",
+          // As on the contact page; the footer shows only "Chamoli, Joshimath - 246443".
+          streetAddress: "Near Military Hospital",
+          addressLocality: "Joshimath",
+          addressRegion: "Uttarakhand",
+          postalCode: "246443",
+          addressCountry: "IN",
+        },
+        contactPoint: ["+91-78179-12062", "+91-86505-61564"].map((telephone) => ({
+          "@type": "ContactPoint",
+          telephone,
+          contactType: "customer service",
+          areaServed: "IN",
+        })),
+        department: {
+          "@type": "TravelAgency",
+          name: `${SITE_NAME}, Gurugram office`,
+          telephone: "+91-78179-12062",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "M3M Marina, Sector 68",
+            addressLocality: "Gurugram",
+            addressRegion: "Haryana",
+            postalCode: "122101",
+            addressCountry: "IN",
+          },
+        },
+        sameAs: SOCIAL_PROFILES,
+        areaServed: [
+          { "@type": "State", name: "Uttarakhand" },
+          { "@type": "State", name: "Himachal Pradesh" },
+        ],
+        priceRange: `${inr(Math.min(...prices))}–${inr(Math.max(...prices))}`,
       },
       {
-        "@type": "PostalAddress",
-        addressLocality: "Joshimath",
-        addressRegion: "Uttarakhand",
-        addressCountry: "IN",
+        "@type": "WebSite",
+        "@id": WEBSITE_ID,
+        name: SITE_NAME,
+        alternateName: "Himalayan Arc",
+        url: `${SITE_URL}/`,
+        inLanguage: "en-IN",
+        publisher: { "@id": ORGANIZATION_ID },
       },
     ],
-    sameAs: SOCIAL_PROFILES,
-    areaServed: ["Uttarakhand", "Himachal Pradesh"],
-    priceRange: "₹5000–₹65000",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      reviewCount: "692",
-    },
   };
 
   return (

@@ -1,12 +1,10 @@
-import { pageMetadata } from "@/lib/seo";
+import { fitTitle, pageMetadata } from "@/lib/seo";
 import ContactPageClient from "./ContactPageClient";
 
 export const metadata = pageMetadata({
-  title: "Contact Us — Plan Your Himalayan Trek",
+  title: fitTitle("Contact Our Joshimath Trek Team"),
   description:
-    "Get in touch with Himalayan Arc Adventure. Plan your guided Himalayan trek in Uttarakhand or Himachal Pradesh. WhatsApp, email, or call our trek experts.",
-  socialTitle: "Contact Us | Himalayan Arc Adventure",
-  socialDescription: "Plan your guided Himalayan trek. WhatsApp, email, or call our trek experts.",
+    "Call or WhatsApp +91 78179 12062 to plan your trek or Auli ski course. Offices in Joshimath (Chamoli, Uttarakhand 246443) and Gurugram.",
   path: "/contact",
 });
 

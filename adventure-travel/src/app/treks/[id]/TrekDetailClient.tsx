@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef, type ReactNode } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useAnimate, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { priceRoute, type Trek } from "@/data/treks";
 import ContactPopup from "@/components/ContactPopup";
@@ -180,12 +180,9 @@ function galleryMedia(trek: Trek): string[] {
   return TREK_GALLERIES[trek.slug] || (trek.image ? [trek.image, ...GALLERY_IMAGES.slice(0, 7)] : []);
 }
 
-// Saved sideways, so kept out of the hero; rotate the files and remove them from this list.
-const SIDEWAYS_PHOTOS = new Set(["/assets/panpatia-col-trek/IMG_6013.jpeg", "/assets/panpatia-col-trek/IMG_6015.jpeg"]);
-
 /** Hero wallpaper: the gallery's photos (no videos), cover first, stock shots fetched at full-screen width. */
 function getHeroSlides(trek: Trek): WallpaperSlide[] {
-  const photos = galleryMedia(trek).filter((src) => !/\.(mp4|mov)$/i.test(src) && !SIDEWAYS_PHOTOS.has(src));
+  const photos = galleryMedia(trek).filter((src) => !/\.(mp4|mov)$/i.test(src));
   const ordered = trek.image ? [trek.image, ...photos.filter((src) => src !== trek.image)] : photos;
   return ordered.map((src) => ({ src: src.includes("images.unsplash.com") ? src.replace(/([?&])w=\d+/, "$1w=1920") : src }));
 }
@@ -213,7 +210,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
     setActiveTab(tab);
     const idx = TABS.indexOf(tab);
     tabRefs.current[idx]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-    document.getElementById("trek-tabpanel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("trek-tabpanels")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   // Register CTA on an active departure → prefill the date and open the reservation tab.
@@ -409,7 +406,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
                   role="tab"
                   id={`trek-tab-${index}`}
                   aria-selected={activeTab === tab}
-                  aria-controls="trek-tabpanel"
+                  aria-controls={`trek-tabpanel-${index}`}
                   tabIndex={activeTab === tab ? 0 : -1}
                   onClick={() => goToTab(tab)}
                   onKeyDown={(e) => onTabKeyDown(e, index)}
@@ -444,45 +441,37 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left: Tab Content */}
           <div className="lg:w-2/3">
-            {/* Tab Content */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab}
-                id="trek-tabpanel"
-                role="tabpanel"
-                aria-labelledby={`trek-tab-${TABS.indexOf(activeTab)}`}
-                tabIndex={0}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="scroll-mt-36 focus:outline-none"
-              >
-                {activeTab === "Overview" && <OverviewTab trek={trek} />}
-                {activeTab === "Dates" && <DatesTab departures={departures} onRegister={registerForDate} />}
-                {activeTab === "Itinerary" && <ItineraryTab trek={trek} />}
-                {activeTab === "T&C" && <TermsConditions />}
-                {activeTab === "Photo Gallery" && <GalleryTab trek={trek} />}
-                {activeTab === "Scholarships" && <ScholarshipsTab trek={trek} />}
-                {activeTab === "What's Included" && <IncludedTab trek={trek} onNav={goToTab} />}
-                {activeTab === "Packing List" && <PackingListTab />}
-                {activeTab === "Make Reservation" && (
-                  <ReservationTab
-                    trek={trek}
-                    form={bookingForm}
-                    setForm={setBookingForm}
-                    onSubmit={handleBookingSubmit}
-                    bookingIssue={bookingIssue}
-                    // Online payment needs Supabase (the booking row) and a numeric group size to price.
-                    payHref={
-                      payBookingId && isSupabaseConfigured && /^\d+$/.test(bookingForm.groupSize)
-                        ? `/checkout?booking=${payBookingId}`
-                        : undefined
-                    }
-                  />
-                )}
-              </motion.div>
-            </AnimatePresence>
+            {/* Tab Content: every panel is in the static HTML so search engines can read the
+                itinerary, inclusions and packing list; inactive panels are `hidden`. */}
+            <div id="trek-tabpanels" className="scroll-mt-36">
+              {TABS.map((tab, index) => (
+                <TabPanel key={tab} index={index} active={activeTab === tab} reduceMotion={!!shouldReduceMotion}>
+                  {tab === "Overview" && <OverviewTab trek={trek} />}
+                  {tab === "Dates" && <DatesTab departures={departures} onRegister={registerForDate} />}
+                  {tab === "Itinerary" && <ItineraryTab trek={trek} />}
+                  {tab === "T&C" && <TermsConditions />}
+                  {tab === "Photo Gallery" && <GalleryTab trek={trek} />}
+                  {tab === "Scholarships" && <ScholarshipsTab trek={trek} />}
+                  {tab === "What's Included" && <IncludedTab trek={trek} onNav={goToTab} />}
+                  {tab === "Packing List" && <PackingListTab />}
+                  {tab === "Make Reservation" && (
+                    <ReservationTab
+                      trek={trek}
+                      form={bookingForm}
+                      setForm={setBookingForm}
+                      onSubmit={handleBookingSubmit}
+                      bookingIssue={bookingIssue}
+                      // Online payment needs Supabase (the booking row) and a numeric group size to price.
+                      payHref={
+                        payBookingId && isSupabaseConfigured && /^\d+$/.test(bookingForm.groupSize)
+                          ? `/checkout?booking=${payBookingId}`
+                          : undefined
+                      }
+                    />
+                  )}
+                </TabPanel>
+              ))}
+            </div>
           </div>
 
           {/* Right: Sticky Sidebar */}
@@ -541,6 +530,38 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
       />
 
       <ScrollProgressRing className="bottom-28 right-4 lg:bottom-8 lg:right-6" />
+    </div>
+  );
+}
+
+/**
+ * One tab's panel. All panels stay mounted (their text is in the static HTML for crawlers,
+ * and form/gallery state survives tab switches); inactive ones are `hidden`, so their lazy
+ * images and videos don't load until shown. The fade-in runs only when a panel is switched
+ * to after load, never on first paint, and not at all with reduced motion.
+ */
+function TabPanel({ index, active, reduceMotion, children }: { index: number; active: boolean; reduceMotion: boolean; children: ReactNode }) {
+  const [scope, animate] = useAnimate<HTMLDivElement>();
+  const wasActive = useRef(active);
+
+  useEffect(() => {
+    if (active && !wasActive.current && !reduceMotion && scope.current) {
+      animate(scope.current, { opacity: [0, 1], y: [10, 0] }, { duration: 0.2 });
+    }
+    wasActive.current = active;
+  }, [active, reduceMotion, animate, scope]);
+
+  return (
+    <div
+      ref={scope}
+      id={`trek-tabpanel-${index}`}
+      role="tabpanel"
+      aria-labelledby={`trek-tab-${index}`}
+      tabIndex={0}
+      hidden={!active}
+      className="focus:outline-none"
+    >
+      {children}
     </div>
   );
 }

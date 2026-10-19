@@ -1,10 +1,17 @@
 import type { MetadataRoute } from "next";
 import { treks } from "@/data/treks";
 import { courses } from "@/data/courses";
+import { absoluteUrl, SITE_URL } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
-const BASE = "https://www.himalayanarcadventure.com";
+const BASE = SITE_URL;
+
+/** Our own photos (files under public/), for Google Images; stock (Unsplash) shots are left out. */
+const ownImages = (...srcs: (string | undefined)[]) => {
+  const own = [...new Set(srcs.filter((src): src is string => !!src && src.startsWith("/")))];
+  return own.length ? { images: own.map(absoluteUrl) } : {};
+};
 
 const STATIC_ROUTES = [
   { url: BASE, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 1.0 },
@@ -22,6 +29,7 @@ const TREK_ROUTES = treks.map((trek) => ({
   lastModified: new Date(),
   changeFrequency: "monthly" as const,
   priority: 0.8,
+  ...ownImages(trek.image),
 }));
 
 const COURSE_ROUTES = courses.map((course) => ({
@@ -29,6 +37,7 @@ const COURSE_ROUTES = courses.map((course) => ({
   lastModified: new Date(),
   changeFrequency: "monthly" as const,
   priority: 0.8,
+  ...ownImages(course.image, ...(course.gallery ?? [])),
 }));
 
 export default function sitemap(): MetadataRoute.Sitemap {

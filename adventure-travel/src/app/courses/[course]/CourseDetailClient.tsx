@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
+import { motion, AnimatePresence, useAnimate, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
 import type { Course } from "@/data/courses";
 import CourseVideoBackdrop from "@/components/CourseVideoBackdrop";
 import SmartImage from "@/components/SmartImage";
@@ -155,7 +155,7 @@ function AvailabilityView({ batches, onBook }: { batches: CourseBatch[]; onBook:
     show: { transition: { staggerChildren: reduce ? 0 : 0.06 } },
   };
   return (
-    <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-40px" }} variants={stagger}>
+    <motion.div initial={false} whileInView="show" viewport={{ once: true, margin: "-40px" }} variants={stagger}>
       <motion.div variants={fadeUp}>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Upcoming Batches</h2>
         <p className="text-gray-600 mb-6">Live availability for this course — pick a batch and reserve your spot.</p>
@@ -218,6 +218,40 @@ interface Props {
   course: Course;
 }
 
+const noSubscribe = () => () => {};
+
+/**
+ * One tab's panel. All panels stay mounted (their text is in the static HTML for crawlers,
+ * and the booking form survives tab switches); inactive ones are `hidden`, so their lazy
+ * images don't load until shown. The fade-in runs only when a panel is switched to after
+ * load, never on first paint, and not at all with reduced motion.
+ */
+function CourseTabPanel({ index, active, reduceMotion, children }: { index: number; active: boolean; reduceMotion: boolean; children: ReactNode }) {
+  const [scope, animate] = useAnimate<HTMLDivElement>();
+  const wasActive = useRef(active);
+
+  useEffect(() => {
+    if (active && !wasActive.current && !reduceMotion && scope.current) {
+      animate(scope.current, { opacity: [0, 1], y: [10, 0] }, { duration: 0.2 });
+    }
+    wasActive.current = active;
+  }, [active, reduceMotion, animate, scope]);
+
+  return (
+    <div
+      ref={scope}
+      id={`course-tabpanel-${index}`}
+      role="tabpanel"
+      aria-labelledby={`course-tab-${index}`}
+      tabIndex={0}
+      hidden={!active}
+      className="focus:outline-none"
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function CourseDetailClient({ course }: Props) {
   const shouldReduceMotion = useReducedMotion();
   const [tab, setTab] = useState<Tab>("overview");
@@ -235,6 +269,8 @@ export default function CourseDetailClient({ course }: Props) {
   // Set once the server has stored the booking — enables "Pay online" and the account hint.
   const [saved, setSaved] = useState<{ id: string; amount: number | null; signedIn: boolean } | null>(null);
   const [lightbox, setLightbox] = useState<number | null>(null);
+  // False in the server HTML and during hydration, true afterwards (gates the body portal).
+  const isClient = useSyncExternalStore(noSubscribe, () => true, () => false);
 
   // Scroll-linked parallax — hero copy lifts and fades as the footage recedes
   const heroRef = useRef<HTMLElement>(null);
@@ -265,7 +301,7 @@ export default function CourseDetailClient({ course }: Props) {
 
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   // Switch tab and center it in the strip. Panel scrolling happens in a
-  // useEffect after AnimatePresence (mode="wait") has swapped the panel in.
+  // useEffect once the newly shown panel has rendered.
   const goToTab = (key: Tab) => {
     setTab(key);
     const idx = TAB_LIST.findIndex((t) => t.key === key);
@@ -287,7 +323,7 @@ export default function CourseDetailClient({ course }: Props) {
     const tries = 8;
     let i = 0;
     const scrollToPanel = () => {
-      document.getElementById("course-tabpanel")?.scrollIntoView({ behavior: "auto", block: "start" });
+      document.getElementById("course-tabpanels")?.scrollIntoView({ behavior: "auto", block: "start" });
       if (++i < tries) raf = requestAnimationFrame(scrollToPanel);
     };
     const t = window.setTimeout(() => {
@@ -397,11 +433,8 @@ export default function CourseDetailClient({ course }: Props) {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             All Courses
           </Link>
-          <motion.div
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-          >
+          {/* CSS entrance (not framer's initial opacity:0), so the h1 is visible without JavaScript. */}
+          <div className="motion-safe:animate-[fade-in-up_0.7s_cubic-bezier(0.25,0.1,0.25,1)_both]">
             <span className="inline-block px-4 py-1.5 rounded-full bg-white/15 text-white text-[11px] font-semibold uppercase tracking-[0.2em] mb-5 backdrop-blur-sm border border-white/20">
               Auli Snow Sports Academy · The Experience
             </span>
@@ -424,7 +457,7 @@ export default function CourseDetailClient({ course }: Props) {
                 </span>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Scroll cue */}
           <motion.a
@@ -457,7 +490,7 @@ export default function CourseDetailClient({ course }: Props) {
                     role="tab"
                     id={`course-tab-${i}`}
                     aria-selected={tab === t.key}
-                    aria-controls="course-tabpanel"
+                    aria-controls={`course-tabpanel-${i}`}
                     tabIndex={tab === t.key ? 0 : -1}
                     onClick={() => goToTab(t.key)}
                     onKeyDown={(e) => onTabKeyDown(e, i)}
@@ -483,22 +516,14 @@ export default function CourseDetailClient({ course }: Props) {
               </div>
             </div>
 
-            {/* Tab Content */}
-            <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={tab}
-              id="course-tabpanel"
-              role="tabpanel"
-              aria-labelledby={`course-tab-${TAB_LIST.findIndex((t) => t.key === tab)}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="scroll-mt-36 focus:outline-none"
-            >
-              {tab === "overview" && (
+            {/* Tab Content: every panel is in the static HTML so search engines can read the
+                itinerary and inclusions; inactive panels are `hidden`. */}
+            <div id="course-tabpanels" className="scroll-mt-36">
+            {TAB_LIST.map((panel, panelIndex) => (
+            <CourseTabPanel key={panel.key} index={panelIndex} active={tab === panel.key} reduceMotion={!!shouldReduceMotion}>
+              {panel.key === "overview" && (
                 <motion.div
-                  initial="hidden"
+                  initial={false}
                   whileInView="show"
                   viewport={{ once: true, margin: "-40px" }}
                   variants={inViewStagger}
@@ -610,11 +635,11 @@ export default function CourseDetailClient({ course }: Props) {
                 </motion.div>
               )}
 
-              {tab === "dates" && (
+              {panel.key === "dates" && (
                 <AvailabilityView batches={getCourseBatches(course, selectedTier?.priceBase)} onBook={registerForBatch} />
               )}
 
-              {tab === "itinerary" && (
+              {panel.key === "itinerary" && (
                 <div>
                   <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                     <h2 className="text-2xl font-bold text-gray-900">{course.duration} Itinerary</h2>
@@ -645,7 +670,7 @@ export default function CourseDetailClient({ course }: Props) {
                         <Price inr={selectedTier.priceBase} /> without stay &amp; meals · <Price inr={selectedTier.priceFull} /> with lodging &amp; all meals. Certificate and graduation ceremony included in both.
                       </p>
                       <motion.div
-                        initial="hidden"
+                        initial={false}
                         whileInView="show"
                         viewport={{ once: true, margin: "-40px" }}
                         variants={inViewStagger}
@@ -671,7 +696,7 @@ export default function CourseDetailClient({ course }: Props) {
                     <>
                       <p className="text-gray-600 mb-8">A structured progression from first turns to certified confidence.</p>
                       <motion.div
-                        initial="hidden"
+                        initial={false}
                         whileInView="show"
                         viewport={{ once: true, margin: "-40px" }}
                         variants={inViewStagger}
@@ -697,9 +722,9 @@ export default function CourseDetailClient({ course }: Props) {
                 </div>
               )}
 
-              {tab === "gallery" && (
+              {panel.key === "gallery" && (
                 <motion.div
-                  initial="hidden"
+                  initial={false}
                   whileInView="show"
                   viewport={{ once: true, margin: "-40px" }}
                   variants={inViewStagger}
@@ -752,8 +777,9 @@ export default function CourseDetailClient({ course }: Props) {
                   </motion.div>
 
                   {/* Lightbox — portaled to body so the animating tab panel's
-                      CSS transform can't break its fixed/centered positioning */}
-                  {createPortal(
+                      CSS transform can't break its fixed/centered positioning.
+                      Client-only: this panel is now in the server HTML, where there's no document. */}
+                  {isClient && createPortal(
                   <AnimatePresence>
                     {lightbox !== null && (
                       <motion.div
@@ -832,9 +858,9 @@ export default function CourseDetailClient({ course }: Props) {
                 </motion.div>
               )}
 
-              {tab === "included" && (
+              {panel.key === "included" && (
                 <motion.div
-                  initial="hidden"
+                  initial={false}
                   whileInView="show"
                   viewport={{ once: true, margin: "-40px" }}
                   variants={inViewStagger}
@@ -861,7 +887,7 @@ export default function CourseDetailClient({ course }: Props) {
                 </motion.div>
               )}
 
-              {tab === "book" && (
+              {panel.key === "book" && (
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">Book This Course</h2>
                   {sent ? (
@@ -1024,14 +1050,15 @@ export default function CourseDetailClient({ course }: Props) {
                   )}
                 </div>
               )}
-            </motion.div>
-            </AnimatePresence>
+            </CourseTabPanel>
+            ))}
+            </div>
           </div>
 
           {/* Sidebar */}
           <div className="lg:w-80 flex-shrink-0">
             <motion.div
-              initial="hidden"
+              initial={false}
               whileInView="show"
               viewport={{ once: true, margin: "-60px" }}
               variants={fadeUp}

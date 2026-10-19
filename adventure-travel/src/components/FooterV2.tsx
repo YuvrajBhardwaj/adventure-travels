@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
 import CurrencySwitcher from "./CurrencySwitcher";
+import { treks } from "@/data/treks";
 
 
 const quickLinks = [
@@ -18,13 +19,14 @@ const quickLinks = [
   { label: "Cancellation Policy", href: "/cancellation-policy" },
 ];
 
-const popularTreks = [
-  { name: "Valley of Flowers", href: "/treks/valley-of-flowers" },
-  { name: "Kedarkantha Trek", href: "/treks/kedarkantha" },
-  { name: "Brahmatal Trek", href: "/treks/brahmatal" },
-  { name: "Roopkund Trek", href: "/treks/roopkund" },
-  { name: "Har Ki Dun", href: "/treks/har-ki-dun" },
-];
+// Site-wide links, so these carry the most internal weight: the routes we run from our
+// Joshimath base first (Dronagiri and Panpatia Col had no other crawlable links).
+// Picked by slug from the data, so a renamed or removed trek can't leave a dead link.
+const POPULAR_TREK_SLUGS = ["kuari-pass", "pangarchula-peak", "dronagiri-base-camp", "valley-of-flowers", "panpatia-col", "kedarkantha"];
+const popularTreks = POPULAR_TREK_SLUGS.flatMap((slug) => {
+  const trek = treks.find((t) => t.slug === slug);
+  return trek ? [{ name: trek.name, href: `/treks/${trek.slug}` }] : [];
+});
 
 const destinations = [
   "Uttarakhand Himalayas",

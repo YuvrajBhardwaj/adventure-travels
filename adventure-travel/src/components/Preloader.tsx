@@ -29,9 +29,10 @@ export default function Preloader() {
           transition={{ duration: 0.4 }}
           className="text-center"
         >
-          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wider mb-1">
+          {/* Not a heading: this overlay is in every page's HTML, and each page has its own h1. */}
+          <p className="font-heading text-2xl md:text-3xl font-bold text-white tracking-wider mb-1">
             HIMALAYAN ARC
-          </h1>
+          </p>
           <p className="text-emerald-300/60 text-sm tracking-[0.3em] uppercase">Adventure</p>
         </motion.div>
       </motion.div>

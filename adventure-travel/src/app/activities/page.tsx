@@ -1,12 +1,10 @@
-import { pageMetadata } from "@/lib/seo";
+import { fitTitle, pageMetadata } from "@/lib/seo";
 import ActivitiesPageClient from "./ActivitiesPageClient";
 
 export const metadata = pageMetadata({
-  title: "Activities — Trekking, Skiing, Camping & More",
+  title: fitTitle("Treks, Skiing & Camping in the Himalayas"),
   description:
-    "Himalayan treks, skiing & snowboarding in Auli, riverside camping, paragliding in Bir Billing, rock climbing and mountaineering courses. Guided adventures in Uttarakhand & Himachal.",
-  socialTitle: "Activities | Himalayan Arc Adventure",
-  socialDescription: "Trekking, skiing, camping, paragliding and mountaineering in the Indian Himalayas.",
+    "Himalayan treks, skiing and snowboarding in Auli, camping, paragliding in Bir Billing and rock climbing. Guided adventures in Uttarakhand and Himachal Pradesh.",
   path: "/activities",
 });
 

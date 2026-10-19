@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useMemo, Suspense } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { treks, REGIONS, priceRoute } from "@/data/treks";
 import { destinations } from "@/data/destinations";
 import SmartImage from "@/components/SmartImage";
@@ -51,58 +50,29 @@ const DIFF_BADGE: Record<string, { bg: string; text: string }> = {
   Strenuous: { bg: "bg-red-100 dark:bg-red-900/30", text: "text-red-600 dark:text-red-400" },
 };
 
-function TrekSkeleton() {
-  return (
-    <div className="bg-white dark:bg-card rounded-2xl shadow-lg overflow-hidden">
-      <div className="relative h-64 skeleton" />
-      <div className="p-6 space-y-3">
-        <div className="h-3 skeleton rounded w-1/3" />
-        <div className="h-5 skeleton rounded w-2/3" />
-        <div className="h-3 skeleton rounded w-full" />
-        <div className="h-3 skeleton rounded w-1/2" />
-        <div className="flex justify-between items-center pt-4">
-          <div className="h-6 skeleton rounded w-1/4" />
-          <div className="h-8 skeleton rounded w-1/4" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function TreksPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-white dark:bg-background pt-20">
-        <section className={`bg-[#0F172A] ${HERO_HEIGHT}`} />
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {Array.from({ length: 6 }).map((_, i) => <TrekSkeleton key={i} />)}
-          </div>
-        </section>
-      </div>
-    }>
-      <TreksCatalogue />
-    </Suspense>
-  );
-}
+  // Filters start at "everything", so the static HTML lists all treks (crawlable links to
+  // every trek page). No useSearchParams(): in a static export it would turn this whole
+  // page into a client-only skeleton.
+  const [destination, setDestination] = useState("");
+  const [search, setSearch] = useState("");
+  const [region, setRegion] = useState("All Regions");
+  const [difficulty, setDifficulty] = useState("All Levels");
 
-function TreksCatalogue() {
-  const searchParams = useSearchParams();
+  // Deep links from the hero search, navbar, destination cards and footer
+  // (?search=, ?destination=, ?region=, ?difficulty=) are applied after mount.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const regionParam = params.get("region");
+    const difficultyParam = params.get("difficulty");
+    /* eslint-disable react-hooks/set-state-in-effect -- the URL only exists in the browser */
+    if (params.get("destination")) setDestination(params.get("destination")!);
+    if (params.get("search")) setSearch(params.get("search")!);
+    if (regionParam && REGIONS.includes(regionParam)) setRegion(regionParam);
+    if (difficultyParam && (DIFFICULTIES as readonly string[]).includes(difficultyParam)) setDifficulty(difficultyParam);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
 
-  // Initialise filters straight from the URL (?search=, ?region=, ?difficulty=) so
-  // deep links from the hero search, destination cards and footer land pre-filtered.
-  const regionParam = searchParams.get("region");
-  const difficultyParam = searchParams.get("difficulty");
-  const [destination, setDestination] = useState(searchParams.get("destination") ?? "");
-  const [search, setSearch] = useState(searchParams.get("search") ?? "");
-  const [region, setRegion] = useState(
-    regionParam && REGIONS.includes(regionParam) ? regionParam : "All Regions"
-  );
-  const [difficulty, setDifficulty] = useState(
-    difficultyParam && (DIFFICULTIES as readonly string[]).includes(difficultyParam)
-      ? difficultyParam
-      : "All Levels"
-  );
   const [durationIdx, setDurationIdx] = useState(0);
   const [priceIdx, setPriceIdx] = useState(0);
   const [sort, setSort] = useState("Sort by Popularity");
