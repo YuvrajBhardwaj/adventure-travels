@@ -17,7 +17,7 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
-### 19 Oct 2026: **Backend** database set up on Supabase — script change uncommitted (branch `preview/trek-slideshows`)
+### 19 Oct 2026: **Backend** database set up on Supabase — script change `dbb2ce7` (branch `preview/trek-slideshows`, pushed)
 - **Database:** ran `scripts/setup-backend.mjs` against Supabase project `sdhtgmlkzcknmeakxgdz`. All 5 SQL files applied and were verified: 8 tables with row-level security, 23 policies, payment and audit triggers, `apply_payment()` callable only by the server.
 - **Sign-in settings (Supabase Auth):**
   - "Confirm email" is on.
