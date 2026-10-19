@@ -10,12 +10,64 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 |---|---|---|
 | **Live site** (`main` on GitHub) | `a630559` | Everything up to "three quick boxes on trek cost card" (15 Oct). None of the 16 Oct work below. |
 | **Preview** (`preview/trek-slideshows` on GitHub) | `1be764a` | Everything in [Unreleased] except this changelog and TODO. Last preview link seen: https://adventure-travels-2ds2d9ltc-yuvrajbhardwaj2s-projects.vercel.app (built from `c56f595`, before the navbar). Bookings and payments need Supabase, which isn't set up yet. |
-| **This computer, not committed** | — | `CHANGELOG.md`, `TODO.md`, and the CLAUDE.md note about keeping them current. |
+| **This computer, not committed** | — | Everything under "19 Oct 2026" below, plus `CHANGELOG.md`, `TODO.md` and the CLAUDE.md note about keeping them current. |
 | Local `main` | `9b522d5` | 6 commits ahead of GitHub `main`; all of them are also in the preview branch. |
 
 ---
 
 ## [Unreleased]
+
+### 19 Oct 2026: Why the site doesn't rank yet, and SEO fixes *(uncommitted)*
+**Findings**
+- **The site isn't indexed yet.** The domain was registered on 30 Sep 2026, so it is 19 days old with no links pointing to it. Searching for the brand or `site:himalayanarcadventure.com` returns nothing. This is normal for a new domain, not a penalty.
+- **Search Console:** Google Search Console is already verified (DNS record), and pages have real pre-rendered text.
+- **Redirect:** the apex domain redirects to www with a *temporary* 307 redirect. It should be permanent; that's a Vercel setting, listed in TODO.
+- **Full report:** `adventure-travel/docs/seo/2026-10-19-audit-and-plan.md`. It covers a realistic timeline, a competitor-gap table for 15 searches, a prioritised plan, Google Business Profile and backlink steps, content outlines and a social calendar.
+
+**SEO fixes in code** (by the SEO/SMO agent)
+- **Headings:** every page now has one `<h1>`. The preloader's "HIMALAYAN ARC" title was a second one.
+- **Titles and descriptions:** rewritten to fit Google's length limits and to lead with the search people make. Example: "Kuari Pass Trek from Joshimath: 5 Days | Himalayan Arc". Prices and counts come from the trek data. This fixed the `/courses` text, which claimed "from Rs.30,000, all meals included".
+- **Share previews:** images now always use full web addresses, so WhatsApp and Facebook previews work. Dropped the X (Twitter) handle because it is longer than X allows, and the Facebook and YouTube profile links because those pages don't load.
+- **Structured data for Google:**
+  - the business is described as a travel agency with the Joshimath address, both phone numbers and the Gurugram office
+  - trek and course pages get breadcrumbs
+  - **removed invented ratings**: the site-wide 4.8 from 692, the 4.9 from 150 on courses, and the made-up "100 reviews" fallback on treks.
+- **Sitemap:** now includes Tungnath and Madhyamaheshwar, plus 87 of our own photos.
+- **Trek and course pages put every tab in the page HTML.** Before, only the open tab was there, so Google couldn't see the itinerary, inclusions, packing list, terms or gallery. The visible text Google can read on a trek page went from about 500 words to about 2,360. The tabs look and behave the same, and photos in closed tabs still load only when opened.
+- **`/treks` now lists all 21 treks in the page HTML.** Before, it shipped as an empty loading skeleton. Links that open the list pre-filtered (`?region=`, `?difficulty=`, `?search=`) still work.
+- **Pages show immediately.** The first page load no longer starts invisible (`opacity:0`) waiting for JavaScript, and the three `loading.tsx` files are removed; in the static site they moved page content into a hidden block. Moving between pages inside the site still fades in.
+- **Footer "Popular Treks"** now links our own Joshimath routes (Kuari Pass, Pangarchula, Dronagiri, Valley of Flowers, Panpatia Col, Kedarkantha), so no trek page is left without internal links.
+- The two Panpatia Col photos are back in that trek's banner slideshow now that they're upright.
+- **Files:** `src/app/treks/[id]/TrekDetailClient.tsx`, `src/app/courses/[course]/CourseDetailClient.tsx`, `src/app/treks/TreksPageClient.tsx`, `src/app/template.tsx`, `src/components/FooterV2.tsx`. Deleted: `src/app/loading.tsx`, `src/app/treks/[id]/loading.tsx`, `src/app/courses/[course]/loading.tsx`.
+- **Checks:** type-check clean, lint 0 errors, 45/45 unit tests, and a production build (48 pages; the built Kuari Pass page contains the packing list and `/treks` links all 21 treks).
+- **Files:** `src/components/Preloader.tsx`, `src/lib/seo.ts`, `src/app/layout.tsx`, `src/app/sitemap.ts`, `src/app/treks/[id]/page.tsx`, `src/app/courses/[course]/page.tsx`, and the `page.tsx` of /treks, /courses, /destinations, /activities, /contact and /faq.
+
+**Protecting the site's content**
+- `robots.txt` now blocks AI scraping bots (GPTBot, ClaudeBot, CCBot, Google-Extended, Bytespider, PerplexityBot, Amazonbot, Applebot-Extended, Meta). Google and Bing search crawling is unaffected.
+- **Photos:**
+  - All 125 photos are now web-sized: at most 1600px, with a small "© Himalayan Arc Adventure" mark in the corner.
+  - Camera and GPS metadata are stripped.
+  - Size went from 98 MB to 29 MB, which makes pages much faster.
+  - Full-resolution originals moved to `media-originals/` (git-ignored, never published).
+  - The two sideways Panpatia Col photos are now upright.
+  - Re-run `node scripts/prepare-photos.mjs` after adding new photos.
+  - The 35 videos are unchanged, because there is no video tool on this machine.
+- `sharp` is now a declared dev dependency (it was already installed through Next).
+
+**Backend**
+- New one-command setup: `node scripts/setup-backend.mjs` (template `scripts/setup-backend.example.env`). From two tokens plus your Razorpay and email details, it:
+  - reads the Supabase keys
+  - runs the 5 SQL files in order
+  - sets Supabase sign-in emails and redirect URLs
+  - makes your account admin
+  - writes every key into Vercel and `.env.local`.
+
+  `--dry-run` checks the inputs without changing anything. It has only been tested in dry-run, because no Supabase or Vercel tokens are available yet.
+- `supabase-schema.sql` is now safe to run more than once: each policy is dropped if it exists before being created.
+
+**Tools installed on this computer (not in the repo)**
+- `caveman` (shorter replies), `ponytail` (smallest-change coding style) and `agent-browser` (browser automation) skills.
+- The `agent-browser` command line tool v0.39.1, with its own Chrome.
 
 ### 16 Oct 2026: Navbar redesign — `1be764a` (preview)
 Committed as "Refactor code structure for improved readability and maintainability".

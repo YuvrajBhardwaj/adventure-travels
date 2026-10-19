@@ -4,8 +4,21 @@ What's left, most urgent first. Tick items off here and record the change in [CH
 **You** = the business owner (accounts, dashboards, decisions). **Dev** = code work Claude or a developer can do.
 Last updated: 16 Oct 2026.
 
+## 0. Do these first (5 minutes each, big effect)
+- [ ] **You: make the GitHub repo private.** GitHub → `YuvrajBhardwaj/adventure-travels` → Settings → General → Danger Zone → "Change visibility" → Private. Right now anyone can download the whole site: every photo and video original, the code, the database design and the business documents. Vercel still deploys from a private repo.
+- [ ] **You: make the www redirect permanent.** Vercel → Project → Settings → Domains → `himalayanarcadventure.com` → redirect to `www.himalayanarcadventure.com` with **308 Permanent** (it is 307 Temporary now). Google treats a temporary redirect as "this might change".
+- [ ] **You: Google Search Console.** After the next deploy, go to Sitemaps → submit `https://www.himalayanarcadventure.com/sitemap.xml`, then use URL Inspection → "Request indexing" on the home page and the 5 most important trek pages. The domain is only 19 days old, so this is how Google finds it fastest.
+- [ ] **You: Google Business Profile** for the Joshimath office, with the same name, address and phone as the website footer, real photos, and a review request after each batch. Steps are in `adventure-travel/docs/seo/2026-10-19-audit-and-plan.md`.
+
 ## 1. Set up the backend (blocks login, booking and payments)
 Until this is done, login and sign-up show "Accounts are temporarily unavailable". This is true on this computer and almost certainly on the live site too.
+
+**Fast way (new):**
+1. Create the Supabase project.
+2. Copy `adventure-travel/scripts/setup-backend.example.env` to `adventure-travel/.env.setup` and fill it in (instructions are inside).
+3. From `adventure-travel/`, run `node scripts/setup-backend.mjs --dry-run`, then `node scripts/setup-backend.mjs`.
+
+That covers most of the items below. The manual steps are listed in case you prefer the dashboards.
 
 - [ ] **You:** Create a Supabase project (a separate dev and production project is best).
 - [ ] **You:** Run the 5 SQL files in order in the Supabase SQL Editor (list in the [Backend tracker](CHANGELOG.md#backend-tracker)), then give your own account admin rights.
@@ -41,7 +54,10 @@ Until this is done, login and sign-up show "Accounts are temporarily unavailable
 ## 4. Decisions needed from you
 - [ ] **Rishikesh ↔ Joshimath drive.** The 8 Joshimath treks are now priced "Joshimath to Joshimath", and "What's included" says transfers run from Joshimath. Day 1 of their itineraries still shows the Rishikesh drive. Is that drive included, extra, or available on request?
 - [ ] **Valley of Flowers location.** The page header says "Rishikesh" next to "Starts from Joshimath". Should it change to Joshimath?
-- [ ] **Star ratings.** `src/data/treks.ts` has ratings and review counts, and when a trek has no count the trek page tells Google it has **100** reviews. Google treats invented review counts as spam. Are these from real reviews? If not, remove them (Dev, 10 minutes).
+- [ ] **Star ratings.** The invented ones were removed from Google's structured data on 19 Oct (the site-wide 4.8/692, courses 4.9/150, and the "100 reviews" fallback). `src/data/treks.ts` still holds ratings for 19 treks, which show on the page and in trek structured data. Are they from real reviews? If not, delete them (Dev, 10 minutes).
+- [ ] **Unverified claims on the page.** The footer says "4.9, based on 1,200+ Google Reviews" and "Est. 2010 / since 2010". Every trek shows a "10% OFF" strike-through price that the code calculates as price ÷ 0.9; it isn't a real old price. Testimonial names repeat across treks. If these aren't true, they should go: fake discounts count as misleading advertising under India's consumer rules, and fake reviews break Google's policies.
+- [ ] **Departure dates and "seats left" are made up by code.** The Dates tab always shows the 8th and 22nd of each month, cycling "Available / Few Seats Left / Sold Out", and the "Filling Fast" badge depends on it. Is there a real batch calendar? If yes, Dev can put the real dates into the trek data. If no, these labels should go. Google can now read them too.
+- [ ] **Altitudes to check.** Dronagiri says a maximum of 4,500 m, but its own Day 7 reaches 4,920 m. Pangarchula says 4,700 m, while most sources give about 4,590 m.
 - [ ] **Stock photos.** Brahmatal, Roopkund, Kalindi Khal, Gupt Khal, Mana Pass, Niti Pass and Rimkhim show generic stock mountain photos (gallery and banner slideshow). Keep them, or show only the main image until you have real photos?
 - [ ] **Navbar wording.** "Adventures" → "Treks", "Home" removed from the desktop bar, and the phone menu's main button now opens WhatsApp. OK?
 - [ ] **SEO agent in git?** It's ignored with the rest of `.claude/`. Should it be shared in the repo?
@@ -49,8 +65,12 @@ Until this is done, login and sign-up show "Accounts are temporarily unavailable
 ## 5. Code and content
 - [x] ~~Commit the navbar redesign and the `.gitignore` change~~ (done: `1be764a`, pushed to the preview branch).
 - [ ] **Dev:** Commit `CHANGELOG.md`, `TODO.md` and the `CLAUDE.md` note.
-- [ ] **You:** Re-save `panpatia-col-trek/IMG_6013.jpeg` and `IMG_6015.jpeg` the right way up. **Dev:** then remove them from `SIDEWAYS_PHOTOS` in `TrekDetailClient.tsx`.
-- [ ] **Dev:** Run the SEO/SMO agent for a first audit and competitor-gap report, starting with Kuari Pass, Pangarchula, Dronagiri, Valley of Flowers and Kedarkantha.
+- [x] ~~Re-save the sideways Panpatia photos and put them back in the slideshow~~ (done 19 Oct).
+- [ ] **Dev:** Still waiting for JavaScript before showing: card and gallery photos (`SmartImage` starts invisible), the home hero slides and several home sections, and the home FAQ, which arrives as a hidden streamed block. Same fix pattern as the trek pages; this mainly helps load speed.
+- [x] ~~Run the SEO/SMO agent~~ (done 19 Oct). The report is `adventure-travel/docs/seo/2026-10-19-audit-and-plan.md`.
+- [ ] **Dev:** Work through the report's prioritised actions. Next up: the "Treks from Joshimath" and "Winter treks in Uttarakhand" hub pages, and the Inner Line Permit guide.
+- [ ] **Dev:** Downsize and watermark the 35 trek videos as well. This needs `ffmpeg`, which isn't installed here.
+- [ ] **You:** Fix or recreate the Facebook and YouTube pages. The links on the site returned errors, so they were removed from the site's profile list.
 - [ ] **Dev:** Fix the 9 remaining lint warnings (all minor: unused variables and similar).
 - [ ] **Dev:** Optional: run `/impeccable init` once to record your brand and audience, so future design work fits better.
 - [ ] **You:** Real photos for Tungnath and Madhyamaheshwar. They show a "no photo" panel at the moment.
