@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { courses, type Course } from "@/data/courses";
 import { absoluteUrl, fitDescription, fitTitle, ORGANIZATION_ID, pageMetadata, SITE_URL } from "@/lib/seo";
+import { shareImage } from "@/lib/shareImage";
 import CourseDetailClient from "./CourseDetailClient";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: { params: Promise<{ course: s
       `${course.duration} in ${course.location}, ${course.dates}.`,
     ]),
     path: `/courses/${course.slug}`,
-    image: course.image,
+    ...shareImage(`course-${course.slug}`),
     imageAlt: `${course.name} — Himalayan snow sports in Auli`,
     type: "article",
   });

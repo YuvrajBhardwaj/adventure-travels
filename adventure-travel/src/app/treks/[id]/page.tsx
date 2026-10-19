@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { treks, priceRoute } from "@/data/treks";
 import { absoluteUrl, fitDescription, fitTitle, ORGANIZATION_ID, pageMetadata, SITE_URL } from "@/lib/seo";
+import { shareImage } from "@/lib/shareImage";
 import TrekDetailClient from "./TrekDetailClient";
 
 // "Kalindi Khal Expedition" and "Ghiya Vinayak Pass (Nandi Kund Trek)" already say what they are.
@@ -36,11 +37,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     title,
     description,
     path: `/treks/${trek.slug}`,
-    // No trek photo → the site's default share image (and its own alt text).
-    ...(trek.image && {
-      image: trek.image,
-      imageAlt: `${name} — Himalayan adventure in ${trek.region}`,
-    }),
+    // Our own trek photo as a 1200×630 preview; stock or no photo → the site's default image.
+    ...shareImage(trek.slug),
+    imageAlt: `${name} — Himalayan adventure in ${trek.region}`,
     type: "article",
   });
 }

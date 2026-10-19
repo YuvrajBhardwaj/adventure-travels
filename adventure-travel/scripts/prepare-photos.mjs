@@ -2,19 +2,25 @@
 // side, a small "© Himalayan Arc Adventure" mark in the corner, and no metadata (camera,
 // GPS). Originals live in ../media-originals/ (git-ignored) so the site never publishes
 // full-resolution files. Safe to re-run: it always rebuilds from the originals.
+// It also writes public/og/<trek-slug>.jpg and public/og/course-<slug>.jpg: the link-preview
+// image for every trek/course whose cover is our own photo (read from src/data).
 //
 //   node scripts/prepare-photos.mjs           process every photo in public/assets
 //   node scripts/prepare-photos.mjs --check   self-check only, changes nothing
 //
 // New photos: drop them into public/assets/<trek>/ as usual, then run this once.
 import sharp from "sharp";
+import ts from "typescript";
 import assert from "node:assert/strict";
-import { access, copyFile, mkdir, readdir, stat } from "node:fs/promises";
+import { access, copyFile, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const APP = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ASSETS = path.join(APP, "public", "assets");
+// Link-preview images (WhatsApp, Facebook, X): 1200×630 JPEG, under WhatsApp's ~300 KB limit.
+const OG = path.join(APP, "public", "og");
+const SHARE = { width: 1200, height: 630, maxBytes: 300_000 };
 const ORIGINALS = path.join(APP, "..", "media-originals", "assets");
 const MAX = 1600;
 const MARK = "© Himalayan Arc Adventure";
@@ -51,6 +57,45 @@ async function transform(input, rel, ext) {
   return encoded.toBuffer({ resolveWithObject: true });
 }
 
+/** Original → 1200×630 share image (crop centred on the busiest part), watermarked, ≤ 300 KB. */
+async function shareImage(input, rel) {
+  const cropped = await sharp(input)
+    .rotate(ROTATE[rel])
+    .resize(SHARE.width, SHARE.height, { fit: "cover", position: sharp.strategy.attention })
+    .toBuffer();
+  for (let quality = 82; ; quality -= 8) {
+    const data = await sharp(cropped)
+      .composite([{ input: watermark(SHARE.width, SHARE.height), top: 0, left: 0 }])
+      .jpeg({ quality, mozjpeg: true })
+      .toBuffer();
+    if (data.length <= SHARE.maxBytes || quality <= 42) return data;
+  }
+}
+
+/** Reads an exported array from src/data/<file>.ts, the same way scripts/gen-price-catalog.mjs does. */
+async function loadData(file, name) {
+  const { outputText } = ts.transpileModule(await readFile(path.join(APP, "src", "data", file), "utf8"), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
+  });
+  const mod = { exports: {} };
+  new Function("module", "exports", outputText)(mod, mod.exports);
+  return mod.exports[name] ?? [];
+}
+
+/** One share image per trek/course whose cover is our own photo; stock or missing covers keep the site image. */
+async function shareImages() {
+  const items = [
+    ...(await loadData("treks.ts", "treks")).map((t) => ({ name: t.slug, image: t.image })),
+    ...(await loadData("courses.ts", "courses")).map((c) => ({ name: `course-${c.slug}`, image: c.image })),
+  ].filter((i) => typeof i.image === "string" && i.image.startsWith("/assets/"));
+  await mkdir(OG, { recursive: true });
+  for (const { name, image } of items) {
+    const rel = decodeURIComponent(image.slice("/assets/".length));
+    await writeFile(path.join(OG, `${name}.jpg`), await shareImage(path.join(ORIGINALS, rel), rel));
+  }
+  return items.length;
+}
+
 async function* walk(dir, base = dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
@@ -69,6 +114,8 @@ async function selfCheck() {
   const turned = await transform(big, "panpatia-col-trek/IMG_6013.jpeg", ".jpeg");
   assert.equal(turned.info.width, 1067, "sideways photos are turned upright");
   assert.ok(watermark(1600, 1000).toString().includes(MARK));
+  const share = await sharp(await shareImage(big, "check.jpeg")).metadata();
+  assert.deepEqual([share.width, share.height, share.format], [1200, 630, "jpeg"]);
   console.log("self-check passed");
 }
 
@@ -95,6 +142,7 @@ async function main() {
   }
   const mb = (n) => `${(n / 1048576).toFixed(1)} MB`;
   console.log(`${count} photos: ${mb(before)} of originals → ${mb(after)} served. Originals in ${path.relative(APP, ORIGINALS)}`);
+  console.log(`${await shareImages()} share images in public/og/`);
 }
 
 main().catch((error) => {
