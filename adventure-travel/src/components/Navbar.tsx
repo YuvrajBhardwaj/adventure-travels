@@ -220,8 +220,8 @@ export default function Navbar() {
               <img
                 src="/brand/badge.png"
                 alt=""
-                width={1254}
-                height={1254}
+                width={192}
+                height={192}
                 className={`w-auto rounded-full ring-1 ring-white/15 transition-[height,transform] duration-300 group-hover:scale-[1.03] motion-reduce:transition-none ${scrolled ? "h-10" : "h-11 sm:h-12"}`}
               />
               <span className="hidden flex-col leading-none sm:flex lg:hidden xl:flex">
