@@ -9,7 +9,6 @@ import { absoluteUrl, ORGANIZATION_ID, SITE_NAME, SITE_URL, SOCIAL_IMAGE, SOCIAL
 import { treks } from "@/data/treks";
 import { courses } from "@/data/courses";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
-import WelcomeChooser from "@/components/WelcomeChooser";
 import LegacyDataNotice from "@/components/LegacyDataNotice";
 
 const poppins = Poppins({
@@ -211,9 +210,7 @@ export default function RootLayout({
         <AuthProvider>
           <CurrencyProvider>
             <Preloader />
-            {/* Before WelcomeChooser, so its check has run when the chooser decides whether to open. */}
             <LegacyDataNotice />
-            <WelcomeChooser />
             <Navbar />
             {children}
             <FooterV2 />

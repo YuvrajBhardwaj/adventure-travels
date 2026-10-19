@@ -17,6 +17,7 @@ import UnlockRestrictedUttarakhand from "@/components/UnlockRestrictedUttarakhan
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import MobileSearchButton from "@/components/MobileSearchButton";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import WelcomeChooser from "@/components/WelcomeChooser";
 
 const FAQV2 = dynamic(() => import("@/components/FAQV2"), {
   loading: () => (
@@ -34,6 +35,7 @@ export default function Home() {
       <main className="relative overflow-x-hidden">
         <SeasonSplitHero />
         <div className="relative z-10 pb-24 md:pb-0">
+          <WelcomeChooser />
           <StatsStrip />
           <FindYourTrek />
           <SummerTreksRail />

@@ -7,13 +7,6 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 /** Keys the old browser-only accounts wrote (src/lib/auth.ts and the deleted src/lib/auth-store.ts). */
 const LEGACY_KEYS = ["eht_users", "eht_session", "eht_bookings", "eht_trek_bookings", "eht_activity_bookings"];
 
-/**
- * Set for the tab session once the check has run: "notice" when old data was found (and
- * the notice shown), "clear" otherwise. WelcomeChooser waits for "clear" so the two
- * overlays never stack.
- */
-export const LEGACY_CHECKED_KEY = "hac_legacy_checked";
-
 // Before accounts moved to the server, some visitors' accounts and bookings lived only in
 // this browser. That data is wiped on first sight (FR-051) and the visitor is told once
 // how to get set up again (FR-050).
@@ -26,7 +19,6 @@ export default function LegacyDataNotice() {
     try {
       const found = LEGACY_KEYS.some((k) => localStorage.getItem(k) !== null);
       if (found) LEGACY_KEYS.forEach((k) => localStorage.removeItem(k));
-      sessionStorage.setItem(LEGACY_CHECKED_KEY, found ? "notice" : "clear");
       // eslint-disable-next-line react-hooks/set-state-in-effect
       if (found) setOpen(true);
     } catch {
