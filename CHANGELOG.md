@@ -4,20 +4,52 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 **How to add an entry:** add it under [Unreleased] with the date, where the change lives (branch and commit, or "uncommitted"), and what changed for visitors, for the business and in the backend. Move entries to a dated release heading when they go live on www.himalayanarcadventure.com. Open work goes in [TODO.md](TODO.md).
 
-## Where things stand (16 Oct 2026)
+## Where things stand (19 Oct 2026)
 
 | Where | Commit | What it has |
 |---|---|---|
-| **Live site** (`main` on GitHub) | `a630559` | Everything up to "three quick boxes on trek cost card" (15 Oct). None of the 16 Oct work below. |
-| **Preview** (`preview/trek-slideshows` on GitHub) | `1be764a` | Everything in [Unreleased] except this changelog and TODO. Last preview link seen: https://adventure-travels-2ds2d9ltc-yuvrajbhardwaj2s-projects.vercel.app (built from `c56f595`, before the navbar). Bookings and payments need Supabase, which isn't set up yet. |
-| **Committed, not pushed** | `8c9832f` | The 19 Oct work below (SEO fixes, web-sized photos, AI-bot block, backend setup script). Push to get a Vercel preview. |
-| Local `main` | `9b522d5` | 6 commits ahead of GitHub `main`; all of them are also in the preview branch. |
+| **Live site** (`main` on GitHub) | `a42c960` | Everything up to "three quick boxes on trek cost card" (15 Oct, `a630559`), plus the 19 Oct favicon hotfix. None of the 16 Oct work below. |
+| **Preview** (`preview/trek-slideshows` on GitHub) | `b47d7fa` | Everything in [Unreleased]. Preview link: https://adventure-travels-aenl3rdk1-yuvrajbhardwaj2s-projects.vercel.app (built from `b47d7fa`, 19 Oct; branch link: https://adventure-travels-git-preview-581130-yuvrajbhardwaj2s-projects.vercel.app). Bookings and payments need Supabase. |
+| **Why it isn't live** | — | Vercel's Production environment has **no environment variables**, and `next.config.ts` stops a production build without the Supabase ones. The owner chose (19 Oct) to go live only after Supabase is set up. Merge into `main` then. |
+| Local `main` | `9b522d5` | Stale: everything in it is in the preview branch, and GitHub `main` has moved on to `a42c960`. Reset it to `origin/main` before the next use. |
 
 ---
 
 ## [Unreleased]
 
-### 19 Oct 2026: Why the site doesn't rank yet, and SEO fixes — `f8f83d3`, `cd4c2cf`, `6a82a5c` (branch `preview/trek-slideshows`, not pushed yet)
+### 19 Oct 2026: "Where to today?" is a home-page section, not a pop-up — `910d4bb` (branch `preview/trek-slideshows`, pushed)
+- **Visitors:** the Treks / Courses / Destinations chooser used to cover the whole screen on a first visit to the home page. It now sits right under the hero. Tapping a tile shows what's inside it; "See all" and each card link through. There's no scroll lock or "Skip" button any more.
+- **Why:** the home page is what Google shows for the brand name, and Google discourages full-screen pop-ups for visitors arriving from search. The chooser's links are now also in the page HTML that search engines read.
+- **Files:**
+  - `src/components/WelcomeChooser.tsx` (now an inline `<section>`)
+  - `src/app/page.tsx` (placed after the hero)
+  - `src/app/layout.tsx` (removed from every page)
+  - `src/components/LegacyDataNotice.tsx` (dropped the session key that only the pop-up read).
+- **Checks:** type-check clean, lint 0 errors (8 old warnings), 45/45 unit tests. The dev server's home HTML has the section and no full-screen overlay.
+
+### 19 Oct 2026: Faster logo, link previews, account pages kept out of Google — `55d3fe1`, `d18cb3c`, `b47d7fa` (branch `preview/trek-slideshows`, pushed)
+- **Logo badge** in the navbar: 1.8 MB down to 29 KB (192×192), with the same look. It loads on every page, so every page gets faster. The original is kept in `media-originals/brand/`. Files: `public/brand/badge.png`, `src/components/Navbar.tsx` (declared size).
+- **Link previews (WhatsApp, Facebook, X):** every trek and course with our own cover photo now has its own 1200×630 preview image under WhatsApp's 300 KB limit, with the corner watermark. That's 15 images, the largest 222 KB, in `public/og/`. Treks with stock or no photos use the branded default preview. `scripts/prepare-photos.mjs` builds them, so re-run it after changing a cover photo. Pages only point at a preview that exists (`src/lib/shareImage.ts`). Files: `src/app/treks/[id]/page.tsx`, `src/app/courses/[course]/page.tsx`.
+- **Account pages:** `/login`, `/signup`, `/reset-password` and `/dashboard` now tell Google not to index them, and each has its own canonical address. Before, they inherited the home page's. `/login`, `/signup` and `/reset-password` were removed from `robots.txt` so Google can actually read that instruction. `/dashboard`, `/checkout` and `/admin` stay blocked. Files: new `layout.tsx` in those four folders, `src/app/robots.ts`.
+- **Checks:** type-check clean, lint 0 errors, and the dev server serves the right tags and preview files.
+
+### 19 Oct 2026: Favicon missing in Google results — live via `a42c960` on `main`; same change as `0e3f8ca` on `preview/trek-slideshows`
+**What was wrong**
+- Google shows a grey globe instead of the logo next to the site in mobile search. Google's favicon service had **no icon stored** for the domain (it returns 404).
+- `/apple-touch-icon.png` wasn't an icon. It was a 3000×4000 JPEG of the night camp (moon and tent), there since August. Google reads `apple-touch-icon` as a favicon candidate and needs a square image. The same photo was also the icon iPhones used when someone added the site to their home screen.
+- `/favicon.png` was a 237 KB, 484×484 file, and the manifest listed sizes that didn't match the files.
+
+**Fix**
+- `/apple-touch-icon.png` is now a real 180×180 PNG of the compass emblem on white (iOS turns transparent areas black).
+- `/favicon.png` is now 192×192 (52 KB), made from the same emblem (`assets/favicon_circular.png`).
+- The home page now declares all three icons with their real sizes: `/favicon.ico` (48 and 256 px), `/favicon.png` and the Apple icon. `site.webmanifest` sizes are corrected.
+- **Files:** `adventure-travel/public/apple-touch-icon.png`, `adventure-travel/public/favicon.png`, `adventure-travel/public/site.webmanifest`, `adventure-travel/src/app/layout.tsx`.
+- **Checks:** type-check and lint clean. The dev server's home page serves the three icon links, and each file returns 200 with the right type.
+- **Takes effect only after deploy.** Then request indexing of the home page in Search Console. Google says favicon updates take "several days to several weeks".
+- **Shipped to the live site as a hotfix:** commit `a42c960` on GitHub `main` (pushed 19 Oct, with the owner's permission). It contains only these four files, on top of `a630559`. It didn't need the Supabase variables, because the production-build guard only arrived in `9b522d5`. The same changes are still uncommitted on `preview/trek-slideshows`; commit them there too, and the later merge into `main` stays clean, since both sides make the identical change.
+- **Update to the finding below:** the home page is now in Google (the owner saw it in mobile search on 19 Oct). It still shows the old title "Premium Himalayan Adventures…" because the live site is still `a630559`. The site name shows as "himalayanarcadventure.com" because the live site has no `WebSite` structured data; that is already fixed in `f8f83d3`.
+
+### 19 Oct 2026: Why the site doesn't rank yet, and SEO fixes — `f8f83d3`, `cd4c2cf`, `6a82a5c` (branch `preview/trek-slideshows`, pushed 19 Oct)
 **Findings**
 - **The site isn't indexed yet.** The domain was registered on 30 Sep 2026, so it is 19 days old with no links pointing to it. Searching for the brand or `site:himalayanarcadventure.com` returns nothing. This is normal for a new domain, not a penalty.
 - **Search Console:** Google Search Console is already verified (DNS record), and pages have real pre-rendered text.

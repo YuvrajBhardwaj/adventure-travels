@@ -2,12 +2,14 @@
 
 What's left, most urgent first. Tick items off here and record the change in [CHANGELOG.md](CHANGELOG.md).
 **You** = the business owner (accounts, dashboards, decisions). **Dev** = code work Claude or a developer can do.
-Last updated: 16 Oct 2026.
+Last updated: 19 Oct 2026.
 
 ## 0. Do these first (5 minutes each, big effect)
+- [x] ~~Ship the favicon hotfix~~ (done 19 Oct: `a42c960` pushed to `main`).
+- [ ] **You: Search Console → URL Inspection → home page → Request indexing**, so Google re-reads the new favicon. Allow days to weeks before the logo replaces the grey globe.
 - [ ] **You: make the GitHub repo private.** GitHub → `YuvrajBhardwaj/adventure-travels` → Settings → General → Danger Zone → "Change visibility" → Private. Right now anyone can download the whole site: every photo and video original, the code, the database design and the business documents. Vercel still deploys from a private repo.
 - [ ] **You: make the www redirect permanent.** Vercel → Project → Settings → Domains → `himalayanarcadventure.com` → redirect to `www.himalayanarcadventure.com` with **308 Permanent** (it is 307 Temporary now). Google treats a temporary redirect as "this might change".
-- [ ] **You: Google Search Console.** After the next deploy, go to Sitemaps → submit `https://www.himalayanarcadventure.com/sitemap.xml`, then use URL Inspection → "Request indexing" on the home page and the 5 most important trek pages. The domain is only 19 days old, so this is how Google finds it fastest.
+- [ ] **You: Google Search Console.** After the next deploy, go to Sitemaps → submit `https://www.himalayanarcadventure.com/sitemap.xml`, then use URL Inspection → "Request indexing" on the home page and the 5 most important trek pages. The domain is only 19 days old, so this is how Google finds it fastest. Requesting the home page also makes Google re-read the favicon, which was fixed on 19 Oct. Allow days to weeks before the logo replaces the grey globe in results.
 - [ ] **You: Google Business Profile** for the Joshimath office, with the same name, address and phone as the website footer, real photos, and a review request after each batch. Steps are in `adventure-travel/docs/seo/2026-10-19-audit-and-plan.md`.
 
 ## 1. Set up the backend (blocks login, booking and payments)
@@ -20,7 +22,7 @@ Until this is done, login and sign-up show "Accounts are temporarily unavailable
 
 That covers most of the items below. The manual steps are listed in case you prefer the dashboards.
 
-- [ ] **You:** Create a Supabase project (a separate dev and production project is best).
+- [ ] **You:** Create a Supabase project (a separate dev and production project is best). *19 Oct: a project exists (ref `sdhtgmlkzcknmeakxgdz`), and the Supabase MCP server is added for Claude in `.mcp.json`. Next: in Claude Code run `/mcp` → supabase → sign in, so Claude can run the SQL setup with you. Is this project the production one or a dev one?*
 - [ ] **You:** Run the 5 SQL files in order in the Supabase SQL Editor (list in the [Backend tracker](CHANGELOG.md#backend-tracker)), then give your own account admin rights.
 - [ ] **You:** Supabase → Authentication:
   - turn on "Confirm email"
@@ -66,9 +68,12 @@ That covers most of the items below. The manual steps are listed in case you pre
 - [x] ~~Commit the navbar redesign and the `.gitignore` change~~ (done: `1be764a`, pushed to the preview branch).
 - [ ] **Dev:** Commit `CHANGELOG.md`, `TODO.md` and the `CLAUDE.md` note.
 - [x] ~~Re-save the sideways Panpatia photos and put them back in the slideshow~~ (done 19 Oct).
+- [x] ~~Favicon missing in Google results~~ (done 19 Oct). `apple-touch-icon.png` was a camping photo, not a square icon. Live via hotfix `a42c960` on `main`, and committed on `preview/trek-slideshows` too.
 - [ ] **Dev:** Still waiting for JavaScript before showing: card and gallery photos (`SmartImage` starts invisible), the home hero slides and several home sections, and the home FAQ, which arrives as a hidden streamed block. Same fix pattern as the trek pages; this mainly helps load speed.
 - [x] ~~Run the SEO/SMO agent~~ (done 19 Oct). The report is `adventure-travel/docs/seo/2026-10-19-audit-and-plan.md`.
-- [ ] **Dev:** Work through the report's prioritised actions. Next up: the "Treks from Joshimath" and "Winter treks in Uttarakhand" hub pages, and the Inner Line Permit guide.
+- [ ] **Dev:** Work through the report's prioritised actions. Done 19 Oct: #9 link-preview images, #10 logo badge, #14 noindex on account pages. Next up: #6 "Treks from Joshimath" and #7 "Winter treks in Uttarakhand" hub pages, then the Inner Line Permit guide.
+- [x] ~~"Where to today?" pop-up on the home page~~ (done 19 Oct). It is now a normal section under the home hero instead of a full-screen gate. Not live until the branch is merged.
+- [ ] **Dev:** The preloader covers every page until the site's JavaScript has loaded, plus 600 ms. It slows down when pages appear (load speed is a Google ranking signal). Shorten it, or skip it after the first visit.
 - [ ] **Dev:** Downsize and watermark the 35 trek videos as well. This needs `ffmpeg`, which isn't installed here.
 - [ ] **You:** Fix or recreate the Facebook and YouTube pages. The links on the site returned errors, so they were removed from the site's profile list.
 - [ ] **Dev:** Fix the 9 remaining lint warnings (all minor: unused variables and similar).
