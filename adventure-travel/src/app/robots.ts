@@ -8,7 +8,8 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/dashboard", "/login", "/signup", "/checkout", "/admin", "/reset-password"],
+        // /login, /signup and /reset-password stay crawlable so Google can see their noindex tag.
+        disallow: ["/dashboard", "/checkout", "/admin"],
       },
       // AI training/scraping crawlers: blocked so our photos and copy aren't bulk-copied into datasets.
       // Search engines (Googlebot, Bingbot) are unaffected; Google-Extended only controls Gemini training.
