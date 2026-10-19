@@ -21,6 +21,9 @@
 .specify/
 .claude/
 
+# Full-resolution photo originals (scripts/prepare-photos.mjs). Never published or committed.
+/media-originals/
+
 # env files (secrets) — keep examples only
 .env*
 !.env.example

@@ -10,6 +10,12 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: ["/dashboard", "/login", "/signup", "/checkout", "/admin", "/reset-password"],
       },
+      // AI training/scraping crawlers: blocked so our photos and copy aren't bulk-copied into datasets.
+      // Search engines (Googlebot, Bingbot) are unaffected; Google-Extended only controls Gemini training.
+      {
+        userAgent: ["GPTBot", "ClaudeBot", "CCBot", "Google-Extended", "Bytespider", "PerplexityBot", "Amazonbot", "Applebot-Extended", "meta-externalagent"],
+        disallow: "/",
+      },
     ],
     sitemap: "https://www.himalayanarcadventure.com/sitemap.xml",
   };
