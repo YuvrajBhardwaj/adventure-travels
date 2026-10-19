@@ -9,7 +9,7 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 | Where | Commit | What it has |
 |---|---|---|
 | **Live site** (`main` on GitHub) | `a42c960` | Everything up to "three quick boxes on trek cost card" (15 Oct, `a630559`), plus the 19 Oct favicon hotfix. None of the 16 Oct work below. |
-| **Preview** (`preview/trek-slideshows` on GitHub) | `b47d7fa` | Everything in [Unreleased]. Preview link: https://adventure-travels-aenl3rdk1-yuvrajbhardwaj2s-projects.vercel.app (built from `b47d7fa`, 19 Oct; branch link: https://adventure-travels-git-preview-581130-yuvrajbhardwaj2s-projects.vercel.app). Bookings and payments need Supabase. |
+| **Preview** (`preview/trek-slideshows` on GitHub) | `b17ebd1` | Everything in [Unreleased]. Preview link: https://adventure-travels-e2s3w71d6-yuvrajbhardwaj2s-projects.vercel.app (built from `b17ebd1`, 19 Oct). The branch link always shows the newest build: https://adventure-travels-git-preview-581130-yuvrajbhardwaj2s-projects.vercel.app. Bookings and payments need Supabase. |
 | **Why it isn't live** | — | Vercel's Production environment has **no environment variables**, and `next.config.ts` stops a production build without the Supabase ones. The owner chose (19 Oct) to go live only after Supabase is set up. Merge into `main` then. |
 | Local `main` | `9b522d5` | Stale: everything in it is in the preview branch, and GitHub `main` has moved on to `a42c960`. Reset it to `origin/main` before the next use. |
 
@@ -17,7 +17,7 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
-### 19 Oct 2026: Two new landing pages: "Treks from Joshimath" and "Winter Treks in Uttarakhand" — uncommitted (branch `preview/trek-slideshows`)
+### 19 Oct 2026: Two new landing pages: "Treks from Joshimath" and "Winter Treks in Uttarakhand" — `b17ebd1` (branch `preview/trek-slideshows`, pushed)
 - **Visitors:** two new pages, each with:
   - a comparison table (days, highest point, grade, best season, price and what the price covers)
   - a month-by-month "when to go" planner
