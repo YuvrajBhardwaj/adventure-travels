@@ -107,9 +107,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.himalayanarcadventure.com",
   },
+  // Google takes the search-result favicon from these links on the home page, apple-touch-icon
+  // included, so every file must be a real square image of its declared size.
   icons: {
-    icon: "/favicon.png",
-    apple: "/apple-touch-icon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48 256x256" },
+      { url: "/favicon.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: { url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" },
     other: [
       { rel: "manifest", url: "/site.webmanifest" },
     ],
