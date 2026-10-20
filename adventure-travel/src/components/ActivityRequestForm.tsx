@@ -5,6 +5,12 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { BackendUnavailableError, createActivityBooking } from "@/lib/auth";
 import WhatsAppFallback from "@/components/WhatsAppFallback";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ACTIVITIES = [
   { type: "camping", name: "Camping" },
@@ -58,24 +64,37 @@ export default function ActivityRequestForm() {
     }
   };
 
-  const field =
-    "w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500";
-
   return (
-    <section className="py-20">
+    <section className="py-section-sm">
       <div className="mx-auto max-w-2xl px-4 sm:px-6">
-        <h2 className="font-heading text-3xl font-bold text-foreground">Request an activity</h2>
-        <p className="mt-2 text-muted">
+        <h2 className="font-heading text-3xl font-bold tracking-[-0.02em] text-foreground sm:text-4xl">Request an activity</h2>
+        <p className="mt-2 text-base text-muted">
           Tell us what you&apos;d like to do and when. We&apos;ll confirm availability and the price for your group.
         </p>
 
-        <div className="mt-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+        <div className="mt-8 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
           {loading ? (
-            <p className="text-sm text-muted">Loading…</p>
+            // Layout-true placeholder: three fields, the message box and the submit button.
+            <div aria-busy="true" className="space-y-4">
+              <span className="sr-only">Loading the request form</span>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {[0, 1, 2].map((i) => (
+                  <div key={i}>
+                    <Skeleton className="mb-2 h-4 w-24" />
+                    <Skeleton className="h-11 w-full rounded-xl" />
+                  </div>
+                ))}
+              </div>
+              <div>
+                <Skeleton className="mb-2 h-4 w-48" />
+                <Skeleton className="h-[5.5rem] w-full rounded-xl" />
+              </div>
+              <Skeleton className="h-12 w-full rounded-xl" />
+            </div>
           ) : !user ? (
-            <p className="text-sm text-gray-700">
-              <Link href="/login" className="font-semibold text-emerald-600 hover:underline">Log in</Link> or{" "}
-              <Link href="/signup" className="font-semibold text-emerald-600 hover:underline">create an account</Link>{" "}
+            <p className="text-sm text-slate-700">
+              <Link href="/login" className="font-semibold text-emerald-700 hover:underline">Log in</Link> or{" "}
+              <Link href="/signup" className="font-semibold text-emerald-700 hover:underline">create an account</Link>{" "}
               to request an activity. Your requests are then saved to your dashboard.
             </p>
           ) : status === "sent" ? (
@@ -83,55 +102,52 @@ export default function ActivityRequestForm() {
               <p className="font-semibold text-foreground">Request sent!</p>
               <p className="mt-1 text-sm text-muted">
                 We&apos;ll confirm the date and price for {activity.name.toLowerCase()} soon. You can see it in your{" "}
-                <Link href="/dashboard" className="font-semibold text-emerald-600 hover:underline">dashboard</Link>.
+                <Link href="/dashboard" className="font-semibold text-emerald-700 hover:underline">dashboard</Link>.
               </p>
-              <button
-                onClick={() => setStatus("idle")}
-                className="mt-4 text-sm font-semibold text-emerald-600 hover:underline"
-              >
+              <Button variant="link" onClick={() => setStatus("idle")} className="mt-2 min-h-11">
                 Request another
-              </button>
+              </Button>
             </div>
           ) : (
             <form onSubmit={submit} noValidate className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block text-sm font-medium text-muted">
+                <Label className="mb-0">
                   Activity
-                  <select className={`${field} mt-1.5`} value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
+                  <Select wrapperClassName="mt-1.5" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
                     {ACTIVITIES.map((a) => (
                       <option key={a.type} value={a.type}>{a.name}</option>
                     ))}
-                  </select>
-                </label>
-                <label className="block text-sm font-medium text-muted">
+                  </Select>
+                </Label>
+                <Label className="mb-0">
                   Preferred date
-                  <input
+                  <Input
                     type="date"
-                    className={`${field} mt-1.5`}
+                    className="mt-1.5"
                     min={minDate || undefined}
                     value={form.date}
                     onChange={(e) => setForm({ ...form, date: e.target.value })}
                   />
-                </label>
-                <label className="block text-sm font-medium text-muted">
+                </Label>
+                <Label className="mb-0">
                   Group size
-                  <select className={`${field} mt-1.5`} value={form.groupSize} onChange={(e) => setForm({ ...form, groupSize: e.target.value })}>
+                  <Select wrapperClassName="mt-1.5" value={form.groupSize} onChange={(e) => setForm({ ...form, groupSize: e.target.value })}>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
                       <option key={n} value={String(n)}>{n} {n === 1 ? "person" : "persons"}</option>
                     ))}
                     <option value="10+">10+ persons</option>
-                  </select>
-                </label>
+                  </Select>
+                </Label>
               </div>
-              <label className="block text-sm font-medium text-muted">
+              <Label className="mb-0">
                 Anything we should know? <span className="font-normal">(optional)</span>
-                <textarea
+                <Textarea
                   rows={3}
-                  className={`${field} mt-1.5 resize-none`}
+                  className="mt-1.5 resize-none"
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                 />
-              </label>
+              </Label>
               {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
               {unavailable && (
                 <WhatsAppFallback
@@ -144,13 +160,9 @@ export default function ActivityRequestForm() {
                   ].filter((line): line is string => Boolean(line))}
                 />
               )}
-              <button
-                type="submit"
-                disabled={status === "saving"}
-                className="w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white transition-colors hover:bg-emerald-700 disabled:opacity-70"
-              >
+              <Button type="submit" size="lg" loading={status === "saving"} className="w-full">
                 {status === "saving" ? "Sending…" : "Send request"}
-              </button>
+              </Button>
             </form>
           )}
         </div>

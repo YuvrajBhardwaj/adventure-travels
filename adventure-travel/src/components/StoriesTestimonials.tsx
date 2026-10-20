@@ -12,7 +12,7 @@ export default function StoriesTestimonials() {
 
   return (
     <section className="relative bg-background py-section">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeUp>
           <div className="flex items-center gap-3">
             <span className="h-px w-10 bg-primary" aria-hidden />
@@ -20,7 +20,7 @@ export default function StoriesTestimonials() {
               FROM THE TRAIL
             </span>
           </div>
-          <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-display-lg">
+          <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-foreground tracking-[-0.02em] sm:text-4xl">
             Stories and words from the mountains
           </h2>
         </FadeUp>
@@ -33,20 +33,20 @@ export default function StoriesTestimonials() {
             <StaggerItem key={story.id}>
               <Link
                 href={story.href}
-                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-foreground/10 bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-foreground/10 bg-card shadow-sm transition-[transform,border-color,background-color] duration-200 ease-out hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <SmartImage
                     src={story.image}
                     alt={story.title}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
                   />
                   <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold text-foreground">
                     {story.category}
                   </span>
                 </div>
-                <div className="flex flex-1 flex-col p-5">
-                  <h3 className="font-heading text-base font-semibold leading-tight text-foreground">
+                <div className="flex flex-1 flex-col p-5 sm:p-6">
+                  <h3 className="font-heading text-lg font-semibold leading-tight text-foreground">
                     {story.title}
                   </h3>
                   <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">
@@ -68,7 +68,7 @@ export default function StoriesTestimonials() {
         >
           {picks.map((t) => (
             <StaggerItem key={t.name}>
-              <div className="rounded-2xl border border-foreground/10 bg-surface p-6">
+              <div className="h-full rounded-2xl border border-foreground/10 bg-surface p-5 sm:p-6">
                 <div
                   className="flex gap-0.5 text-accent"
                   aria-label={`Rated ${t.rating} out of 5`}

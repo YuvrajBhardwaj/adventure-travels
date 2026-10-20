@@ -33,7 +33,7 @@ export function PaymentChoice({
 }) {
   return (
     <fieldset className="space-y-3">
-      <legend className="mb-2 text-sm font-semibold">How much would you like to pay now?</legend>
+      <legend className="mb-2 text-sm font-semibold text-slate-900 dark:text-white">How much would you like to pay now?</legend>
 
       <Option
         checked={value === "advance"}
@@ -81,9 +81,9 @@ function Option({
   return (
     <label
       className={cn(
-        "relative flex cursor-pointer gap-3 rounded-xl border p-4 transition-colors motion-reduce:transition-none",
+        "relative flex cursor-pointer gap-3 rounded-xl border p-4 transition-[border-color,background-color,box-shadow] duration-150 ease-out motion-reduce:transition-none",
         checked
-          ? "border-emerald-500 bg-emerald-50/70 ring-1 ring-emerald-500 dark:bg-emerald-400/10"
+          ? "border-emerald-500 bg-emerald-50/70 ring-1 ring-emerald-500 dark:border-emerald-400 dark:bg-emerald-400/10 dark:ring-emerald-400"
           : "border-slate-200 hover:border-slate-300 dark:border-white/10 dark:hover:border-white/20",
         disabled && "cursor-not-allowed opacity-60 hover:border-slate-200 dark:hover:border-white/10"
       )}
@@ -99,16 +99,16 @@ function Option({
       <span
         aria-hidden
         className={cn(
-          "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-500 peer-focus-visible:ring-offset-2",
-          checked ? "border-emerald-600 bg-emerald-600 text-white" : "border-slate-300 dark:border-white/30"
+          "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-500 peer-focus-visible:ring-offset-2 dark:peer-focus-visible:ring-offset-slate-900",
+          checked ? "border-emerald-600 bg-emerald-600 text-white dark:border-emerald-500 dark:bg-emerald-500" : "border-slate-300 dark:border-white/30"
         )}
       >
         {checked && <CircleCheck className="h-5 w-5" />}
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-baseline justify-between gap-3">
-          <span className="font-semibold">{title}</span>
-          <span className="whitespace-nowrap text-base font-bold">{amount}</span>
+          <span className="font-semibold text-slate-900 dark:text-white">{title}</span>
+          <span className="whitespace-nowrap text-base font-bold tabular-nums text-slate-900 dark:text-white">{amount}</span>
         </span>
         <span className="mt-1 block text-sm text-slate-600 dark:text-slate-300">{children}</span>
       </span>

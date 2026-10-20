@@ -21,7 +21,7 @@ export default function ScrollProgressRing({ className = "" }: { className?: str
       type="button"
       onClick={handleClick}
       aria-label="Scroll to top"
-      className={`fixed z-50 flex items-center justify-center rounded-full bg-white/90 shadow-[0_8px_24px_rgba(2,6,23,0.18)] ring-1 ring-black/5 backdrop-blur transition-opacity hover:bg-white ${className}`}
+      className={`fixed z-50 flex items-center justify-center rounded-full bg-white/90 shadow-[0_8px_24px_rgba(2,6,23,0.18)] ring-1 ring-black/5 backdrop-blur transition-colors duration-150 ease-out hover:bg-white ${className}`}
       style={{ width: SIZE, height: SIZE }}
     >
       <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="-rotate-90" aria-hidden>

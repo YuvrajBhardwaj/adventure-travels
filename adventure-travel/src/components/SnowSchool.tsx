@@ -12,7 +12,7 @@ export default function SnowSchool() {
 
   return (
     <section className="relative bg-gradient-to-b from-emerald-50/40 via-background to-sky-50/40 py-section">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeUp>
           <div className="flex items-center gap-3">
             <span className="h-[2px] w-8 bg-secondary" aria-hidden />
@@ -20,7 +20,7 @@ export default function SnowSchool() {
               DEC – MAR · WINTER
             </span>
           </div>
-          <h2 className="mt-4 font-heading text-3xl font-bold leading-snug text-foreground sm:text-4xl md:text-display-lg">
+          <h2 className="mt-4 font-heading text-3xl font-bold leading-snug text-foreground tracking-[-0.02em] sm:text-4xl">
             The Auli Snow School
           </h2>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-foreground/70 sm:text-lg">
@@ -29,7 +29,7 @@ export default function SnowSchool() {
           </p>
           <Link
             href="/courses"
-            className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-secondary transition-colors hover:text-secondary/80"
+            className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-secondary transition-colors duration-150 ease-out hover:text-secondary/80"
           >
             All courses
             <svg
@@ -53,16 +53,16 @@ export default function SnowSchool() {
         <ScaleIn className="mt-10">
           <Link
             href={`/courses/${featured.slug}`}
-            className="group grid overflow-hidden rounded-3xl border border-white/20 bg-slate-950 text-white shadow-2xl shadow-black/20 transition-all hover:shadow-black/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary lg:grid-cols-2"
+            className="group grid overflow-hidden rounded-2xl border border-white/20 bg-slate-950 text-white shadow-2xl shadow-black/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary lg:grid-cols-2"
           >
             <div className="relative min-h-[320px] overflow-hidden">
               <SmartImage
                 src={featured.image}
                 alt={featured.name}
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
               />
             </div>
-            <div className="flex flex-col p-6 lg:p-8">
+            <div className="flex flex-col p-5 sm:p-6 lg:p-8">
               <span className="inline-flex w-fit rounded-full bg-secondary/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-sky-300">
                 {featured.type}
               </span>
@@ -120,7 +120,7 @@ export default function SnowSchool() {
               <span className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-sky-300 group-hover:underline">
                 Book this course
                 <svg
-                  className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                  className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-1 motion-reduce:transition-none"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -148,20 +148,20 @@ export default function SnowSchool() {
               <StaggerItem key={course.slug}>
                 <Link
                   href={`/courses/${course.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-foreground/10 bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-foreground/10 bg-card shadow-sm transition-[transform,border-color,background-color] duration-200 ease-out hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <SmartImage
                       src={course.image}
                       alt={course.name}
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
                     />
                     <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold text-foreground">
                       {course.type}
                     </span>
                   </div>
-                  <div className="flex flex-1 flex-col p-5">
-                    <h4 className="font-heading text-base font-semibold leading-tight text-foreground">
+                  <div className="flex flex-1 flex-col p-5 sm:p-6">
+                    <h4 className="font-heading text-lg font-semibold leading-tight text-foreground">
                       {course.name}
                     </h4>
                     <p className="mt-1 text-xs text-muted">

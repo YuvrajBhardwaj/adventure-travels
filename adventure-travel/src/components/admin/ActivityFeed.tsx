@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
+  Activity,
   AlertTriangle,
   CalendarCheck,
   CircleDollarSign,
@@ -21,7 +22,9 @@ import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DURATION, transition } from "@/lib/motion";
 
 const PAGE_SIZE = 25;
 const SELECT = "id,user_id,action_type,metadata,created_at,profiles(full_name)";
@@ -106,7 +109,8 @@ function normalize(row: Record<string, unknown>): ActivityLog {
 
 function FeedSkeleton() {
   return (
-    <ul className="space-y-6" aria-label="Loading activity" aria-busy>
+    <ul className="space-y-6" aria-busy="true">
+      <li className="sr-only">Loading activity</li>
       {Array.from({ length: 6 }).map((_, i) => (
         <li key={i} className="flex gap-4">
           <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
@@ -214,8 +218,8 @@ export function ActivityFeed() {
             <span className={cn("h-2 w-2 rounded-full", live ? "bg-emerald-500" : "bg-slate-400")} />
             {live ? "Live" : "Offline"}
           </span>
-          <Button variant="outline" size="sm" onClick={() => void load()} disabled={status === "loading"}>
-            <RefreshCw className={cn("h-4 w-4", status === "loading" && "animate-spin motion-reduce:animate-none")} aria-hidden />
+          <Button variant="outline" size="sm" onClick={() => void load()} loading={status === "loading"}>
+            {status !== "loading" && <RefreshCw className="h-4 w-4" aria-hidden />}
             Refresh
           </Button>
         </div>
@@ -225,19 +229,23 @@ export function ActivityFeed() {
         {status === "loading" && logs.length === 0 && <FeedSkeleton />}
 
         {status === "error" && (
-          <div role="alert" className="flex flex-col items-center gap-3 py-10 text-center">
-            <AlertTriangle className="h-8 w-8 text-amber-500" aria-hidden />
-            <p className="max-w-sm text-sm text-slate-600 dark:text-slate-300">
-              Couldn&apos;t load activity. Check that the SQL migration has been run and that your account has the admin role.
-            </p>
-            <Button variant="outline" size="sm" onClick={() => void load()}>
-              Try again
-            </Button>
+          <div role="alert">
+            <EmptyState
+              tone="amber"
+              icon={<AlertTriangle />}
+              title="Couldn't load activity."
+              description="Check that the SQL migration has been run and that your account has the admin role."
+              action={
+                <Button variant="outline" size="sm" onClick={() => void load()}>
+                  Try again
+                </Button>
+              }
+            />
           </div>
         )}
 
         {status === "ready" && logs.length === 0 && (
-          <p className="py-10 text-center text-sm text-slate-500 dark:text-slate-400">No activity yet.</p>
+          <EmptyState icon={<Activity />} title="No activity yet." />
         )}
 
         {logs.length > 0 && status !== "error" && (
@@ -256,7 +264,7 @@ export function ActivityFeed() {
                   layout={reduceMotion ? false : "position"}
                   initial={reduceMotion ? false : { opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25, delay: reduceMotion ? 0 : Math.min(index, 8) * 0.04 }}
+                  transition={{ ...transition("base"), delay: reduceMotion ? 0 : Math.min(index, 8) * (DURATION.fast / 4) }}
                   className="relative flex gap-4 pb-6 last:pb-0"
                 >
                   {!isLast && (
@@ -265,7 +273,7 @@ export function ActivityFeed() {
                   <Avatar name={name} seed={log.user_id} />
                   <div
                     className={cn(
-                      "min-w-0 flex-1 rounded-xl px-3 py-2 -mx-3 -my-2 transition-colors duration-700 motion-reduce:transition-none",
+                      "min-w-0 flex-1 rounded-xl px-3 py-2 -mx-3 -my-2 transition-colors duration-300 ease-in-out motion-reduce:transition-none",
                       fresh.includes(log.id) && "bg-emerald-50 dark:bg-emerald-400/10"
                     )}
                   >
@@ -294,8 +302,8 @@ export function ActivityFeed() {
 
         {hasMore && status === "ready" && (
           <div className="mt-6 flex justify-center">
-            <Button variant="outline" size="sm" onClick={() => void loadMore()} disabled={loadingMore}>
-              {loadingMore ? "Loading…" : "Load older activity"}
+            <Button variant="outline" onClick={() => void loadMore()} loading={loadingMore}>
+              Load older activity
             </Button>
           </div>
         )}

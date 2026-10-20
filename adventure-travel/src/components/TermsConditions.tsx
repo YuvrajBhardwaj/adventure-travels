@@ -22,19 +22,18 @@ export default function TermsConditions() {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             aria-pressed={activeTab === tab.id}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+            className={`inline-flex min-h-11 items-center rounded-full border px-4 text-sm font-semibold transition-colors duration-150 ease-out motion-reduce:transition-none ${
               activeTab === tab.id
-                ? "bg-emerald-600 text-white"
-                : "bg-gray-100 dark:bg-white/5 text-muted hover:text-foreground border border-gray-200 dark:border-white/10"
+                ? "border-emerald-600 bg-emerald-600 text-white"
+                : "border-slate-200 bg-slate-100 text-muted hover:text-foreground dark:border-white/10 dark:bg-white/5"
             }`}
           >
             {tab.label}
           </button>
         ))}
       </div>
-      <div className="rounded-2xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-card p-6 md:p-8 text-foreground leading-relaxed space-y-4 text-sm md:text-base">
-        {activeTab === "cancellation" && (
-          <>
+      <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50 dark:bg-card p-5 sm:p-6 md:p-8 text-foreground leading-relaxed text-sm md:text-base">
+        <div hidden={activeTab !== "cancellation"} className="space-y-4">
             <p>
               <strong>Note:</strong> No refund on unutilized services of the package, if any. See the{" "}
               <strong>Cancellation Process &amp; Terms &amp; Conditions</strong> below.
@@ -86,10 +85,8 @@ export default function TermsConditions() {
               </a>{" "}
               with your voucher code and preferred batch date.
             </p>
-          </>
-        )}
-        {activeTab === "payments" && (
-          <ul className="list-disc pl-6 space-y-2">
+        </div>
+        <ul hidden={activeTab !== "payments"} className="list-disc pl-6 space-y-2">
             <li>Pay a <strong>30% advance</strong> (non-refundable) or the <strong>full amount</strong> online. The balance is due 15 days before departure.</li>
             <li>Booking confirmations are subject to availability of accommodation.</li>
             <li>Cheques not accepted.</li>
@@ -97,9 +94,7 @@ export default function TermsConditions() {
             <li>After payment, share a screenshot of the confirmation with our team — date, time, and UTR number clearly visible.</li>
             <li>Solo female travellers who prefer not to share accommodation will be charged an additional cost.</li>
           </ul>
-        )}
-        {activeTab === "others" && (
-          <ul className="list-disc pl-6 space-y-2">
+        <ul hidden={activeTab !== "others"} className="list-disc pl-6 space-y-2">
             <li>We reserve the right to alter the day-wise schedule without prior information (based on traffic, route restrictions, or unforeseen travel circumstances).</li>
             <li>In case of a surge in transportation or accommodation costs (e.g. fuel price hikes), the total package cost will increase accordingly.</li>
             <li>We are not responsible for itinerary changes due to natural calamities or unforeseen circumstances; any additional cost is borne by the client.</li>
@@ -107,7 +102,6 @@ export default function TermsConditions() {
             <li>Images of sites, hotels, etc. are for illustration purposes only.</li>
             <li>Additional charges apply for passengers who wish to stay back at the destination or in transit.</li>
           </ul>
-        )}
       </div>
     </div>
   );

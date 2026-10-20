@@ -30,7 +30,8 @@ That covers most of the items below. The manual steps are listed in case you pre
 - [ ] **You (optional):** Supabase → Authentication → Providers → Google, for "Continue with Google". It needs a Google Cloud OAuth client.
 - [ ] **You:** Razorpay in **Test mode**: copy the keys into `.env.setup` and re-run the script. Then add a webhook to `https://<site>/api/razorpay-webhook` for `payment.captured`, `order.paid` and `payment.failed`.
 - [x] ~~Make up a `CRON_SECRET`~~ (the setup script generated one, 19 Oct).
-- [ ] **You: Vercel token** into `VERCEL_TOKEN` in `.env.setup`, then re-run the script. It loads every key into Vercel (Development, Preview and Production). *The local `.env.local` is done (19 Oct); restart `npm run dev` to use it.*
+- [x] ~~Supabase keys into Vercel **Preview**~~ (done 21 Oct with the logged-in Vercel CLI; the preview is redeployed and connected). **Production** gets them at go-live (§3). The local `.env.local` is done too, and the running dev server already picked it up.
+- [ ] **Dev:** after you add the SMTP and Razorpay keys to `.env.setup`, load them into `.env.local` and Vercel Preview the same way, then redeploy the preview.
 
 ## 2. Test it end to end (after step 1)
 - [ ] **Dev:** Run checks V1–V22 from [quickstart.md](specs/001-persistent-backend/quickstart.md) with `npx vercel dev` or on a preview, and record the results there. These are spec tasks T025, T033, T041, T045, T052, T055, T057 and T061. They cover:
@@ -62,11 +63,17 @@ That covers most of the items below. The manual steps are listed in case you pre
 - [ ] **SEO agent in git?** It's ignored with the rest of `.claude/`. Should it be shared in the repo?
 
 ## 5. Code and content
+- [ ] **UI consistency and polish** (spec and plan: `specs/002-ui-polish-consistency/`).
+  - [x] ~~Confirm the defaults~~ (21 Oct: keep the navy account pages; remove the preloader)
+  - [x] ~~Design plan~~ (21 Oct: `plan.md` and its research, contracts and checks)
+  - [ ] **Dev:** `/speckit-tasks`, then `/speckit-implement`
+  - [ ] **Dev:** before coding starts, build the current site once into `out-baseline/` for the text check
+  - [ ] **You:** OK to add one package, `@radix-ui/react-dialog` (accessible dialogs and drawers)? The plan assumes yes.
 - [x] ~~Commit the navbar redesign and the `.gitignore` change~~ (done: `1be764a`, pushed to the preview branch).
 - [ ] **Dev:** Commit `CHANGELOG.md`, `TODO.md` and the `CLAUDE.md` note.
 - [x] ~~Re-save the sideways Panpatia photos and put them back in the slideshow~~ (done 19 Oct).
 - [x] ~~Favicon missing in Google results~~ (done 19 Oct). `apple-touch-icon.png` was a camping photo, not a square icon. Live via hotfix `a42c960` on `main`, and committed on `preview/trek-slideshows` too.
-- [ ] **Dev:** Still waiting for JavaScript before showing: card and gallery photos (`SmartImage` starts invisible), the home hero slides and several home sections, and the home FAQ, which arrives as a hidden streamed block. Same fix pattern as the trek pages; this mainly helps load speed.
+- [ ] **Dev:** (covered by the UI plan, US2/US3) Still waiting for JavaScript before showing: card and gallery photos (`SmartImage` starts invisible), the home hero slides and several home sections, and the home FAQ, which arrives as a hidden streamed block. Same fix pattern as the trek pages; this mainly helps load speed.
 - [x] ~~Run the SEO/SMO agent~~ (done 19 Oct). The report is `adventure-travel/docs/seo/2026-10-19-audit-and-plan.md`.
 - [ ] **Dev:** Work through the report's prioritised actions. Done 19 Oct: #6 and #7 hub pages, #9 link-preview images, #10 logo badge, #14 noindex on account pages. Next up: the Inner Line Permit guide (needs your facts: documents, office, processing days), a "related treks" block on trek pages, and #15 a home-page h1 that says what we do.
 - [ ] **Dev:** Switch `QuickInfoModal.tsx` to the new season parser (`src/lib/season.ts`). Its own parser mis-reads ranges like "Mar–Jun & Sept–Dec" in the "Best season" pop-up.

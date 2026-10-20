@@ -358,6 +358,92 @@ export async function listFailedNotifications(): Promise<FailedNotification[]> {
   }));
 }
 
+// ─── Departures: the batch calendar (supabase-departures.sql) ───
+
+export interface AdminDeparture {
+  id: string;
+  trekSlug: string;
+  startDate: string;
+  capacity: number;
+  /** Seats sold outside the website, entered by the admin. */
+  offlineSeats: number;
+  /** Seats held by website bookings: confirmed, or with money paid. */
+  onlineSeats: number;
+  seatsLeft: number;
+  closed: boolean;
+  tag: string;
+}
+
+export type DepartureChange = Partial<Pick<AdminDeparture, "capacity" | "offlineSeats" | "closed" | "tag">>;
+
+/** A trek's upcoming batches, with seats counted exactly as visitors see them. */
+export async function listDepartures(trekSlug: string): Promise<AdminDeparture[]> {
+  const [rows, seats] = await Promise.all([
+    db().from("trek_departures").select("*").eq("trek_slug", trekSlug).gt("start_date", istToday()).order("start_date"),
+    db().rpc("trek_departure_availability", { p_slug: trekSlug }),
+  ]);
+  if (rows.error) throw rows.error;
+  if (seats.error) throw seats.error;
+  const booked = new Map(((seats.data ?? []) as Row[]).map((r) => [r.id as string, Number(r.seats_booked)]));
+  return ((rows.data ?? []) as Row[]).map((r) => {
+    const capacity = Number(r.capacity);
+    const offlineSeats = Number(r.offline_seats ?? 0);
+    const total = booked.get(r.id as string) ?? offlineSeats;
+    return {
+      id: r.id as string,
+      trekSlug: str(r.trek_slug),
+      startDate: str(r.start_date),
+      capacity,
+      offlineSeats,
+      onlineSeats: Math.max(total - offlineSeats, 0),
+      seatsLeft: Math.max(capacity - total, 0),
+      closed: Boolean(r.closed),
+      tag: str(r.tag),
+    };
+  });
+}
+
+/** Upcoming batches per trek slug, for the trek picker. */
+export async function countDepartures(): Promise<Record<string, number>> {
+  const { data, error } = await db().rpc("trek_departure_availability", { p_slug: null });
+  if (error) throw error;
+  const counts: Record<string, number> = {};
+  for (const r of (data ?? []) as Row[]) counts[str(r.trek_slug)] = (counts[str(r.trek_slug)] ?? 0) + 1;
+  return counts;
+}
+
+/** Adds batches; dates the trek already has are skipped. Returns how many were added. */
+export async function addDepartures(trekSlug: string, startDates: string[], capacity: number): Promise<number> {
+  if (startDates.length === 0) return 0;
+  const { data, error } = await db()
+    .from("trek_departures")
+    .upsert(
+      startDates.map((start_date) => ({ trek_slug: trekSlug, start_date, capacity })),
+      { onConflict: "trek_slug,start_date", ignoreDuplicates: true }
+    )
+    .select("id");
+  if (error) throw error;
+  return data?.length ?? 0;
+}
+
+export async function updateDeparture(id: string, change: DepartureChange) {
+  const row: Row = {};
+  if (change.capacity !== undefined) row.capacity = change.capacity;
+  if (change.offlineSeats !== undefined) row.offline_seats = change.offlineSeats;
+  if (change.closed !== undefined) row.closed = change.closed;
+  if (change.tag !== undefined) row.tag = change.tag.trim().slice(0, 30);
+  const { data, error } = await db().from("trek_departures").update(row).eq("id", id).select("id").maybeSingle();
+  if (error) throw error;
+  if (!data) throw new Error("That batch couldn't be updated. Check you're signed in as an admin.");
+}
+
+/** Removes a batch. Bookings already made for that date keep their date. */
+export async function deleteDeparture(id: string) {
+  const { data, error } = await db().from("trek_departures").delete().eq("id", id).select("id").maybeSingle();
+  if (error) throw error;
+  if (!data) throw new Error("That batch couldn't be deleted. Check you're signed in as an admin.");
+}
+
 /** Who changed a booking's status or payment state, and when (written by a database trigger). */
 export async function getBookingEvents(type: BookingType, id: string): Promise<BookingEvent[]> {
   const { data, error } = await db()

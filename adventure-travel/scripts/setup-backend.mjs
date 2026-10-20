@@ -1,7 +1,7 @@
 // One-command backend setup (specs/001-persistent-backend, quickstart §2).
 // Reads adventure-travel/.env.setup (template: scripts/setup-backend.example.env) and:
 //   1. fetches the Supabase API keys,
-//   2. runs the 5 SQL files in order (all idempotent),
+//   2. runs the 6 SQL files in order (all idempotent),
 //   3. sets Supabase Auth: confirm email, site URL, redirect URLs, custom SMTP,
 //   4. makes ADMIN_EMAIL an admin,
 //   5. writes every key to Vercel (Production, Preview, Development) and to .env.local.
@@ -22,6 +22,7 @@ const SQL_FILES = [
   "supabase-backend.sql",
   "supabase-room-sharing.sql",
   "supabase-payments-v2.sql",
+  "supabase-departures.sql",
 ];
 const DRY = process.argv.includes("--dry-run");
 const EMAIL = /^[^\s@'"\\]+@[^\s@'"\\]+\.[^\s@'"\\]+$/;
@@ -90,6 +91,7 @@ async function main() {
   } catch {
     throw new Error("Missing adventure-travel/.env.setup. Copy scripts/setup-backend.example.env to .env.setup and fill it in.");
   }
+
   // VERCEL_TOKEN is optional: without it the database and .env.local are set up, and a later
   // run with the token loads the same keys into Vercel.
   const missing = ["SUPABASE_ACCESS_TOKEN", "SUPABASE_PROJECT_REF"].filter((k) => !cfg[k]);

@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { Mail, Phone, RefreshCw, Search } from "lucide-react";
+import { Mail, Phone, RefreshCw, Search, UserSearch, Users } from "lucide-react";
 import { AdminGate } from "@/components/admin/AdminGate";
 import { LoadError } from "@/components/admin/LoadError";
 import {
-  FIELD,
   KIND_LABEL,
   PAYMENT_STATE_LABEL,
   PAYMENT_STATE_TONE,
@@ -19,6 +18,8 @@ import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCustomer, listCustomers, type AdminCustomer } from "@/lib/admin";
 import { cn, formatPaise } from "@/lib/utils";
@@ -91,26 +92,42 @@ function CustomersAdmin() {
             <label className="relative block flex-1">
               <span className="sr-only">Search customers</span>
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden />
-              <input
+              <Input
                 type="search"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Name, email, phone or city"
-                className={cn(FIELD, "w-full pl-9")}
+                className="pl-9"
               />
             </label>
-            <Button variant="outline" size="icon" onClick={() => void load()} aria-label="Refresh customers" disabled={status === "loading"}>
-              <RefreshCw className={cn("h-4 w-4", status === "loading" && "animate-spin motion-reduce:animate-none")} aria-hidden />
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-11 w-11 shrink-0"
+              onClick={() => void load()}
+              aria-label="Refresh customers"
+              loading={status === "loading"}
+            >
+              {status !== "loading" && <RefreshCw className="h-4 w-4" aria-hidden />}
             </Button>
           </div>
           {status === "error" ? (
             <LoadError onRetry={() => void load()} />
           ) : status === "loading" && all.length === 0 ? (
-            <div className="space-y-2" aria-busy aria-label="Loading customers">
-              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
-            </div>
+            <ul className="space-y-1" aria-busy="true">
+              <li className="sr-only">Loading customers</li>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <li key={i} className="flex items-center gap-3 px-3 py-2">
+                  <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
+                  <span className="flex-1 space-y-2">
+                    <Skeleton className="h-3.5 w-3/5" />
+                    <Skeleton className="h-3 w-4/5" />
+                  </span>
+                </li>
+              ))}
+            </ul>
           ) : visible.length === 0 ? (
-            <p className="py-8 text-center text-sm text-slate-500 dark:text-slate-400">No customers match.</p>
+            <EmptyState className="py-8" icon={<UserSearch />} title="No customers match." />
           ) : (
             <ul className="-mx-2 max-h-[65vh] space-y-1 overflow-y-auto px-2">
               {visible.map((c) => (
@@ -120,7 +137,7 @@ function CustomersAdmin() {
                     onClick={() => void open(c.id)}
                     aria-current={selected === c.id}
                     className={cn(
-                      "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors motion-reduce:transition-none",
+                      "flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors duration-150 ease-out motion-reduce:transition-none",
                       selected === c.id ? "bg-emerald-50 dark:bg-emerald-400/10" : "hover:bg-slate-100 dark:hover:bg-white/5"
                     )}
                   >
@@ -141,10 +158,36 @@ function CustomersAdmin() {
       <div ref={detailRef} className="scroll-mt-24">
         {!selected ? (
           <Card>
-            <CardContent className="py-16 text-center text-sm text-slate-500 dark:text-slate-400">Pick a customer to see their bookings and payments.</CardContent>
+            <EmptyState className="py-16" icon={<Users />} title="Pick a customer to see their bookings and payments." />
           </Card>
         ) : detailState === "loading" ? (
-          <Skeleton className="h-96 w-full rounded-2xl" />
+          <div className="space-y-4" aria-busy="true">
+            <span className="sr-only">Loading customer</span>
+            <Card className="p-6">
+              <div className="flex items-start gap-4">
+                <Skeleton className="h-14 w-14 shrink-0 rounded-full" />
+                <div className="flex-1 space-y-2 pt-1">
+                  <Skeleton className="h-5 w-1/3" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              </div>
+              <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="h-3 w-1/2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+                ))}
+              </div>
+            </Card>
+            {Array.from({ length: 2 }).map((_, i) => (
+              <Card key={i} className="space-y-3 p-6">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+              </Card>
+            ))}
+          </div>
         ) : detailState === "error" || !detail ? (
           <Card>
             <CardContent className="py-12 text-center text-sm text-red-600 dark:text-red-300">Couldn&apos;t load this customer.</CardContent>
@@ -205,7 +248,7 @@ function CustomerDetail({ detail }: { detail: Detail }) {
             </div>
           </dl>
           {p.deletedAt && (
-            <p className="mt-4 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-400/10 dark:text-amber-200">
+            <p className="mt-4 rounded-2xl bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-400/10 dark:text-amber-200">
               This account was deleted on {shortDate(p.deletedAt)}. Its payment records are kept for legal reasons.
             </p>
           )}
@@ -214,7 +257,7 @@ function CustomerDetail({ detail }: { detail: Detail }) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Bookings ({bookings.length})</CardTitle>
+          <CardTitle className="text-lg font-semibold">Bookings ({bookings.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {bookings.length === 0 ? (
@@ -243,7 +286,7 @@ function CustomerDetail({ detail }: { detail: Detail }) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Payments ({payments.length})</CardTitle>
+          <CardTitle className="text-lg font-semibold">Payments ({payments.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {payments.length === 0 ? (

@@ -37,8 +37,8 @@ export default function TreksFromJoshimathPage() {
       }
     >
       {PERMIT_TOURS.length > 0 && (
-        <section aria-labelledby="permits" className="rounded-2xl bg-slate-50 p-6 sm:p-8">
-          <h2 id="permits" className="font-heading text-2xl font-bold text-slate-900">Permit tours to the Tibet border</h2>
+        <section aria-labelledby="permits" className="rounded-2xl bg-slate-50 p-5 sm:p-6">
+          <h2 id="permits" className="font-heading text-2xl font-bold tracking-[-0.02em] text-slate-900 sm:text-3xl">Permit tours to the Tibet border</h2>
           <p className="mt-3 max-w-3xl text-slate-600">
             {PERMIT_TOURS.map((t, i) => (
               <span key={t.slug}>
@@ -56,13 +56,13 @@ export default function TreksFromJoshimathPage() {
         </section>
       )}
 
-      <section aria-labelledby="auli" className="rounded-2xl bg-slate-50 p-6 sm:p-8">
-        <h2 id="auli" className="font-heading text-2xl font-bold text-slate-900">Winter in Auli</h2>
+      <section aria-labelledby="auli" className="rounded-2xl bg-slate-50 p-5 sm:p-6">
+        <h2 id="auli" className="font-heading text-2xl font-bold tracking-[-0.02em] text-slate-900 sm:text-3xl">Winter in Auli</h2>
         <p className="mt-3 max-w-3xl text-slate-600">Our ski and snowboard school runs in Auli, just above Joshimath:</p>
         <ul className="mt-3 flex flex-wrap gap-2">
           {courses.map((c) => (
             <li key={c.slug}>
-              <Link href={`/courses/${c.slug}`} className="inline-block rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-800 hover:border-emerald-400 hover:text-emerald-700">
+              <Link href={`/courses/${c.slug}`} className="inline-flex min-h-11 items-center rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-800 transition-colors duration-150 ease-out hover:border-emerald-400 hover:text-emerald-700">
                 {c.name}
               </Link>
             </li>

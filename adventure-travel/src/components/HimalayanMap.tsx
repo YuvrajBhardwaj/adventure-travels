@@ -2,10 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FadeUp } from "./MotionWrapper";
+import { buttonVariants } from "@/components/ui/button";
+import { transition } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -45,7 +48,7 @@ const regions = [
     name: "Kumaon Region",
     treks: 5,
     highlights: ["Pindari Glacier", "Milam Glacier", "Nanda Devi"],
-    color: "#8B5CF6",
+    color: "#F97316",
     path: "M260,40 L320,20 L370,40 L390,90 L370,130 L320,150 L280,140 L260,90 Z",
     labelX: 320,
     labelY: 85,
@@ -54,6 +57,7 @@ const regions = [
 
 export default function HimalayanMap() {
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
+  const reduceMotion = useReducedMotion();
   const mapWrapRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
 
@@ -88,7 +92,7 @@ export default function HimalayanMap() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeUp className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
           <span className="font-nav text-xs font-bold uppercase tracking-[0.3em] text-accent">Explore</span>
-          <h2 className="mt-3 sm:mt-4 font-heading text-2xl sm:text-3xl md:text-display-lg font-bold text-foreground leading-tight">
+          <h2 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-[-0.02em] text-foreground sm:mt-4 sm:text-4xl">
             Interactive Himalayan Map
           </h2>
           <p className="mt-3 text-base sm:text-lg text-muted leading-relaxed">
@@ -99,12 +103,12 @@ export default function HimalayanMap() {
         <div ref={mapWrapRef} className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 items-center">
           {/* Map SVG */}
           <FadeUp className="lg:col-span-2">
-            <div ref={mapRef} className="relative bg-white dark:bg-card rounded-3xl p-8 shadow-lg shadow-black/5 border border-gray-100 dark:border-white/10" style={{ transformStyle: "preserve-3d" }}>
+            <div ref={mapRef} className="relative rounded-2xl border border-slate-100 bg-white p-5 shadow-lg shadow-black/5 sm:p-8 dark:border-white/10 dark:bg-card" style={{ transformStyle: "preserve-3d" }}>
               <svg viewBox="0 0 450 250" className="w-full h-auto">
                 {/* Background Grid */}
                 <defs>
                   <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-gray-100 dark:text-white/5" />
+                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-slate-100 dark:text-white/5" />
                   </pattern>
                 </defs>
                 <rect width="450" height="250" fill="url(#grid)" />
@@ -117,7 +121,7 @@ export default function HimalayanMap() {
                       fill={hoveredRegion === region.id ? region.color : `${region.color}33`}
                       stroke={region.color}
                       strokeWidth={hoveredRegion === region.id ? 3 : 1.5}
-                      className="cursor-pointer transition-all duration-300 focus:outline-none"
+                      className="cursor-pointer transition-colors duration-150 ease-out focus:outline-none"
                       tabIndex={0}
                       role="button"
                       aria-label={`${region.name}: ${region.treks} treks`}
@@ -169,15 +173,16 @@ export default function HimalayanMap() {
 
           {/* Region Info Panel */}
           <FadeUp delay={0.2} className="lg:col-span-1">
-            <AnimatePresence mode="wait">
+            {/* initial={false}: the default panel is in the HTML at full opacity */}
+            <AnimatePresence mode="wait" initial={false}>
               {hoveredRegion ? (
                 <motion.div
                   key={hoveredRegion}
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, x: reduceMotion ? 0 : 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white dark:bg-card rounded-3xl p-6 shadow-lg shadow-black/5 border border-gray-100 dark:border-white/10"
+                  exit={{ opacity: 0, x: reduceMotion ? 0 : -20 }}
+                  transition={transition("base")}
+                  className="rounded-2xl border border-slate-100 bg-white p-5 shadow-lg shadow-black/5 sm:p-6 dark:border-white/10 dark:bg-card"
                 >
                   {(() => {
                     const region = regions.find((r) => r.id === hoveredRegion);
@@ -192,7 +197,7 @@ export default function HimalayanMap() {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="font-heading font-bold text-foreground">{region.name}</h3>
+                            <h3 className="font-heading text-lg font-semibold text-foreground">{region.name}</h3>
                             <p className="text-sm text-muted">{region.treks} treks available</p>
                           </div>
                         </div>
@@ -210,7 +215,7 @@ export default function HimalayanMap() {
 
                         <Link
                           href="/treks"
-                          className="block text-center w-full bg-primary text-white font-semibold rounded-xl px-6 py-3 hover:bg-primary/90 transition-all"
+                          className={cn(buttonVariants(), "h-auto min-h-11 w-full whitespace-normal py-2.5 text-center")}
                         >
                           Explore {region.name} Treks
                         </Link>
@@ -220,9 +225,12 @@ export default function HimalayanMap() {
                 </motion.div>
               ) : (
                 <motion.div
+                  key="none"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-white dark:bg-card rounded-3xl p-6 shadow-lg shadow-black/5 border border-gray-100 dark:border-white/10 text-center"
+                  exit={{ opacity: 0 }}
+                  transition={transition("base")}
+                  className="rounded-2xl border border-slate-100 bg-white p-5 text-center shadow-lg shadow-black/5 sm:p-6 dark:border-white/10 dark:bg-card"
                 >
                   <div className="h-16 w-16 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
                     <svg className="h-8 w-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -230,7 +238,7 @@ export default function HimalayanMap() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                     </svg>
                   </div>
-                  <h3 className="font-heading font-bold text-foreground mb-2">Select a Region</h3>
+                  <h3 className="mb-2 font-heading text-lg font-semibold text-foreground">Select a Region</h3>
                   <p className="text-sm text-muted">Tap or hover over any region on the map to see available treks and highlights.</p>
                 </motion.div>
               )}

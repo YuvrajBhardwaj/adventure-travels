@@ -47,5 +47,11 @@ export function dateTime(iso: string) {
   return new Date(iso).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" });
 }
 
+/**
+ * Legacy class string for admin fields that aren't kit components yet (the Departures
+ * screen). Same look as the kit's Input/Select box (ui/input.tsx `fieldClasses`), but
+ * without its width and height so existing layouts keep their sizes. New code: use
+ * <Input> / <Select> from @/components/ui.
+ */
 export const FIELD =
-  "h-10 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100";
+  "h-10 rounded-xl border border-slate-300 bg-white px-3 text-base text-slate-900 shadow-sm shadow-slate-900/[0.03] outline-none transition-[border-color,box-shadow] duration-150 ease-out focus-visible:border-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none sm:text-sm dark:border-white/10 dark:bg-white/5 dark:text-white dark:shadow-none dark:focus-visible:border-emerald-400 dark:focus-visible:ring-emerald-400/25 dark:[&>option]:bg-navy";

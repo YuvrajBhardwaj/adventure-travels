@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, CalendarDays, Loader2, Lock, Smartphone, Users } from "lucide-react";
+import { ArrowLeft, CalendarDays, Lock, Smartphone, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -13,6 +13,7 @@ import { treks, pricePerPerson } from "@/data/treks";
 import { courses } from "@/data/courses";
 import { formatPaise } from "@/lib/utils";
 import { advanceAmount, balanceDueDate, isAdvanceAllowed } from "@/lib/paymentRules";
+import { transition } from "@/lib/motion";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -313,7 +314,7 @@ export default function CheckoutClient() {
       <main className="relative mx-auto max-w-lg px-4 pb-16 pt-28">
         <Link
           href="/dashboard"
-          className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+          className="mb-2 inline-flex min-h-11 items-center gap-1.5 rounded-xl text-sm font-medium text-slate-500 transition-colors duration-150 ease-out hover:text-slate-900 motion-reduce:transition-none dark:text-slate-400 dark:hover:text-white"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />
           My bookings
@@ -322,7 +323,7 @@ export default function CheckoutClient() {
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35 }}
+          transition={transition("slow")}
         >
           <Card className="overflow-hidden border-white/60 bg-white/80 shadow-xl shadow-emerald-900/5 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/60 dark:shadow-black/30">
             <CardHeader className="flex-row items-center justify-between space-y-0 border-b border-slate-200/70 pb-4 dark:border-white/10">
@@ -335,10 +336,24 @@ export default function CheckoutClient() {
 
             <CardContent className="space-y-6 pt-6">
               {phase === "loading" && (
-                <div className="space-y-4" aria-busy aria-label="Loading checkout">
-                  <Skeleton className="h-20 w-full rounded-xl" />
-                  <Skeleton className="h-4 w-2/3" />
-                  <Skeleton className="h-12 w-full rounded-xl" />
+                <div className="space-y-6" aria-busy="true">
+                  <span className="sr-only">Loading checkout</span>
+                  {/* Same shape as the loaded page: booking row, price summary, payment choice, Pay button. */}
+                  <div className="flex gap-4">
+                    <Skeleton className="h-20 w-20 shrink-0 rounded-xl" />
+                    <div className="flex-1 space-y-2 pt-1">
+                      <Skeleton className="h-5 w-3/4" />
+                      <Skeleton className="h-4 w-1/3" />
+                      <Skeleton className="h-4 w-1/4" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-24 w-full rounded-2xl" />
+                  <div className="space-y-3">
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-20 w-full rounded-xl" />
+                    <Skeleton className="h-16 w-full rounded-xl" />
+                  </div>
+                  <Skeleton className="h-14 w-full rounded-xl" />
                 </div>
               )}
 
@@ -353,7 +368,12 @@ export default function CheckoutClient() {
                           ? "This booking was refunded, so there's nothing to pay."
                           : "This booking was cancelled, so there's nothing to pay."}
                   </p>
-                  <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: "outline" })}>
+                  <a
+                    href={WHATSAPP}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={buttonVariants({ variant: phase === "closed" ? "outline" : "default" })}
+                  >
                     {phase === "closed" ? "Questions? Message us on WhatsApp" : "Pay via WhatsApp instead"}
                   </a>
                 </div>
@@ -386,6 +406,7 @@ export default function CheckoutClient() {
                     initial={reduceMotion ? false : { opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={reduceMotion ? undefined : { opacity: 0 }}
+                    transition={transition("base", "inOut")}
                   >
                     <PaymentStatus
                       phase={phase as PaymentPhase}
@@ -414,11 +435,12 @@ export default function CheckoutClient() {
                       initial={reduceMotion ? false : { opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={reduceMotion ? undefined : { opacity: 0 }}
+                      transition={transition("base", "inOut")}
                       className="space-y-6"
                     >
                       {plan ? (
                         <>
-                          <dl className="space-y-2 rounded-xl bg-slate-100/70 p-4 text-sm dark:bg-white/5">
+                          <dl className="space-y-2 rounded-2xl bg-slate-100/70 p-4 text-sm dark:bg-white/5">
                             {payable.persons ? (
                               <div className="flex justify-between text-slate-600 dark:text-slate-300">
                                 <dt>
@@ -440,7 +462,7 @@ export default function CheckoutClient() {
                           </dl>
 
                           {plan.kind === "balance" ? (
-                            <p className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-100">
+                            <p className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-100">
                               Pay the balance of {formatPaise(plan.now)}
                               {payable.balanceDueDate ? ` by ${longDate(payable.balanceDueDate)}` : ""} to complete your booking.
                             </p>
@@ -464,17 +486,21 @@ export default function CheckoutClient() {
                           )}
 
                           {error && (
-                            <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-400/10 dark:text-red-300">
+                            <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-400/20 dark:bg-red-400/10 dark:text-red-300">
                               {error}
                             </p>
                           )}
 
-                          <Button size="lg" className="w-full" onClick={() => void startPayment()} disabled={busy}>
+                          {/* The page's single primary action: tallest, full width, strongest colour. */}
+                          <Button
+                            size="lg"
+                            className="h-auto min-h-14 w-full whitespace-normal py-3 text-center text-base leading-snug shadow-lg shadow-emerald-900/20 hover:shadow-lg hover:shadow-emerald-900/25 [&_svg]:h-5 [&_svg]:w-5"
+                            onClick={() => void startPayment()}
+                            disabled={busy}
+                            loading={phase === "creating"}
+                          >
                             {phase === "creating" ? (
-                              <>
-                                <Loader2 className="h-5 w-5 animate-spin motion-reduce:animate-none" aria-hidden />
-                                Preparing secure payment…
-                              </>
+                              "Preparing secure payment…"
                             ) : phase === "awaiting" ? (
                               "Complete payment in the Razorpay window"
                             ) : (
@@ -488,7 +514,7 @@ export default function CheckoutClient() {
                       ) : (
                         <div className="space-y-3 text-center text-sm text-slate-600 dark:text-slate-300">
                           <p>This booking is priced individually — we&apos;ll send you a quote.</p>
-                          <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: "outline" })}>
+                          <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className={buttonVariants()}>
                             Get a group quote on WhatsApp
                           </a>
                         </div>
@@ -502,7 +528,7 @@ export default function CheckoutClient() {
 
               <p className="text-center text-xs text-slate-500 dark:text-slate-400">
                 By paying you agree to our{" "}
-                <Link href="/cancellation-policy" className="underline underline-offset-2 hover:text-slate-900 dark:hover:text-white">
+                <Link href="/cancellation-policy" className="underline underline-offset-2 transition-colors duration-150 ease-out hover:text-slate-900 motion-reduce:transition-none dark:hover:text-white">
                   cancellation policy
                 </Link>
                 .

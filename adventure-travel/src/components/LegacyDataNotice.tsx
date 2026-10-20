@@ -2,16 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 /** Keys the old browser-only accounts wrote (src/lib/auth.ts and the deleted src/lib/auth-store.ts). */
 const LEGACY_KEYS = ["eht_users", "eht_session", "eht_bookings", "eht_trek_bookings", "eht_activity_bookings"];
 
 // Before accounts moved to the server, some visitors' accounts and bookings lived only in
 // this browser. That data is wiped on first sight (FR-051) and the visitor is told once
-// how to get set up again (FR-050).
+// how to get set up again (FR-050). Focus trap, Escape and scroll lock come from Dialog.
 export default function LegacyDataNotice() {
-  const reduceMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
   const firstButton = useRef<HTMLAnchorElement>(null);
 
@@ -26,65 +26,44 @@ export default function LegacyDataNotice() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
-    firstButton.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
-
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="fixed inset-0 z-[130] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: reduceMotion ? 0 : 0.2 }}
-        >
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="legacy-notice-title"
-            className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0F172A] p-6 text-white shadow-2xl"
-            initial={reduceMotion ? false : { opacity: 0, y: 16, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-            transition={{ duration: reduceMotion ? 0 : 0.25, ease: [0.23, 1, 0.32, 1] }}
-          >
-            <h2 id="legacy-notice-title" className="font-heading text-xl font-bold">
-              We&apos;ve upgraded accounts
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-white/75">
-              Please sign up again to keep your bookings safe across devices. Booked with us before? Message us on WhatsApp and
-              we&apos;ll sort it out.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                ref={firstButton}
-                href="/signup"
-                onClick={() => setOpen(false)}
-                className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold hover:bg-emerald-700"
-              >
-                Sign up
-              </Link>
-              <a
-                href="https://wa.me/917817912062"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-xl bg-white/10 px-5 py-2.5 text-sm font-semibold hover:bg-white/20"
-              >
-                WhatsApp
-              </a>
-              <button type="button" onClick={() => setOpen(false)} className="ml-auto px-3 py-2.5 text-sm text-white/70 hover:text-white">
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent
+        title="We've upgraded accounts"
+        size="sm"
+        tone="dark"
+        hideClose
+        className="max-w-md"
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+          firstButton.current?.focus();
+        }}
+      >
+        <div className="px-6 pb-6">
+          <p className="mt-1 text-sm leading-relaxed text-white/75">
+            Please sign up again to keep your bookings safe across devices. Booked with us before? Message us on WhatsApp and
+            we&apos;ll sort it out.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link ref={firstButton} href="/signup" onClick={() => setOpen(false)} className={buttonVariants()}>
+              Sign up
+            </Link>
+            <a
+              href="https://wa.me/917817912062"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonVariants({ variant: "outline" })}
+            >
+              WhatsApp
+            </a>
+            <DialogClose asChild>
+              <Button variant="ghost" className="ml-auto text-white/70">
                 Close
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+              </Button>
+            </DialogClose>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

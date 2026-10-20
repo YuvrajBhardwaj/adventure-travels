@@ -1,4 +1,5 @@
-export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
+export type MonthName = (typeof MONTHS)[number];
 
 const monthIndex = (word: string) => MONTHS.findIndex((m) => word.toLowerCase().startsWith(m.toLowerCase()));
 

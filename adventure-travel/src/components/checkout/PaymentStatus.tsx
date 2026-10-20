@@ -1,8 +1,10 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Clock, Loader2, TriangleAlert } from "lucide-react";
+import { Clock, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { DURATION, EASE, transition } from "@/lib/motion";
 
 export type PaymentPhase = "processing" | "success" | "failed" | "pending";
 
@@ -38,7 +40,7 @@ function SuccessMark({ animate }: { animate: boolean }) {
           strokeLinecap="round"
           initial={animate ? { pathLength: 0 } : false}
           animate={{ pathLength: 1 }}
-          transition={{ duration: 0.55, ease: "easeOut" }}
+          transition={{ duration: DURATION.slow * 1.5, ease: EASE.out }}
         />
         <motion.path
           d="M30 50 L43 63 L67 36"
@@ -48,7 +50,7 @@ function SuccessMark({ animate }: { animate: boolean }) {
           strokeLinejoin="round"
           initial={animate ? { pathLength: 0 } : false}
           animate={{ pathLength: 1 }}
-          transition={{ duration: 0.35, delay: animate ? 0.45 : 0, ease: "easeOut" }}
+          transition={{ duration: DURATION.slow, delay: animate ? DURATION.slow * 1.25 : 0, ease: EASE.out }}
         />
       </svg>
     </span>
@@ -74,7 +76,8 @@ function Icon({ phase, animate }: { phase: PaymentPhase; animate: boolean }) {
   return (
     <span className="relative flex h-20 w-20 items-center justify-center">
       <span className="absolute inset-0 animate-ping rounded-full bg-emerald-500/15 motion-reduce:animate-none" />
-      <Loader2 className="h-9 w-9 animate-spin text-emerald-600 motion-reduce:animate-none dark:text-emerald-400" aria-hidden />
+      {/* Documented exception (FR-013): this spinner is the continuing state of the Pay button. */}
+      <Spinner size="md" className="h-9 w-9 text-emerald-600 dark:text-emerald-400" />
     </span>
   );
 }
@@ -100,12 +103,12 @@ export function PaymentStatus({
           initial={reduce ? false : { opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={reduce ? undefined : { opacity: 0, scale: 0.85 }}
-          transition={{ duration: 0.22 }}
+          transition={transition("base")}
           className="flex flex-col items-center"
         >
           <Icon phase={phase} animate={!reduce} />
-          <h2 className="mt-5 font-heading text-xl font-bold">{copy.title}</h2>
-          <p className="mt-2 max-w-xs text-sm text-slate-500 dark:text-slate-400">{detail || copy.body}</p>
+          <h2 className="mt-5 font-heading text-xl font-bold tracking-[-0.01em]">{copy.title}</h2>
+          <p className="mt-2 max-w-xs text-sm leading-relaxed text-slate-500 dark:text-slate-400">{detail || copy.body}</p>
           {phase === "failed" && onRetry && (
             <Button className="mt-5" onClick={onRetry}>
               Try again

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem, ScaleIn } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
+import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 
 type Reel = {
   title: string;
@@ -52,14 +52,19 @@ const REELS: Reel[] = [
 ];
 
 export default function VideoShowcase() {
-  const reduceMotion = useReducedMotion();
+  // `active` stays set while the dialog animates closed, so the video doesn't vanish mid-fade.
   const [active, setActive] = useState<Reel | null>(null);
+  const [open, setOpen] = useState(false);
+  const play = (reel: Reel) => {
+    setActive(reel);
+    setOpen(true);
+  };
   const featured = REELS[0];
   const rest = REELS.slice(1, 5);
 
   return (
     <section className="relative bg-gradient-to-b from-background to-slate-950 py-section">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeUp>
           <div className="flex items-center gap-3">
             <span className="h-px w-10 bg-accent" aria-hidden />
@@ -67,7 +72,7 @@ export default function VideoShowcase() {
               WATCH THE TREKS
             </span>
           </div>
-          <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-display-lg">
+          <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-foreground tracking-[-0.02em] sm:text-4xl">
             Real footage from the trail
           </h2>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
@@ -80,31 +85,31 @@ export default function VideoShowcase() {
         <ScaleIn className="mt-10">
           <button
             type="button"
-            onClick={() => setActive(featured)}
-            className="group relative block w-full overflow-hidden rounded-3xl border border-white/10 text-left shadow-2xl shadow-black/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            onClick={() => play(featured)}
+            className="group relative block w-full overflow-hidden rounded-2xl border border-white/10 text-left shadow-2xl shadow-black/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             aria-label={`Play ${featured.title} video`}
           >
             <div className="relative aspect-[16/9] overflow-hidden sm:aspect-[21/9]">
               <SmartImage
                 src={featured.poster}
                 alt={featured.title}
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
               {/* Play badge */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/20 backdrop-blur-md ring-1 ring-white/40 transition-transform duration-300 group-hover:scale-110">
+                <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/20 backdrop-blur-md ring-1 ring-white/40 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:transition-none">
                   <svg className="ml-1 h-8 w-8 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </span>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between p-5">
+              <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between p-5 sm:p-6">
                 <div>
                   <p className="font-nav text-[10px] font-bold uppercase tracking-[0.25em] text-accent">
                     {featured.region}
                   </p>
-                  <h3 className="mt-1 font-heading text-xl font-bold text-white sm:text-2xl">
+                  <h3 className="mt-1 font-heading text-xl font-semibold text-white sm:text-2xl">
                     {featured.title}
                   </h3>
                 </div>
@@ -125,7 +130,7 @@ export default function VideoShowcase() {
             <StaggerItem key={reel.slug}>
               <button
                 type="button"
-                onClick={() => setActive(reel)}
+                onClick={() => play(reel)}
                 className="group relative block w-full overflow-hidden rounded-2xl border border-white/10 text-left shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 aria-label={`Play ${reel.title} video`}
               >
@@ -133,11 +138,11 @@ export default function VideoShowcase() {
                   <SmartImage
                     src={reel.poster}
                     alt={reel.title}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
                   <span className="absolute inset-0 flex items-center justify-center">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md ring-1 ring-white/40 transition-transform duration-300 group-hover:scale-110">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md ring-1 ring-white/40 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:transition-none">
                       <svg className="ml-0.5 h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                         <path d="M8 5v14l11-7z" />
                       </svg>
@@ -159,54 +164,41 @@ export default function VideoShowcase() {
       </div>
 
       {/* Video modal */}
-      <AnimatePresence>
-        {active && (
-          <motion.div
-            className="fixed inset-0 z-[130] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setActive(null)}
-            role="dialog"
-            aria-modal="true"
-            aria-label={`${active.title} video`}
-          >
-            <motion.div
-              className="relative w-full max-w-4xl"
-              initial={reduceMotion ? false : { scale: 0.94, y: 16 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={reduceMotion ? undefined : { scale: 0.94, y: 16 }}
-              transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent size="full" tone="dark" hideTitle hideClose title={active ? `${active.title} video` : "Video"}>
+          {active && (
+            <div
+              className="flex h-full w-full items-center justify-center p-4"
+              onClick={(e) => e.target === e.currentTarget && setOpen(false)}
             >
-              <button
-                type="button"
-                onClick={() => setActive(null)}
-                className="absolute -top-11 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/30 transition-colors hover:bg-white/20"
-                aria-label="Close video"
-              >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-              <h3 className="mb-3 font-heading text-lg font-bold text-white">
-                {active.title}
-                <span className="ml-2 text-sm font-normal text-white/60">{active.region}</span>
-              </h3>
-              <video
-                key={active.video}
-                className="aspect-video w-full rounded-2xl bg-black shadow-2xl"
-                src={active.video}
-                poster={active.poster}
-                controls
-                controlsList="nodownload"
-                autoPlay
-                playsInline
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <div className="relative w-full max-w-4xl">
+                <DialogClose
+                  className="absolute -top-12 right-0 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/30 transition-colors duration-150 ease-out hover:bg-white/20"
+                  aria-label="Close video"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </DialogClose>
+                <h3 className="mb-3 pr-14 font-heading text-lg font-semibold text-white">
+                  {active.title}
+                  <span className="ml-2 text-sm font-normal text-white/60">{active.region}</span>
+                </h3>
+                <video
+                  key={active.video}
+                  className="aspect-video w-full rounded-2xl bg-black shadow-2xl"
+                  src={active.video}
+                  poster={active.poster}
+                  controls
+                  controlsList="nodownload"
+                  autoPlay
+                  playsInline
+                />
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

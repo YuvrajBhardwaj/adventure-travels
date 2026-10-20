@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import type { Trek } from "@/data/treks";
 import { DIFFICULTY_COLORS } from "@/data/treks";
 import Price from "@/components/Price";
@@ -90,8 +89,8 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
               {(["Easy", "Moderate", "Challenging", "Strenuous"] as const).map((d) => (
                 <div
                   key={d}
-                  className={`rounded-lg border p-2.5 text-center text-xs font-semibold ${
-                    d === trek.difficulty ? "border-transparent text-white" : "border-gray-200 text-muted dark:border-white/10"
+                  className={`rounded-xl border p-2.5 text-center text-xs font-semibold ${
+                    d === trek.difficulty ? "border-transparent text-white" : "border-slate-200 text-muted dark:border-white/10"
                   }`}
                   style={d === trek.difficulty ? { backgroundColor: DIFFICULTY_COLORS[d] } : undefined}
                 >
@@ -144,16 +143,16 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
               <strong>{trek.days} days</strong> on the mountain with roughly <strong>{totalHours} hours</strong> of actual trekking. This is how the
               effort spreads across the itinerary:
             </P>
-            <div className="mb-4 overflow-hidden rounded-xl border border-gray-100 dark:border-white/10">
+            <div className="mb-4 overflow-hidden rounded-xl border border-slate-100 dark:border-white/10">
               {trek.itinerary.map((d) => (
                 <div
                   key={d.day}
-                  className="flex items-center justify-between gap-3 border-b border-gray-50 px-4 py-2.5 text-sm last:border-0 dark:border-white/5"
+                  className="flex items-center justify-between gap-3 border-b border-slate-50 px-4 py-2.5 text-sm last:border-0 dark:border-white/5"
                 >
                   <span className="font-semibold text-foreground">Day {d.day}</span>
                   <span className="min-w-0 flex-1 truncate text-muted">{d.title}</span>
                   <span className={`flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                    d === longestDay ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-muted dark:bg-white/10"
+                    d === longestDay ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-muted dark:bg-white/10"
                   }`}>
                     {d.hours}h · {d.altitude.toLocaleString("en-IN")}m
                   </span>
@@ -188,8 +187,8 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
               ].map((z) => (
                 <div
                   key={z.range}
-                  className={`flex items-center justify-between rounded-lg border px-4 py-2.5 text-sm ${
-                    z.active ? "border-emerald-500 bg-emerald-50 font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" : "border-gray-100 text-muted dark:border-white/10"
+                  className={`flex items-center justify-between rounded-xl border px-4 py-2.5 text-sm ${
+                    z.active ? "border-emerald-500 bg-emerald-50 font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" : "border-slate-100 text-muted dark:border-white/10"
                   }`}
                 >
                   <span>{z.range}</span>
@@ -219,8 +218,8 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
               {MONTHS.map((m) => (
                 <div
                   key={m}
-                  className={`rounded-lg py-2 text-center text-xs font-semibold ${
-                    months.has(m) ? "bg-emerald-600 text-white" : "bg-gray-100 text-muted dark:bg-white/10"
+                  className={`rounded-xl py-2 text-center text-xs font-semibold ${
+                    months.has(m) ? "bg-emerald-600 text-white" : "bg-slate-100 text-muted dark:bg-white/10"
                   }`}
                 >
                   {m}
@@ -268,7 +267,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${basecamp}, ${trek.region}, India`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-emerald-600 hover:underline"
+                  className="font-semibold text-emerald-700 underline-offset-2 hover:underline"
                 >
                   Open {basecamp} in Google Maps ↗
                 </a>
@@ -350,7 +349,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
                 href="https://wa.me/917817912062?text=Hi!%20I'd%20like%20to%20book%20offloading%20for%20my%20trek."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-emerald-600 hover:underline"
+                className="font-semibold text-emerald-700 underline-offset-2 hover:underline"
               >
                 Book offloading on WhatsApp ↗
               </a>
@@ -485,57 +484,46 @@ function treks50Plus(trek: Trek) {
   return trek.difficulty === "Challenging" || trek.difficulty === "Strenuous";
 }
 
-export function QuickInfoModal({ id, label, trek, onClose }: { id: QuickInfoId; label: string; trek: Trek; onClose: () => void }) {
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [onClose]);
-
+/**
+ * The "Know more" panel behind the trek facts and the booking card's inclusions. Kit Dialog:
+ * rises from the bottom on phones, centred from `sm` up; focus trap, Escape and scroll lock
+ * come from Radix. Callers keep it mounted with open=false after closing so it animates out.
+ */
+export function QuickInfoModal({
+  id,
+  open = true,
+  label,
+  trek,
+  onClose,
+}: {
+  id: QuickInfoId;
+  open?: boolean;
+  label: string;
+  trek: Trek;
+  onClose: () => void;
+}) {
   const { title, body } = quickInfoModalBody(id, trek);
 
-  return createPortal(
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[150] flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center sm:p-6"
-        onClick={onClose}
-        role="dialog"
-        aria-modal="true"
-        aria-label={`${label} details`}
-      >
-        <motion.div
-          initial={{ y: 60, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 60, opacity: 0 }}
-          transition={{ type: "spring", damping: 28, stiffness: 300 }}
-          onClick={(e) => e.stopPropagation()}
-          className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-t-3xl bg-white p-6 shadow-2xl dark:bg-card sm:rounded-3xl sm:p-8"
-        >
-          <span className="mb-4 inline-block rounded-full bg-emerald-600 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white">
+  return (
+    <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
+      <DialogContent size="lg" placement="bottom" tone="light" hideClose className="max-w-2xl">
+        <DialogTitle className="sr-only">{`${label} details`}</DialogTitle>
+        <div className="px-6 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:p-8">
+          <Badge className="mb-4 bg-emerald-600 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white ring-0">
             {label}
-          </span>
-          <button
-            onClick={onClose}
+          </Badge>
+          <DialogClose
             aria-label="Close popup"
-            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-muted transition-colors hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20"
+            className="absolute right-3 top-3 z-10 inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 transition-colors duration-150 ease-out hover:bg-slate-100 hover:text-slate-900"
           >
-            <svg className="h-4.5 w-4.5" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+            <svg className="h-5 w-5" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" d="M18 6L6 18M6 6l12 12" />
             </svg>
-          </button>
+          </DialogClose>
           <H>{title}</H>
           <div className="pr-1">{body}</div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>,
-    document.body,
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

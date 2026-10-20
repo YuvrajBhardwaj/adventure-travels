@@ -1,6 +1,7 @@
 const Razorpay = require("razorpay");
 const trekCatalog = require("./_lib/catalog");
 const pricing = require("./_lib/pricing");
+const departures = require("./_lib/departures");
 const { getAdmin, getUserFromRequest, clientIp } = require("./_lib/supabaseAdmin");
 const { logActivity } = require("./_lib/payments");
 
@@ -77,6 +78,8 @@ async function loadBooking(db, user, bookingType, bookingId) {
     startDate: b.trek_date,
     balanceDueDate: b.balance_due_date,
     label: `${b.trek_name}${b.room_sharing ? ` · ${b.room_sharing}` : ""} · ${persons(b.group_size)}`,
+    slug: b.trek_slug,
+    seats: departures.seatsFor(b.group_size),
   };
 }
 
@@ -108,6 +111,13 @@ module.exports = async function handler(req, res) {
     const rule = pricing.orderAmount(booking, kind);
     if (rule.error) throw new HttpError(rule.status, rule.error);
     const amount = rule.amount;
+
+    // An unpaid, unconfirmed trek booking doesn't hold seats yet, so its batch may have
+    // filled since it was made: check before taking money (supabase-departures.sql).
+    if (booking.type === "trek" && booking.status === "pending" && booking.paymentState === "unpaid") {
+      const full = departures.seatProblem(await departures.findDeparture(db, booking.slug, booking.startDate), booking.seats);
+      if (full) throw new HttpError(409, full);
+    }
 
     const summary = {
       total: booking.amount,

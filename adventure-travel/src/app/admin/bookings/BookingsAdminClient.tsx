@@ -1,12 +1,10 @@
 "use client";
 
-import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { History, RefreshCw, Search, X } from "lucide-react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
+import { History, Inbox, RefreshCw, Search, X } from "lucide-react";
 import { AdminGate } from "@/components/admin/AdminGate";
 import { LoadError } from "@/components/admin/LoadError";
 import {
-  FIELD,
   PAYMENT_STATE_LABEL,
   PAYMENT_STATE_TONE,
   STATUS_TONE,
@@ -18,6 +16,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   filterBookings,
@@ -115,47 +118,50 @@ function BookingsAdmin() {
           <label className="relative block">
             <span className="sr-only">Search bookings</span>
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden />
-            <input
+            <Input
               type="search"
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search name, email, phone, reference or trek"
-              className={cn(FIELD, "w-full pl-9")}
+              className="pl-9"
             />
           </label>
           <div className="flex flex-wrap items-end gap-2">
-            <Select label="Type" value={filters.type ?? ""} onChange={(v) => setFilter("type", v as BookingType)}>
+            <FilterSelect label="Type" value={filters.type ?? ""} onChange={(v) => setFilter("type", v as BookingType)}>
               <option value="">All types</option>
               <option value="trek">Treks</option>
               <option value="course">Courses</option>
               <option value="activity">Activities</option>
-            </Select>
-            <Select label="Status" value={filters.status ?? ""} onChange={(v) => setFilter("status", v as BookingStatus)}>
+            </FilterSelect>
+            <FilterSelect label="Status" value={filters.status ?? ""} onChange={(v) => setFilter("status", v as BookingStatus)}>
               <option value="">Any status</option>
               {STATUSES.map((s) => (
                 <option key={s} value={s}>{cap(s)}</option>
               ))}
-            </Select>
-            <Select label="Payment" value={filters.paymentState ?? ""} onChange={(v) => setFilter("paymentState", v as PaymentState)}>
+            </FilterSelect>
+            <FilterSelect label="Payment" value={filters.paymentState ?? ""} onChange={(v) => setFilter("paymentState", v as PaymentState)}>
               <option value="">Any payment</option>
               {PAYMENT_STATES.map((s) => (
                 <option key={s} value={s}>{PAYMENT_STATE_LABEL[s]}</option>
               ))}
-            </Select>
-            <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            </FilterSelect>
+            <label className={FILTER_LABEL}>
               Starts from
-              <input type="date" value={filters.from ?? ""} onChange={(e) => setFilter("from", e.target.value)} className={cn(FIELD, "mt-1 block")} />
+              <Input type="date" value={filters.from ?? ""} onChange={(e) => setFilter("from", e.target.value)} className="mt-1" />
             </label>
-            <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            <label className={FILTER_LABEL}>
               to
-              <input type="date" value={filters.to ?? ""} onChange={(e) => setFilter("to", e.target.value)} className={cn(FIELD, "mt-1 block")} />
+              <Input type="date" value={filters.to ?? ""} onChange={(e) => setFilter("to", e.target.value)} className="mt-1" />
             </label>
-            <label className="flex h-10 items-center gap-2 rounded-xl px-2 text-sm font-medium">
-              <input type="checkbox" checked={overdueOnly} onChange={(e) => setOverdueOnly(e.target.checked)} className="h-4 w-4 accent-emerald-600" />
-              Overdue only{overdueCount > 0 && <Badge tone="red">{overdueCount}</Badge>}
-            </label>
-            <Button variant="outline" size="sm" className="ml-auto h-10" onClick={() => void load(filters)} disabled={status === "loading"}>
-              <RefreshCw className={cn("h-4 w-4", status === "loading" && "animate-spin motion-reduce:animate-none")} aria-hidden />
+            <Checkbox
+              checked={overdueOnly}
+              onChange={(e) => setOverdueOnly(e.target.checked)}
+              className="mt-0"
+              labelClassName="items-center px-2 font-medium text-slate-900 dark:text-slate-100 [&>span]:inline-flex [&>span]:items-center [&>span]:gap-2"
+              label={<>Overdue only{overdueCount > 0 && <Badge tone="red">{overdueCount}</Badge>}</>}
+            />
+            <Button variant="outline" className="ml-auto" onClick={() => void load(filters)} loading={status === "loading"}>
+              {status !== "loading" && <RefreshCw className="h-4 w-4" aria-hidden />}
               Refresh
             </Button>
           </div>
@@ -163,7 +169,7 @@ function BookingsAdmin() {
       </Card>
 
       {notice && (
-        <p role="status" className="mb-4 rounded-xl bg-emerald-50 px-4 py-2.5 text-sm text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-200">
+        <p role="status" className="mb-4 rounded-2xl bg-emerald-50 px-4 py-2.5 text-sm text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-200">
           {notice}
         </p>
       )}
@@ -171,13 +177,11 @@ function BookingsAdmin() {
       <Card>
         <CardContent className="p-0">
           {status === "loading" && rows.length === 0 ? (
-            <div className="space-y-3 p-5" aria-busy aria-label="Loading bookings">
-              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
-            </div>
+            <TableSkeleton label="Loading bookings" />
           ) : status === "error" ? (
             <LoadError onRetry={() => void load(filters)} />
           ) : visible.length === 0 ? (
-            <p className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">No bookings match.</p>
+            <EmptyState className="py-12" icon={<Inbox />} title="No bookings match." />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[1080px] text-left text-sm">
@@ -236,17 +240,18 @@ function BookingsAdmin() {
                         </td>
                         <td className="px-4 py-3">
                           <label className="sr-only" htmlFor={`status-${b.id}`}>Status for {b.ref}</label>
-                          <select
+                          <Select
                             id={`status-${b.id}`}
                             value={b.status}
                             disabled={busyId === b.id}
                             onChange={(e) => void changeStatus(b, e.target.value as BookingStatus)}
-                            className={cn(FIELD, "h-9 pr-8 font-medium")}
+                            wrapperClassName="min-w-[8.5rem]"
+                            className="h-9 font-medium"
                           >
                             {STATUSES.map((s) => (
                               <option key={s} value={s}>{cap(s)}</option>
                             ))}
-                          </select>
+                          </Select>
                           <span className="mt-1 block"><Badge tone={STATUS_TONE[b.status]}>{cap(b.status)}</Badge></span>
                         </td>
                         <td className="whitespace-nowrap px-4 py-3 text-right">
@@ -258,7 +263,7 @@ function BookingsAdmin() {
                             {refundable &&
                               (confirmRefund === b.id ? (
                                 <span className="flex items-center gap-1">
-                                  <Button size="sm" className="bg-red-600 hover:bg-red-700" disabled={busyId === b.id} onClick={() => void refund(b)}>
+                                  <Button variant="destructive" size="sm" loading={busyId === b.id} onClick={() => void refund(b)}>
                                     Confirm refund
                                   </Button>
                                   <Button variant="ghost" size="sm" onClick={() => setConfirmRefund(null)}>Keep</Button>
@@ -288,14 +293,51 @@ function BookingsAdmin() {
   );
 }
 
-function Select({ label, value, onChange, children }: { label: string; value: string; onChange: (v: string) => void; children: React.ReactNode }) {
+const FILTER_LABEL = "min-w-[9.5rem] text-xs font-medium text-slate-500 dark:text-slate-400";
+
+function FilterSelect({ label, value, onChange, children }: { label: string; value: string; onChange: (v: string) => void; children: React.ReactNode }) {
   return (
-    <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+    <label className={FILTER_LABEL}>
       {label}
-      <select value={value} onChange={(e) => onChange(e.target.value)} className={cn(FIELD, "mt-1 block pr-8")}>
+      <Select value={value} onChange={(e) => onChange(e.target.value)} wrapperClassName="mt-1">
         {children}
-      </select>
+      </Select>
     </label>
+  );
+}
+
+/** Placeholder rows shaped like the table: reference + type, customer, booking, date, amounts, badges. */
+function TableSkeleton({ label }: { label: string }) {
+  return (
+    <div aria-busy="true" className="overflow-hidden">
+      <span className="sr-only">{label}</span>
+      <div className="flex gap-6 border-b border-slate-200 px-4 py-3.5 dark:border-white/10">
+        {[10, 24, 24, 12, 10, 14].map((w, i) => (
+          <Skeleton key={i} className="h-3" style={{ width: `${w}%` }} />
+        ))}
+      </div>
+      <div className="divide-y divide-slate-100 dark:divide-white/5">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="flex items-start gap-6 px-4 py-3">
+            <div className="w-[10%] space-y-2">
+              <Skeleton className="h-3.5 w-full" />
+              <Skeleton className="h-5 w-3/4 rounded-full" />
+            </div>
+            <div className="w-[24%] space-y-2">
+              <Skeleton className="h-4 w-4/5" />
+              <Skeleton className="h-3 w-3/5" />
+            </div>
+            <div className="w-[24%] space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-3 w-1/2" />
+            </div>
+            <Skeleton className="h-4 w-[12%]" />
+            <Skeleton className="h-4 w-[10%]" />
+            <Skeleton className="h-5 w-[14%] rounded-full" />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -310,10 +352,11 @@ function describeEvent(e: BookingEvent) {
 }
 
 function HistoryDrawer({ booking, onClose }: { booking: AdminBooking | null; onClose: () => void }) {
-  const reduceMotion = useReducedMotion();
   const [events, setEvents] = useState<BookingEvent[] | null>(null);
   const [error, setError] = useState(false);
-  const closeRef = useRef<HTMLButtonElement>(null);
+  // Keep the last booking on screen while the sheet slides out.
+  const [shown, setShown] = useState<AdminBooking | null>(booking);
+  if (booking && booking !== shown) setShown(booking);
 
   useEffect(() => {
     if (!booking) return;
@@ -324,63 +367,53 @@ function HistoryDrawer({ booking, onClose }: { booking: AdminBooking | null; onC
     getBookingEvents(booking.type, booking.id)
       .then((rows) => !cancelled && setEvents(rows))
       .catch(() => !cancelled && setError(true));
-    closeRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKey);
     return () => {
       cancelled = true;
-      document.removeEventListener("keydown", onKey);
     };
-  }, [booking, onClose]);
+  }, [booking]);
 
+  // Radix handles focus (moves in, returns to the History button), Escape, scrim click and scroll lock.
   return (
-    <AnimatePresence>
-      {booking && (
-        <>
-          <motion.div
-            key="scrim"
-            className="fixed inset-0 z-[110] bg-slate-950/40"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reduceMotion ? 0 : 0.2 }}
-            onClick={onClose}
-            aria-hidden
-          />
-          <motion.aside
-            key="drawer"
-            role="dialog"
-            aria-modal="true"
-            aria-label={`History for booking ${booking.ref}`}
-            className="fixed inset-y-0 right-0 z-[111] flex w-full max-w-md flex-col bg-white shadow-2xl dark:bg-slate-900"
-            initial={reduceMotion ? { opacity: 0 } : { x: "100%" }}
-            animate={reduceMotion ? { opacity: 1 } : { x: 0 }}
-            exit={reduceMotion ? { opacity: 0 } : { x: "100%" }}
-            transition={reduceMotion ? { duration: 0 } : { type: "spring", damping: 32, stiffness: 320 }}
-          >
+    <Sheet open={booking !== null} onOpenChange={(open) => !open && onClose()}>
+      <SheetContent
+        side="right"
+        title={shown ? `History for booking ${shown.ref}` : "Booking history"}
+        hideTitle
+        hideClose
+        className="w-[min(100vw,448px)]"
+      >
+        {shown && (
+          <>
             <header className="flex items-start justify-between gap-4 border-b border-slate-200 p-5 dark:border-white/10">
-              <div>
-                <p className="font-mono text-xs font-semibold text-slate-500">{booking.ref}</p>
-                <h2 className="font-heading text-lg font-bold">{booking.item}</h2>
+              <div className="min-w-0">
+                <p className="font-mono text-xs font-semibold text-slate-500 dark:text-slate-400">{shown.ref}</p>
+                <h2 className="font-heading text-lg font-semibold">{shown.item}</h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {booking.customer.name || "—"} · starts {shortDate(booking.startDate)}
+                  {shown.customer.name || "—"} · starts {shortDate(shown.startDate)}
                 </p>
               </div>
-              <Button ref={closeRef} variant="ghost" size="icon" onClick={onClose} aria-label="Close history">
-                <X className="h-5 w-5" aria-hidden />
-              </Button>
+              <SheetClose asChild>
+                <Button variant="ghost" size="icon" aria-label="Close history" className="shrink-0">
+                  <X className="h-5 w-5" aria-hidden />
+                </Button>
+              </SheetClose>
             </header>
-            <div className="flex-1 overflow-y-auto p-5">
-              <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">Booked {dateTime(booking.createdAt)}</p>
-              {booking.message && (
-                <p className="mb-4 rounded-xl bg-slate-100 p-3 text-sm dark:bg-white/5">“{booking.message}”</p>
+            <div className="flex-1 p-5">
+              <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">Booked {dateTime(shown.createdAt)}</p>
+              {shown.message && (
+                <p className="mb-4 rounded-2xl bg-slate-100 p-3 text-sm dark:bg-white/5">“{shown.message}”</p>
               )}
               {error ? (
                 <p role="alert" className="text-sm text-red-600 dark:text-red-300">Couldn&apos;t load the history.</p>
               ) : events === null ? (
-                <div className="space-y-3" aria-busy aria-label="Loading history">
-                  <Skeleton className="h-12 w-full" />
-                  <Skeleton className="h-12 w-full" />
+                <div className="space-y-4" aria-busy="true">
+                  <span className="sr-only">Loading history</span>
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="space-y-2 border-l-2 border-slate-200 pl-4 dark:border-white/10">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-3 w-1/2" />
+                    </div>
+                  ))}
                 </div>
               ) : events.length === 0 ? (
                 <p className="text-sm text-slate-500 dark:text-slate-400">No changes since it was booked.</p>
@@ -398,9 +431,9 @@ function HistoryDrawer({ booking, onClose }: { booking: AdminBooking | null; onC
                 </ol>
               )}
             </div>
-          </motion.aside>
-        </>
-      )}
-    </AnimatePresence>
+          </>
+        )}
+      </SheetContent>
+    </Sheet>
   );
 }

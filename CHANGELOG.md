@@ -4,18 +4,64 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 **How to add an entry:** add it under [Unreleased] with the date, where the change lives (branch and commit, or "uncommitted"), and what changed for visitors, for the business and in the backend. Move entries to a dated release heading when they go live on www.himalayanarcadventure.com. Open work goes in [TODO.md](TODO.md).
 
-## Where things stand (19 Oct 2026)
+## Where things stand (21 Oct 2026)
 
 | Where | Commit | What it has |
 |---|---|---|
 | **Live site** (`main` on GitHub) | `a42c960` | Everything up to "three quick boxes on trek cost card" (15 Oct, `a630559`), plus the 19 Oct favicon hotfix. None of the 16 Oct work below. |
-| **Preview** (`preview/trek-slideshows` on GitHub) | `b17ebd1` | Everything in [Unreleased]. Preview link: https://adventure-travels-e2s3w71d6-yuvrajbhardwaj2s-projects.vercel.app (built from `b17ebd1`, 19 Oct). The branch link always shows the newest build: https://adventure-travels-git-preview-581130-yuvrajbhardwaj2s-projects.vercel.app. Bookings and payments need Supabase. |
-| **Why it isn't live** | — | Vercel's Production environment has **no environment variables**, and `next.config.ts` stops a production build without the Supabase ones. The owner chose (19 Oct) to go live only after Supabase is set up. Merge into `main` then. |
+| **Preview** (`preview/trek-slideshows` on GitHub) | `9133594` | Everything pushed so far (21 Oct entries below marked "uncommitted" are not in it). **Connected to Supabase** since 21 Oct: https://adventure-travels-68r7k3o37-yuvrajbhardwaj2s-projects.vercel.app. The branch link always shows the newest build: https://adventure-travels-git-preview-581130-yuvrajbhardwaj2s-projects.vercel.app. Payments and emails still need the Razorpay and SMTP keys. |
+| **Why it isn't live** | — | Vercel's Production environment still has **no environment variables**, and `next.config.ts` stops a production build without the Supabase ones. They go in at go-live, together with the merge into `main`. |
 | Local `main` | `9b522d5` | Stale: everything in it is in the preview branch, and GitHub `main` has moved on to `a42c960`. Reset it to `origin/main` before the next use. |
 
 ---
 
 ## [Unreleased]
+
+### 21 Oct 2026: **Backend** Supabase keys in Vercel Preview — no code change
+- **Business:** the preview site now has working accounts and saves bookings to the database. The live site is unchanged.
+- **Backend:**
+  - Added to Vercel **Preview** with the logged-in Vercel CLI (no token needed): `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Config), and `SUPABASE_SERVICE_ROLE_KEY` and `CRON_SECRET` (Sensitive). The values come from `.env.local`.
+  - Production is left empty until go-live, so a stray rebuild of the old live code can't connect it to the new database.
+  - Redeployed the newest preview so the keys are built in: https://adventure-travels-68r7k3o37-yuvrajbhardwaj2s-projects.vercel.app.
+- **Checks:**
+  - **Server functions:** `POST /api/account` answered 503 "temporarily unavailable" on the old preview and **401 "Please sign in."** on the new one. `POST /api/bookings` answered 400 "Unknown booking type." (connected, and checking the request).
+  - **Browser code:** it now contains the Supabase project.
+  - No test account or booking was created.
+
+### 21 Oct 2026: Plan for site-wide UI consistency and polish — uncommitted
+- Design plan for spec 002 in `specs/002-ui-polish-consistency/`: `plan.md`, `research.md` (14 decisions), `data-model.md`, `contracts/components.md`, `contracts/motion.md` and `quickstart.md` (checks V1–V10). No code changed yet.
+- **For visitors (once built):**
+  - no full-screen preloader; photos and sections show straight away
+  - loading placeholders shaped like the real content, with no "Loading…" text
+  - the same buttons, fields and dialogs on every page, with one set of smooth, interruptible motion.
+- **Decisions:**
+  - account pages keep their dark navy look
+  - the existing component kit is extended rather than adding a second design system; the one new package is `@radix-ui/react-dialog`, for accessible dialogs and drawers
+  - the navy shades get names, but no colour changes; off-palette cyan becomes the brand's sky or emerald.
+- The spec's count of hand-typed colours was corrected from 27 to 34 (gradient stops included).
+
+### 21 Oct 2026: Spec for site-wide UI consistency and polish — uncommitted
+- New spec `specs/002-ui-polish-consistency/spec.md`: one brand-coloured component set on every page (light and dark variants), modern placeholders that match each layout, smooth and interruptible motion, nothing hiding content on first view, and every page polished from 320px to 1920px. Brand colours stay exactly as they are; off-palette uses get fixed.
+- It's based on a survey of today's inconsistencies:
+  - 6 plain "Loading…" texts and 7 spinners
+  - 8 off-palette cyan uses and 34 hand-typed colours
+  - 15 of about 118 buttons using the shared button
+  - three page "looks"
+  - a preloader that hides every page.
+- Planning only so far; no site code changed.
+
+### 21 Oct 2026: `CLAUDE.md` brought up to date — uncommitted
+- **Fixed outdated guidance for future Claude sessions:**
+  - the repo root wasn't `d:\opencode`
+  - headings are Space Grotesk, not Poppins
+  - most routes are a server `page.tsx` plus a client component, not all client
+  - `MotionWrapper` is widely used
+  - the ContactPopup placeholder note is gone.
+- **Added:**
+  - how to run one test file or one test by name
+  - `npx vercel dev`, the photo and setup scripts, the env files and the deploy flow
+  - the rules that keep page content in the static HTML for SEO
+  - the share-image pipeline and the Supabase MCP server.
 
 ### 19 Oct 2026: **Backend** database set up on Supabase — script change `dbb2ce7` (branch `preview/trek-slideshows`, pushed)
 - **Database:** ran `scripts/setup-backend.mjs` against Supabase project `sdhtgmlkzcknmeakxgdz`. All 5 SQL files applied and were verified: 8 tables with row-level security, 23 policies, payment and audit triggers, `apply_payment()` callable only by the server.
@@ -275,11 +321,11 @@ After running them, give the business account admin rights (snippet at the top o
 ### Environment variables (Vercel → Settings, and `adventure-travel/.env.local` for local work)
 | Variable | Needed for | Set? |
 |---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Accounts, bookings, dashboard. Production build refuses to run without them | ☑ local · ☐ Vercel |
-| `SUPABASE_SERVICE_ROLE_KEY` | Every API function | ☑ local · ☐ Vercel |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Accounts, bookings, dashboard. Production build refuses to run without them | ☑ local · ☑ Vercel Preview (21 Oct) · ☐ Vercel Production |
+| `SUPABASE_SERVICE_ROLE_KEY` | Every API function | ☑ local · ☑ Vercel Preview (21 Oct, Sensitive) · ☐ Vercel Production |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | Online payments | ☐ local · ☐ Vercel |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `BOOKING_TO_EMAIL` | Booking, payment and reminder emails | ☐ local · ☐ Vercel |
-| `CRON_SECRET` | Daily reminder job | ☑ local · ☐ Vercel |
+| `CRON_SECRET` | Daily reminder job | ☑ local · ☑ Vercel Preview (21 Oct, Sensitive) · ☐ Vercel Production |
 
 ### Testing status
 | Check | Result |

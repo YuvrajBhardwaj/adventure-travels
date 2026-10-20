@@ -49,12 +49,12 @@ export function TrekHub({
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
 
       {/* Runs under the fixed navbar, so there's no light strip between the two. */}
-      <header className="bg-[#0F172A] text-white">
+      <header className="bg-navy text-white">
         <div className="mx-auto max-w-7xl px-4 pb-14 pt-32 sm:px-6 lg:px-8">
           <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-2 text-sm text-white/60">
-            <Link href="/" className="hover:text-white">Home</Link>
+            <Link href="/" className="transition-colors duration-150 ease-out hover:text-white">Home</Link>
             <span aria-hidden>/</span>
-            <Link href="/treks" className="hover:text-white">Treks</Link>
+            <Link href="/treks" className="transition-colors duration-150 ease-out hover:text-white">Treks</Link>
             <span aria-hidden>/</span>
             <span className="text-white/90">{title}</span>
           </nav>
@@ -63,9 +63,9 @@ export function TrekHub({
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl space-y-16 px-4 py-14 sm:px-6 lg:px-8">
+      <main className="py-section-sm mx-auto max-w-7xl space-y-16 px-4 sm:px-6 lg:px-8">
         <section aria-labelledby="compare">
-          <h2 id="compare" className="font-heading text-2xl font-bold text-slate-900">Compare the treks</h2>
+          <h2 id="compare" className="font-heading text-3xl font-bold tracking-[-0.02em] text-slate-900 sm:text-4xl">Compare the treks</h2>
           <div className="relative mt-5 overflow-x-auto rounded-2xl border border-slate-200">
             <table className="w-full min-w-[760px] text-sm">
               <thead className="bg-slate-50">
@@ -82,7 +82,7 @@ export function TrekHub({
                 {treks.map((t) => (
                   <tr key={t.slug} className="align-top">
                     <th scope="row" className="px-4 py-3 text-left font-semibold">
-                      <Link href={`/treks/${t.slug}`} className="text-slate-900 hover:text-emerald-600">{t.name}</Link>
+                      <Link href={`/treks/${t.slug}`} className="text-slate-900 transition-colors duration-150 ease-out hover:text-emerald-600">{t.name}</Link>
                     </th>
                     <td className="px-4 py-3 tabular-nums">{t.days}</td>
                     <td className="whitespace-nowrap px-4 py-3 tabular-nums">{t.maxAltitude.toLocaleString("en-IN")} m</td>
@@ -104,7 +104,7 @@ export function TrekHub({
         </section>
 
         <section aria-labelledby="season">
-          <h2 id="season" className="font-heading text-2xl font-bold text-slate-900">When to go</h2>
+          <h2 id="season" className="font-heading text-3xl font-bold tracking-[-0.02em] text-slate-900 sm:text-4xl">When to go</h2>
           <div className="relative mt-5 overflow-x-auto rounded-2xl border border-slate-200">
             <table className="w-full min-w-[760px] text-sm">
               <thead className="bg-slate-50">
@@ -141,7 +141,7 @@ export function TrekHub({
         </section>
 
         <section aria-labelledby="treks">
-          <h2 id="treks" className="font-heading text-2xl font-bold text-slate-900">The treks</h2>
+          <h2 id="treks" className="font-heading text-3xl font-bold tracking-[-0.02em] text-slate-900 sm:text-4xl">The treks</h2>
           <div className="mt-6 grid gap-8 md:grid-cols-2">
             {treks.map((t) => (
               <TrekCard key={t.slug} trek={t} />

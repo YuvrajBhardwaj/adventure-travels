@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins, Inter, Fraunces, Space_Grotesk } from "next/font/google";
+import { Inter, Fraunces, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import Preloader from "@/components/Preloader";
 import Navbar from "@/components/Navbar";
 import FooterV2 from "@/components/FooterV2";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -10,13 +9,6 @@ import { treks } from "@/data/treks";
 import { courses } from "@/data/courses";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import LegacyDataNotice from "@/components/LegacyDataNotice";
-
-const poppins = Poppins({
-  variable: "--font-heading",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-  display: "swap",
-});
 
 const inter = Inter({
   variable: "--font-body",
@@ -195,7 +187,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${poppins.variable} ${inter.variable} ${fraunces.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${fraunces.variable} ${spaceGrotesk.variable}`}>
       <head>
         <meta name="X-Content-Type-Options" content="nosniff" />
         <meta name="X-Frame-Options" content="DENY" />
@@ -209,7 +201,6 @@ export default function RootLayout({
       <body className="min-h-screen bg-background text-foreground antialiased">
         <AuthProvider>
           <CurrencyProvider>
-            <Preloader />
             <LegacyDataNotice />
             <Navbar />
             {children}

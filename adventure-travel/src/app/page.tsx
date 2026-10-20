@@ -18,12 +18,13 @@ import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import MobileSearchButton from "@/components/MobileSearchButton";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import WelcomeChooser from "@/components/WelcomeChooser";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const FAQV2 = dynamic(() => import("@/components/FAQV2"), {
   loading: () => (
     <div className="py-section bg-background/70 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="h-64 skeleton rounded-2xl" />
+        <Skeleton className="h-64 rounded-2xl" />
       </div>
     </div>
   ),

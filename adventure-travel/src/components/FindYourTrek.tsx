@@ -35,7 +35,7 @@ const regionStats = REGIONS.filter((r) => r !== "All Regions").map((region) => (
 export default function FindYourTrek() {
   return (
     <section className="relative bg-background py-section">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeUp>
           <div className="flex items-center gap-3">
             <span className="h-px w-10 bg-primary" aria-hidden />
@@ -43,7 +43,7 @@ export default function FindYourTrek() {
               FIND YOUR TREK
             </span>
           </div>
-          <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-display-lg">
+          <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-foreground tracking-[-0.02em] sm:text-4xl">
             Which trek is right for you?
           </h2>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
@@ -56,17 +56,17 @@ export default function FindYourTrek() {
             <StaggerItem key={l.difficulty}>
               <Link
                 href={`/treks?difficulty=${encodeURIComponent(l.difficulty)}`}
-                className="group flex h-full flex-col overflow-hidden rounded-3xl border border-foreground/10 bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-black/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-foreground/10 bg-card shadow-sm transition-[transform,border-color,background-color] duration-200 ease-out hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 hover:shadow-lg hover:shadow-black/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 <span aria-hidden className="h-1.5 w-full" style={{ backgroundColor: DIFFICULTY_COLORS[l.difficulty] }} />
-                <div className="flex flex-1 flex-col p-6">
+                <div className="flex flex-1 flex-col p-5 sm:p-6">
                   <span
                     className="inline-flex w-fit rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white"
                     style={{ backgroundColor: DIFFICULTY_COLORS[l.difficulty] }}
                   >
                     {l.difficulty}
                   </span>
-                  <h3 className="mt-4 font-heading text-xl font-bold text-foreground">{l.label}</h3>
+                  <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">{l.label}</h3>
                   <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{l.blurb}</p>
 
                   <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-foreground/10 pt-4 text-sm">
@@ -86,7 +86,7 @@ export default function FindYourTrek() {
                     <span>
                       {l.count} {l.count === 1 ? "trek" : "treks"} · from <Price inr={l.fromPrice} />
                     </span>
-                    <span aria-hidden className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
+                    <span aria-hidden className="transition-transform duration-150 ease-out group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
                       →
                     </span>
                   </p>
@@ -103,7 +103,7 @@ export default function FindYourTrek() {
               <Link
                 key={r.region}
                 href={`/treks?region=${encodeURIComponent(r.region)}`}
-                className="rounded-full border border-foreground/15 bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="inline-flex min-h-11 items-center gap-1 rounded-full border border-foreground/15 bg-card px-4 text-sm font-medium text-foreground transition-colors duration-150 ease-out hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 {r.region} <span className="text-muted">({r.count})</span>
               </Link>

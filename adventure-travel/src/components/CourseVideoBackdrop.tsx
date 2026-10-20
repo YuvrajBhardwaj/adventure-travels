@@ -38,12 +38,13 @@ export default function CourseVideoBackdrop({ video, poster }: { video: string; 
   return (
     <div className="fixed inset-0 z-0" aria-hidden>
       {/* poster under the video: instant paint, also the reduced-motion / error view */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={poster} alt="" className="absolute inset-0 h-full w-full object-cover" decoding="async" />
       {showVideo && (
         <video
           key={video}
           ref={vidRef}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${ready ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${ready ? "opacity-100" : "opacity-0"}`}
           src={video}
           poster={poster}
           autoPlay

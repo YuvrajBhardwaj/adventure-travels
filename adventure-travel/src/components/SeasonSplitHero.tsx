@@ -2,7 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
+import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { buttonVariants } from "@/components/ui/button";
+import { DURATION, EASE } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 type Slide = { type: "image" | "video"; src: string; alt: string };
 
@@ -28,6 +31,7 @@ function CarouselLayer({
   slides,
   intervalMs,
   gradient,
+  dotsClassName,
   reduceMotion,
   paused,
   frozen,
@@ -36,6 +40,8 @@ function CarouselLayer({
   slides: Slide[];
   intervalMs: number;
   gradient: string;
+  /** Centres the dots in this layer's visible half (the other half is clipped away). */
+  dotsClassName: string;
   reduceMotion: boolean | null;
   paused: boolean;
   frozen?: boolean;
@@ -72,10 +78,11 @@ function CarouselLayer({
             key={i}
             initial={false}
             animate={{ opacity: active ? 1 : 0 }}
+            // Ambient crossfade: deliberately longer than the UI tokens (motion contract), eased with EASE.inOut.
             transition={
               active
-                ? { duration: reduceMotion ? 0.15 : 0.7, ease: "easeInOut" }
-                : { duration: reduceMotion ? 0.1 : 0.5, ease: "easeInOut", delay: reduceMotion ? 0 : 0.5 }
+                ? { duration: reduceMotion ? DURATION.fast : 0.7, ease: EASE.inOut }
+                : { duration: reduceMotion ? DURATION.fast : 0.5, ease: EASE.inOut, delay: reduceMotion ? 0 : 0.5 }
             }
             className="absolute inset-0"
           >
@@ -106,15 +113,24 @@ function CarouselLayer({
         );
       })}
       <div className={`absolute inset-0 ${gradient}`} aria-hidden />
-      {/* Dots */}
-      <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
+      {/* Dots: pointer-only (the layer is aria-hidden decoration), 44px tall hit area */}
+      <div className={cn("absolute bottom-1 z-10 flex -translate-x-1/2", dotsClassName)}>
         {slides.map((_, i) => (
           <button
             key={i}
+            type="button"
+            tabIndex={-1}
             aria-label={`Go to slide ${i + 1}`}
             onClick={() => setIdx(i)}
-            className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-white" : "w-1.5 bg-white/40 hover:bg-white/70"}`}
-          />
+            className="group/dot flex h-11 w-8 items-center justify-center"
+          >
+            <span
+              className={cn(
+                "block h-1.5 w-6 rounded-full transition-[transform,background-color] duration-200 ease-out motion-reduce:transition-none",
+                i === idx ? "scale-x-100 bg-white" : "scale-x-25 bg-white/40 group-hover/dot:bg-white/70"
+              )}
+            />
+          </button>
         ))}
       </div>
     </>
@@ -155,27 +171,6 @@ export default function SeasonSplitHero() {
   // Scroll-linked exit — copy lifts away as the hero leaves the viewport
   const contentY = useTransform(scrollYProgress, [0, 1], [0, 90]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-
-  // Orchestrated entrance — paced to match the courses hero (slower, cinematic)
-  const heroStagger: Variants = {
-    hidden: {},
-    show: { transition: { staggerChildren: reduceMotion ? 0 : 0.12, delayChildren: reduceMotion ? 0 : 0.15 } },
-  };
-  const copyStagger: Variants = {
-    hidden: {},
-    show: { transition: { staggerChildren: reduceMotion ? 0 : 0.12, delayChildren: reduceMotion ? 0 : 0.3 } },
-  };
-  const fadeUp: Variants = {
-    hidden: { opacity: 0, y: reduceMotion ? 0 : 26 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-  };
-  const fadeDown: Variants = {
-    hidden: { opacity: 0, y: reduceMotion ? 0 : -14 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-  };
-  const lineReveal: Variants = reduceMotion
-    ? { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.4 } } }
-    : { hidden: { y: "112%" }, show: { y: "0%", transition: { duration: 0.95, ease: [0.22, 1, 0.36, 1] } } };
 
   // Pointer-drag divider (desktop)
   useEffect(() => {
@@ -245,7 +240,7 @@ export default function SeasonSplitHero() {
     >
       {/* Summer layer — left side only */}
       <motion.div className="absolute inset-0" style={{ clipPath: summerClip }} aria-hidden>
-        <CarouselLayer slides={SUMMER_SLIDES} intervalMs={3000} gradient="bg-gradient-to-t from-emerald-950/70 via-emerald-950/15 to-transparent" reduceMotion={reduceMotion} paused={paused} frozen={!heroVisible} fetchPriorityFirst />
+        <CarouselLayer slides={SUMMER_SLIDES} intervalMs={3000} gradient="bg-gradient-to-t from-emerald-950/70 via-emerald-950/15 to-transparent" dotsClassName="left-1/4" reduceMotion={reduceMotion} paused={paused} frozen={!heroVisible} fetchPriorityFirst />
       </motion.div>
 
       {/* Winter layer — right side only */}
@@ -254,7 +249,7 @@ export default function SeasonSplitHero() {
         style={{ clipPath: winterClip }}
         aria-hidden
       >
-        <CarouselLayer slides={WINTER_SLIDES} intervalMs={6000} gradient="bg-gradient-to-t from-sky-950/70 via-sky-950/15 to-transparent" reduceMotion={reduceMotion} paused={paused} frozen={!heroVisible} />
+        <CarouselLayer slides={WINTER_SLIDES} intervalMs={6000} gradient="bg-gradient-to-t from-sky-950/70 via-sky-950/15 to-transparent" dotsClassName="left-3/4" reduceMotion={reduceMotion} paused={paused} frozen={!heroVisible} />
       </motion.div>
 
       {/* Global scrim — keeps the white copy readable over any (even bright) slide */}
@@ -283,55 +278,55 @@ export default function SeasonSplitHero() {
         </div>
       </motion.div>
 
-      {/* Content — scroll-parallax wrapper, orchestrated entrance inside */}
+      {/* Content: visible from the first paint (no entrance); only the scroll-linked lift-away moves it */}
       <motion.div
         style={reduceMotion ? undefined : { y: contentY, opacity: contentOpacity }}
-        className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-between px-6 pb-14 pt-28 lg:px-8"
+        className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-between px-4 pb-14 pt-28 sm:px-6 lg:px-8"
       >
-        <motion.div variants={heroStagger} initial={reduceMotion ? "show" : "hidden"} animate="show" className="contents">
-          {/* Top rail */}
-          <motion.div variants={fadeDown} className="flex items-center justify-between font-nav">
-            <span className="rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.25em] text-white backdrop-blur-sm">JAN – DEC</span>
-            <span className="rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.25em] text-white backdrop-blur-sm">DEC – MAR</span>
-          </motion.div>
+        {/* Top rail */}
+        <div className="flex items-center justify-between font-nav">
+          <span className="rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.25em] text-white backdrop-blur-sm">JAN – DEC</span>
+          <span className="rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.25em] text-white backdrop-blur-sm">DEC – MAR</span>
+        </div>
 
-          <div className="mt-auto flex flex-col gap-4 lg:gap-3">
-            <motion.div variants={copyStagger} className="flex flex-col">
-              <h1 className="font-heading font-bold leading-none text-white drop-shadow-lg">
-                <span className="block overflow-hidden pb-1">
-                  <motion.span variants={lineReveal} className="block text-display-xl">ONE RANGE.</motion.span>
-                </span>
-                <span className="block overflow-hidden pb-2">
-                  <motion.span variants={lineReveal} className="block text-display-xl text-white/95">TWO SEASONS.</motion.span>
-                </span>
-              </h1>
-              <motion.p variants={fadeUp} className="max-w-xl text-base font-medium leading-relaxed text-white/80 md:text-lg">
-                Himalayan treks in Uttarakhand — and snow school at Auli.
-              </motion.p>
-              <motion.div variants={fadeUp} className="mt-4 flex flex-wrap gap-3">
-                <Link href="/treks" className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:bg-primary/90 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
-                  Explore treks
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </Link>
-                <Link href="/courses" className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/5 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-white hover:bg-white/15 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                  Learn to ski
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </Link>
-              </motion.div>
-            </motion.div>
+        <div className="mt-auto flex flex-col gap-4 lg:gap-3">
+          <div className="flex flex-col">
+            <h1 className="font-heading font-bold leading-none text-white drop-shadow-lg">
+              <span className="block pb-1 text-display-xl">ONE RANGE.</span>
+              <span className="block pb-2 text-display-xl text-white/95">TWO SEASONS.</span>
+            </h1>
+            <p className="max-w-xl text-base font-medium leading-relaxed text-white/80 md:text-lg">
+              Himalayan treks in Uttarakhand — and snow school at Auli.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link href="/treks" className={cn(buttonVariants({ size: "lg" }), "px-7 shadow-lg")}>
+                Explore treks
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </Link>
+              <Link
+                href="/courses"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "border-white/70 bg-white/5 px-7 text-white backdrop-blur-sm hover:border-white hover:bg-white/15"
+                )}
+              >
+                Learn to ski
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </Link>
+            </div>
           </div>
+        </div>
 
-          <motion.div variants={fadeUp} className="mt-8 hidden items-center gap-2 self-start rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-sm sm:flex">
-            <svg className="h-3.5 w-3.5 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M3 17l6-6 4 4 8-8" /><path strokeLinecap="round" strokeLinejoin="round" d="M14 7h7v7" /></svg>
-            <span className="font-heading text-sm font-bold tabular-nums text-white">1,200 M – 4,700 M</span>
-            <span className="text-xs font-semibold uppercase tracking-widest text-white/70">Uttarakhand Himalaya</span>
-          </motion.div>
-        </motion.div>
+        <div className="mt-8 hidden items-center gap-2 self-start rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-sm sm:flex">
+          <svg className="h-3.5 w-3.5 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M3 17l6-6 4 4 8-8" /><path strokeLinecap="round" strokeLinejoin="round" d="M14 7h7v7" /></svg>
+          <span className="font-heading text-sm font-bold tabular-nums text-white">1,200 M – 4,700 M</span>
+          <span className="text-xs font-semibold uppercase tracking-widest text-white/70">Uttarakhand Himalaya</span>
+        </div>
       </motion.div>
       <div className="pointer-events-none absolute bottom-5 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 lg:flex">
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/60">Scroll</span>
         <div className="flex h-8 w-5 justify-center rounded-full border border-white/30 pt-1.5">
-          <div className="h-1.5 w-1 rounded-full bg-white/60" style={{ animation: "scroll-dot 1.5s ease-in-out infinite" }} />
+          <div className="h-1.5 w-1 rounded-full bg-white/60" style={reduceMotion ? undefined : { animation: "scroll-dot 1.5s ease-in-out infinite" }} />
         </div>
       </div>
     </section>

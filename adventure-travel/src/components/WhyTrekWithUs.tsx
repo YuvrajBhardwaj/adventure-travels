@@ -41,7 +41,7 @@ const POINTS: { icon: LucideIcon; title: string; text: string }[] = [
 export default function WhyTrekWithUs() {
   return (
     <section className="relative bg-background py-section">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeUp>
           <div className="flex items-center gap-3">
             <span className="h-px w-10 bg-primary" aria-hidden />
@@ -49,7 +49,7 @@ export default function WhyTrekWithUs() {
               WHY TREK WITH US
             </span>
           </div>
-          <h2 className="mt-4 max-w-2xl font-heading text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-display-lg">
+          <h2 className="mt-4 max-w-2xl font-heading text-3xl font-bold leading-tight text-foreground tracking-[-0.02em] sm:text-4xl">
             Built around safety, not shortcuts
           </h2>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
@@ -60,11 +60,11 @@ export default function WhyTrekWithUs() {
         <StaggerContainer className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" staggerDelay={0.06}>
           {POINTS.map(({ icon: Icon, title, text }) => (
             <StaggerItem key={title}>
-              <div className="h-full rounded-3xl border border-foreground/10 bg-card p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+              <div className="h-full rounded-2xl border border-foreground/10 bg-card p-5 shadow-sm sm:p-6 transition-[transform,border-color,background-color] duration-200 ease-out hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0 hover:shadow-md">
                 <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                   <Icon className="h-6 w-6" aria-hidden />
                 </span>
-                <h3 className="mt-5 font-heading text-lg font-bold text-foreground">{title}</h3>
+                <h3 className="mt-5 font-heading text-lg font-semibold text-foreground">{title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted">{text}</p>
               </div>
             </StaggerItem>
@@ -74,7 +74,7 @@ export default function WhyTrekWithUs() {
         <FadeUp delay={0.1}>
           <Link
             href="/faq"
-            className="mt-8 inline-flex items-center gap-1 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+            className="mt-6 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary transition-colors duration-150 ease-out hover:text-primary/80"
           >
             Read how we handle altitude, permits and more →
           </Link>

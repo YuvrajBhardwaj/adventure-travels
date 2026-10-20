@@ -5,6 +5,8 @@ import { treks, DIFFICULTY_COLORS } from "@/data/treks";
 import { FadeUp, StaggerContainer, StaggerItem } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
 import Price from "@/components/Price";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const PERKS = [
   "ILP / permit handled by us",
@@ -16,13 +18,13 @@ export default function UnlockRestrictedUttarakhand() {
   const restricted = treks.filter((t) => t.permitTour);
 
   return (
-    <section className="relative overflow-hidden bg-[#0F172A] py-section text-white">
+    <section className="relative overflow-hidden bg-navy py-section text-white">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-24 left-1/4 h-96 w-96 rounded-full bg-emerald-500/10 blur-[120px]" />
         <div className="absolute -bottom-24 right-1/5 h-96 w-96 rounded-full bg-amber-500/10 blur-[120px]" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
           <FadeUp>
             <div className="flex items-center gap-3">
@@ -31,7 +33,7 @@ export default function UnlockRestrictedUttarakhand() {
                 ILP-RESTRICTED · BY PERMIT ONLY
               </span>
             </div>
-            <h2 className="mt-4 font-heading text-3xl font-bold leading-tight sm:text-4xl md:text-display-lg">
+            <h2 className="mt-4 font-heading text-3xl font-bold leading-tight tracking-[-0.02em] sm:text-4xl">
               Unlock Restricted Uttarakhand
             </h2>
             <p className="mt-3 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">
@@ -73,13 +75,13 @@ export default function UnlockRestrictedUttarakhand() {
             <StaggerItem key={trek.id}>
               <Link
                 href={`/treks/${trek.slug}`}
-                className="group block overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm transition-all hover:-translate-y-1 hover:border-emerald-400/40 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+                className="group block overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm transition-[transform,border-color,background-color] duration-200 ease-out hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 hover:border-emerald-400/40 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <SmartImage
                     src={trek.image}
                     alt={trek.name}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                   <span
@@ -106,12 +108,12 @@ export default function UnlockRestrictedUttarakhand() {
                       {trek.region} · {trek.days} Days ·{" "}
                       {trek.maxAltitude.toLocaleString("en-IN")} m
                     </p>
-                    <h3 className="mt-1 font-heading text-xl font-bold leading-tight">
+                    <h3 className="mt-1 font-heading text-lg font-semibold leading-tight">
                       {trek.name}
                     </h3>
                   </div>
                 </div>
-                <div className="p-5">
+                <div className="p-5 sm:p-6">
                   <p className="line-clamp-2 text-sm leading-relaxed text-white/60">
                     {trek.blurb}
                   </p>
@@ -131,7 +133,7 @@ export default function UnlockRestrictedUttarakhand() {
         </StaggerContainer>
 
         <FadeUp delay={0.1}>
-          <div className="mt-10 flex flex-col items-center gap-3 rounded-2xl border border-amber-400/20 bg-gradient-to-r from-emerald-500/10 via-transparent to-amber-500/10 p-6 text-center sm:flex-row sm:justify-between sm:text-left">
+          <div className="mt-10 flex flex-col items-center gap-3 rounded-2xl border border-amber-400/20 bg-gradient-to-r from-emerald-500/10 via-transparent to-amber-500/10 p-5 text-center sm:p-6 sm:flex-row sm:justify-between sm:text-left">
             <p className="text-sm leading-relaxed text-white/70">
               <span className="font-bold text-amber-300">Permit handled by us.</span>{" "}
               These are frontier-zone expeditions — not open treks. Limited
@@ -139,7 +141,7 @@ export default function UnlockRestrictedUttarakhand() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex flex-shrink-0 items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-[#0F172A] transition-all hover:bg-amber-300 hover:-translate-y-0.5"
+              className={cn(buttonVariants(), "shrink-0 bg-white px-6 font-bold text-navy shadow-none hover:bg-amber-300 hover:shadow-none focus-visible:ring-offset-navy")}
             >
               Request a permit
               <svg

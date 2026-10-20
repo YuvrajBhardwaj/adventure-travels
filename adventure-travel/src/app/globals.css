@@ -18,6 +18,17 @@
   --color-muted: #64748B;
   --color-surface: #F1F5F9;
 
+  /* Navy chrome (navbar, footer, dark account pages, dark heroes). Named so no
+     component hard-codes the hex. */
+  --color-navy: #0F172A;
+  --color-navy-deep: #0B1222;
+  --color-navy-hero: #0B1D33;
+
+  /* Motion easing (src/lib/motion.ts mirrors these): `ease-out` for anything
+     entering or moving into place, `ease-in-out` for leaving and cross-fades. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
   --font-heading: "Space Grotesk", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-display: "Fraunces", serif;
@@ -638,6 +649,39 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes skeleton-shimmer {
   100% {
     transform: translateX(100%);
+  }
+}
+
+/* Kit <Skeleton> (src/components/ui/skeleton.tsx). Fades in only after 150ms,
+   so data that arrives quickly never flashes a placeholder; the shimmer moves
+   with transform only, and is off for reduced motion. */
+.ui-skeleton {
+  position: relative;
+  overflow: hidden;
+  animation: skeleton-in 0.2s ease-out 150ms both;
+}
+
+.ui-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.6), transparent);
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+.dark .ui-skeleton::after {
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.07), transparent);
+}
+
+@keyframes skeleton-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-skeleton::after {
+    display: none;
   }
 }
 

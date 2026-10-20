@@ -1,6 +1,7 @@
 const trekCatalog = require("./_lib/catalog");
 const courseCatalog = require("./_lib/courseCatalog");
 const pricing = require("./_lib/pricing");
+const departures = require("./_lib/departures");
 const notify = require("./_lib/notify");
 const { getAdmin, getUserFromRequest } = require("./_lib/supabaseAdmin");
 const { logActivity } = require("./_lib/payments");
@@ -32,6 +33,9 @@ async function createTrek(db, user, body) {
   if (!pricing.isFutureStart(date)) throw new HttpError(400, "Pick a start date in the future.");
 
   const group = parseTrekGroup(body.groupSize);
+  // A listed batch must be open and have room for the whole group.
+  const full = departures.seatProblem(await departures.findDeparture(db, slug, date), departures.seatsFor(group.label));
+  if (full) throw new HttpError(409, full);
   const roomSharing = text(body.roomSharing, 40) || null;
   if (roomSharing && (!trek.roomSharing || !Object.prototype.hasOwnProperty.call(trek.roomSharing, roomSharing))) {
     throw new HttpError(400, "Choose one of the listed room options.");

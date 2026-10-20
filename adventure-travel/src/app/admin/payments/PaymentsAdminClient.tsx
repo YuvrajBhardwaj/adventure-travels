@@ -1,13 +1,16 @@
 "use client";
 
 import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
-import { MailWarning, RefreshCw, Search } from "lucide-react";
+import { MailWarning, ReceiptText, RefreshCw, Search } from "lucide-react";
 import { AdminGate } from "@/components/admin/AdminGate";
 import { LoadError } from "@/components/admin/LoadError";
-import { FIELD, KIND_LABEL, PAYMENT_STATUS_TONE, cap, dateTime } from "@/components/admin/labels";
+import { KIND_LABEL, PAYMENT_STATUS_TONE, cap, dateTime } from "@/components/admin/labels";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   listFailedNotifications,
@@ -17,7 +20,7 @@ import {
   type PaymentFilters,
   type PaymentKind,
 } from "@/lib/admin";
-import { cn, formatPaise } from "@/lib/utils";
+import { formatPaise } from "@/lib/utils";
 
 export default function PaymentsAdminClient() {
   return (
@@ -69,42 +72,42 @@ function PaymentsAdmin() {
           <label className="relative block min-w-[240px] flex-1">
             <span className="sr-only">Search payments</span>
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden />
-            <input
+            <Input
               type="search"
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Customer, trek, reference or Razorpay id"
-              className={cn(FIELD, "w-full pl-9")}
+              className="pl-9"
             />
           </label>
-          <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+          <label className={FILTER_LABEL}>
             Status
-            <select
+            <Select
               value={filters.status ?? ""}
               onChange={(e) => setFilters((f) => ({ ...f, status: (e.target.value || undefined) as AdminPayment["status"] | undefined }))}
-              className={cn(FIELD, "mt-1 block pr-8")}
+              wrapperClassName="mt-1"
             >
               <option value="">Any status</option>
               <option value="paid">Paid</option>
               <option value="created">Started, not paid</option>
               <option value="failed">Failed</option>
-            </select>
+            </Select>
           </label>
-          <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+          <label className={FILTER_LABEL}>
             Kind
-            <select
+            <Select
               value={filters.kind ?? ""}
               onChange={(e) => setFilters((f) => ({ ...f, kind: (e.target.value || undefined) as PaymentKind | undefined }))}
-              className={cn(FIELD, "mt-1 block pr-8")}
+              wrapperClassName="mt-1"
             >
               <option value="">Any kind</option>
               <option value="advance">Advance</option>
               <option value="balance">Balance</option>
               <option value="full">Full</option>
-            </select>
+            </Select>
           </label>
-          <Button variant="outline" size="sm" className="ml-auto h-10" onClick={() => void load(filters)} disabled={status === "loading"}>
-            <RefreshCw className={cn("h-4 w-4", status === "loading" && "animate-spin motion-reduce:animate-none")} aria-hidden />
+          <Button variant="outline" className="ml-auto" onClick={() => void load(filters)} loading={status === "loading"}>
+            {status !== "loading" && <RefreshCw className="h-4 w-4" aria-hidden />}
             Refresh
           </Button>
         </CardContent>
@@ -113,13 +116,11 @@ function PaymentsAdmin() {
       <Card>
         <CardContent className="p-0">
           {status === "loading" && rows.length === 0 ? (
-            <div className="space-y-3 p-5" aria-busy aria-label="Loading payments">
-              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
-            </div>
+            <PaymentsSkeleton />
           ) : status === "error" ? (
             <LoadError onRetry={() => void load(filters)} />
           ) : visible.length === 0 ? (
-            <p className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">No payments match.</p>
+            <EmptyState className="py-12" icon={<ReceiptText />} title="No payments match." />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[860px] text-left text-sm">
@@ -169,16 +170,51 @@ function PaymentsAdmin() {
   );
 }
 
+const FILTER_LABEL = "min-w-[10rem] text-xs font-medium text-slate-500 dark:text-slate-400";
+
+/** Placeholder rows shaped like the payments table: date, customer, booking + ref, kind, amount, method, status. */
+function PaymentsSkeleton() {
+  return (
+    <div aria-busy="true" className="overflow-hidden">
+      <span className="sr-only">Loading payments</span>
+      <div className="flex gap-6 border-b border-slate-200 px-4 py-3.5 dark:border-white/10">
+        {[14, 16, 26, 8, 10, 8].map((w, i) => (
+          <Skeleton key={i} className="h-3" style={{ width: `${w}%` }} />
+        ))}
+      </div>
+      <div className="divide-y divide-slate-100 dark:divide-white/5">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="flex items-start gap-6 px-4 py-3">
+            <Skeleton className="h-4 w-[14%]" />
+            <Skeleton className="h-4 w-[16%]" />
+            <div className="w-[26%] space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-3 w-1/3" />
+            </div>
+            <Skeleton className="h-5 w-[8%] rounded-full" />
+            <Skeleton className="h-4 w-[10%]" />
+            <Skeleton className="h-5 w-[8%] rounded-full" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FailedEmails() {
   const [rows, setRows] = useState<FailedNotification[] | null>(null);
   const [error, setError] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
     setError(false);
+    setRefreshing(true);
     try {
       setRows(await listFailedNotifications());
     } catch {
       setError(true);
+    } finally {
+      setRefreshing(false);
     }
   }, []);
 
@@ -189,7 +225,7 @@ function FailedEmails() {
     <Card>
       <CardHeader className="flex-row items-start justify-between gap-4">
         <div className="space-y-1.5">
-          <CardTitle className="flex items-center gap-2 text-base">
+          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
             <MailWarning className="h-4 w-4 text-amber-500" aria-hidden />
             Failed emails
           </CardTitle>
@@ -197,8 +233,8 @@ function FailedEmails() {
             Emails that couldn&apos;t be sent. The daily job retries each one up to 3 times; after that, contact the customer yourself.
           </CardDescription>
         </div>
-        <Button variant="outline" size="sm" onClick={() => void load()}>
-          <RefreshCw className="h-4 w-4" aria-hidden />
+        <Button variant="outline" size="sm" className="shrink-0" onClick={() => void load()} loading={refreshing}>
+          {!refreshing && <RefreshCw className="h-4 w-4" aria-hidden />}
           Refresh
         </Button>
       </CardHeader>
@@ -206,7 +242,11 @@ function FailedEmails() {
         {error ? (
           <p role="alert" className="text-sm text-red-600 dark:text-red-300">Couldn&apos;t load failed emails.</p>
         ) : rows === null ? (
-          <Skeleton className="h-16 w-full" />
+          <div className="space-y-2" aria-busy="true">
+            <span className="sr-only">Loading failed emails</span>
+            <Skeleton className="h-5 w-2/5 rounded-full" />
+            <Skeleton className="h-3 w-3/5" />
+          </div>
         ) : rows.length === 0 ? (
           <p className="text-sm text-slate-500 dark:text-slate-400">None. Every email went out.</p>
         ) : (

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { DURATION, EASE } from "@/lib/motion";
 
 export interface WallpaperSlide {
   src: string;
@@ -12,6 +13,13 @@ export interface WallpaperSlide {
 }
 
 const SLIDE_MS = 5500;
+/** Ambient photo crossfade (contracts/motion.md allows ~1.2s for slideshows). */
+const CROSSFADE_S = 1.2;
+/** Round control: a 44px hit area around a 32px glass circle. */
+const roundControl =
+  "group/ctl h-11 w-11 shrink-0 items-center justify-center rounded-full text-white";
+const roundControlFace =
+  "flex h-8 w-8 items-center justify-center rounded-full bg-black/35 backdrop-blur-sm transition-colors duration-150 ease-out group-hover/ctl:bg-black/55";
 
 /**
  * Full-bleed photo wallpaper that crossfades through its slides with a slow zoom,
@@ -85,7 +93,7 @@ export default function WallpaperCarousel({
           onClick={() => setIdx(i)}
           aria-label={`Show photo ${i + 1} of ${n}${s.caption ? `: ${s.caption}` : ""}`}
           aria-current={i === idx}
-          className="group flex h-8 items-center px-1"
+          className="group flex h-11 items-center justify-center rounded-full px-1 sm:min-w-6"
         >
           {i === idx ? (
             <span className="relative block h-1.5 w-6 overflow-hidden rounded-full bg-white/40">
@@ -99,7 +107,7 @@ export default function WallpaperCarousel({
               />
             </span>
           ) : (
-            <span className="block h-1.5 w-1.5 rounded-full bg-white/45 transition-colors group-hover:bg-white/80" />
+            <span className="block h-1.5 w-1.5 rounded-full bg-white/45 transition-colors duration-150 ease-out group-hover:bg-white/80" />
           )}
         </button>
       ))}
@@ -109,13 +117,15 @@ export default function WallpaperCarousel({
           type="button"
           onClick={() => setPaused((p) => !p)}
           aria-label={paused ? "Play slideshow" : "Pause slideshow"}
-          className="ml-1 flex h-8 w-8 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition-colors hover:bg-black/55"
+          className={`${roundControl} flex`}
         >
-          {paused ? (
-            <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M8 5v14l11-7z" /></svg>
-          ) : (
-            <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
-          )}
+          <span className={roundControlFace}>
+            {paused ? (
+              <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M8 5v14l11-7z" /></svg>
+            ) : (
+              <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
+            )}
+          </span>
         </button>
       )}
     </div>
@@ -125,7 +135,7 @@ export default function WallpaperCarousel({
     <section
       aria-roledescription={n > 1 ? "carousel" : undefined}
       aria-label={label}
-      className={`relative overflow-hidden bg-[#0F172A] ${className}`}
+      className={`relative overflow-hidden bg-navy ${className}`}
       onPointerEnter={(e) => e.pointerType === "mouse" && setHolding(true)}
       onPointerLeave={(e) => e.pointerType === "mouse" && setHolding(false)}
       onFocus={() => setHolding(true)}
@@ -143,13 +153,15 @@ export default function WallpaperCarousel({
       }}
     >
       {slide ? (
+        // initial={false}: the first slide renders at full opacity in the static HTML (no fade-in on
+        // first paint); only later slides crossfade in.
         <AnimatePresence initial={false}>
           <motion.div
             key={idx}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: reduceMotion ? 0.2 : 1.2, ease: "easeInOut" }}
+            transition={{ duration: reduceMotion ? DURATION.base : CROSSFADE_S, ease: EASE.inOut }}
             className="absolute inset-0"
           >
             {isTall && (
@@ -168,7 +180,8 @@ export default function WallpaperCarousel({
               onLoad={(e) => measure(slide.src, e.currentTarget)}
               initial={reduceMotion ? false : { scale: 1.08 }}
               animate={{ scale: 1 }}
-              transition={{ duration: SLIDE_MS / 1000 + 1.2, ease: "linear" }}
+              // Ken Burns: an ambient constant-speed zoom, so linear on purpose (contracts/motion.md exception).
+              transition={{ duration: SLIDE_MS / 1000 + CROSSFADE_S, ease: "linear" }}
               className={`relative h-full w-full object-cover ${isTall ? "sm:object-contain" : ""}`}
             />
           </motion.div>
@@ -190,7 +203,7 @@ export default function WallpaperCarousel({
               (slide.href ? (
                 <Link
                   href={slide.href}
-                  className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-black/35 px-3 py-1.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-black/55"
+                  className="relative inline-flex max-w-full items-center gap-1.5 rounded-full bg-black/35 px-3 py-1.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors duration-150 ease-out before:absolute before:-inset-y-1.5 before:inset-x-0 hover:bg-black/55"
                 >
                   <PinIcon />
                   <span className="truncate">{slide.caption}</span>
@@ -225,11 +238,13 @@ function ArrowButton({ dir, onClick }: { dir: "prev" | "next"; onClick: () => vo
       type="button"
       onClick={onClick}
       aria-label={dir === "prev" ? "Previous photo" : "Next photo"}
-      className="mx-1 hidden h-8 w-8 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition-colors hover:bg-black/55 sm:flex"
+      className={`${roundControl} hidden sm:flex`}
     >
-      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
-        <path strokeLinecap="round" strokeLinejoin="round" d={dir === "prev" ? "M15.75 19.5L8.25 12l7.5-7.5" : "M8.25 4.5l7.5 7.5-7.5 7.5"} />
-      </svg>
+      <span className={roundControlFace}>
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
+          <path strokeLinecap="round" strokeLinejoin="round" d={dir === "prev" ? "M15.75 19.5L8.25 12l7.5-7.5" : "M8.25 4.5l7.5 7.5-7.5 7.5"} />
+        </svg>
+      </span>
     </button>
   );
 }

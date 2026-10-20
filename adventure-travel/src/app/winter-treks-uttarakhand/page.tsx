@@ -37,8 +37,8 @@ export default function WinterTreksPage() {
         </>
       }
     >
-      <section aria-labelledby="more" className="rounded-2xl bg-slate-50 p-6 sm:p-8">
-        <h2 id="more" className="font-heading text-2xl font-bold text-slate-900">More winter ideas</h2>
+      <section aria-labelledby="more" className="rounded-2xl bg-slate-50 p-5 sm:p-6">
+        <h2 id="more" className="font-heading text-2xl font-bold tracking-[-0.02em] text-slate-900 sm:text-3xl">More winter ideas</h2>
         <ul className="mt-3 space-y-2 text-slate-600">
           <li>
             Learn to ski or snowboard: <Link href="/courses" className="font-semibold text-emerald-700 hover:underline">our courses in Auli</Link>.

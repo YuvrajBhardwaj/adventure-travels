@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { Trek } from "@/data/treks";
 import Price from "@/components/Price";
+import { buttonVariants } from "@/components/ui/button";
 
 /* ── The offer. Change a number here and every trek page updates. ─────────────────
    These are commitments to customers — only publish numbers the business will honour. */
@@ -35,7 +36,7 @@ export default function ScholarshipsTab({ trek }: { trek: Trek }) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-foreground mb-2">Scholarships &amp; Waivers</h2>
+      <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground mb-2">Scholarships &amp; Waivers</h2>
       <p className="text-muted mb-8 max-w-2xl">
         Two simple ways to pay less on the {trek.name}: a scholarship for children, and a waiver when you come as a
         group.
@@ -43,11 +44,11 @@ export default function ScholarshipsTab({ trek }: { trek: Trek }) {
 
       <div className="grid gap-5 md:grid-cols-2 mb-10">
         {/* Children */}
-        <section className="rounded-2xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 p-6">
+        <section className="rounded-2xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 p-5 sm:p-6">
           <span className="inline-block rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white">
             {CHILD_OFF_PCT}% off
           </span>
-          <h3 className="mt-3 text-lg font-bold text-foreground">Scholarship for children</h3>
+          <h3 className="mt-3 text-lg font-semibold text-foreground">Scholarship for children</h3>
           {childEligible ? (
             <>
               <p className="mt-2 text-sm leading-relaxed text-foreground">
@@ -71,11 +72,11 @@ export default function ScholarshipsTab({ trek }: { trek: Trek }) {
         </section>
 
         {/* Groups */}
-        <section className="rounded-2xl border border-sky-200 dark:border-sky-500/30 bg-sky-50 dark:bg-sky-500/10 p-6">
+        <section className="rounded-2xl border border-sky-200 dark:border-sky-500/30 bg-sky-50 dark:bg-sky-500/10 p-5 sm:p-6">
           <span className="inline-block rounded-full bg-sky-600 px-3 py-1 text-xs font-bold text-white">
             {GROUP_OFF_PCT}% off for 1 in every {GROUP_EVERY}
           </span>
-          <h3 className="mt-3 text-lg font-bold text-foreground">Waiver for groups</h3>
+          <h3 className="mt-3 text-lg font-semibold text-foreground">Waiver for groups</h3>
           <p className="mt-2 text-sm leading-relaxed text-foreground">
             Book together with {GROUP_EVERY} adults (age {CHILD_MAX_AGE + 1} and above) and one person&apos;s trek fee
             drops by {GROUP_OFF_PCT}%.
@@ -100,7 +101,7 @@ export default function ScholarshipsTab({ trek }: { trek: Trek }) {
             text: `Within ${CLAIM_WINDOW_DAYS} days of your trek date, email us or message us on WhatsApp with your booking name. We send back the amount you saved.`,
           },
         ].map((step) => (
-          <li key={step.n} className="flex gap-3 rounded-2xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-card p-4">
+          <li key={step.n} className="flex gap-3 rounded-2xl border border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-card p-4">
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
               {step.n}
             </span>
@@ -112,17 +113,12 @@ export default function ScholarshipsTab({ trek }: { trek: Trek }) {
         Requests made after {CLAIM_WINDOW_DAYS} days from your trek date can&apos;t be accepted.
       </p>
       <div className="flex flex-wrap gap-3 mb-12">
-        <a
-          href={claimLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
-        >
+        <a href={claimLink} target="_blank" rel="noopener noreferrer" className={buttonVariants()}>
           Claim on WhatsApp
         </a>
         <a
           href={`mailto:${SUPPORT_EMAIL}`}
-          className="inline-flex items-center rounded-xl border border-gray-300 dark:border-white/15 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-emerald-400"
+          className={buttonVariants({ variant: "outline" })}
         >
           {SUPPORT_EMAIL}
         </a>
@@ -131,7 +127,7 @@ export default function ScholarshipsTab({ trek }: { trek: Trek }) {
       <h3 className="text-sm font-bold uppercase tracking-wider text-muted mb-3">More ways we keep it easy</h3>
       <ul className="grid gap-4 sm:grid-cols-3">
         {OTHER_PERKS.map((item) => (
-          <li key={item.title} className="rounded-2xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-card p-5">
+          <li key={item.title} className="rounded-2xl border border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-card p-5">
             <p className="font-semibold text-foreground">{item.title}</p>
             <p className="mt-1.5 text-sm leading-relaxed text-muted">{item.detail}</p>
           </li>

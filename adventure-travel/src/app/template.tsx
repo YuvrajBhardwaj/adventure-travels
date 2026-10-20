@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { transition } from "@/lib/motion";
 
 const noSubscribe = () => () => {};
 
@@ -29,7 +30,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
       key={pathname}
       initial={hydrated && !reduceMotion ? { opacity: 0 } : false}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={transition("slow")}
     >
       {children}
     </motion.div>

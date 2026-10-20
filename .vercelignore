@@ -1,0 +1,8 @@
+/*
+!adventure-travel
+adventure-travel/assets
+adventure-travel/out
+/adventure-travel/.env*
+/adventure-travel/.next
+/adventure-travel/node_modules
+/adventure-travel/.vercel

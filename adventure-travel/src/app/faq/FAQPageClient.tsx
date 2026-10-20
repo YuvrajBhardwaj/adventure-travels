@@ -1,12 +1,17 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo, type ReactNode } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   FadeUp,
   StaggerContainer,
   StaggerItem,
 } from "@/components/MotionWrapper";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { EmptyState } from "@/components/ui/empty-state";
+import { transition } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 // Inline SVG Icons
 function SearchIcon({ className = "w-5 h-5" }: { className?: string }) {
@@ -510,29 +515,53 @@ const FAQ_CATEGORIES: FAQCategory[] = [
   },
 ];
 
+/**
+ * Accordion body that stays mounted (answers are in the static HTML for search
+ * engines): `hidden` once closed, measured height while it moves.
+ */
+function Collapse({ open, id, children }: { open: boolean; id: string; children: ReactNode }) {
+  const reduce = useReducedMotion();
+  const [settledClosed, setSettledClosed] = useState(!open);
+  return (
+    <motion.div
+      id={id}
+      initial={false}
+      animate={{ height: open ? "auto" : 0 }}
+      transition={reduce ? { duration: 0 } : transition("base")}
+      onAnimationComplete={() => setSettledClosed(!open)}
+      hidden={!open && settledClosed}
+      className="overflow-hidden"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 export default function FAQPage() {
+  const reduce = useReducedMotion();
   const [activeTab, setActiveTab] = useState("booking");
   const [searchQuery, setSearchQuery] = useState("");
   const [openIndex, setOpenIndex] = useState<string | null>("booking-0");
 
-  const filteredCategories = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return FAQ_CATEGORIES.map((cat) => ({
-        ...cat,
-        faqs: cat.id === activeTab ? cat.faqs : [],
-      })).filter((cat) => cat.faqs.length > 0);
-    }
-
+  // Keys of the questions matching the search, or null when not searching.
+  // Every category and answer stays mounted (static HTML); filters toggle `hidden`.
+  const matches = useMemo(() => {
+    if (!searchQuery.trim()) return null;
     const query = searchQuery.toLowerCase();
-    return FAQ_CATEGORIES.map((cat) => ({
-      ...cat,
-      faqs: cat.faqs.filter(
-        (faq) =>
-          faq.q.toLowerCase().includes(query) ||
-          faq.a.toLowerCase().includes(query)
-      ),
-    })).filter((cat) => cat.faqs.length > 0);
-  }, [searchQuery, activeTab]);
+    const keys = new Set<string>();
+    FAQ_CATEGORIES.forEach((cat) =>
+      cat.faqs.forEach((faq, idx) => {
+        if (faq.q.toLowerCase().includes(query) || faq.a.toLowerCase().includes(query)) keys.add(`${cat.id}-${idx}`);
+      })
+    );
+    return keys;
+  }, [searchQuery]);
+  const noResults = matches !== null && matches.size === 0;
+
+  const ctaSecondary = cn(
+    buttonVariants({ variant: "outline", size: "lg" }),
+    "w-full gap-2.5 border-white/25 bg-white/15 px-7 text-white backdrop-blur-sm hover:bg-white/25 focus-visible:ring-white focus-visible:ring-offset-emerald-600 sm:w-auto"
+  );
 
   return (
     <div className="min-h-screen bg-white dark:bg-background">
@@ -543,70 +572,61 @@ export default function FAQPage() {
           alt="Himalayan landscape"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/75 via-[#0F172A]/50 to-[#0F172A]/85" />
+        <div className="absolute inset-0 bg-gradient-to-b from-navy/75 via-navy/50 to-navy/85" />
         <div className="relative z-10 text-center px-4 sm:px-6 max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6"
-          >
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6">
             <span className="text-xs sm:text-sm font-medium text-white/95">
               Knowledge Base &amp; Help Center
             </span>
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight"
-          >
+          </div>
+          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.02em] text-white mb-4 leading-tight">
             Frequently Asked Questions
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-white/80 text-lg max-w-2xl mx-auto leading-relaxed"
-          >
+          </h1>
+          <p className="text-white/80 text-lg max-w-2xl mx-auto leading-relaxed">
             Everything you need to know about trekking in Uttarakhand and Himachal
             Pradesh — from booking and fitness to gear, safety, and trail experiences.
-          </motion.p>
+          </p>
         </div>
       </section>
 
       {/* ─── Search & Navigation Bar ─── */}
-      <section className="sticky top-20 z-30 bg-white/90 dark:bg-card/90 backdrop-blur-md border-b border-gray-100 dark:border-white/10 py-3 sm:py-4 px-4 sm:px-6 lg:px-8 shadow-sm">
+      <section className="sticky top-20 z-30 bg-white/90 dark:bg-card/90 backdrop-blur-md border-b border-slate-100 dark:border-white/10 py-3 sm:py-4 px-4 sm:px-6 lg:px-8 shadow-sm">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
           {/* Search Bar */}
           <div className="relative w-full sm:w-72 flex-shrink-0">
-            <SearchIcon className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted" />
-            <input
+            <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+            <Input
               type="text"
               placeholder="Search your question..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-surface dark:bg-background border border-gray-200 dark:border-white/10 rounded-xl sm:rounded-2xl pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm text-foreground placeholder-muted outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
+              className="pl-10"
             />
           </div>
 
           {/* Category Tabs (scrollable on mobile) */}
-          <div className="w-full sm:w-auto overflow-x-auto hide-scrollbar flex items-center gap-1.5 sm:gap-2 py-0.5">
-            {FAQ_CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => {
-                  setActiveTab(cat.id);
-                  setSearchQuery("");
-                }}
-                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl font-heading text-xs font-semibold whitespace-nowrap transition-all ${
-                  activeTab === cat.id && !searchQuery
-                    ? "bg-primary text-white shadow-md shadow-primary/25"
-                    : "bg-surface dark:bg-white/5 text-muted hover:text-foreground hover:bg-gray-200 dark:hover:bg-white/10"
-                }`}
-              >
-                {cat.title}
-              </button>
-            ))}
+          <div className="w-full sm:w-auto overflow-x-auto hide-scrollbar flex items-center gap-2 p-1 -m-1">
+            {FAQ_CATEGORIES.map((cat) => {
+              const active = activeTab === cat.id && !searchQuery;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    setActiveTab(cat.id);
+                    setSearchQuery("");
+                  }}
+                  aria-pressed={active}
+                  className={cn(
+                    "min-h-11 shrink-0 rounded-full px-4 font-heading text-xs font-semibold whitespace-nowrap transition-colors duration-150 ease-out motion-reduce:transition-none",
+                    active
+                      ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/25"
+                      : "bg-surface dark:bg-white/5 text-muted hover:text-foreground hover:bg-slate-200 dark:hover:bg-white/10"
+                  )}
+                >
+                  {cat.title}
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -614,119 +634,114 @@ export default function FAQPage() {
       {/* ─── FAQ Content Section ─── */}
       <section className="py-section-sm px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          {filteredCategories.length === 0 ? (
+          {noResults && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center py-16 sm:py-20"
+              transition={transition(reduce ? "fast" : "base")}
             >
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
-                <SearchIcon className="w-8 h-8" />
-              </div>
-              <h3 className="font-heading text-2xl font-bold text-foreground mb-2">
-                No matching questions found
-              </h3>
-              <p className="text-muted max-w-md mx-auto mb-6">
-                We couldn&apos;t find anything matching &ldquo;{searchQuery}&rdquo;. Try another search term or reach out to our trek experts.
-              </p>
-              <button
-                onClick={() => setSearchQuery("")}
-                className="px-6 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors"
-              >
-                Clear Search
-              </button>
+              <EmptyState
+                className="py-16 sm:py-20"
+                icon={<SearchIcon />}
+                title="No matching questions found"
+                description={
+                  <>We couldn&apos;t find anything matching &ldquo;{searchQuery}&rdquo;. Try another search term or reach out to our trek experts.</>
+                }
+                action={<Button onClick={() => setSearchQuery("")}>Clear Search</Button>}
+              />
             </motion.div>
-          ) : (
-            <div className="space-y-12">
-              {filteredCategories.map((cat) => (
-                <div key={cat.id} className="space-y-6">
-                  {searchQuery && (
-                    <div className="border-b border-gray-100 dark:border-white/10 pb-2">
+          )}
+
+          <div className="flex flex-col gap-12" hidden={noResults}>
+            {FAQ_CATEGORIES.map((cat) => {
+              const visible = matches
+                ? cat.faqs.some((_, idx) => matches.has(`${cat.id}-${idx}`))
+                : cat.id === activeTab;
+
+              return (
+                <div key={cat.id} className="flex flex-col gap-6" hidden={!visible}>
+                  {searchQuery && visible && (
+                    <div className="border-b border-slate-100 dark:border-white/10 pb-2">
                       <h3 className="font-heading text-xl font-bold text-foreground">
                         {cat.title}
                       </h3>
                     </div>
                   )}
 
-                  <StaggerContainer className="space-y-4" staggerDelay={0.05}>
+                  <StaggerContainer className="flex flex-col gap-4" staggerDelay={0.05}>
                     {cat.faqs.map((faq, idx) => {
                       const itemKey = `${cat.id}-${idx}`;
                       const isOpen = openIndex === itemKey;
+                      const panelId = `faq-panel-${itemKey}`;
 
                       return (
-                        <StaggerItem key={itemKey}>
-                          <motion.div
-                            whileHover={{ x: 2 }}
-                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                            className={`rounded-2xl overflow-hidden transition-colors duration-200 border ${
-                              isOpen
-                                ? "bg-primary/5 border-primary/20 shadow-sm"
-                                : "bg-white dark:bg-card border-gray-100 dark:border-white/10 hover:border-gray-200 dark:hover:border-white/20"
-                            }`}
-                          >
-                            <button
-                              onClick={() => setOpenIndex(isOpen ? null : itemKey)}
-                              className="w-full flex items-center justify-between p-6 text-left"
-                              aria-expanded={isOpen}
-                            >
-                              <span className="font-heading text-base md:text-lg font-semibold text-foreground pr-4">
-                                {faq.q}
-                              </span>
-                              <motion.div
-                                animate={{ rotate: isOpen ? 45 : 0 }}
-                                transition={{ duration: 0.2 }}
-                                className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center transition-colors ${
-                                  isOpen ? "bg-primary text-white" : "bg-surface text-foreground"
-                                }`}
-                              >
-                                <ChevronDownIcon className="h-4 w-4" />
-                              </motion.div>
-                            </button>
-
-                            <AnimatePresence>
-                              {isOpen && (
-                                <motion.div
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: "auto", opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  transition={{
-                                    duration: 0.3,
-                                    ease: [0.25, 0.1, 0.25, 1],
-                                  }}
-                                >
-                                  <div className="px-6 pb-6 pt-2 border-t border-gray-100 dark:border-white/10 space-y-4">
-                                    <p className="text-muted text-base leading-relaxed">
-                                      {faq.a}
-                                    </p>
-
-                                    {faq.related && faq.related.length > 0 && (
-                                      <div className="pt-3 border-t border-gray-100 dark:border-white/10 flex flex-wrap items-center gap-2">
-                                        <span className="text-xs font-semibold text-foreground/70 uppercase tracking-wider">
-                                          Related:
-                                        </span>
-                                        {faq.related.map((rel, rIdx) => (
-                                          <span
-                                            key={rIdx}
-                                            className="text-xs bg-surface dark:bg-white/5 text-primary hover:bg-primary/10 px-3 py-1 rounded-full cursor-pointer transition-colors font-medium"
-                                          >
-                                            {rel}
-                                          </span>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </div>
-                                </motion.div>
+                        <div key={itemKey} hidden={matches ? !matches.has(itemKey) : false}>
+                          <StaggerItem>
+                            <div
+                              className={cn(
+                                "rounded-2xl border transition-colors duration-200 ease-out motion-reduce:transition-none",
+                                isOpen
+                                  ? "bg-primary/5 border-primary/20 shadow-sm"
+                                  : "bg-white dark:bg-card border-slate-200/70 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
                               )}
-                            </AnimatePresence>
-                          </motion.div>
-                        </StaggerItem>
+                            >
+                              <button
+                                onClick={() => setOpenIndex(isOpen ? null : itemKey)}
+                                className="w-full min-h-11 flex items-center justify-between gap-4 rounded-2xl p-5 sm:p-6 text-left"
+                                aria-expanded={isOpen}
+                                aria-controls={panelId}
+                              >
+                                <span className="font-heading text-base md:text-lg font-semibold text-foreground">
+                                  {faq.q}
+                                </span>
+                                <span
+                                  className={cn(
+                                    "flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center transition-colors duration-150 ease-out",
+                                    isOpen ? "bg-primary text-white" : "bg-surface text-foreground"
+                                  )}
+                                >
+                                  <ChevronDownIcon
+                                    className={cn(
+                                      "h-4 w-4 transition-transform duration-200 ease-out motion-reduce:transition-none",
+                                      isOpen && "rotate-180"
+                                    )}
+                                  />
+                                </span>
+                              </button>
+
+                              <Collapse open={isOpen} id={panelId}>
+                                <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-slate-100 dark:border-white/10 space-y-4">
+                                  <p className="text-muted text-base leading-relaxed">
+                                    {faq.a}
+                                  </p>
+
+                                  {faq.related && faq.related.length > 0 && (
+                                    <div className="pt-3 border-t border-slate-100 dark:border-white/10 flex flex-wrap items-center gap-2">
+                                      <span className="text-xs font-semibold text-foreground/70 uppercase tracking-wider">
+                                        Related:
+                                      </span>
+                                      {faq.related.map((rel, rIdx) => (
+                                        <span
+                                          key={rIdx}
+                                          className="text-xs bg-surface dark:bg-white/5 text-emerald-700 px-3 py-1 rounded-full font-medium"
+                                        >
+                                          {rel}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </Collapse>
+                            </div>
+                          </StaggerItem>
+                        </div>
                       );
                     })}
                   </StaggerContainer>
                 </div>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -734,7 +749,7 @@ export default function FAQPage() {
       <section className="py-section-sm px-4 sm:px-6 lg:px-8 bg-surface dark:bg-background">
         <div className="max-w-4xl mx-auto">
           <FadeUp>
-            <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-primary via-emerald-600 to-emerald-700 p-8 sm:p-10 md:p-14 text-center">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-emerald-600 to-emerald-700 px-5 py-10 sm:p-10 md:p-14 text-center">
               <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2" />
               <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/5 rounded-full translate-x-1/3 translate-y-1/3" />
 
@@ -742,33 +757,30 @@ export default function FAQPage() {
                 <div className="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center mx-auto mb-6 text-white">
                   <MessageCircleIcon className="w-8 h-8" />
                 </div>
-                <h2 className="font-heading text-3xl md:text-4xl font-bold text-white mb-3">
+                <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-white mb-3">
                   Still have questions? Talk to our Trek Experts
                 </h2>
                 <p className="text-white/80 text-lg max-w-xl mx-auto mb-8">
                   Whether you need help choosing between Uttarakhand snow treks or Himachal alpine passes, we&apos;re here to guide you.
                 </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center justify-center gap-3 sm:gap-4">
                   <a
                     href="https://wa.me/917817912062"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2.5 bg-white text-emerald-700 font-semibold px-7 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-lg"
+                    className={cn(
+                      buttonVariants({ size: "lg" }),
+                      "w-full gap-2.5 bg-white px-7 text-emerald-700 shadow-lg hover:bg-white/90 focus-visible:ring-white focus-visible:ring-offset-emerald-600 sm:w-auto"
+                    )}
                   >
                     <MessageCircleIcon className="w-5 h-5" />
                     WhatsApp Support
                   </a>
-                  <a
-                    href="tel:+917817912062"
-                    className="inline-flex items-center gap-2.5 bg-white/15 backdrop-blur-sm text-white font-semibold px-7 py-3.5 rounded-xl border border-white/25 hover:bg-white/25 transition-colors"
-                  >
+                  <a href="tel:+917817912062" className={ctaSecondary}>
                     <PhoneIcon className="w-5 h-5" />
                     Call Us
                   </a>
-                  <a
-                    href="mailto:himalayanarcadventure@gmail.com"
-                    className="inline-flex items-center gap-2.5 bg-white/15 backdrop-blur-sm text-white font-semibold px-7 py-3.5 rounded-xl border border-white/25 hover:bg-white/25 transition-colors"
-                  >
+                  <a href="mailto:himalayanarcadventure@gmail.com" className={ctaSecondary}>
                     <MailIcon className="w-5 h-5" />
                     Email Support
                   </a>

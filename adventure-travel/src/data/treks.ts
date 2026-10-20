@@ -62,6 +62,21 @@ export function slugify(str: string): string {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+/**
+ * Our most popular routes, in order: Kuari Pass first, then Pangarchula. The home page,
+ * the footer and the treks list's "Sort by Popularity" all lead with these.
+ */
+export const POPULAR_TREK_SLUGS = ["kuari-pass", "pangarchula-peak", "dronagiri-base-camp", "valley-of-flowers", "panpatia-col", "kedarkantha"];
+
+/** `list` with the popular treks first, in that order; the rest keep their order. */
+export function byPopularity(list: Trek[] = treks): Trek[] {
+  const rank = (t: Trek) => {
+    const i = POPULAR_TREK_SLUGS.indexOf(t.slug);
+    return i < 0 ? POPULAR_TREK_SLUGS.length : i;
+  };
+  return [...list].sort((a, b) => rank(a) - rank(b));
+}
+
 export const REGIONS = [
   "All Regions",
   "Uttarakhand",
@@ -247,7 +262,7 @@ export const treks: Trek[] = [
     rating: 4.7,
     reviewCount: 298,
     blurb: "Conquer the challenging Pangarchula Peak at 4,700m for breathtaking 360° views of the Himalayas.",
-    bestSeason: "Dec-March (Snow Trek)",
+    bestSeason: "Mar–May (snow summit) & Oct–Nov",
     days: 6,
     maxAltitude: 4700,
     elevationProfile: [1875, 3390, 4700, 3350, 1875, 340],
@@ -276,7 +291,7 @@ export const treks: Trek[] = [
     rating: 4.8,
     reviewCount: 341,
     blurb: "Follow the historic trail of Lord Curzon to one of the most spectacular viewpoints in the Himalayas.",
-    bestSeason: "Oct–Feb",
+    bestSeason: "Sep–Jun (snow Dec–Mar)",
     days: 5,
     maxAltitude: 3815,
     elevationProfile: [1875, 3357, 3815, 1875, 340],

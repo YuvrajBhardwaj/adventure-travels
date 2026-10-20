@@ -13,7 +13,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { BackendUnavailableError, createTrekBooking } from "@/lib/auth";
 import WhatsAppFallback from "@/components/WhatsAppFallback";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
-import { getDepartures, type Departure, type Availability, type MonthGroup } from "./trekContent";
+import { Flower2, Leaf, Mountain, Snowflake, Sprout, Sun } from "lucide-react";
+import { useDepartures, type DeparturesState } from "./useDepartures";
+import {
+  batchLabel, datesBadge, groupByMonth, isBookable, seasonStrip, seatLabel, seatStatus,
+  type Departure, type SeatStatus,
+} from "@/lib/departures";
+import { MONTHS } from "@/lib/season";
+import { MONTH_HIGHLIGHTS } from "@/data/trekSeasons";
 import { getTrekPackage } from "@/data/trekPackage";
 import ScholarshipsTab from "./ScholarshipsTab";
 import { printItinerary } from "./printItinerary";
@@ -21,19 +28,28 @@ import NoPhoto from "@/components/NoPhoto";
 import WallpaperCarousel, { type WallpaperSlide } from "@/components/WallpaperCarousel";
 import ScrollProgressRing from "@/components/ScrollProgressRing";
 import Price, { PriceNote } from "@/components/Price";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input as TextInput } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { DURATION, EASE, transition } from "@/lib/motion";
+// The site's one difficulty palette (also used by QuickInfoModal and the trek cards).
+import { DIFFICULTY_COLORS } from "@/data/treks";
 
-const DIFFICULTY_COLORS: Record<string, string> = {
-  Easy: "#22c55e",
-  Moderate: "#f59e0b",
-  Challenging: "#f97316",
-  Strenuous: "#ef4444",
+const SEAT_STYLE: Record<SeatStatus, { dot: string; text: string; legend: string }> = {
+  available: { dot: "bg-emerald-600", text: "text-emerald-700", legend: "Available" },
+  few: { dot: "bg-amber-500", text: "text-amber-700", legend: "Few seats left" },
+  full: { dot: "bg-slate-400", text: "text-slate-500", legend: "Full (join the waitlist)" },
+  closed: { dot: "bg-slate-300", text: "text-slate-400", legend: "Closed" },
 };
 
-const AVAIL: Record<Availability, { color: string; label: string }> = {
-  available: { color: "#16A34A", label: "Available" },
-  few: { color: "#D97706", label: "Few Seats Left" },
-  sold: { color: "#DC2626", label: "Sold Out" },
-};
+const FULL_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const WHATSAPP = "https://wa.me/917817912062";
 
 const TABS = ["Overview", "Dates", "Itinerary", "T&C", "Scholarships", "Photo Gallery", "What's Included", "Packing List", "Make Reservation"] as const;
 type Tab = (typeof TABS)[number];
@@ -203,7 +219,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
   });
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  const departures = useMemo(() => getDepartures(trek), [trek]);
+  const dates = useDepartures(trek.slug);
   const heroSlides = useMemo(() => getHeroSlides(trek), [trek]);
 
   const goToTab = (tab: Tab) => {
@@ -289,8 +305,8 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
   return (
     <div className="min-h-screen bg-white dark:bg-background">
       {/* Breadcrumb */}
-      <div className="bg-gray-50 dark:bg-surface pt-20">
-        <div className="max-w-7xl mx-auto px-6 py-3">
+      <div className="bg-slate-50 dark:bg-surface pt-20">
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
           <nav className="flex items-center gap-2 text-sm text-muted" aria-label="Breadcrumb">
             <Link href="/" className="hover:text-emerald-600 transition-colors">Home</Link>
             <span aria-hidden>/</span>
@@ -314,9 +330,10 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
         <div className="absolute top-6 right-6 flex items-center gap-3">
           {shareMsg && (
             <motion.span
-              initial={{ opacity: 0, y: -6 }}
+              initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-gray-800 shadow"
+              transition={transition("base")}
+              className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-800 shadow-sm"
               role="status"
             >
               {shareMsg}
@@ -326,16 +343,16 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
             onClick={() => setWished((w) => !w)}
             aria-pressed={wished}
             aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
-            className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+            className="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors duration-150 ease-out"
           >
-            <svg className={`w-5 h-5 transition-transform ${wished ? "scale-110 text-red-400" : ""}`} fill={wished ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+            <svg className={`w-5 h-5 transition-transform duration-150 ease-out motion-reduce:transition-none ${wished ? "scale-110 text-red-400" : ""}`} fill={wished ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
             </svg>
           </button>
           <button
             onClick={handleShare}
             aria-label="Share this trek"
-            className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+            className="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors duration-150 ease-out"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -380,8 +397,8 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
       </WallpaperCarousel>
 
       {/* Trek Statistics Cards */}
-      <section className="bg-white dark:bg-background border-b border-gray-100 dark:border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-5">
+      <section className="bg-white dark:bg-background border-b border-slate-100 dark:border-white/10">
+        <div className="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <StatCard icon="clock" label="Duration" value={`${trek.days} Days`} />
             <StatCard icon="mountain" label="Max Elevation" value={`${trek.maxAltitude}m`} sub={`${Math.round(trek.maxAltitude * 3.28084)} ft`} />
@@ -392,9 +409,9 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
       </section>
 
       {/* Main Content + Sticky Sidebar */}
-      <div className="max-w-7xl mx-auto px-6 pt-8 pb-28 lg:pb-8">
+      <div className="max-w-7xl mx-auto px-4 pt-8 pb-28 sm:px-6 lg:px-8 lg:pb-16">
         {/* Full-width sticky tab bar — sticks against the whole page, stays visible past the Trek Cost card */}
-        <div className="sticky top-16 z-30 -mx-6 mb-8 bg-white/95 dark:bg-background/95 backdrop-blur-md border-b border-gray-200 dark:border-white/10 sm:mx-0 sm:rounded-2xl sm:rounded-b-none sm:border-x sm:border-t sm:rounded-t-2xl">
+        <div className="sticky top-16 z-30 -mx-4 mb-8 bg-white/95 dark:bg-background/95 backdrop-blur-md border-b border-slate-200 dark:border-white/10 sm:mx-0 sm:rounded-t-2xl sm:border-x sm:border-t">
           <div className="overflow-x-auto">
             <div role="tablist" aria-label="Trek details" className="flex min-w-max px-2">
               {TABS.map((tab, index) => (
@@ -410,8 +427,8 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
                   tabIndex={activeTab === tab ? 0 : -1}
                   onClick={() => goToTab(tab)}
                   onKeyDown={(e) => onTabKeyDown(e, index)}
-                  className={`relative px-3.5 py-3.5 text-xs sm:px-5 sm:text-sm font-semibold whitespace-nowrap transition-colors ${
-                    activeTab === tab ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500 hover:text-slate-800 dark:text-gray-400 dark:hover:text-gray-200"
+                  className={`relative min-h-11 px-3.5 py-3.5 text-xs sm:px-5 sm:text-sm font-semibold whitespace-nowrap transition-colors duration-150 ease-out ${
+                    activeTab === tab ? "text-emerald-700 dark:text-emerald-400" : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
                   }`}
                 >
                   {tab}
@@ -421,7 +438,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
                     ) : (
                       <motion.span
                         layoutId="trek-tab-underline"
-                        transition={{ type: "spring", damping: 32, stiffness: 350 }}
+                        transition={transition("base")}
                         className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-emerald-600 dark:bg-emerald-400"
                       />
                     ))}
@@ -430,8 +447,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
             </div>
           </div>
           {/* Mobile scroll hint */}
-          <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-gradient-to-l from-white/95 via-white/70 to-transparent pl-6 pr-3 py-2 rounded-l-xl md:hidden dark:from-background/95 dark:via-background/70">
-            <span className="text-[11px] font-medium text-emerald-600">Scroll</span>
+          <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 flex items-center bg-gradient-to-l from-white/95 via-white/70 to-transparent pl-2 pr-1 py-2 rounded-l-xl md:hidden dark:from-background/95 dark:via-background/70">
             <svg className="h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
             </svg>
@@ -447,8 +463,17 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
               {TABS.map((tab, index) => (
                 <TabPanel key={tab} index={index} active={activeTab === tab} reduceMotion={!!shouldReduceMotion}>
                   {tab === "Overview" && <OverviewTab trek={trek} />}
-                  {tab === "Dates" && <DatesTab departures={departures} onRegister={registerForDate} />}
-                  {tab === "Itinerary" && <ItineraryTab trek={trek} />}
+                  {tab === "Dates" && <DatesTab trek={trek} dates={dates} onRegister={registerForDate} />}
+                  {tab === "Itinerary" && (
+                    <ItineraryTab
+                      key={trek.slug}
+                      trek={trek}
+                      onChoosePackage={(sharing) => {
+                        if (sharing) setBookingForm((form) => ({ ...form, sharing }));
+                        goToTab("Make Reservation");
+                      }}
+                    />
+                  )}
                   {tab === "T&C" && <TermsConditions />}
                   {tab === "Photo Gallery" && <GalleryTab trek={trek} />}
                   {tab === "Scholarships" && <ScholarshipsTab trek={trek} />}
@@ -457,6 +482,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
                   {tab === "Make Reservation" && (
                     <ReservationTab
                       trek={trek}
+                      dates={dates}
                       form={bookingForm}
                       setForm={setBookingForm}
                       onSubmit={handleBookingSubmit}
@@ -480,15 +506,15 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
               {/* Booking Card */}
               <BookingCard
                 trek={trek}
-                departures={departures}
+                dates={dates}
                 onViewDates={() => goToTab("Dates")}
                 onContact={() => setShowContact(true)}
                 onNav={(tab) => goToTab(tab)}
               />
 
               {/* Elevation Profile Mini */}
-              <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-white/10 p-5">
-                <h4 className="font-semibold text-foreground mb-3 text-sm">Elevation Profile</h4>
+              <div className="bg-white dark:bg-card rounded-2xl border border-slate-200 dark:border-white/10 p-5 sm:p-6">
+                <h4 className="text-lg font-semibold text-foreground mb-3">Elevation Profile</h4>
                 <MiniElevationChart profile={trek.elevationProfile} itinerary={trek.itinerary} />
               </div>
             </div>
@@ -498,7 +524,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
 
       {/* Fixed mobile details band */}
       <div
-        className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-background/95 backdrop-blur border-t border-gray-200 dark:border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
+        className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-background/95 backdrop-blur border-t border-slate-200 dark:border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="flex items-center gap-3 px-4 py-3">
@@ -506,18 +532,16 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
             <div className="text-[11px] leading-none text-muted mb-0.5">From</div>
             <div className="text-base sm:text-lg font-bold leading-none text-foreground"><Price inr={trek.price} /></div>
           </div>
-          <button
+          <Button
+            variant="outline"
             onClick={() => setShowContact(true)}
-            className="flex-shrink-0 self-center rounded-lg border border-emerald-600/40 bg-emerald-50 px-3 py-2.5 text-sm font-semibold text-emerald-700 active:scale-95 transition"
+            className="flex-shrink-0 px-3.5 border-emerald-600/40 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
           >
             Info
-          </button>
-          <button
-            onClick={() => goToTab("Dates")}
-            className="flex-1 self-center truncate rounded-lg bg-emerald-600 px-3 py-2.5 text-sm font-bold text-white shadow-md active:scale-95 transition"
-          >
-            View Dates &amp; Register →
-          </button>
+          </Button>
+          <Button onClick={() => goToTab("Dates")} className="min-w-0 flex-1 px-3 font-bold">
+            <span className="truncate">View Dates &amp; Register →</span>
+          </Button>
         </div>
         <PriceRoute trek={trek} className="-mt-2 px-4 pb-2 text-[11px] font-medium text-muted" />
       </div>
@@ -546,7 +570,7 @@ function TabPanel({ index, active, reduceMotion, children }: { index: number; ac
 
   useEffect(() => {
     if (active && !wasActive.current && !reduceMotion && scope.current) {
-      animate(scope.current, { opacity: [0, 1], y: [10, 0] }, { duration: 0.2 });
+      animate(scope.current, { opacity: [0, 1], y: [10, 0] }, { duration: DURATION.base, ease: EASE.out });
     }
     wasActive.current = active;
   }, [active, reduceMotion, animate, scope]);
@@ -583,15 +607,21 @@ function PriceRoute({ trek, className }: { trek: Trek; className: string }) {
 }
 
 /* ─── Booking / Cost Breakup Card ─── */
+const DATES_BADGE = {
+  open: { label: "Dates Open", tone: "emerald" },
+  filling: { label: "Filling Fast", tone: "amber" },
+  waitlist: { label: "Join Waitlist", tone: "slate" },
+} as const;
+
 function BookingCard({
   trek,
-  departures,
+  dates,
   onViewDates,
   onContact,
   onNav,
 }: {
   trek: Trek;
-  departures: MonthGroup[];
+  dates: DeparturesState;
   onViewDates: () => void;
   onContact: () => void;
   onNav: (tab: Tab) => void;
@@ -600,15 +630,13 @@ function BookingCard({
   const discount = Math.round((1 - trek.price / oldPrice) * 100);
   const rating = trek.rating;
   const reviews = trek.reviewCount ?? 0;
-  const shownDepartures = departures.flatMap((g) => g.departures).filter((d) => d.availability !== "sold").slice(0, 3);
-  const [showIncludedInfo, setShowIncludedInfo] = useState<QuickInfoId | null>(null);
+  // Kept after closing (open: false) so the dialog can animate out with its content.
+  const [includedInfo, setIncludedInfo] = useState<{ id: QuickInfoId; open: boolean } | null>(null);
 
-  const badge =
-    shownDepartures.length === 0
-      ? { label: "Join Waitlist", cls: "bg-slate-600" }
-      : shownDepartures.some((d) => d.availability === "few")
-        ? { label: "Filling Fast", cls: "bg-amber-500" }
-        : { label: "Dates Open", cls: "bg-emerald-600" };
+  // Only real batches earn a badge; none listed (or not loaded yet) shows none.
+  const badgeKind = datesBadge(dates.departures);
+  const badge = badgeKind ? DATES_BADGE[badgeKind] : null;
+  const nextBatch = dates.departures.find(isBookable);
 
   const INCLUDED_UI = [
     { icon: "tent", label: trek.stay?.label ?? "Twin Sharing Tent Accommodation", info: "inc-tent" as QuickInfoId },
@@ -642,36 +670,35 @@ function BookingCard({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border-2 border-emerald-500 bg-white p-4 shadow-lg sm:p-5 dark:bg-card">
-      <div className="pointer-events-none absolute left-0 top-0 h-[180px] w-full opacity-70 blur-[58px]" style={{ transform: "translate(100px,-40px)" }} aria-hidden />
+    <div className="relative overflow-hidden rounded-2xl border-2 border-emerald-500 bg-white p-5 shadow-lg shadow-emerald-900/5 sm:p-6 dark:bg-card">
       <div className="sr-only">Trek cost details</div>
 
       {/* Header */}
       <div className="relative z-10 flex items-start justify-between gap-3">
-        <h4 className="text-3xl font-semibold text-foreground">Trek Cost</h4>
-        <span className={`rounded-full ${badge.cls} px-2.5 py-1 text-[10px] font-bold text-white`}>{badge.label}</span>
+        <h4 className="text-3xl font-semibold tracking-[-0.02em] text-foreground">Trek Cost</h4>
+        {badge && <Badge tone={badge.tone} className="mt-1.5 shrink-0">{badge.label}</Badge>}
       </div>
 
       {/* Price */}
       <div className="relative z-10 mt-2">
-        <div className="flex items-baseline gap-2">
-          <span className="text-md font-semibold text-slate-500 line-through decoration-2 decoration-rose-500/80">
+        <div className="flex items-center gap-2">
+          <span className="text-base font-semibold text-slate-500 line-through decoration-2 decoration-red-500/70">
             <Price inr={oldPrice} />
           </span>
-          <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-bold text-rose-600">{discount}% OFF</span>
+          <Badge tone="emerald">{discount}% OFF</Badge>
         </div>
         <div className="mt-1 flex items-baseline gap-1.5">
           {trek.roomSharing && <span className="text-sm text-muted">From</span>}
           <span className="text-4xl font-bold tracking-tight text-foreground"><Price inr={trek.price} /></span>
           <span className="text-sm text-muted">/ person</span>
         </div>
-        <PriceRoute trek={trek} className="mt-1 text-sm font-semibold text-gray-700 dark:text-gray-200" />
+        <PriceRoute trek={trek} className="mt-1 text-sm font-semibold text-slate-700 dark:text-slate-200" />
         <PriceNote inr={trek.price} className="mt-2 text-muted" />
         {trek.roomSharing && (
-          <ul className="mt-3 divide-y divide-gray-100 rounded-xl border border-gray-200 text-sm dark:divide-white/10 dark:border-white/10">
+          <ul className="mt-3 divide-y divide-slate-100 rounded-xl border border-slate-200 text-sm dark:divide-white/10 dark:border-white/10">
             {trek.roomSharing.map((r) => (
               <li key={r.label} className="flex items-center justify-between gap-3 px-3 py-2">
-                <span className="text-gray-700 dark:text-gray-200">
+                <span className="text-slate-700 dark:text-slate-200">
                   {r.label} <span className="text-xs text-muted">· {r.perRoom} per room</span>
                 </span>
                 <span className="font-bold text-foreground"><Price inr={r.price} /></span>
@@ -700,37 +727,49 @@ function BookingCard({
         <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted">What&apos;s Included</p>
         <ul className="space-y-2.5">
           {INCLUDED_UI.map((item) => (
-            <li key={item.label} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
+            <li key={item.label} className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
               <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-100 dark:bg-emerald-500/10 dark:ring-emerald-500/20">
                 {icon(item.icon, "h-5 w-5")}
               </span>
               <span className="flex-1 break-words">{item.label}</span>
-              <button
-                onClick={() => setShowIncludedInfo(item.info)}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIncludedInfo({ id: item.info, open: true })}
                 aria-label={`More about ${item.label}`}
-                className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
+                className="-my-1 -mr-2 h-11 w-11 flex-shrink-0 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
               >
                 <svg className="h-4.5 w-4.5" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                 </svg>
-              </button>
+              </Button>
             </li>
           ))}
         </ul>
-        {showIncludedInfo && (
+        {includedInfo && (
           <QuickInfoModal
-            id={showIncludedInfo}
-            label={INCLUDED_UI.find((i) => i.info === showIncludedInfo)?.label ?? "Included"}
+            id={includedInfo.id}
+            open={includedInfo.open}
+            label={INCLUDED_UI.find((i) => i.info === includedInfo.id)?.label ?? "Included"}
             trek={trek}
-            onClose={() => setShowIncludedInfo(null)}
+            onClose={() => setIncludedInfo((s) => s && { ...s, open: false })}
           />
         )}
-        <button
+        {nextBatch && (
+          <p className="mt-4 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm">
+            <span className="text-xs font-bold uppercase tracking-wider text-muted">Next batch</span>
+            <span className="font-semibold text-foreground">{batchLabel(nextBatch.start, trek.days)}</span>
+            <span className={`text-xs font-bold ${SEAT_STYLE[seatStatus(nextBatch)].text}`}>{seatLabel(nextBatch)}</span>
+          </p>
+        )}
+        <Button
+          variant="outline"
+          size="lg"
           onClick={onViewDates}
-          className="mt-4 w-full rounded-xl border border-gray-200 bg-white py-3 text-center font-bold text-foreground shadow-sm transition-colors hover:border-emerald-300 hover:bg-emerald-50 dark:bg-card dark:hover:bg-emerald-950/30"
+          className="mt-4 w-full font-bold text-foreground shadow-sm hover:border-emerald-300 hover:bg-emerald-50"
         >
           View full package &amp; dates
-        </button>
+        </Button>
         {/* Three quick doors into the detail tabs */}
         <div className="mt-3 grid grid-cols-3 gap-2">
           {(
@@ -755,9 +794,9 @@ function BookingCard({
             <button
               key={box.tab}
               onClick={() => onNav(box.tab)}
-              className="group flex flex-col items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-1.5 py-3 text-center transition-all hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 motion-reduce:transition-none motion-reduce:hover:translate-y-0 dark:border-white/10 dark:bg-card dark:hover:bg-emerald-950/30"
+              className="group flex flex-col items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-1.5 py-3 text-center transition-[color,background-color,border-color,transform] duration-150 ease-out hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 motion-reduce:transition-none motion-reduce:hover:translate-y-0 dark:border-white/10 dark:bg-card dark:hover:bg-emerald-950/30"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-100 transition-colors group-hover:bg-white dark:bg-emerald-500/10 dark:ring-emerald-500/20">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-100 transition-colors duration-150 ease-out group-hover:bg-white dark:bg-emerald-500/10 dark:ring-emerald-500/20">
                 <svg className="h-5 w-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d={box.path} />
                 </svg>
@@ -768,22 +807,22 @@ function BookingCard({
         </div>
       </div>
 
-      <div className="my-6 h-px w-full bg-gray-200 dark:bg-white/10" />
+      <div className="my-6 h-px w-full bg-slate-200 dark:bg-white/10" />
 
       {/* Optional extras */}
-      <div className="relative z-10 mt-5 rounded-2xl border border-dashed border-gray-200 bg-gray-50/70 p-4 dark:border-white/10 dark:bg-white/5">
+      <div className="relative z-10 mt-5 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
         <p className="mb-1 text-xs font-bold uppercase tracking-wider text-muted">Optional</p>
         <ul className="space-y-2.5">
-          <li className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
-            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-50 ring-1 ring-gray-100 dark:bg-white/5 dark:ring-white/10">
+          <li className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
+            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-slate-50 ring-1 ring-slate-100 dark:bg-white/5 dark:ring-white/10">
               {icon("backpack", "h-5 w-5")}
             </span>
             <span>
               Backpack Offloading — <span className="font-bold text-foreground">avail on request, extra cost</span>
             </span>
           </li>
-          <li className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
-            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-50 ring-1 ring-gray-100 dark:bg-white/5 dark:ring-white/10">
+          <li className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
+            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-slate-50 ring-1 ring-slate-100 dark:bg-white/5 dark:ring-white/10">
               {icon("bed", "h-5 w-5")}
             </span>
             <span>
@@ -794,7 +833,7 @@ function BookingCard({
       </div>
 
       {/* Trust row */}
-      <div className="relative z-10 mt-4 grid grid-cols-2 gap-4 border-t border-gray-100 pt-4 text-[13px] font-semibold leading-snug text-slate-500 dark:border-white/10 dark:text-gray-400">
+      <div className="relative z-10 mt-4 grid grid-cols-2 gap-4 border-t border-slate-100 pt-4 text-[13px] font-semibold leading-snug text-slate-500 dark:border-white/10 dark:text-slate-400">
         <div className="flex items-start gap-2">
           <span aria-hidden>🔒</span>
           <span>Secure payment</span>
@@ -807,30 +846,29 @@ function BookingCard({
 
       {/* Call experts */}
       <div className="relative z-10 mt-5 rounded-2xl bg-orange-50 p-3 text-center dark:bg-orange-950/20">
-        <p className="w-full rounded-2xl bg-orange-100 p-2 text-lg font-semibold text-foreground shadow-lg dark:bg-orange-900/30">
+        <p className="w-full rounded-xl bg-orange-100 p-2 text-lg font-semibold text-foreground shadow-sm dark:bg-orange-900/30">
           Call Our Mountain Experts!
         </p>
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[13px] text-gray-800 dark:text-gray-200">
-          <a href="tel:+917817912062" className="font-semibold hover:underline">+91 78179 12062</a>
-          <span className="h-4 w-px bg-black/50 dark:bg-white/30" aria-hidden />
-          <a href="tel:+918650561564" className="font-semibold hover:underline">+91 86505 61564</a>
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-1 text-sm text-slate-800 dark:text-slate-200">
+          <a href="tel:+917817912062" className="inline-flex min-h-11 items-center rounded-xl px-2.5 font-semibold transition-colors duration-150 ease-out hover:bg-orange-100 hover:underline">+91 78179 12062</a>
+          <span className="h-4 w-px bg-slate-900/40 dark:bg-white/30" aria-hidden />
+          <a href="tel:+918650561564" className="inline-flex min-h-11 items-center rounded-xl px-2.5 font-semibold transition-colors duration-150 ease-out hover:bg-orange-100 hover:underline">+91 86505 61564</a>
         </div>
       </div>
 
       {/* CTA */}
       <div className="relative z-10 mt-4 space-y-2">
-        <button
-          onClick={onViewDates}
-          className="w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white transition-colors hover:bg-emerald-700"
-        >
+        <Button size="lg" onClick={onViewDates} className="w-full">
           View All Dates &amp; Register
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
+          size="lg"
           onClick={onContact}
-          className="w-full rounded-xl border-2 border-emerald-600 py-3 font-semibold text-emerald-600 transition-colors hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+          className="w-full border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-600 dark:text-emerald-400 dark:hover:bg-emerald-950/30"
         >
           Request Information
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -845,8 +883,8 @@ function StatCard({ icon, label, value, sub }: { icon: string; label: string; va
     calendar: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>,
   };
   return (
-    <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-surface rounded-xl">
-      <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0">
+    <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-surface rounded-2xl">
+      <div className="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center flex-shrink-0">
         {icons[icon]}
       </div>
       <div>
@@ -876,7 +914,8 @@ function QuickInfo({ trek }: { trek: Trek }) {
     Challenging: "5 km in 35 mins",
     Strenuous: "10 km in 60 mins",
   };
-  const [openModal, setOpenModal] = useState<QuickInfoId | null>(null);
+  // Kept after closing (open: false) so the dialog can animate out with its content.
+  const [openModal, setOpenModal] = useState<{ id: QuickInfoId; open: boolean } | null>(null);
 
   const items: { id: QuickInfoId; label: string; value: string; color?: string; icon: ReactNode }[] = [
     {
@@ -1001,8 +1040,8 @@ function QuickInfo({ trek }: { trek: Trek }) {
         {items.map((item) => (
           <button
             key={item.id}
-            onClick={() => setOpenModal(item.id)}
-            className="group rounded-xl border border-gray-100 bg-white p-4 text-left transition-all hover:border-emerald-300 hover:shadow-md active:scale-[0.98] dark:border-white/10 dark:bg-card dark:hover:border-emerald-700"
+            onClick={() => setOpenModal({ id: item.id, open: true })}
+            className="group rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition-[border-color,transform] duration-150 ease-out hover:border-emerald-300 active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100 dark:border-white/10 dark:bg-card dark:hover:border-emerald-700"
           >
             <div className="flex items-start justify-between">
               <div
@@ -1012,7 +1051,7 @@ function QuickInfo({ trek }: { trek: Trek }) {
                 {item.icon}
               </div>
               <svg
-                className="mt-1 h-3.5 w-3.5 text-muted opacity-40 transition-all group-hover:translate-x-0.5 group-hover:text-emerald-600 group-hover:opacity-100"
+                className="mt-1 h-3.5 w-3.5 text-muted opacity-40 transition-[color,opacity,transform] duration-150 ease-out group-hover:translate-x-0.5 group-hover:text-emerald-600 group-hover:opacity-100 motion-reduce:transition-none"
                 fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -1020,7 +1059,8 @@ function QuickInfo({ trek }: { trek: Trek }) {
             </div>
             <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted">{item.label}</h4>
             <p className="mt-0.5 text-sm font-bold leading-snug text-foreground">{item.value}</p>
-            <span className="mt-1 block text-[10px] font-medium text-emerald-600 opacity-0 transition-opacity group-hover:opacity-100">
+            {/* Always shown on touch screens; a hover hint where there's a mouse. */}
+            <span className="mt-1 block text-[11px] font-semibold text-emerald-700 transition-opacity duration-150 ease-out pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:group-focus-visible:opacity-100">
               Know more
             </span>
           </button>
@@ -1028,10 +1068,11 @@ function QuickInfo({ trek }: { trek: Trek }) {
       </div>
       {openModal && (
         <QuickInfoModal
-          id={openModal}
-          label={items.find((i) => i.id === openModal)?.label ?? ""}
+          id={openModal.id}
+          open={openModal.open}
+          label={items.find((i) => i.id === openModal.id)?.label ?? ""}
           trek={trek}
-          onClose={() => setOpenModal(null)}
+          onClose={() => setOpenModal((s) => s && { ...s, open: false })}
         />
       )}
     </div>
@@ -1041,11 +1082,11 @@ function QuickInfo({ trek }: { trek: Trek }) {
 function OverviewTab({ trek }: { trek: Trek }) {
   return (
     <div>
-      <h2 className="text-2xl font-bold text-foreground mb-6">Key Facts</h2>
+      <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground mb-6">Key Facts</h2>
 
       {/* About This Trek */}
-      <div className="mb-6 rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm dark:border-emerald-800/30 dark:bg-card">
-        <h3 className="flex items-center gap-2 text-lg font-bold text-foreground">
+      <div className="mb-6 rounded-2xl border border-emerald-100 bg-white p-5 sm:p-6 shadow-sm dark:border-emerald-800/30 dark:bg-card">
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-foreground">
           About This Trek
           <span className="h-px flex-1 bg-emerald-200/70 dark:bg-emerald-800/40" aria-hidden />
         </h3>
@@ -1089,126 +1130,253 @@ function OverviewTab({ trek }: { trek: Trek }) {
 }
 
 /* ─── Dates / Availability Tab ─── */
-function DatesTab({
-  departures,
-  onRegister,
-}: {
-  departures: MonthGroup[];
-  onRegister: (iso: string) => void;
-}) {
-  const [open, setOpen] = useState<string | null>(departures[0]?.key ?? null);
+
+// Icon and colour for a month's highlight ("Clearest views"), matched on its words.
+const HIGHLIGHT_ICONS = [
+  { test: /snow|frozen|thaw/i, Icon: Snowflake, cls: "text-sky-700" },
+  { test: /bloom|rhododendron|flower/i, Icon: Flower2, cls: "text-amber-700" },
+  { test: /colour/i, Icon: Leaf, cls: "text-orange-700" },
+  { test: /green|meadow|bugyal|monsoon/i, Icon: Sprout, cls: "text-emerald-700" },
+  { test: /view|skies|window/i, Icon: Mountain, cls: "text-sky-700" },
+];
+
+function MonthHighlight({ text, className = "" }: { text?: string; className?: string }) {
+  if (!text) return null;
+  const match = HIGHLIGHT_ICONS.find((h) => h.test.test(text));
+  const Icon = match?.Icon ?? Sun;
+  return (
+    <span className={`inline-flex items-center gap-1 font-semibold ${match?.cls ?? "text-amber-700"} ${className}`}>
+      <Icon className="h-4 w-4 shrink-0" aria-hidden />
+      {text}
+    </span>
+  );
+}
+
+/**
+ * Indiahikes-style batch list: months as accordions, each batch with its live seats.
+ * Batches load after mount (useDepartures); the "When to go" strip below is static, so the
+ * season facts are in the page HTML for search engines.
+ */
+function DatesTab({ trek, dates, onRegister }: { trek: Trek; dates: DeparturesState; onRegister: (iso: string) => void }) {
+  const reduceMotion = useReducedMotion();
+  const months = useMemo(() => groupByMonth(dates.departures), [dates.departures]);
+  const highlights = MONTH_HIGHLIGHTS[trek.slug] ?? {};
+  // Until the visitor opens or closes a month, the first month with an open batch is open.
+  const [picked, setPicked] = useState<string | null | undefined>(undefined);
+  const open = picked !== undefined ? picked : ((months.find((m) => m.departures.some(isBookable)) ?? months[0])?.key ?? null);
+  const askHref = `${WHATSAPP}?text=${encodeURIComponent(`Hi! When is the next ${trek.name} batch?`)}`;
+
   return (
     <div>
-      <h2 className="text-2xl font-bold text-foreground mb-2">Select a Date to Register</h2>
-      <p className="text-muted mb-6">Live availability for upcoming departures — pick a batch and reserve your spot.</p>
+      <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground mb-2">Select a Date to Register</h2>
+      <p className="text-muted mb-5">Seats update live. Tap an open batch to register.</p>
 
-      {/* Availability legend */}
-      <div className="flex flex-wrap items-center gap-4 mb-5 text-xs">
-        {(Object.keys(AVAIL) as Availability[]).map((k) => (
-          <span key={k} className="inline-flex items-center gap-1.5 text-muted">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: AVAIL[k].color }} />
-            {AVAIL[k].label}
-          </span>
+      <ul className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted" aria-label="What the labels mean">
+        {(Object.keys(SEAT_STYLE) as SeatStatus[]).map((k) => (
+          <li key={k} className="inline-flex items-center gap-1.5">
+            <span className={`h-2.5 w-2.5 rounded-full ${SEAT_STYLE[k].dot}`} aria-hidden />
+            {SEAT_STYLE[k].legend}
+          </li>
         ))}
-      </div>
+      </ul>
 
-      <div className="space-y-3">
-        {departures.map((m) => {
-          const isOpen = open === m.key;
-          return (
-            <div key={m.key} className="rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden bg-white dark:bg-card">
-              <button
-                onClick={() => setOpen(isOpen ? null : m.key)}
-                aria-expanded={isOpen}
-                aria-controls={`month-${m.key}`}
-                className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-left hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
-              >
-                <span className="flex items-center gap-2 min-w-0">
-                  <span className="font-semibold text-foreground">{m.month} {m.year}</span>
-                  {m.note && <span className="text-xs text-muted truncate hidden sm:inline">{m.note}</span>}
-                </span>
-                <svg className={`w-5 h-5 text-muted flex-shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                </svg>
-              </button>
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    id={`month-${m.key}`}
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-4 pb-4 pt-1 space-y-2.5 border-t border-gray-100 dark:border-white/5">
-                      {m.departures.map((d) => (
-                        <DepartureRow key={d.id} d={d} onRegister={onRegister} />
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+      {dates.status === "loading" ? (
+        <div className="space-y-3" aria-busy="true" aria-label="Loading dates">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex h-[52px] items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 shadow-sm">
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="h-3.5 w-14" />
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      ) : months.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm sm:p-6 dark:border-white/10 dark:bg-white/5">
+          <p className="font-semibold text-foreground">
+            {dates.status === "unavailable" ? "Live dates couldn't load right now." : "No batches are listed for the coming months yet."}
+          </p>
+          <p className="mt-1 text-muted">
+            Best season: {trek.bestSeason}. Message us for the next batch, or book a private departure for 2 or more on a date that suits you.
+          </p>
+          <a
+            href={askHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonVariants({ className: "mt-4" })}
+          >
+            Ask for dates on WhatsApp
+          </a>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {months.map((m) => {
+            const isOpen = open === m.key;
+            const openCount = m.departures.filter(isBookable).length;
+            return (
+              <div key={m.key} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-card">
+                <button
+                  type="button"
+                  onClick={() => setPicked(isOpen ? null : m.key)}
+                  aria-expanded={isOpen}
+                  aria-controls={`month-${m.key}`}
+                  className="flex min-h-11 w-full items-center justify-between gap-3 bg-slate-50 px-4 py-3.5 text-left transition-colors duration-150 ease-out hover:bg-slate-100 focus-visible:outline-offset-[-2px] dark:bg-white/5 dark:hover:bg-white/10"
+                >
+                  <span className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className="font-bold text-foreground">{FULL_MONTHS[m.month]} {m.year}</span>
+                    <MonthHighlight text={highlights[MONTHS[m.month]]} className="text-sm" />
+                  </span>
+                  <span className="flex shrink-0 items-center gap-2">
+                    <span className="text-xs font-semibold text-muted">{openCount === 0 ? "Full" : `${openCount} open`}</span>
+                    <svg className={`h-5 w-5 text-emerald-700 transition-transform duration-150 ease-out motion-reduce:transition-none ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </span>
+                </button>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.ul
+                      id={`month-${m.key}`}
+                      initial={reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                      animate={reduceMotion ? { opacity: 1 } : { height: "auto", opacity: 1 }}
+                      exit={reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                      transition={reduceMotion ? { duration: 0 } : transition("base")}
+                      className="divide-y divide-slate-100 overflow-hidden dark:divide-white/5"
+                    >
+                      {m.departures.map((d) => (
+                        <DepartureRow key={d.id} d={d} trek={trek} onRegister={onRegister} />
+                      ))}
+                    </motion.ul>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <section aria-labelledby="when-to-go" className="mt-8">
+        <h3 id="when-to-go" className="text-lg font-bold text-foreground">When to go</h3>
+        <p className="mt-1 text-sm text-muted">Best season: {trek.bestSeason}</p>
+        <ol className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+          {seasonStrip(trek.bestSeason, highlights).map((m) => (
+            <li
+              key={m.name}
+              className={`rounded-xl border px-3 py-2 ${m.inSeason ? "border-emerald-200 bg-emerald-50/60" : "border-slate-200 bg-slate-50 text-slate-500"}`}
+            >
+              <span className={`block text-sm font-semibold ${m.inSeason ? "text-foreground" : ""}`}>{FULL_MONTHS[m.month]}</span>
+              {m.inSeason ? (
+                m.highlight ? <MonthHighlight text={m.highlight} className="text-xs" /> : <span className="text-xs font-semibold text-emerald-700">In season</span>
+              ) : (
+                <span className="text-xs">Off season</span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </section>
     </div>
   );
 }
 
-function DepartureRow({ d, onRegister }: { d: Departure; onRegister: (iso: string) => void }) {
-  const a = AVAIL[d.availability];
-  const sold = d.availability === "sold";
-  return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-lg bg-gray-50 dark:bg-surface p-3">
-      <div className="flex-1 min-w-0">
-        <div className="font-semibold text-foreground text-sm">{d.label}</div>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted mt-1">
-          <span>{d.days} Days</span>
-          <span className="inline-flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: a.color }} />
-            <span style={{ color: a.color }} className="font-medium">{a.label}</span>
-          </span>
-        </div>
-      </div>
-      <div className="flex items-center justify-between sm:justify-end gap-3">
-        <div className="text-right">
-          <div className="font-bold text-foreground text-sm"><Price inr={d.price} /></div>
-          <div className="text-[11px] text-muted">/ person</div>
-        </div>
-        <button
-          disabled={sold}
-          onClick={() => onRegister(d.iso)}
-          aria-label={sold ? `${d.label} sold out` : `Register for ${d.label}`}
-          className={`rounded-full px-4 py-2 text-sm font-bold transition active:scale-95 ${
-            sold ? "bg-gray-200 dark:bg-white/10 text-gray-400 cursor-not-allowed" : "bg-emerald-600 text-white hover:bg-emerald-700"
-          }`}
+function DepartureRow({ d, trek, onRegister }: { d: Departure; trek: Trek; onRegister: (iso: string) => void }) {
+  const status = seatStatus(d);
+  const label = batchLabel(d.start, trek.days);
+  const bookable = isBookable(d);
+  const row = "flex w-full items-center gap-3 px-4 py-3 text-left text-sm";
+  const dateCell = (
+    <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
+      <span className={`font-semibold ${bookable ? "text-foreground" : "text-slate-400"}`}>{label}</span>
+      {d.tag && <Badge tone="amber">{d.tag}</Badge>}
+    </span>
+  );
+  const seats = <span className={`text-xs font-bold uppercase tracking-wide ${SEAT_STYLE[status].text}`}>{seatLabel(d)}</span>;
+
+  if (status === "closed") {
+    return <li className={row}>{dateCell}{seats}</li>;
+  }
+  if (status === "full") {
+    const text = encodeURIComponent(`Hi! The ${trek.name} batch ${label} is full. Please add me to the waitlist.`);
+    return (
+      <li>
+        <a
+          href={`${WHATSAPP}?text=${text}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${label} is full. Join the waitlist on WhatsApp`}
+          className={`${row} min-h-11 transition-colors duration-150 ease-out hover:bg-slate-50 focus-visible:outline-offset-[-2px] dark:hover:bg-white/5`}
         >
-          {sold ? "Sold Out" : "Register"}
-        </button>
-      </div>
-    </div>
+          {dateCell}
+          <span className="flex shrink-0 flex-col items-end gap-0.5">
+            {seats}
+            <span className="text-xs font-semibold text-emerald-700 underline underline-offset-2">Join waitlist</span>
+          </span>
+        </a>
+      </li>
+    );
+  }
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={() => onRegister(d.start)}
+        aria-label={`Register for ${label}, ${seatLabel(d).toLowerCase()}`}
+        className={`${row} group min-h-11 transition-colors duration-150 ease-out hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-500 dark:hover:bg-emerald-950/30`}
+      >
+        {dateCell}
+        {seats}
+        <svg className="h-4 w-4 shrink-0 text-emerald-700 transition-transform duration-150 ease-out group-hover:translate-x-0.5 motion-reduce:transition-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>
+    </li>
   );
 }
 
 /* ─── Day by Day Tab ─── */
-function ItineraryTab({ trek }: { trek: Trek }) {
+function ItineraryTab({ trek, onChoosePackage }: { trek: Trek; onChoosePackage: (sharing?: string) => void }) {
   const [blocked, setBlocked] = useState(false);
+  const [expandedDays, setExpandedDays] = useState(() => new Set(trek.itinerary.map((day) => day.day)));
+  const reduceMotion = useReducedMotion();
+  const allExpanded = expandedDays.size === trek.itinerary.length;
+  const packageInfo = getTrekPackage(trek);
+  const packageOptions = trek.roomSharing?.length
+    ? trek.roomSharing.map((room) => ({
+        name: room.label,
+        detail: `${room.perRoom} per room · ${priceRoute(trek) ?? trek.location ?? trek.region}`,
+        price: room.price,
+        sharing: room.label,
+      }))
+    : [{
+        name: `${trek.name} package`,
+        detail: priceRoute(trek) ?? trek.location ?? trek.region,
+        price: trek.price,
+        sharing: undefined,
+      }];
+  const toggleAll = () => setExpandedDays(allExpanded ? new Set() : new Set(trek.itinerary.map((day) => day.day)));
+  const toggleDay = (day: number) => setExpandedDays((current) => {
+    const next = new Set(current);
+    if (next.has(day)) next.delete(day);
+    else next.add(day);
+    return next;
+  });
+
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-2xl font-bold text-foreground">Day-by-Day Itinerary</h2>
-        <button
-          type="button"
-          onClick={() => setBlocked(!printItinerary(trek))}
-          className="inline-flex items-center gap-2 rounded-xl border border-emerald-600/40 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-300 dark:hover:bg-emerald-500/20"
-        >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-          </svg>
-          Save itinerary as PDF
-        </button>
+        <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground">Day-by-Day Itinerary</h2>
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" variant="outline" onClick={toggleAll} aria-expanded={allExpanded}>
+            {allExpanded ? "Collapse all" : "Expand all"}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setBlocked(!printItinerary(trek))}
+            className="border-emerald-600/40 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            Save itinerary as PDF
+          </Button>
+        </div>
         {blocked && (
           <p role="status" className="w-full text-sm text-amber-700 dark:text-amber-300">
             Your browser blocked the itinerary window. Allow pop-ups for this site and try again.
@@ -1216,14 +1384,30 @@ function ItineraryTab({ trek }: { trek: Trek }) {
         )}
       </div>
       <div className="space-y-4">
-        {trek.itinerary.map((day) => (
-          <div key={day.day} className="bg-white dark:bg-card rounded-xl border border-gray-100 dark:border-white/10 p-5 hover:border-emerald-200 dark:hover:border-emerald-700 hover:shadow-md transition-all">
+        {trek.itinerary.map((day) => {
+          const expanded = expandedDays.has(day.day);
+          const panelId = `itinerary-${trek.slug}-day-${day.day}`;
+          return (
+          <div key={day.day} className="bg-white dark:bg-card rounded-2xl border border-slate-200 dark:border-white/10 p-5 sm:p-6 shadow-sm">
             <div className="flex gap-4">
               <div className="flex-shrink-0 w-11 h-11 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
                 {day.day}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-foreground">{day.title}</h3>
+                <h3 className="text-lg font-semibold leading-snug text-foreground">
+                  <button
+                    type="button"
+                    aria-expanded={expanded}
+                    aria-controls={panelId}
+                    onClick={() => toggleDay(day.day)}
+                    className="flex w-full items-start justify-between gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                  >
+                    <span>{day.title}</span>
+                    <svg className={`mt-1 h-5 w-5 shrink-0 text-emerald-700 transition-transform duration-200 motion-reduce:transition-none ${expanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </button>
+                </h3>
                 <div className="flex flex-wrap items-center gap-3 text-xs text-muted mt-1.5 mb-2">
                   <span className="flex items-center gap-1">
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
@@ -1236,9 +1420,22 @@ function ItineraryTab({ trek }: { trek: Trek }) {
                     </span>
                   )}
                 </div>
+                <AnimatePresence initial={false}>
+                  {expanded && (
+                    <motion.div
+                      id={panelId}
+                      role="region"
+                      aria-label={`Day ${day.day} itinerary details`}
+                      initial={reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                      animate={reduceMotion ? { opacity: 1 } : { height: "auto", opacity: 1 }}
+                      exit={reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                      transition={{ duration: reduceMotion ? 0 : DURATION.base, ease: EASE.out }}
+                      className="overflow-hidden"
+                    >
+                      <div className="border-t border-slate-100 pt-4 dark:border-white/5">
                 <p className="text-muted text-sm leading-relaxed">{day.description}</p>
                 {day.note && (
-                  <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-bold leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+                  <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-bold leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
                     Note: {day.note}
                   </p>
                 )}
@@ -1248,61 +1445,106 @@ function ItineraryTab({ trek }: { trek: Trek }) {
                     Meals: {day.meals || "B/L/D"}
                   </span>
                 </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
+      <section aria-labelledby="package-options-title" className="mt-10">
+        <div className="mb-4">
+          <h3 id="package-options-title" className="text-2xl font-bold text-foreground">Package options</h3>
+          <p className="mt-1 text-sm text-muted">Choose a package to continue to the reservation form. Prices are per person.</p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {packageOptions.map((option) => (
+            <article key={option.name} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-card">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h4 className="text-lg font-bold text-foreground">{option.name}</h4>
+                  <p className="mt-1 text-sm text-muted">{option.detail}</p>
+                </div>
+                <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">{trek.days} days</span>
+              </div>
+              <p className="mt-4 text-3xl font-bold text-foreground"><Price inr={option.price} /> <span className="text-sm font-normal text-muted">/ person</span></p>
+              <details className="mt-4 border-t border-slate-100 pt-4 text-sm dark:border-white/10">
+                <summary className="cursor-pointer font-semibold text-emerald-700 marker:text-emerald-600 dark:text-emerald-300">Show package details</summary>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <h5 className="font-semibold text-foreground">Price includes</h5>
+                    <ul className="mt-2 space-y-2 text-muted">
+                      {packageInfo.included.map((item) => <li key={item}>{item}</li>)}
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-semibold text-foreground">Not included</h5>
+                    <ul className="mt-2 space-y-2 text-muted">
+                      {packageInfo.excluded.map((item) => <li key={item}>{item}</li>)}
+                    </ul>
+                  </div>
+                </div>
+              </details>
+              <Button type="button" className="mt-5 w-full" onClick={() => onChoosePackage(option.sharing)}>
+                Choose package
+              </Button>
+            </article>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
 
 /* ─── Photo Gallery Tab (with lightbox) ─── */
+const isVideo = (src: string) => /\.(mp4|mov)$/i.test(src);
+
 function GalleryTab({ trek }: { trek: Trek }) {
   // No photos of its own → no stand-in stock gallery either.
   const images = galleryMedia(trek);
-  const [lightbox, setLightbox] = useState<number | null>(null);
+  const reduceMotion = useReducedMotion();
+  // The index is kept after closing so the viewer can animate out on the photo it showed.
+  const [viewer, setViewer] = useState({ index: 0, open: false });
+  const step = (by: number) => setViewer((v) => ({ ...v, index: (v.index + by + images.length) % images.length }));
+  const current = images[viewer.index];
 
-  useEffect(() => {
-    if (lightbox === null) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setLightbox(null);
-      else if (e.key === "ArrowRight") setLightbox((i) => (i === null ? i : (i + 1) % images.length));
-      else if (e.key === "ArrowLeft") setLightbox((i) => (i === null ? i : (i - 1 + images.length) % images.length));
-    };
-    document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [lightbox, images.length]);
+  const navButton =
+    "absolute top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-150 ease-out hover:bg-white/20";
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-foreground mb-6">Photo Gallery</h2>
+      <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground mb-6">Photo Gallery</h2>
       {images.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-12 text-center dark:border-white/10 dark:bg-card">
-          <p className="font-semibold text-foreground">Photos from this trek are coming soon.</p>
-          <p className="mt-1 text-sm text-muted">Ask us on WhatsApp and we&apos;ll send pictures from our recent batches.</p>
-        </div>
+        <EmptyState
+          className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 py-12 dark:border-white/10 dark:bg-card"
+          icon={
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5a1.5 1.5 0 001.5 1.5z" />
+            </svg>
+          }
+          title="Photos from this trek are coming soon."
+          description="Ask us on WhatsApp and we'll send pictures from our recent batches."
+        />
       )}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {images.map((img, i) => (
           <button
             key={i}
             type="button"
-            onClick={() => setLightbox(i)}
+            onClick={() => setViewer({ index: i, open: true })}
             aria-label={`View photo ${i + 1} of ${images.length}`}
             className="relative aspect-[4/3] rounded-xl overflow-hidden group cursor-pointer"
           >
-            {/\.(mp4|mov)$/i.test(img) ? (
-              <LazyVideo src={img} muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            {isVideo(img) ? (
+              <LazyVideo src={img} muted className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
             ) : (
-              <SmartImage src={img} alt={`${trek.name} — photo ${i + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <SmartImage src={img} alt={`${trek.name} — photo ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
             )}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-              {/\.(mp4|mov)$/i.test(img) ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100">
+              {isVideo(img) ? (
                 <svg className="w-10 h-10 text-white drop-shadow" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
               ) : (
                 <svg className="w-8 h-8 text-white drop-shadow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden>
@@ -1315,83 +1557,84 @@ function GalleryTab({ trek }: { trek: Trek }) {
         ))}
       </div>
 
-      <AnimatePresence>
-        {lightbox !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[120] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setLightbox(null)}
-            role="dialog"
-            aria-modal="true"
-            aria-label={`${trek.name} photo viewer`}
+      {images.length > 0 && (
+        <Dialog open={viewer.open} onOpenChange={(open) => setViewer((v) => ({ ...v, open }))}>
+          <DialogContent
+            size="full"
+            tone="dark"
+            hideClose
+            onKeyDown={(e) => {
+              if (e.key === "ArrowRight") step(1);
+              else if (e.key === "ArrowLeft") step(-1);
+            }}
           >
-            <button
-              onClick={() => setLightbox(null)}
-              aria-label="Close photo viewer"
-              className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+            <DialogTitle className="sr-only">{`${trek.name} photo viewer`}</DialogTitle>
+            {/* Tapping the dark area around the photo closes the viewer, as before. */}
+            <motion.div
+              className="relative flex h-full w-full touch-pan-y items-center justify-center p-4"
+              onClick={(e) => e.target === e.currentTarget && setViewer((v) => ({ ...v, open: false }))}
+              onPanEnd={(_, info) => {
+                if (isVideo(current)) return; // dragging a video scrubs it instead
+                // Swipe left/right on phones moves between photos.
+                if (Math.abs(info.offset.x) > 50 && Math.abs(info.offset.x) > Math.abs(info.offset.y)) step(info.offset.x < 0 ? 1 : -1);
+              }}
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); setLightbox((i) => (i === null ? i : (i - 1 + images.length) % images.length)); }}
-              aria-label="Previous photo"
-              className="absolute left-2 sm:left-4 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-              </svg>
-            </button>
-            {/\.(mp4|mov)$/i.test(images[lightbox]) ? (
-              <motion.div
-                key={lightbox}
-                onClick={(e) => e.stopPropagation()}
-                initial={{ scale: 0.96, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.25 }}
-                className="max-h-[85vh] max-w-[92vw]"
+              <DialogClose
+                aria-label="Close photo viewer"
+                className="absolute top-4 right-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-150 ease-out hover:bg-white/20"
               >
-                <video
-                  src={images[lightbox]}
-                  controls
-                  controlsList="nodownload"
-                  autoPlay
-                  muted
-                  playsInline
-                  preload="metadata"
-                  className="max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl"
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </DialogClose>
+              <button type="button" onClick={() => step(-1)} aria-label="Previous photo" className={`${navButton} left-2 sm:left-4`}>
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+              </button>
+              {isVideo(current) ? (
+                <motion.div
+                  key={viewer.index}
+                  initial={reduceMotion ? { opacity: 0 } : { scale: 0.96, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={transition("base")}
+                  className="max-h-[85vh] max-w-[92vw]"
+                >
+                  <video
+                    src={current}
+                    controls
+                    controlsList="nodownload"
+                    autoPlay
+                    muted
+                    playsInline
+                    preload="metadata"
+                    className="max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl"
+                  />
+                </motion.div>
+              ) : (
+                <motion.img
+                  key={viewer.index}
+                  src={current}
+                  alt={`${trek.name} — photo ${viewer.index + 1}`}
+                  draggable={false}
+                  initial={reduceMotion ? { opacity: 0 } : { scale: 0.96, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={transition("base")}
+                  className="max-h-[85vh] max-w-[92vw] select-none rounded-xl object-contain shadow-2xl"
                 />
-              </motion.div>
-            ) : (
-              <motion.img
-                key={lightbox}
-                src={images[lightbox]}
-                alt={`${trek.name} — photo ${lightbox + 1}`}
-                onClick={(e) => e.stopPropagation()}
-                initial={{ scale: 0.96, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.25 }}
-                className="max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl"
-              />
-            )}
-            <button
-              onClick={(e) => { e.stopPropagation(); setLightbox((i) => (i === null ? i : (i + 1) % images.length)); }}
-              aria-label="Next photo"
-              className="absolute right-2 sm:right-4 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-              </svg>
-            </button>
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-sm text-white/80">
-              {lightbox + 1} / {images.length}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              )}
+              <button type="button" onClick={() => step(1)} aria-label="Next photo" className={`${navButton} right-2 sm:right-4`}>
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+              </button>
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-3 py-1 text-sm text-white/80" aria-live="polite">
+                {viewer.index + 1} / {images.length}
+              </div>
+            </motion.div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
@@ -1401,11 +1644,11 @@ function IncludedTab({ trek, onNav }: { trek: Trek; onNav: (tab: Tab) => void })
   const pkg = useMemo(() => getTrekPackage(trek), [trek]);
   return (
     <div>
-      <h2 className="text-2xl font-bold text-foreground mb-2">Inclusions &amp; Exclusions</h2>
+      <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground mb-2">Inclusions &amp; Exclusions</h2>
       <p className="text-muted mb-6">What your fee covers on the {trek.name}, and what you&apos;ll arrange yourself.</p>
       <dl className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {pkg.facts.map((f) => (
-          <div key={f.label} className="rounded-xl border border-gray-100 bg-gray-50 p-3 dark:border-white/10 dark:bg-card">
+          <div key={f.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-card">
             <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted">{f.label}</dt>
             <dd className="mt-0.5 text-sm font-semibold leading-snug text-foreground">{f.value}</dd>
           </div>
@@ -1413,7 +1656,7 @@ function IncludedTab({ trek, onNav }: { trek: Trek; onNav: (tab: Tab) => void })
       </dl>
       <div className="grid md:grid-cols-2 gap-8">
         <div>
-          <h3 className="text-lg font-bold text-emerald-600 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-emerald-700 mb-4 flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -1433,7 +1676,7 @@ function IncludedTab({ trek, onNav }: { trek: Trek; onNav: (tab: Tab) => void })
           </ul>
         </div>
         <div>
-          <h3 className="text-lg font-bold text-red-500 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-red-600 mb-4 flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -1455,9 +1698,9 @@ function IncludedTab({ trek, onNav }: { trek: Trek; onNav: (tab: Tab) => void })
       </div>
       <p className="mt-8 text-sm text-muted">
         Anything not listed under Included isn&apos;t part of the package. Getting your own gear sorted?{" "}
-        <button onClick={() => onNav("Packing List")} className="font-semibold text-emerald-600 hover:underline">
+        <Button variant="link" onClick={() => onNav("Packing List")} className="inline p-0 align-baseline text-sm">
           See the Packing List
-        </button>
+        </Button>
         .
       </p>
     </div>
@@ -1524,7 +1767,7 @@ const PACKING_GROUPS: {
 function PackingListTab() {
   return (
     <div>
-      <h2 className="text-2xl font-bold text-foreground mb-3">Packing List</h2>
+      <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground mb-3">Packing List</h2>
       <p className="mb-6 text-sm text-muted">
         Pack for safety and performance. Our treks call for an<strong> essential-over-extras</strong> approach — every
         item below is a genuine need on a high-altitude Himalayan trek.
@@ -1536,9 +1779,9 @@ function PackingListTab() {
           { t: "Layering System", d: "Multiple synthetic or wool layers to manage temperature and moisture — never cotton." },
           { t: "Waterproof Footwear", d: "Mid-calf waterproof boots so your feet and ankles stay protected on snow and ice." },
         ].map((c) => (
-          <div key={c.t} className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 dark:border-emerald-800/30 dark:bg-emerald-950/20">
+          <div key={c.t} className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4 dark:border-emerald-800/30 dark:bg-emerald-950/20">
             <p className="text-sm font-bold text-emerald-700 dark:text-emerald-300">{c.t}</p>
-            <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">{c.d}</p>
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{c.d}</p>
           </div>
         ))}
       </div>
@@ -1551,8 +1794,8 @@ function PackingListTab() {
               {group.title}
             </h3>
             {group.note && <p className="mb-3 text-xs text-muted">{group.note}</p>}
-            <div className="overflow-hidden rounded-2xl border border-gray-200 dark:border-white/10">
-              <ul className="divide-y divide-gray-100 dark:divide-white/10">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10">
+              <ul className="divide-y divide-slate-100 dark:divide-white/10">
                 {group.items.map((item) => (
                   <li key={item.name} className="flex items-start gap-3 bg-white px-4 py-3.5 dark:bg-card">
                     <svg className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
@@ -1562,7 +1805,7 @@ function PackingListTab() {
                       <p className="text-sm font-bold text-foreground">{item.name}</p>
                       <p className="mt-0.5 text-xs leading-relaxed text-muted">{item.why}</p>
                       {item.pro && (
-                        <p className="mt-1.5 inline-flex rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
+                        <p className="mt-1.5 inline-flex rounded-full bg-amber-50 px-2.5 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
                           Pro-tip: {item.pro}
                         </p>
                       )}
@@ -1575,7 +1818,7 @@ function PackingListTab() {
         ))}
       </div>
 
-      <div className="mt-10 rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-white/10 dark:bg-card">
+      <div className="mt-10 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6 dark:border-white/10 dark:bg-card">
         <h3 className="mb-3 flex items-center gap-2 text-base font-bold text-foreground">
           <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5l-3 3-4.5-4.5M19.5 10.5a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1595,9 +1838,10 @@ function PackingListTab() {
 
 /* ─── Reservation Tab ─── */
 function ReservationTab({
-  trek, form, setForm, onSubmit, payHref, bookingIssue,
+  trek, dates, form, setForm, onSubmit, payHref, bookingIssue,
 }: {
   trek: Trek;
+  dates: DeparturesState;
   form: { name: string; email: string; phone: string; date: string; groupSize: string; message: string; sharing: string };
   setForm: (f: typeof form) => void;
   onSubmit: () => void;
@@ -1605,6 +1849,7 @@ function ReservationTab({
   bookingIssue?: string | null;
 }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const reduceMotion = useReducedMotion();
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [minDate, setMinDate] = useState("");
@@ -1612,6 +1857,12 @@ function ReservationTab({
   // Set the date floor client-side only, to avoid a hydration mismatch at midnight.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMinDate(new Date().toISOString().slice(0, 10)), []);
+
+  // With listed batches the date is a batch picker; "another date" is a private departure.
+  const batches = dates.departures.filter(isBookable);
+  const [otherDate, setOtherDate] = useState(false);
+  const pickBatch = batches.length > 0 && !otherDate;
+  const batch = batches.find((d) => d.start === form.date);
 
   const update = (key: keyof typeof form, value: string) => {
     setForm({ ...form, [key]: value });
@@ -1623,8 +1874,12 @@ function ReservationTab({
     if (!form.name.trim()) next.name = "Enter your full name.";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) next.email = "Enter a valid email address.";
     if (form.phone.replace(/\D/g, "").length < 7) next.phone = "Enter a valid phone number.";
-    if (!form.date) next.date = "Pick a preferred date.";
+    if (!form.date) next.date = pickBatch ? "Pick a batch." : "Pick a preferred date.";
     else if (minDate && form.date < minDate) next.date = "Choose a date in the future.";
+    const persons = Number.parseInt(form.groupSize, 10);
+    if (batch && persons > batch.seatsLeft) {
+      next.groupSize = `Only ${batch.seatsLeft} ${batch.seatsLeft === 1 ? "seat is" : "seats are"} left on this batch. Make the group smaller or pick another batch.`;
+    }
     return next;
   };
 
@@ -1656,16 +1911,21 @@ function ReservationTab({
             form.message && `Message: ${form.message}`,
           ].filter((line): line is string => Boolean(line))}
         />
-        <button onClick={() => setSent(false)} className="mt-4 block text-emerald-600 font-semibold hover:underline">
+        <Button variant="link" onClick={() => setSent(false)} className="mt-4 min-h-11">
           Try again
-        </button>
+        </Button>
       </div>
     );
   }
 
   if (sent) {
     return (
-      <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12">
+      <motion.div
+        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={transition("slow")}
+        className="text-center py-12"
+      >
         <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -1677,58 +1937,87 @@ function ReservationTab({
           {form.sharing ? ` and your ${form.sharing.toLowerCase()} room` : ""} for {trek.name} within 24 hours.
         </p>
         {payHref && (
-          <Link
-            href={payHref}
-            className="mt-5 inline-flex items-center justify-center rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-emerald-700"
-          >
+          <Link href={payHref} className={buttonVariants({ size: "lg", className: "mt-5" })}>
             Pay online with UPI
           </Link>
         )}
-        <button onClick={() => setSent(false)} className="mt-4 block mx-auto text-emerald-600 font-semibold hover:underline">
+        <Button variant="link" onClick={() => setSent(false)} className="mt-4 mx-auto flex min-h-11">
           Make another request
-        </button>
+        </Button>
       </motion.div>
     );
   }
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-foreground mb-2">Make a Reservation</h2>
+      <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground mb-2">Make a Reservation</h2>
       <p className="text-muted mb-6">Fill out the form below and we&apos;ll get back to you within 24 hours.</p>
       <form onSubmit={handleSubmit} noValidate className="space-y-5">
         <div className="grid md:grid-cols-2 gap-5">
-          <Input id="res-name" label="Full Name" value={form.name} onChange={(v) => update("name", v)} required error={errors.name} autoComplete="name" />
-          <Input id="res-email" label="Email" type="email" value={form.email} onChange={(v) => update("email", v)} required error={errors.email} autoComplete="email" />
-          <Input id="res-phone" label="Phone Number" type="tel" value={form.phone} onChange={(v) => update("phone", v)} required error={errors.phone} autoComplete="tel" />
-          <Input id="res-date" label="Preferred Date" type="date" value={form.date} onChange={(v) => update("date", v)} required min={minDate || undefined} error={errors.date} />
+          <Field id="res-name" label="Full Name" value={form.name} onChange={(v) => update("name", v)} required error={errors.name} autoComplete="name" />
+          <Field id="res-email" label="Email" type="email" value={form.email} onChange={(v) => update("email", v)} required error={errors.email} autoComplete="email" />
+          <Field id="res-phone" label="Phone Number" type="tel" value={form.phone} onChange={(v) => update("phone", v)} required error={errors.phone} autoComplete="tel" />
+          {pickBatch ? (
+            <div>
+              <Label htmlFor="res-date">Batch</Label>
+              <Select
+                id="res-date"
+                value={batch ? form.date : ""}
+                onChange={(e) => {
+                  if (e.target.value === "other") {
+                    setOtherDate(true);
+                    update("date", "");
+                  } else update("date", e.target.value);
+                }}
+                required
+                invalid={!!errors.date}
+                aria-describedby={errors.date ? "res-date-err" : undefined}
+              >
+                <option value="">Choose a batch</option>
+                {batches.map((d) => (
+                  <option key={d.id} value={d.start}>
+                    {batchLabel(d.start, trek.days)} {d.start.slice(0, 4)} · {seatLabel(d)}
+                  </option>
+                ))}
+                <option value="other">Another date (private departure)</option>
+              </Select>
+              {errors.date && <FieldError id="res-date-err">{errors.date}</FieldError>}
+            </div>
+          ) : (
+            <div>
+              <Field id="res-date" label="Preferred Date" type="date" value={form.date} onChange={(v) => update("date", v)} required min={minDate || undefined} error={errors.date} />
+              {otherDate && (
+                <Button variant="link" onClick={() => setOtherDate(false)} className="mt-1 py-2 text-xs">
+                  Back to the listed batches
+                </Button>
+              )}
+            </div>
+          )}
         </div>
         <div>
-          <label htmlFor="res-group" className="block text-sm font-medium text-muted mb-1.5">Group Size</label>
-          <select
+          <Label htmlFor="res-group">Group Size</Label>
+          <Select
             id="res-group"
             value={form.groupSize}
             onChange={(e) => update("groupSize", e.target.value)}
-            className="w-full px-4 py-2.5 border border-gray-300 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+            invalid={!!errors.groupSize}
+            aria-describedby={errors.groupSize ? "res-group-err" : undefined}
           >
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
               <option key={n} value={n}>{n} {n === 1 ? "Person" : "Persons"}</option>
             ))}
             <option value="10+">10+ Persons (Group)</option>
-          </select>
+          </Select>
+          {errors.groupSize && <FieldError id="res-group-err">{errors.groupSize}</FieldError>}
         </div>
         {trek.roomSharing && (
           <div>
-            <label htmlFor="res-sharing" className="block text-sm font-medium text-muted mb-1.5">Room Sharing</label>
-            <select
-              id="res-sharing"
-              value={form.sharing}
-              onChange={(e) => update("sharing", e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-            >
+            <Label htmlFor="res-sharing">Room Sharing</Label>
+            <Select id="res-sharing" value={form.sharing} onChange={(e) => update("sharing", e.target.value)}>
               {trek.roomSharing.map((r) => (
                 <option key={r.label} value={r.label}>{r.label} ({r.perRoom} per room)</option>
               ))}
-            </select>
+            </Select>
             <p className="mt-1.5 text-xs text-muted">
               Per person: {trek.roomSharing.map((r, i) => (
                 <span key={r.label}>{i > 0 && " · "}{r.label.replace(/ sharing$/i, "")} <Price inr={r.price} /></span>
@@ -1737,39 +2026,29 @@ function ReservationTab({
           </div>
         )}
         <div>
-          <label htmlFor="res-message" className="block text-sm font-medium text-muted mb-1.5">Additional Message</label>
-          <textarea
+          <Label htmlFor="res-message">Additional Message</Label>
+          <Textarea
             id="res-message"
             rows={4}
             value={form.message}
             onChange={(e) => update("message", e.target.value)}
             placeholder="Custom requests, dietary needs, transport questions..."
-            className="w-full px-4 py-2.5 border border-gray-300 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none"
           />
         </div>
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-        >
-          {submitting ? (
-            <>
-              <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden>
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-              </svg>
-              Sending…
-            </>
-          ) : (
-            "Send Reservation Request"
-          )}
-        </button>
+        <Button type="submit" size="lg" loading={submitting} className="w-full">
+          {submitting ? "Sending…" : "Send Reservation Request"}
+        </Button>
       </form>
     </div>
   );
 }
 
-function Input({ label, id, type = "text", value, onChange, required, min, error, placeholder, autoComplete }: {
+function FieldError({ id, children }: { id: string; children: ReactNode }) {
+  return <p id={id} className="mt-1.5 text-xs font-medium text-red-600">{children}</p>;
+}
+
+/** A labelled kit Input with its error line (linked by aria-describedby). */
+function Field({ label, id, type = "text", value, onChange, required, min, error, placeholder, autoComplete }: {
   label: string;
   id: string;
   type?: string;
@@ -1783,8 +2062,8 @@ function Input({ label, id, type = "text", value, onChange, required, min, error
 }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-muted mb-1.5">{label}</label>
-      <input
+      <Label htmlFor={id}>{label}</Label>
+      <TextInput
         id={id}
         type={type}
         value={value}
@@ -1793,13 +2072,10 @@ function Input({ label, id, type = "text", value, onChange, required, min, error
         min={min}
         placeholder={placeholder}
         autoComplete={autoComplete}
-        aria-invalid={!!error}
+        invalid={!!error}
         aria-describedby={error ? `${id}-err` : undefined}
-        className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-colors focus:ring-2 focus:ring-emerald-500 ${
-          error ? "border-red-400 focus:border-red-400" : "border-gray-300 dark:border-white/10 focus:border-emerald-500"
-        }`}
       />
-      {error && <p id={`${id}-err`} className="mt-1 text-xs text-red-500">{error}</p>}
+      {error && <FieldError id={`${id}-err`}>{error}</FieldError>}
     </div>
   );
 }
@@ -1891,7 +2167,7 @@ function MiniElevationChart({ profile, itinerary }: { profile: number[]; itinera
                 stroke="#10b981"
                 strokeWidth={isHovered ? 2.5 : 2}
                 filter={isHovered ? "url(#glow)" : undefined}
-                className="pointer-events-none transition-all duration-200"
+                className="pointer-events-none"
               />
               {/* Peak marker (highest point) */}
               {p.alt === max && !isHovered && (
@@ -1905,10 +2181,10 @@ function MiniElevationChart({ profile, itinerary }: { profile: number[]; itinera
         <text x={padL + 2} y={padT - 6} className="fill-emerald-600 text-[8px] font-semibold">
           {max.toLocaleString()}m
         </text>
-        <text x={w - padR - 2} y={h - padB + 14} textAnchor="end" className="fill-gray-400 text-[7px]">
+        <text x={w - padR - 2} y={h - padB + 14} textAnchor="end" className="fill-slate-400 text-[7px]">
           Day {pts[pts.length - 1].day?.day ?? pts.length}
         </text>
-        <text x={padL + 2} y={h - padB + 14} className="fill-gray-400 text-[7px]">
+        <text x={padL + 2} y={h - padB + 14} className="fill-slate-400 text-[7px]">
           Day {pts[0].day?.day ?? 1}
         </text>
       </svg>
@@ -1916,7 +2192,7 @@ function MiniElevationChart({ profile, itinerary }: { profile: number[]; itinera
       {/* Tooltip */}
       {active && active.day && (
         <div
-          className="absolute z-10 pointer-events-none transition-all duration-200"
+          className="absolute z-10 pointer-events-none"
           style={{
             left: `${(active.x / w) * 100}%`,
             top: `${(active.y / h) * 100 - 8}%`,

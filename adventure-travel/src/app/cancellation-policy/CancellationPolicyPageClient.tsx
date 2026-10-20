@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/MotionWrapper";
+import { buttonVariants } from "@/components/ui/button";
 
 // Inline SVG Icon components matching the codebase pattern
 function ShieldCheckIcon({ className = "w-5 h-5" }: { className?: string }) {
@@ -107,45 +107,33 @@ export default function CancellationPolicyPage() {
           alt="Himalayan mountain range"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/70 via-[#0F172A]/50 to-[#0F172A]/80" />
-        <div className="relative z-10 text-center px-6 max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+        <div className="absolute inset-0 bg-gradient-to-b from-navy/70 via-navy/50 to-navy/80" />
+        <div className="relative z-10 text-center px-4 sm:px-6 max-w-3xl mx-auto">
+          <div
             className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6"
           >
             <ShieldCheckIcon className="w-4 h-4 text-primary" />
             <span className="text-sm font-medium text-white/90">
               Transparent &amp; Fair
             </span>
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight"
-          >
+          </div>
+          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.02em] text-white mb-4 leading-tight">
             Cancellation &amp; Refund Policy
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-white/70 text-lg max-w-2xl mx-auto leading-relaxed"
-          >
+          </h1>
+          <p className="text-white/70 text-lg max-w-2xl mx-auto leading-relaxed">
             Note: No refund on unutilized services of the package, if any.
-          </motion.p>
+          </p>
         </div>
       </section>
 
       {/* ─── Refund Schedule ─── */}
-      <section className="py-section px-6 lg:px-8 bg-surface dark:bg-background">
+      <section className="py-section px-4 sm:px-6 lg:px-8 bg-surface dark:bg-background">
         <div className="max-w-6xl mx-auto">
-          <FadeUp className="text-center mb-14">
+          <FadeUp className="text-center mb-10 sm:mb-14">
             <span className="text-sm font-semibold tracking-widest uppercase text-accent">
               Refund Schedule
             </span>
-            <h2 className="mt-4 font-heading text-display-lg font-bold text-foreground leading-tight">
+            <h2 className="mt-4 font-heading text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground leading-tight">
               When You Cancel, Here&apos;s What Happens
             </h2>
             <p className="mt-4 text-lg text-muted max-w-2xl mx-auto">
@@ -156,13 +144,11 @@ export default function CancellationPolicyPage() {
             </p>
           </FadeUp>
 
-          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-14" staggerDelay={0.1}>
+          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-10 sm:mb-14" staggerDelay={0.1}>
             {REFUND_TIERS.map((tier) => (
-              <StaggerItem key={tier.window}>
-                <motion.div
-                  whileHover={{ y: -6, scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className={`rounded-2xl p-6 border ${tier.lightColor} ${tier.borderColor}`}
+              <StaggerItem key={tier.window} className="h-full">
+                <div
+                  className={`h-full rounded-2xl p-5 sm:p-6 border transition-transform duration-200 ease-out hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${tier.lightColor} ${tier.borderColor}`}
                 >
                   <div
                     className={`w-12 h-12 rounded-xl ${tier.color} flex items-center justify-center mb-4`}
@@ -180,20 +166,20 @@ export default function CancellationPolicyPage() {
                   <p className="text-sm text-muted leading-relaxed mt-1">
                     or {tier.voucher}
                   </p>
-                </motion.div>
+                </div>
               </StaggerItem>
             ))}
           </StaggerContainer>
 
           <FadeUp>
-            <div className="rounded-2xl border border-gray-100 dark:border-white/10 bg-white dark:bg-card p-6 md:p-8">
+            <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-card p-5 sm:p-6 md:p-8">
               <h3 className="font-heading text-xl font-bold text-foreground mb-4">
                 On the start day / no-show
               </h3>
               <p className="text-muted leading-relaxed">
                 <strong className="text-foreground">No refund, no voucher.</strong>
               </p>
-              <div className="h-px w-full bg-gray-200 dark:bg-white/10 my-6" />
+              <div className="h-px w-full bg-slate-200 dark:bg-white/10 my-6" />
               <ul className="grid gap-3 md:grid-cols-2">
                 {REFUND_NOTE.map((n) => (
                   <li key={n.text} className="flex items-start gap-3 text-sm leading-relaxed text-muted">
@@ -209,7 +195,7 @@ export default function CancellationPolicyPage() {
 
           {/* ─── Bordered callout: we cancel / abandoned mid-way / vouchers ─── */}
           <FadeUp className="mt-8">
-            <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-700/40 p-6 md:p-8 mb-8">
+            <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-700/40 p-5 sm:p-6 md:p-8 mb-8">
               <div className="flex gap-3">
                 <CloudIcon className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                 <div>
@@ -232,7 +218,7 @@ export default function CancellationPolicyPage() {
           </FadeUp>
 
           <FadeUp>
-            <div className="rounded-2xl border border-gray-100 dark:border-white/10 bg-white dark:bg-card p-6 md:p-8 mb-8">
+            <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-card p-5 sm:p-6 md:p-8 mb-8">
               <div className="flex gap-3">
                 <ShieldCheckIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                 <div>
@@ -258,7 +244,7 @@ export default function CancellationPolicyPage() {
           </FadeUp>
 
           <FadeUp>
-            <div className="rounded-2xl border border-gray-100 dark:border-white/10 bg-white dark:bg-card p-6 md:p-8">
+            <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-card p-5 sm:p-6 md:p-8">
               <div className="flex gap-3">
                 <TicketIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                 <div>
@@ -277,7 +263,7 @@ export default function CancellationPolicyPage() {
                     href="https://wa.me/917817912062?text=Hi!%20I'd%20like%20to%20redeem%20my%20Trek%20Voucher."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-5 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700"
+                    className={buttonVariants({ className: "mt-5 px-6" })}
                   >
                     <MailIcon className="w-4 h-4" />
                     Redeem your voucher

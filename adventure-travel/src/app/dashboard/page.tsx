@@ -25,20 +25,29 @@ import {
 } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { daysUntil, isOverdue } from "@/lib/paymentRules";
-import { formatPaise } from "@/lib/utils";
+import { cn, formatPaise } from "@/lib/utils";
+import { Compass, GraduationCap, Mountain, Receipt } from "lucide-react";
+import { DarkScope } from "@/components/ui/dark-scope";
+import { Card } from "@/components/ui/card";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 
-const STATUS_COLORS: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-700",
-  confirmed: "bg-emerald-100 text-emerald-700",
-  cancelled: "bg-red-100 text-red-600",
-  created: "bg-slate-100 text-slate-600",
-  paid: "bg-emerald-100 text-emerald-700",
-  failed: "bg-red-100 text-red-600",
-  advance_paid: "bg-sky-100 text-sky-700",
-  fully_paid: "bg-emerald-100 text-emerald-700",
-  refunded: "bg-slate-200 text-slate-700",
-  overdue: "bg-red-500 text-white",
-  quote: "bg-amber-100 text-amber-800",
+const STATUS_TONES: Record<string, BadgeProps["tone"]> = {
+  pending: "amber",
+  confirmed: "emerald",
+  cancelled: "red",
+  created: "slate",
+  paid: "emerald",
+  failed: "red",
+  advance_paid: "sky",
+  fully_paid: "emerald",
+  refunded: "slate",
+  overdue: "red",
+  quote: "amber",
 };
 
 const LABELS: Record<string, string> = {
@@ -61,7 +70,47 @@ const day = (iso: string) =>
   });
 
 function Pill({ status }: { status: string }) {
-  return <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${STATUS_COLORS[status] ?? ""}`}>{LABELS[status] ?? cap(status)}</span>;
+  return (
+    <Badge
+      tone={STATUS_TONES[status] ?? "slate"}
+      // An overdue balance is the one status that must stand out.
+      className={status === "overdue" ? "bg-red-500 text-white ring-red-500 dark:bg-red-500 dark:text-white dark:ring-red-500" : undefined}
+    >
+      {LABELS[status] ?? cap(status)}
+    </Badge>
+  );
+}
+
+/** Layout-true placeholder for a list section while the records load (T037). */
+function RowsSkeleton({ label, rows = 2, compact = false }: { label: string; rows?: number; compact?: boolean }) {
+  return (
+    <div aria-busy="true" className={compact ? "space-y-3" : "space-y-4"}>
+      <span className="sr-only">{label}</span>
+      {Array.from({ length: rows }, (_, i) =>
+        compact ? (
+          <div key={i} className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4">
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-4 w-2/3 max-w-xs" />
+              <Skeleton className="h-3 w-1/2 max-w-[14rem]" />
+            </div>
+            <Skeleton className="h-5 w-20 rounded-full" />
+          </div>
+        ) : (
+          <div key={i} className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:flex-row sm:items-center">
+            <div className="flex-1 space-y-2.5">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-5 w-40 max-w-[60%]" />
+                <Skeleton className="h-5 w-20 rounded-full" />
+              </div>
+              <Skeleton className="h-3.5 w-3/4 max-w-sm" />
+              <Skeleton className="h-3.5 w-1/2 max-w-[14rem]" />
+            </div>
+            <Skeleton className="h-11 w-full rounded-xl sm:w-28" />
+          </div>
+        )
+      )}
+    </div>
+  );
 }
 
 /** Total, paid and balance for one priced booking (T039). */
@@ -80,9 +129,6 @@ function Money({ amount, paid, state, dueDate }: { amount: number | null | undef
     </div>
   );
 }
-
-const FIELD =
-  "w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none placeholder:text-white/30";
 
 type Row = {
   status: TrekBooking["status"];
@@ -248,42 +294,48 @@ export default function DashboardPage() {
 
   const handleLogout = async () => { await signOut(); router.push("/"); };
 
-  const card = "bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mb-6";
-  const row = "bg-white/5 border border-white/10 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-4";
+  const card = "mb-6 p-5 backdrop-blur-xl sm:p-6";
+  const row = "flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:flex-row sm:items-center";
+  const sectionTitle = "mb-4 font-heading text-lg font-semibold text-white";
+  const actions = "flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium sm:flex-nowrap sm:justify-end";
+  const payButton = cn(buttonVariants(), "w-full sm:w-auto");
+  const textLink = cn(buttonVariants({ variant: "link" }), "min-h-11");
+  const cancelButton = "min-h-11 text-red-300 hover:bg-red-500/10 hover:text-red-200 dark:text-red-300 dark:hover:bg-red-500/10";
+  const empty = "rounded-2xl border border-dashed border-white/10 py-8";
 
   const policyNote = (
     <p className="mt-2 text-xs text-white/50">
       Need to cancel? See our{" "}
-      <Link href="/cancellation-policy" className="text-emerald-400 hover:underline">cancellation policy</Link> or{" "}
-      <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline">message us on WhatsApp</a>.
+      <Link href="/cancellation-policy" className="text-emerald-400 underline-offset-4 hover:underline">cancellation policy</Link> or{" "}
+      <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline-offset-4 hover:underline">message us on WhatsApp</a>.
     </p>
   );
 
   return (
-    <div className="min-h-screen bg-[#0F172A] pt-24 pb-12 px-4">
-      <div className="max-w-4xl mx-auto">
+    <DarkScope className="min-h-screen bg-navy px-4 pb-12 pt-24 sm:px-6">
+      <div className="mx-auto max-w-4xl">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white font-heading">My Dashboard</h1>
-            <p className="text-white/60 mt-1">Welcome back, {fullName.split(" ")[0]}</p>
+            <h1 className="font-heading text-3xl font-bold tracking-[-0.02em] text-white sm:text-4xl">My Dashboard</h1>
+            <p className="mt-1 text-base text-white/60">Welcome back, {fullName.split(" ")[0]}</p>
           </div>
           <div className="flex flex-wrap gap-3">
             {isAdmin && (
-              <Link href="/admin/bookings" className="px-5 py-2.5 bg-sky-600 text-white font-semibold rounded-xl hover:bg-sky-700 transition-colors text-sm">
+              <Link href="/admin/bookings" className={buttonVariants({ variant: "outline" })}>
                 Admin
               </Link>
             )}
-            <Link href="/treks" className="px-5 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors text-sm">
+            <Link href="/treks" className={buttonVariants()}>
               Explore Treks
             </Link>
-            <button onClick={handleLogout} className="px-5 py-2.5 bg-white/10 text-white/80 font-medium rounded-xl hover:bg-white/20 transition-colors text-sm">
+            <Button variant="ghost" onClick={handleLogout} className="text-white/80 dark:text-white/80">
               Log Out
-            </button>
+            </Button>
           </div>
         </div>
 
-        {loadError && <p role="alert" className="mb-6 rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-300">{loadError}</p>}
+        {loadError && <p role="alert" className="mb-6 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">{loadError}</p>}
 
         {needsEmergencyContact && (
           <div role="status" className="mb-6 flex flex-col gap-3 rounded-2xl border border-amber-400/30 bg-amber-400/10 p-5 sm:flex-row sm:items-center">
@@ -292,84 +344,117 @@ export default function DashboardPage() {
               someone to call if anything happens on the trail.
             </p>
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={() => {
                   startEdit();
                   profileRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
-                className="rounded-lg bg-amber-400 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-amber-300"
+                className="bg-amber-400 text-slate-900 shadow-none hover:bg-amber-300 hover:shadow-none"
               >
                 Add contact
-              </button>
-              <button onClick={() => setBannerDismissed(true)} className="text-sm text-amber-100/80 hover:underline">
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setBannerDismissed(true)}
+                className="text-amber-100/80 hover:bg-amber-400/10 dark:text-amber-100/80 dark:hover:bg-amber-400/10"
+              >
                 Later
-              </button>
+              </Button>
             </div>
           </div>
         )}
 
         {/* Profile */}
-        <div ref={profileRef} className={`${card} scroll-mt-24`}>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-white">Profile</h2>
+        <Card ref={profileRef} className={`${card} scroll-mt-24`}>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="font-heading text-lg font-semibold text-white">Profile</h2>
             {!editing && (
-              <button onClick={startEdit} className="text-sm font-semibold text-emerald-400 hover:underline">Edit</button>
+              <Button variant="ghost" size="sm" onClick={startEdit} className="-mr-2 min-h-11 text-emerald-400 dark:text-emerald-400">
+                Edit
+              </Button>
             )}
           </div>
           {editing ? (
-            <form onSubmit={saveProfile} className="grid sm:grid-cols-2 gap-4">
-              <label className="block text-sm text-white/70">Full name
-                <input className={`${FIELD} mt-1.5`} value={draft.full_name} onChange={(e) => setDraft({ ...draft, full_name: e.target.value })} autoComplete="name" />
-              </label>
-              <label className="block text-sm text-white/70">Phone
-                <input className={`${FIELD} mt-1.5`} type="tel" value={draft.phone} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} autoComplete="tel" />
-              </label>
-              <label className="block text-sm text-white/70">City
-                <input className={`${FIELD} mt-1.5`} value={draft.city} onChange={(e) => setDraft({ ...draft, city: e.target.value })} autoComplete="address-level2" />
-              </label>
+            <form onSubmit={saveProfile} className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="profile-full-name">Full name</Label>
+                <Input id="profile-full-name" value={draft.full_name} onChange={(e) => setDraft({ ...draft, full_name: e.target.value })} autoComplete="name" />
+              </div>
+              <div>
+                <Label htmlFor="profile-phone">Phone</Label>
+                <Input id="profile-phone" type="tel" value={draft.phone} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} autoComplete="tel" />
+              </div>
+              <div>
+                <Label htmlFor="profile-city">City</Label>
+                <Input id="profile-city" value={draft.city} onChange={(e) => setDraft({ ...draft, city: e.target.value })} autoComplete="address-level2" />
+              </div>
               <div className="hidden sm:block" />
-              <label className="block text-sm text-white/70">Emergency contact name
-                <input className={`${FIELD} mt-1.5`} value={draft.emergency_contact_name} onChange={(e) => setDraft({ ...draft, emergency_contact_name: e.target.value })} />
-              </label>
-              <label className="block text-sm text-white/70">Emergency contact phone
-                <input className={`${FIELD} mt-1.5`} type="tel" value={draft.emergency_contact_phone} onChange={(e) => setDraft({ ...draft, emergency_contact_phone: e.target.value })} />
-              </label>
-              {saveMsg && <p role="alert" className="sm:col-span-2 text-sm text-red-300">{saveMsg}</p>}
-              <div className="sm:col-span-2 flex gap-3">
-                <button type="submit" disabled={saving} className="px-5 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 text-sm disabled:opacity-70">
+              <div>
+                <Label htmlFor="profile-emergency-name">Emergency contact name</Label>
+                <Input
+                  id="profile-emergency-name"
+                  value={draft.emergency_contact_name}
+                  onChange={(e) => setDraft({ ...draft, emergency_contact_name: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="profile-emergency-phone">Emergency contact phone</Label>
+                <Input
+                  id="profile-emergency-phone"
+                  type="tel"
+                  value={draft.emergency_contact_phone}
+                  onChange={(e) => setDraft({ ...draft, emergency_contact_phone: e.target.value })}
+                />
+              </div>
+              {saveMsg && <p role="alert" className="text-sm text-red-300 sm:col-span-2">{saveMsg}</p>}
+              <div className="flex gap-3 sm:col-span-2">
+                <Button type="submit" loading={saving}>
                   {saving ? "Saving…" : "Save changes"}
-                </button>
-                <button type="button" onClick={() => setEditing(false)} className="px-5 py-2.5 bg-white/10 text-white/80 rounded-xl hover:bg-white/20 text-sm">
+                </Button>
+                <Button variant="outline" onClick={() => setEditing(false)}>
                   Cancel
-                </button>
+                </Button>
               </div>
             </form>
           ) : (
-            <div className="grid sm:grid-cols-3 gap-4 text-sm">
-              <div><span className="text-white/50 block mb-1">Name</span><span className="text-white">{fullName}</span></div>
-              <div><span className="text-white/50 block mb-1">Email</span><span className="text-white">{user.email}</span></div>
-              <div><span className="text-white/50 block mb-1">Phone</span><span className="text-white">{profile?.phone || user.user_metadata?.phone || "—"}</span></div>
-              <div><span className="text-white/50 block mb-1">City</span><span className="text-white">{profile?.city || "—"}</span></div>
+            <div className="grid gap-4 text-sm sm:grid-cols-3" aria-busy={loadingData || undefined}>
+              {loadingData && <span className="sr-only">Loading your profile…</span>}
+              <div><span className="mb-1 block text-white/50">Name</span><span className="text-white">{fullName}</span></div>
+              <div><span className="mb-1 block text-white/50">Email</span><span className="break-words text-white">{user.email}</span></div>
+              <div>
+                <span className="mb-1 block text-white/50">Phone</span>
+                {loadingData ? <Skeleton className="mt-1.5 h-4 w-28" /> : <span className="text-white">{profile?.phone || user.user_metadata?.phone || "—"}</span>}
+              </div>
+              <div>
+                <span className="mb-1 block text-white/50">City</span>
+                {loadingData ? <Skeleton className="mt-1.5 h-4 w-24" /> : <span className="text-white">{profile?.city || "—"}</span>}
+              </div>
               <div className="sm:col-span-2">
-                <span className="text-white/50 block mb-1">Emergency contact</span>
-                <span className="text-white">
-                  {profile?.emergency_contact_name ? `${profile.emergency_contact_name} · ${profile.emergency_contact_phone || "no number"}` : "—"}
-                </span>
+                <span className="mb-1 block text-white/50">Emergency contact</span>
+                {loadingData ? (
+                  <Skeleton className="mt-1.5 h-4 w-48" />
+                ) : (
+                  <span className="text-white">
+                    {profile?.emergency_contact_name ? `${profile.emergency_contact_name} · ${profile.emergency_contact_phone || "no number"}` : "—"}
+                  </span>
+                )}
               </div>
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Trek Bookings */}
-        <div className={card}>
-          <h2 className="text-lg font-bold text-white mb-4">Trek Bookings</h2>
+        <Card className={card}>
+          <h2 className={sectionTitle}>Trek Bookings</h2>
           {loadingData ? (
-            <p className="text-white/40 text-center py-8">Loading…</p>
+            <RowsSkeleton label="Loading your trek bookings…" />
           ) : trekBookings.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-white/40 mb-4">No trek bookings yet.</p>
-              <Link href="/treks" className="text-emerald-400 font-semibold hover:underline">Browse treks →</Link>
-            </div>
+            <EmptyState
+              className={empty}
+              icon={<Mountain />}
+              title="No trek bookings yet."
+              action={<Link href="/treks" className={buttonVariants()}>Browse treks →</Link>}
+            />
           ) : (
             <div className="space-y-4">
               {trekBookings.map((b) => {
@@ -378,9 +463,9 @@ export default function DashboardPage() {
                 const a = actionsFor(b, priceable);
                 return (
                   <div key={b.id} className={row}>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-3 mb-1">
-                        <Link href={`/treks/${b.trek_slug}`} className="font-bold text-white hover:text-emerald-400 transition-colors truncate">{b.trek_name}</Link>
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                        <Link href={`/treks/${b.trek_slug}`} className="truncate text-base font-semibold text-white transition-colors duration-150 ease-out hover:text-emerald-400">{b.trek_name}</Link>
                         <Pill status={b.status} />
                         {a.state !== "unpaid" && <Pill status={a.state} />}
                         {a.overdue && <Pill status="overdue" />}
@@ -394,41 +479,43 @@ export default function DashboardPage() {
                       </div>
                       <Money amount={b.amount} paid={b.amount_paid ?? 0} state={a.state} dueDate={b.balance_due_date} />
                       {b.quote_required && <p className="mt-2 text-sm text-amber-200/80">Quote requested — we&apos;ll send you a price for your group.</p>}
-                      {b.message && <p className="text-white/40 text-sm mt-2 truncate">{b.message}</p>}
+                      {b.message && <p className="mt-2 truncate text-sm text-white/40">{b.message}</p>}
                       {a.policyNote && policyNote}
                     </div>
-                    <div className="flex items-center gap-4 text-sm font-medium whitespace-nowrap">
-                      {a.payNow && <Link href={`/checkout?booking=${b.id}`} className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Pay now</Link>}
-                      {a.payBalance && <Link href={`/checkout?booking=${b.id}&kind=balance`} className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Pay balance</Link>}
-                      {a.cancel && <button onClick={() => void cancelBooking("trek", b.id)} className="text-red-300 hover:underline">Cancel</button>}
-                      <Link href={`/treks/${b.trek_slug}`} className="text-emerald-400 hover:underline">View Trek →</Link>
+                    <div className={actions}>
+                      {a.payNow && <Link href={`/checkout?booking=${b.id}`} className={payButton}>Pay now</Link>}
+                      {a.payBalance && <Link href={`/checkout?booking=${b.id}&kind=balance`} className={payButton}>Pay balance</Link>}
+                      {a.cancel && <Button variant="ghost" size="sm" onClick={() => void cancelBooking("trek", b.id)} className={cancelButton}>Cancel</Button>}
+                      <Link href={`/treks/${b.trek_slug}`} className={textLink}>View Trek →</Link>
                     </div>
                   </div>
                 );
               })}
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Course Bookings */}
-        <div className={card}>
-          <h2 className="text-lg font-bold text-white mb-4">Course Bookings</h2>
+        <Card className={card}>
+          <h2 className={sectionTitle}>Course Bookings</h2>
           {loadingData ? (
-            <p className="text-white/40 text-center py-8">Loading…</p>
+            <RowsSkeleton label="Loading your course bookings…" />
           ) : courseBookings.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-white/40 mb-4">No course bookings yet.</p>
-              <Link href="/courses" className="text-emerald-400 font-semibold hover:underline">Browse courses →</Link>
-            </div>
+            <EmptyState
+              className={empty}
+              icon={<GraduationCap />}
+              title="No course bookings yet."
+              action={<Link href="/courses" className={buttonVariants({ variant: "outline" })}>Browse courses →</Link>}
+            />
           ) : (
             <div className="space-y-4">
               {courseBookings.map((b) => {
                 const a = actionsFor(b, b.amount != null);
                 return (
                   <div key={b.id} className={row}>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-3 mb-1">
-                        <Link href={`/courses/${b.course_slug}`} className="font-bold text-white hover:text-emerald-400 transition-colors truncate">
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                        <Link href={`/courses/${b.course_slug}`} className="truncate text-base font-semibold text-white transition-colors duration-150 ease-out hover:text-emerald-400">
                           {b.course_name}{b.package_name ? ` · ${b.package_name}` : ""}
                         </Link>
                         <Pill status={b.status} />
@@ -445,31 +532,36 @@ export default function DashboardPage() {
                       {b.quote_required && <p className="mt-2 text-sm text-amber-200/80">Quote requested — we&apos;ll send you a price.</p>}
                       {a.policyNote && policyNote}
                     </div>
-                    <div className="flex items-center gap-4 text-sm font-medium whitespace-nowrap">
-                      {a.payNow && <Link href={`/checkout?course=${b.id}`} className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Pay now</Link>}
-                      {a.payBalance && <Link href={`/checkout?course=${b.id}&kind=balance`} className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Pay balance</Link>}
-                      {a.cancel && <button onClick={() => void cancelBooking("course", b.id)} className="text-red-300 hover:underline">Cancel</button>}
+                    <div className={actions}>
+                      {a.payNow && <Link href={`/checkout?course=${b.id}`} className={payButton}>Pay now</Link>}
+                      {a.payBalance && <Link href={`/checkout?course=${b.id}&kind=balance`} className={payButton}>Pay balance</Link>}
+                      {a.cancel && <Button variant="ghost" size="sm" onClick={() => void cancelBooking("course", b.id)} className={cancelButton}>Cancel</Button>}
                     </div>
                   </div>
                 );
               })}
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Payments */}
-        <div className={card}>
-          <h2 className="text-lg font-bold text-white mb-4">Payments</h2>
+        <Card className={card}>
+          <h2 className={sectionTitle}>Payments</h2>
           {loadingData ? (
-            <p className="text-white/40 text-center py-8">Loading…</p>
+            <RowsSkeleton label="Loading your payments…" compact />
           ) : payments.length === 0 ? (
-            <p className="text-white/40 text-center py-8">No payments yet.</p>
+            <EmptyState
+              className={empty}
+              icon={<Receipt />}
+              title="No payments yet."
+              action={<Link href="/treks" className={buttonVariants({ variant: "outline" })}>Browse treks →</Link>}
+            />
           ) : (
             <div className="space-y-3">
               {payments.map((p) => (
-                <div key={p.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-4 text-sm">
+                <div key={p.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-sm">
                   <div className="min-w-0">
-                    <p className="font-semibold text-white truncate">{p.for_label}</p>
+                    <p className="truncate font-semibold text-white">{p.for_label}</p>
                     <p className="text-white/50">
                       {KIND_LABEL[p.kind]} · {day(p.paid_at ?? p.created_at)}{p.method ? ` · ${p.method.toUpperCase()}` : ""}
                     </p>
@@ -482,26 +574,28 @@ export default function DashboardPage() {
               ))}
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Activity Bookings */}
-        <div className={card}>
-          <h2 className="text-lg font-bold text-white mb-4">Activity Bookings</h2>
+        <Card className={card}>
+          <h2 className={sectionTitle}>Activity Bookings</h2>
           {loadingData ? (
-            <p className="text-white/40 text-center py-8">Loading…</p>
+            <RowsSkeleton label="Loading your activity bookings…" />
           ) : activityBookings.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-white/40 mb-4">No activity bookings yet.</p>
-              <Link href="/activities" className="text-emerald-400 font-semibold hover:underline">Browse activities →</Link>
-            </div>
+            <EmptyState
+              className={empty}
+              icon={<Compass />}
+              title="No activity bookings yet."
+              action={<Link href="/activities" className={buttonVariants({ variant: "outline" })}>Browse activities →</Link>}
+            />
           ) : (
             <div className="space-y-4">
               {activityBookings.map((b) => (
                 <div key={b.id} className={row}>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-3 mb-1">
-                      <span className="font-bold text-white truncate">{b.activity_name}</span>
-                      <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700">{b.activity_type}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                      <span className="truncate text-base font-semibold text-white">{b.activity_name}</span>
+                      <Badge tone="sky">{b.activity_type}</Badge>
                       <Pill status={b.status} />
                     </div>
                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/50">
@@ -509,37 +603,35 @@ export default function DashboardPage() {
                       <span>Group: {b.group_size}</span>
                       <span>Booked: {day(b.created_at)}</span>
                     </div>
-                    {b.message && <p className="text-white/40 text-sm mt-2 truncate">{b.message}</p>}
+                    {b.message && <p className="mt-2 truncate text-sm text-white/40">{b.message}</p>}
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Delete account (FR-070) */}
-        <div className="rounded-2xl border border-red-400/20 bg-red-500/5 p-6">
-          <h2 className="text-lg font-bold text-white">Delete my account</h2>
+        <div className="rounded-2xl border border-red-400/20 bg-red-500/5 p-5 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold text-white">Delete my account</h2>
           <p className="mt-2 text-sm text-white/60">
             This removes your sign-in and your personal details. Records of payments you&apos;ve made are kept, without your name, because
             the law requires us to keep financial records. Bookings you&apos;ve paid for stay valid — contact us about them on WhatsApp.
           </p>
           <form onSubmit={handleDelete} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
-            <label className="block flex-1 text-sm text-white/70">
-              Type <span className="font-mono font-semibold text-white">DELETE</span> to confirm
-              <input className={`${FIELD} mt-1.5`} value={deleteText} onChange={(e) => setDeleteText(e.target.value)} autoComplete="off" />
-            </label>
-            <button
-              type="submit"
-              disabled={deleteText !== "DELETE" || deleting}
-              className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
+            <div className="flex-1">
+              <Label htmlFor="delete-confirm">
+                Type <span className="font-mono font-semibold text-white">DELETE</span> to confirm
+              </Label>
+              <Input id="delete-confirm" value={deleteText} onChange={(e) => setDeleteText(e.target.value)} autoComplete="off" />
+            </div>
+            <Button type="submit" variant="destructive" loading={deleting} disabled={deleteText !== "DELETE"}>
               {deleting ? "Deleting…" : "Delete my account"}
-            </button>
+            </Button>
           </form>
           {deleteMsg && <p role="alert" className="mt-3 text-sm text-red-300">{deleteMsg}</p>}
         </div>
       </div>
-    </div>
+    </DarkScope>
   );
 }
