@@ -1,13 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CalendarPlus, RefreshCw, Trash2 } from "lucide-react";
+import { CalendarPlus, CalendarX, RefreshCw, Trash2 } from "lucide-react";
 import { AdminGate } from "@/components/admin/AdminGate";
 import { LoadError } from "@/components/admin/LoadError";
-import { FIELD } from "@/components/admin/labels";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { byPopularity, type Trek } from "@/data/treks";
 import {
@@ -70,26 +73,26 @@ function DeparturesAdmin() {
         <CardContent className="flex flex-wrap items-end gap-3 pt-5">
           <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
             Trek
-            <select
+            <Select
               value={slug}
               onChange={(e) => {
                 setRows([]);
                 setSlug(e.target.value);
               }}
-              className={cn(FIELD, "mt-1 block w-full min-w-[260px] pr-8")}
+              wrapperClassName="mt-1 min-w-[260px]"
             >
               {TREKS.map((t) => (
                 <option key={t.slug} value={t.slug}>
                   {t.name} ({counts[t.slug] ?? 0} upcoming)
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
           <p className="pb-2 text-sm text-slate-600 dark:text-slate-300">
             Best season <strong>{trek.bestSeason}</strong> · {trek.days} days · groups of {defaultCapacity(trek)}
           </p>
-          <Button variant="outline" size="sm" className="ml-auto h-10" onClick={() => void load(slug)} disabled={status === "loading"}>
-            <RefreshCw className={cn("h-4 w-4", status === "loading" && "animate-spin motion-reduce:animate-none")} aria-hidden />
+          <Button variant="outline" className="ml-auto" onClick={() => void load(slug)} loading={status === "loading"}>
+            {status !== "loading" && <RefreshCw className="h-4 w-4" aria-hidden />}
             Refresh
           </Button>
         </CardContent>
@@ -99,7 +102,7 @@ function DeparturesAdmin() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Upcoming batches</CardTitle>
+          <CardTitle className="text-lg font-semibold">Upcoming batches</CardTitle>
           <CardDescription>
             Changes save when you leave a field. Seats left = capacity − sold offline − website bookings that are confirmed or paid.
             Unpaid requests don&apos;t hold a seat; the payment step checks the seats again. A closed batch stays listed but can&apos;t be booked.
@@ -107,15 +110,16 @@ function DeparturesAdmin() {
         </CardHeader>
         <CardContent className="p-0">
           {status === "loading" && rows.length === 0 ? (
-            <div className="space-y-3 p-5" aria-busy="true" aria-label="Loading batches">
-              {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
-            </div>
+            <BatchesSkeleton />
           ) : status === "error" ? (
             <LoadError onRetry={() => void load(slug)} />
           ) : rows.length === 0 ? (
-            <p className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">
-              No upcoming batches for {trek.name}. Visitors see &ldquo;Ask for dates on WhatsApp&rdquo; until you add some.
-            </p>
+            <EmptyState
+              className="py-12"
+              icon={<CalendarX />}
+              title={`No upcoming batches for ${trek.name}.`}
+              description={<>Visitors see &ldquo;Ask for dates on WhatsApp&rdquo; until you add some.</>}
+            />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[900px] text-left text-sm">
@@ -141,6 +145,33 @@ function DeparturesAdmin() {
           )}
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+/** Placeholder rows shaped like the batches table: label, two seat boxes, count, badge, tag box, checkbox. */
+function BatchesSkeleton() {
+  return (
+    <div aria-busy="true" className="overflow-hidden">
+      <span className="sr-only">Loading batches</span>
+      <div className="flex gap-6 border-b border-slate-200 px-4 py-3.5 dark:border-white/10">
+        {[10, 8, 10, 8, 12, 8].map((w, i) => (
+          <Skeleton key={i} className="h-3" style={{ width: `${w}%` }} />
+        ))}
+      </div>
+      <div className="divide-y divide-slate-100 dark:divide-white/5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-6 px-4 py-2.5">
+            <Skeleton className="h-4 w-[10%]" />
+            <Skeleton className="h-9 w-20 rounded-xl" />
+            <Skeleton className="h-9 w-20 rounded-xl" />
+            <Skeleton className="h-4 w-6" />
+            <Skeleton className="h-5 w-[10%] rounded-full" />
+            <Skeleton className="h-9 w-36 rounded-xl" />
+            <Skeleton className="h-4 w-4" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -185,7 +216,7 @@ function AddBatches({ trek, existing, onAdded }: { trek: Trek; existing: AdminDe
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
+        <CardTitle className="flex items-center gap-2 text-lg font-semibold">
           <CalendarPlus className="h-4 w-4 text-emerald-600" aria-hidden />
           Add batches
         </CardTitle>
@@ -201,7 +232,7 @@ function AddBatches({ trek, existing, onAdded }: { trek: Trek; existing: AdminDe
                 aria-pressed={mode === m}
                 onClick={() => setMode(m)}
                 className={cn(
-                  "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors motion-reduce:transition-none",
+                  "min-h-10 rounded-xl px-4 text-sm font-semibold transition-colors duration-150 ease-out motion-reduce:transition-none",
                   mode === m ? "bg-emerald-600 text-white" : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10"
                 )}
               >
@@ -214,47 +245,47 @@ function AddBatches({ trek, existing, onAdded }: { trek: Trek; existing: AdminDe
             {mode === "one" ? (
               <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                 Start date
-                <input type="date" value={date} min={today} onChange={(e) => setDate(e.target.value)} className={cn(FIELD, "mt-1 block")} />
+                <Input type="date" value={date} min={today} onChange={(e) => setDate(e.target.value)} className="mt-1" />
               </label>
             ) : (
               <>
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                   Every
-                  <select value={weekday} onChange={(e) => setWeekday(Number(e.target.value))} className={cn(FIELD, "mt-1 block pr-8")}>
+                  <Select value={weekday} onChange={(e) => setWeekday(Number(e.target.value))} wrapperClassName="mt-1 min-w-[9rem]">
                     {WEEKDAYS.map((w, i) => <option key={w} value={i}>{w}</option>)}
-                  </select>
+                  </Select>
                 </label>
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                   Repeat
-                  <select value={every} onChange={(e) => setEvery(Number(e.target.value))} className={cn(FIELD, "mt-1 block pr-8")}>
+                  <Select value={every} onChange={(e) => setEvery(Number(e.target.value))} wrapperClassName="mt-1 min-w-[11rem]">
                     <option value={1}>Every week</option>
                     <option value={2}>Every 2 weeks</option>
                     <option value={4}>Every 4 weeks</option>
-                  </select>
+                  </Select>
                 </label>
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                   From
-                  <input type="date" value={from} min={today} onChange={(e) => setFrom(e.target.value)} className={cn(FIELD, "mt-1 block")} />
+                  <Input type="date" value={from} min={today} onChange={(e) => setFrom(e.target.value)} className="mt-1" />
                 </label>
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                   To
-                  <input type="date" value={to} min={from || today} onChange={(e) => setTo(e.target.value)} className={cn(FIELD, "mt-1 block")} />
+                  <Input type="date" value={to} min={from || today} onChange={(e) => setTo(e.target.value)} className="mt-1" />
                 </label>
               </>
             )}
             <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
               Seats per batch
-              <input
+              <Input
                 type="number"
                 min={1}
                 max={100}
                 value={capacity}
                 onChange={(e) => setCapacity(e.target.value)}
-                aria-invalid={!seatsOk}
-                className={cn(FIELD, "mt-1 block w-28")}
+                invalid={!seatsOk}
+                className="mt-1 w-28"
               />
             </label>
-            <Button type="submit" className="h-10" loading={busy} disabled={fresh.length === 0 || !seatsOk}>
+            <Button type="submit" loading={busy} disabled={fresh.length === 0 || !seatsOk}>
               Add {fresh.length || ""} {fresh.length === 1 ? "batch" : "batches"}
             </Button>
           </div>
@@ -346,7 +377,7 @@ function BatchRow({ d, days, onChanged }: { d: AdminDeparture; days: number; onC
         )}
       </td>
       <td className={cell}>
-        <input
+        <Input
           type="number"
           min={1}
           max={100}
@@ -354,11 +385,11 @@ function BatchRow({ d, days, onChanged }: { d: AdminDeparture; days: number; onC
           aria-label={`Capacity, ${label}`}
           onChange={(e) => setCapacity(e.target.value)}
           onBlur={() => saveSeats(capacity, d.capacity, 1, "capacity", setCapacity)}
-          className={cn(FIELD, "h-9 w-20")}
+          className="h-9 w-20"
         />
       </td>
       <td className={cell}>
-        <input
+        <Input
           type="number"
           min={0}
           max={100}
@@ -366,7 +397,7 @@ function BatchRow({ d, days, onChanged }: { d: AdminDeparture; days: number; onC
           aria-label={`Seats sold offline, ${label}`}
           onChange={(e) => setOffline(e.target.value)}
           onBlur={() => saveSeats(offline, d.offlineSeats, 0, "offlineSeats", setOffline)}
-          className={cn(FIELD, "h-9 w-20")}
+          className="h-9 w-20"
         />
       </td>
       <td className={cn(cell, "tabular-nums")}>{d.onlineSeats}</td>
@@ -374,7 +405,7 @@ function BatchRow({ d, days, onChanged }: { d: AdminDeparture; days: number; onC
         <Badge tone={SEAT_TONE[seatStatus(d)]}>{seatLabel(d)}</Badge>
       </td>
       <td className={cell}>
-        <input
+        <Input
           type="text"
           maxLength={30}
           value={tag}
@@ -382,20 +413,17 @@ function BatchRow({ d, days, onChanged }: { d: AdminDeparture; days: number; onC
           aria-label={`Label, ${label}`}
           onChange={(e) => setTag(e.target.value)}
           onBlur={() => tag.trim() !== d.tag && void save({ tag })}
-          className={cn(FIELD, "h-9 w-36")}
+          className="h-9 w-36"
         />
       </td>
       <td className={cell}>
-        <input
-          type="checkbox"
-          checked={d.closed}
-          aria-label={`Closed, ${label}`}
-          onChange={(e) => void save({ closed: e.target.checked })}
-          className="h-4 w-4 accent-emerald-600"
-        />
+        {/* The label widens the click target to 44px around the 16px box. */}
+        <label className="-m-3 inline-flex cursor-pointer p-3">
+          <Checkbox checked={d.closed} aria-label={`Closed, ${label}`} onChange={(e) => void save({ closed: e.target.checked })} />
+        </label>
       </td>
       <td className={cn(cell, "text-right")}>
-        <Button variant="ghost" size="icon" onClick={() => void remove()} aria-label={`Delete ${label}`}>
+        <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => void remove()} aria-label={`Delete ${label}`}>
           <Trash2 className="h-4 w-4 text-red-600" aria-hidden />
         </Button>
       </td>

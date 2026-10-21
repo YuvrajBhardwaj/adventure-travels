@@ -7,6 +7,7 @@ import { destinations, sortOptions } from "@/data/destinations";
 import SmartImage from "@/components/SmartImage";
 import { FadeUp } from "@/components/MotionWrapper";
 import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -213,7 +214,7 @@ export default function DestinationsPage() {
                     <div className="mt-5 border-t border-slate-100 pt-4 dark:border-white/10">
                       <Link
                         href={`/treks?destination=${encodeURIComponent(dest.slug)}`}
-                        className={buttonVariants({ variant: "outline", className: "w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50" })}
+                        className={cn(buttonVariants({ variant: "outline" }), "w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50")}
                       >
                         View {dest.popularTreks.length} {dest.popularTreks.length === 1 ? 'Trek' : 'Treks'}
                         <svg className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-1 motion-reduce:transition-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
@@ -242,10 +243,7 @@ export default function DestinationsPage() {
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Link
                 href="/contact"
-                className={buttonVariants({
-                  size: "lg",
-                  className: "bg-white px-8 text-emerald-700 shadow-lg hover:bg-emerald-50 hover:shadow-xl focus-visible:ring-white focus-visible:ring-offset-emerald-600",
-                })}
+                className={cn(buttonVariants({ size: "lg" }), "bg-white px-8 text-emerald-700 shadow-lg hover:bg-emerald-50 hover:shadow-xl focus-visible:ring-white focus-visible:ring-offset-emerald-600")}
               >
                 Plan My Trek
               </Link>
@@ -253,11 +251,7 @@ export default function DestinationsPage() {
                 href="https://wa.me/917817912062?text=Hi!%20I%20need%20help%20choosing%20a%20trek."
                 target="_blank"
                 rel="noopener noreferrer"
-                className={buttonVariants({
-                  variant: "outline",
-                  size: "lg",
-                  className: "border-2 border-white px-8 text-white hover:bg-white hover:text-emerald-700 focus-visible:ring-white focus-visible:ring-offset-emerald-600",
-                })}
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "border-2 border-white px-8 text-white hover:bg-white hover:text-emerald-700 focus-visible:ring-white focus-visible:ring-offset-emerald-600")}
               >
                 Chat on WhatsApp
               </a>

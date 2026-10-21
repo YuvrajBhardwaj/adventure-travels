@@ -222,12 +222,12 @@ export default function CoursesPageClient() {
                         {course.level}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between border-t border-slate-100 pt-4">
-                      <div>
+                    <div className="flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+                      <div className="min-w-0">
                         <span className="text-2xl font-bold text-slate-900">{course.tiers ? "From " : ""}<Price inr={displayPrice} /></span>
                         <span className="ml-1 text-sm text-slate-500">/ person</span>
                       </div>
-                      <span className="inline-flex items-center gap-1 font-semibold text-emerald-700 transition-transform duration-150 ease-out group-hover:translate-x-1 motion-reduce:transition-none">
+                      <span className="inline-flex flex-shrink-0 items-center gap-1 whitespace-nowrap font-semibold text-emerald-700 transition-transform duration-150 ease-out group-hover:translate-x-1 motion-reduce:transition-none">
                         View Course
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                       </span>
@@ -314,11 +314,7 @@ export default function CoursesPageClient() {
             href="https://wa.me/917817912062?text=Hi!%20I'm%20interested%20in%20the%20skiing/snowboarding%20course%20in%20Auli."
             target="_blank"
             rel="noopener noreferrer"
-            className={buttonVariants({
-              size: "lg",
-              className:
-                "group bg-white px-8 text-sky-700 shadow-lg shadow-sky-900/20 hover:bg-sky-50 hover:shadow-xl hover:shadow-sky-900/30 focus-visible:ring-white focus-visible:ring-offset-sky-600",
-            })}
+            className={cn(buttonVariants({ size: "lg" }), "group bg-white px-8 text-sky-700 shadow-lg shadow-sky-900/20 hover:bg-sky-50 hover:shadow-xl hover:shadow-sky-900/30 focus-visible:ring-white focus-visible:ring-offset-sky-600")}
           >
             Book on WhatsApp
             <svg className="h-5 w-5 transition-transform duration-150 ease-out group-hover:translate-x-1 motion-reduce:transition-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>

@@ -307,7 +307,7 @@ export default function FooterV2() {
                   }}
                   invalid={status === "error"}
                   aria-describedby="footer-newsletter-msg"
-                  className="min-w-0 flex-1 dark:aria-[invalid=true]:border-red-400/70"
+                  className="min-w-0 md:flex-1 lg:flex-none dark:aria-[invalid=true]:border-red-400/70"
                 />
                 <Button type="submit" className="shrink-0 focus-visible:ring-offset-navy">
                   Subscribe

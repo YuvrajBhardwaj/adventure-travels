@@ -5,7 +5,7 @@ import { Spinner } from "./spinner";
 
 // shadcn/ui-style Button, wired to this site's emerald palette (no Radix dependency).
 // Links that look like buttons use buttonVariants(...) on the <a>/<Link>.
-const buttonVariants = cva(
+const baseButtonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-[color,background-color,border-color,box-shadow,transform,opacity] duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60 aria-disabled:pointer-events-none aria-disabled:opacity-60 motion-reduce:transition-none motion-reduce:active:scale-100",
   {
     variants: {
@@ -30,9 +30,12 @@ const buttonVariants = cva(
   }
 );
 
+/** cva plus tailwind-merge, so a caller's `className` (e.g. `bg-white`) replaces the variant's own class instead of competing with it. */
+const buttonVariants = (options?: Parameters<typeof baseButtonVariants>[0]) => cn(baseButtonVariants(options));
+
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+    VariantProps<typeof baseButtonVariants> {
   /** Shows a spinner before the label, sets aria-busy and blocks further presses. */
   loading?: boolean;
 }

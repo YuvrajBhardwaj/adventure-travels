@@ -629,22 +629,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ========== SKELETON LOADING ========== */
-/* Apply to a positioned placeholder behind an image while it loads. */
-
-.skeleton {
-  position: relative;
-  overflow: hidden;
-  background: var(--color-surface);
-}
-
-.skeleton::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-  animation: skeleton-shimmer 1.6s ease-in-out infinite;
-}
+/* The kit <Skeleton> (src/components/ui/skeleton.tsx) uses .ui-skeleton below. */
 
 @keyframes skeleton-shimmer {
   100% {

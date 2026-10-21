@@ -180,7 +180,7 @@ export default function ActivitiesPage() {
               from beginner nursery slopes to intermediate runs, all beneath the gaze of Nanda Devi.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
-              <Link href="/courses" className={buttonVariants({ size: "lg", className: "group px-7" })}>
+              <Link href="/courses" className={cn(buttonVariants({ size: "lg" }), "group px-7")}>
                 View Courses
                 <svg className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5 motion-reduce:transition-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -232,7 +232,7 @@ export default function ActivitiesPage() {
                   <p className="font-heading text-xl font-bold text-foreground">From ₹10,000 <span className="text-xs font-normal text-muted">/ 7 days</span></p>
                   <div className="flex flex-wrap gap-2">
                     <Link href="/courses" className={buttonVariants()}>View Course</Link>
-                    <a href={`https://wa.me/917817912062?text=${encodeURIComponent("Hi! I'm interested in the Skiing course in Auli.")}`} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: "outline", className: "border-emerald-600 text-emerald-700 hover:bg-emerald-50" })}>Book</a>
+                    <a href={`https://wa.me/917817912062?text=${encodeURIComponent("Hi! I'm interested in the Skiing course in Auli.")}`} target="_blank" rel="noopener noreferrer" className={cn(buttonVariants({ variant: "outline" }), "border-emerald-600 text-emerald-700 hover:bg-emerald-50")}>Book</a>
                   </div>
                 </div>
               </div>
@@ -264,7 +264,7 @@ export default function ActivitiesPage() {
                   <p className="font-heading text-xl font-bold text-foreground">₹35,000 <span className="text-xs font-normal text-muted">/ 7 days</span></p>
                   <div className="flex flex-wrap gap-2">
                     <Link href="/courses" className={buttonVariants()}>View Course</Link>
-                    <a href={`https://wa.me/917817912062?text=${encodeURIComponent("Hi! I'm interested in the Snowboarding course in Auli.")}`} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: "outline", className: "border-emerald-600 text-emerald-700 hover:bg-emerald-50" })}>Book</a>
+                    <a href={`https://wa.me/917817912062?text=${encodeURIComponent("Hi! I'm interested in the Snowboarding course in Auli.")}`} target="_blank" rel="noopener noreferrer" className={cn(buttonVariants({ variant: "outline" }), "border-emerald-600 text-emerald-700 hover:bg-emerald-50")}>Book</a>
                   </div>
                 </div>
               </div>
@@ -374,7 +374,7 @@ export default function ActivitiesPage() {
                       </div>
 
                       {/* CTA */}
-                      <Link href={act.cta.href} className={buttonVariants({ size: "lg", className: "group/cta px-6" })}>
+                      <Link href={act.cta.href} className={cn(buttonVariants({ size: "lg" }), "group/cta px-6")}>
                         {act.cta.label}
                         <svg className="h-4 w-4 transition-transform duration-150 ease-out group-hover/cta:translate-x-0.5 motion-reduce:transition-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -500,7 +500,7 @@ export default function ActivitiesPage() {
                 href="https://wa.me/917817912062?text=Hi!%20I'm%20interested%20in%20restricted%20area%20trekking%20(Mana/Niti/Rimkhim)."
                 target="_blank"
                 rel="noopener noreferrer"
-                className={buttonVariants({ className: "focus-visible:ring-offset-navy" })}
+                className={cn(buttonVariants(), "focus-visible:ring-offset-navy")}
               >
                 Get Permit Now
               </a>
@@ -550,10 +550,7 @@ export default function ActivitiesPage() {
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Link
                 href="/contact"
-                className={buttonVariants({
-                  size: "lg",
-                  className: "bg-white px-8 text-emerald-700 shadow-lg hover:bg-emerald-50 hover:shadow-xl focus-visible:ring-white focus-visible:ring-offset-emerald-600",
-                })}
+                className={cn(buttonVariants({ size: "lg" }), "bg-white px-8 text-emerald-700 shadow-lg hover:bg-emerald-50 hover:shadow-xl focus-visible:ring-white focus-visible:ring-offset-emerald-600")}
               >
                 Plan My Trip
               </Link>
@@ -561,11 +558,7 @@ export default function ActivitiesPage() {
                 href="https://wa.me/917817912062?text=Hi!%20I'm%20interested%20in%20an%20adventure."
                 target="_blank"
                 rel="noopener noreferrer"
-                className={buttonVariants({
-                  variant: "outline",
-                  size: "lg",
-                  className: "border-2 border-white px-8 text-white hover:bg-white hover:text-emerald-700 focus-visible:ring-white focus-visible:ring-offset-emerald-600",
-                })}
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "border-2 border-white px-8 text-white hover:bg-white hover:text-emerald-700 focus-visible:ring-white focus-visible:ring-offset-emerald-600")}
               >
                 Chat on WhatsApp
               </a>

@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import WhatsAppFallback from "@/components/WhatsAppFallback";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import { EASE, transition } from "@/lib/motion";
@@ -265,6 +266,8 @@ export default function CourseDetailClient({ course }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [bookError, setBookError] = useState("");
+  // The booking service couldn't be reached or isn't set up: nothing was saved, so offer WhatsApp instead of "try again".
+  const [bookUnavailable, setBookUnavailable] = useState(false);
   // Set once the server has stored the booking — enables "Pay online" and the account hint.
   const [saved, setSaved] = useState<{ id: string; amount: number | null; signedIn: boolean } | null>(null);
   const [lightbox, setLightbox] = useState<number | null>(null);
@@ -368,6 +371,7 @@ export default function CourseDetailClient({ course }: Props) {
   const handleBook = async (e: React.FormEvent) => {
     e.preventDefault();
     setBookError("");
+    setBookUnavailable(false);
     setSubmitting(true);
     try {
       // Attach the login (if any) so the booking lands in the user's account.
@@ -393,16 +397,36 @@ export default function CourseDetailClient({ course }: Props) {
         }),
       });
       const result = await response.json().catch(() => null);
-      // 503 = nothing was saved; the error banner below offers the pre-filled WhatsApp fallback (FR-061).
+      // Not found, a server error (5xx) or a non-JSON reply means the booking service isn't reachable: nothing was saved
+      // and retrying can't help, so show the WhatsApp fallback (FR-061). Other errors carry a message
+      // the visitor can act on (bad date, group size, ...).
+      if (response.status === 404 || response.status >= 500 || result === null) {
+        setBookUnavailable(true);
+        return;
+      }
       if (!response.ok) throw new Error(result?.error || "We couldn't send your booking request. Please try again.");
       setSaved(result?.bookingId ? { id: result.bookingId, amount: result.amount ?? null, signedIn: Boolean(token) } : null);
       setSent(true);
     } catch (err) {
-      setBookError(err instanceof Error ? err.message : "We couldn't send your booking request. Please try again.");
+      // fetch() itself failed (offline, blocked): same as unreachable.
+      if (err instanceof TypeError) setBookUnavailable(true);
+      else setBookError(err instanceof Error ? err.message : "We couldn't send your booking request. Please try again.");
     } finally {
       setSubmitting(false);
     }
   };
+
+  // Never lose the lead: the same details, pre-filled for WhatsApp.
+  const fallbackDetails = [
+    `Hi! I'd like to book the ${course.name} (${course.type}) in Auli.`,
+    bookingForm.date && `Preferred date: ${bookingForm.date}`,
+    `Group size: ${bookingForm.groupSize}`,
+    selectedTier && `Package: ${selectedTier.name} (${STAY_LABELS[stay]}) — Rs.${total.toLocaleString("en-IN")}`,
+    bookingForm.name.trim() && `Name: ${bookingForm.name.trim()}`,
+    bookingForm.phone.trim() && `Phone: ${bookingForm.phone.trim()}`,
+    bookingForm.email.trim() && `Email: ${bookingForm.email.trim()}`,
+    bookingForm.message.trim() && `Message: ${bookingForm.message.trim()}`,
+  ].filter((line): line is string => Boolean(line));
 
   const waLink = `${WA_BASE}${encodeURIComponent(
     `Hi! I'm interested in the ${course.name} (${course.type}) in Auli.`
@@ -468,8 +492,8 @@ export default function CourseDetailClient({ course }: Props) {
       <section id="course-content" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 -mt-6">
         <div className="rounded-2xl bg-white/95 p-4 shadow-2xl shadow-slate-950/40 ring-1 ring-white/40 backdrop-blur-xl sm:p-8">
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Main Content */}
-          <div className="flex-1">
+          {/* Main Content (min-w-0 lets the column shrink beside the sidebar instead of widening the page at 1024px) */}
+          <div className="min-w-0 flex-1">
             {/* Tab Navigation */}
             <div className="sticky top-16 z-30 mb-8 border-b border-slate-200 bg-white/90 backdrop-blur-md">
               <div role="tablist" aria-label="Course details" className="flex gap-1 overflow-x-auto py-1">
@@ -869,7 +893,7 @@ export default function CourseDetailClient({ course }: Props) {
                         saved.signedIn ? (
                           <Link
                             href={`/checkout?course=${saved.id}`}
-                            className={buttonVariants({ size: "lg", className: "mb-4" })}
+                            className={cn(buttonVariants({ size: "lg" }), "mb-4")}
                           >
                             Pay online with UPI
                           </Link>
@@ -975,31 +999,12 @@ export default function CourseDetailClient({ course }: Props) {
                           placeholder="Any special requirements or questions..."
                         />
                       </div>
+                      {bookUnavailable && (
+                        <WhatsAppFallback message="We couldn't save your request online right now." details={fallbackDetails} />
+                      )}
                       {bookError && (
                         <div role="alert" className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-100">
                           <p>{bookError}</p>
-                          {/* Never lose the lead: hand the same details to WhatsApp, pre-filled. */}
-                          <a
-                            href={`${WA_BASE}${encodeURIComponent(
-                              [
-                                `Hi! I'd like to book the ${course.name} (${course.type}) in Auli.`,
-                                bookingForm.date && `Preferred date: ${bookingForm.date}`,
-                                `Group size: ${bookingForm.groupSize}`,
-                                selectedTier && `Package: ${selectedTier.name} (${STAY_LABELS[stay]}) — Rs.${total.toLocaleString("en-IN")}`,
-                                bookingForm.name.trim() && `Name: ${bookingForm.name.trim()}`,
-                                bookingForm.phone.trim() && `Phone: ${bookingForm.phone.trim()}`,
-                                bookingForm.email.trim() && `Email: ${bookingForm.email.trim()}`,
-                                bookingForm.message.trim() && `Message: ${bookingForm.message.trim()}`,
-                              ]
-                                .filter(Boolean)
-                                .join("\n")
-                            )}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={buttonVariants({ className: "mt-3" })}
-                          >
-                            Send these details on WhatsApp
-                          </a>
                         </div>
                       )}
                       <Button type="submit" size="lg" loading={submitting} className="w-full px-8 sm:w-auto">
@@ -1061,7 +1066,7 @@ export default function CourseDetailClient({ course }: Props) {
                 href={waLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={buttonVariants({ size: "lg", className: "mb-3 w-full" })}
+                className={cn(buttonVariants({ size: "lg" }), "mb-3 w-full")}
               >
                 <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                 Book on WhatsApp
@@ -1110,10 +1115,7 @@ export default function CourseDetailClient({ course }: Props) {
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
-            className={buttonVariants({
-              variant: "outline",
-              className: "flex-shrink-0 border-2 border-emerald-600 px-4 text-emerald-700 hover:bg-emerald-50",
-            })}
+            className={cn(buttonVariants({ variant: "outline" }), "flex-shrink-0 border-2 border-emerald-600 px-4 text-emerald-700 hover:bg-emerald-50")}
           >
             WhatsApp
           </a>

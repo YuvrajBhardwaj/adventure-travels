@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useReducedMotion } from "framer-motion";
 
 /**
@@ -13,16 +13,20 @@ export default function CourseVideoBackdrop({ video, poster }: { video: string; 
   const vidRef = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
-  // ponytail: poster-only on phones — a 44MB .MOV backdrop isn't worth the jank
-  const [smallScreen, setSmallScreen] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches
+  // ponytail: poster-only on phones — a 44MB .MOV backdrop isn't worth the jank.
+  // useSyncExternalStore: the server HTML (and hydration) assume a phone, so no <video> is
+  // in the static HTML; desktops mount it right after hydration, with no hydration mismatch.
+  const smallScreen = useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia("(max-width: 768px)");
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia("(max-width: 768px)").matches,
+    () => true
   );
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    const onChange = (e: MediaQueryListEvent) => setSmallScreen(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
+
+  const showVideo = !reduceMotion && !failed && !smallScreen;
 
   // ponytail: pause when tab hidden — saves battery, one line
   useEffect(() => {
@@ -31,9 +35,7 @@ export default function CourseVideoBackdrop({ video, poster }: { video: string; 
     const onVis = () => (document.hidden ? v.pause() : v.play().catch(() => {}));
     document.addEventListener("visibilitychange", onVis);
     return () => document.removeEventListener("visibilitychange", onVis);
-  }, []);
-
-  const showVideo = !reduceMotion && !failed && !smallScreen;
+  }, [showVideo]);
 
   return (
     <div className="fixed inset-0 z-0" aria-hidden>

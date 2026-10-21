@@ -30,10 +30,7 @@ function CountUp({ value, suffix, phase }: { value: number; suffix: string; phas
       if (p < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => {
-      cancelAnimationFrame(raf);
-      el.textContent = format(value);
-    };
+    return () => cancelAnimationFrame(raf);
   }, [phase, value]);
 
   return (

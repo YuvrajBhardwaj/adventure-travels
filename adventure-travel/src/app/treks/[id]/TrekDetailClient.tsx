@@ -1400,10 +1400,10 @@ function ItineraryTab({ trek, onChoosePackage }: { trek: Trek; onChoosePackage: 
                     aria-expanded={expanded}
                     aria-controls={panelId}
                     onClick={() => toggleDay(day.day)}
-                    className="flex w-full items-start justify-between gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                    className="flex min-h-11 w-full items-start justify-between gap-3 rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                   >
                     <span>{day.title}</span>
-                    <svg className={`mt-1 h-5 w-5 shrink-0 text-emerald-700 transition-transform duration-200 motion-reduce:transition-none ${expanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                    <svg className={`mt-1 h-5 w-5 shrink-0 text-emerald-700 transition-transform duration-150 ease-out motion-reduce:transition-none ${expanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                   </button>
@@ -1457,22 +1457,22 @@ function ItineraryTab({ trek, onChoosePackage }: { trek: Trek; onChoosePackage: 
       </div>
       <section aria-labelledby="package-options-title" className="mt-10">
         <div className="mb-4">
-          <h3 id="package-options-title" className="text-2xl font-bold text-foreground">Package options</h3>
+          <h3 id="package-options-title" className="text-2xl font-bold tracking-[-0.02em] text-foreground">Package options</h3>
           <p className="mt-1 text-sm text-muted">Choose a package to continue to the reservation form. Prices are per person.</p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           {packageOptions.map((option) => (
-            <article key={option.name} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-card">
+            <article key={option.name} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-white/10 dark:bg-card">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h4 className="text-lg font-bold text-foreground">{option.name}</h4>
+                  <h4 className="text-lg font-semibold text-foreground">{option.name}</h4>
                   <p className="mt-1 text-sm text-muted">{option.detail}</p>
                 </div>
-                <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">{trek.days} days</span>
+                <Badge tone="emerald" className="shrink-0">{trek.days} days</Badge>
               </div>
               <p className="mt-4 text-3xl font-bold text-foreground"><Price inr={option.price} /> <span className="text-sm font-normal text-muted">/ person</span></p>
               <details className="mt-4 border-t border-slate-100 pt-4 text-sm dark:border-white/10">
-                <summary className="cursor-pointer font-semibold text-emerald-700 marker:text-emerald-600 dark:text-emerald-300">Show package details</summary>
+                <summary className="flex min-h-11 cursor-pointer items-center font-semibold text-emerald-700 marker:text-emerald-600 dark:text-emerald-300">Show package details</summary>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
                   <div>
                     <h5 className="font-semibold text-foreground">Price includes</h5>
@@ -1488,7 +1488,7 @@ function ItineraryTab({ trek, onChoosePackage }: { trek: Trek; onChoosePackage: 
                   </div>
                 </div>
               </details>
-              <Button type="button" className="mt-5 w-full" onClick={() => onChoosePackage(option.sharing)}>
+              <Button type="button" size="lg" className="mt-5 w-full" onClick={() => onChoosePackage(option.sharing)}>
                 Choose package
               </Button>
             </article>

@@ -28,7 +28,20 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
   - **Browser code:** it now contains the Supabase project.
   - No test account or booking was created.
 
-### 21 Oct 2026: Plan for site-wide UI consistency and polish — uncommitted
+### 22 Oct 2026: Site-wide UI consistency and polish; course booking fallback; local API runner — branch `preview/trek-slideshows`, preview deploy
+- **For visitors:**
+  - **One look everywhere.** The same buttons, fields, dropdowns, pop-ups and side drawers on every page; off-brand cyan, violet and indigo are gone; brand colours unchanged. The account pages stay dark navy but use the same components.
+  - **No more full-screen preloader.** Pages and photos show straight away, also with slow scripts. Hero text and buttons no longer fade in from invisible.
+  - **Modern loading.** Placeholders shaped like the real content (dashboard, checkout, admin, forms) instead of "Loading…" text; they appear only if the wait is over 150 ms. Buttons show a spinner while saving or paying and can't be pressed twice.
+  - **Smoother motion.** One set of animation speeds; pop-ups, drawers and menus can be closed mid-animation; reduced motion is respected everywhere.
+  - **Easier on phones.** Tap targets are 44 px or larger; the course page no longer scrolls sideways at 1024 px; activity descriptions are readable without hover.
+  - **Course booking form.** If the booking service can't be reached it now shows "We couldn't save your request online right now" with the WhatsApp button, instead of a red "please try again". Real validation messages (bad date, group size) still show inline.
+- **Business:** the FAQ page now exposes all 70 answers, and the contact-page FAQ and the terms tabs expose their text to search engines (visitors see the same page). No fake loading or scarcity added. Open decisions D-01 to D-12 (invented ratings, "10% OFF", "No-cost EMI", generated course availability, opening hours) are in `specs/002-ui-polish-consistency/audit.md` and TODO.md.
+- **Backend:** no change to `api/`, SQL, prices or payment logic. New developer tool `npm run dev:api` (`adventure-travel/scripts/dev-api.mjs`): runs the `api/*.js` functions on http://localhost:3100 and forwards the rest to `npm run dev`, so bookings work locally without a Vercel login. It uses the keys in `.env.local`, so a submitted booking is a real one in that Supabase project.
+- **Code:** new package `@radix-ui/react-dialog`; kit additions in `src/components/ui/` (input, textarea, label, select, checkbox, spinner, empty-state, dialog, sheet, dark-scope; Button `loading`, `destructive`, `link`); `src/lib/motion.ts`; `navy` colour tokens; removed `Preloader`, the Poppins font, the `.skeleton` class and the old admin `FIELD` style. Eight groups of pages were restyled in parallel; the page-by-page audit (about 190 rows) is `specs/002-ui-polish-consistency/audit.md`.
+- **Checks:** `tsc` clean, lint 0 errors, 65 tests pass, production build succeeds. 47 exported pages compared against a baseline: nothing readable was lost because of this work. Layout shift 0 on 7 pages; largest paint about 1 s on a throttled phone profile. Not yet run: Slow-4G walk, real-phone smoothness, keyboard and contrast pass, signed-in flows (dashboard, checkout, admin). These need a person and a login.
+
+### 21 Oct 2026: Plan for site-wide UI consistency and polish
 - Design plan for spec 002 in `specs/002-ui-polish-consistency/`: `plan.md`, `research.md` (14 decisions), `data-model.md`, `contracts/components.md`, `contracts/motion.md` and `quickstart.md` (checks V1–V10). No code changed yet.
 - **For visitors (once built):**
   - no full-screen preloader; photos and sections show straight away

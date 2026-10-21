@@ -63,12 +63,20 @@ That covers most of the items below. The manual steps are listed in case you pre
 - [ ] **SEO agent in git?** It's ignored with the rest of `.claude/`. Should it be shared in the repo?
 
 ## 5. Code and content
-- [ ] **UI consistency and polish** (spec and plan: `specs/002-ui-polish-consistency/`).
-  - [x] ~~Confirm the defaults~~ (21 Oct: keep the navy account pages; remove the preloader)
-  - [x] ~~Design plan~~ (21 Oct: `plan.md` and its research, contracts and checks)
-  - [ ] **Dev:** `/speckit-tasks`, then `/speckit-implement`
-  - [ ] **Dev:** before coding starts, build the current site once into `out-baseline/` for the text check
-  - [ ] **You:** OK to add one package, `@radix-ui/react-dialog` (accessible dialogs and drawers)? The plan assumes yes.
+- [x] ~~**UI consistency and polish**~~ built 22 Oct (`specs/002-ui-polish-consistency/`: 70 of 72 tasks done; deployed as a preview). Still open:
+  - [ ] **You:** click through on a real phone and with a real login: dashboard, checkout, admin (bookings, customers, payments, departures), the mobile menu and a trek photo viewer. These can't be tested without a login. Tell me anything odd.
+  - [ ] **Dev:** after that, V6 to V9 of the quickstart (Slow-4G walk, phone smoothness, keyboard and contrast, signed-in flows), then mark the audit rows `verified`.
+  - [ ] **Dev:** the checkout page stayed invisible for 10 s in a headless test with a fake booking id (also before this work). Check once with a real session.
+- [ ] **UI polish: your decisions** (found while polishing; none changed):
+  - [ ] Invented or unsourced claims: crossed-out "10% OFF" price on trek pages; "No-cost EMI · Free Trek Date Change"; "4.9 / 1,200+ Google Reviews" and "Since 2010" in the footer; "5,000+ Happy Adventurers", "100% Safety Record", "4.8/5" on /activities; "100% Safe / 4.9+ Rating" in the home call to action. Back each with real data or remove it.
+  - [ ] Course batch dates and "Filling Fast" / "Sold Out" labels are generated from a repeating pattern, not real seats. Wire them to real seats or remove them (trek pages already use live departures).
+  - [ ] Opening hours differ: the contact page says Mon to Fri 9 to 6, the FAQ says Mon to Sat 9 to 7.
+  - [ ] Home says "18 treks" but there are 21 routes.
+  - [ ] Show the floating WhatsApp button on every page (today only the home page has it).
+  - [ ] A signed-out visitor submitting a trek reservation is sent to /signup before WhatsApp opens and loses the form. Always hand the details to WhatsApp first?
+  - [ ] The footer newsletter shows a success message but saves nothing: wire it up or replace it with a WhatsApp sign-up.
+  - [ ] Booking-boost ideas from the agents (sticky Pay bar on phones, a WhatsApp button on every trek card and booking card, a balance-due banner on the dashboard, a trust line under the hero buttons): say which to build.
+- [ ] **Traffic and bookings plan** is in `adventure-travel/docs/seo/2026-10-21-traffic-and-bookings-plan.md`: Google Business Profile, first reviews, Search Console, the 308 redirect, directory listings, WhatsApp Business, 13 questions only you can answer.
 - [x] ~~Commit the navbar redesign and the `.gitignore` change~~ (done: `1be764a`, pushed to the preview branch).
 - [ ] **Dev:** Commit `CHANGELOG.md`, `TODO.md` and the `CLAUDE.md` note.
 - [x] ~~Re-save the sideways Panpatia photos and put them back in the slideshow~~ (done 19 Oct).

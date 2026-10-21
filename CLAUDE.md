@@ -27,6 +27,7 @@ The owner tracks the project through two root files. With every change, in the s
 
 ```bash
 npm run dev                  # next dev on http://localhost:3000 (does NOT serve api/*.js — they 404)
+npm run dev:api              # with `npm run dev` running: also serves api/*.js, at http://localhost:3100 (no Vercel login; bookings are saved to the Supabase project in .env.local)
 npx vercel dev               # dev server that also runs the api/ functions
 npm run lint                 # eslint
 npx tsc --noEmit             # type-check
@@ -49,7 +50,7 @@ node scripts/setup-backend.mjs [--dry-run]   # Supabase migrations + auth config
 Next.js 16 App Router with **`output: "export"`** (fully static: no runtime server, no `headers()` or middleware, `images.unoptimized`) · React 19 · TypeScript (strict) · Tailwind CSS v4 · framer-motion (+ gsap) · Supabase (Auth + Postgres) · Vercel Node functions + Cron · Razorpay · nodemailer.
 
 - **Tailwind:** v4 has no `tailwind.config`. The theme is the `@theme inline { … }` block in `src/app/globals.css`.
-- **Fonts:** headings and nav use Space Grotesk (theme tokens plus an `h1–h6` base style), body text Inter, display Fraunces. `layout.tsx` also loads Poppins, but the theme doesn't use it.
+- **Fonts:** headings and nav use Space Grotesk (theme tokens plus an `h1–h6` base style), body text Inter, display Fraunces.
 - **Path alias:** `@/*` → `src/*`.
 
 ## Architecture
@@ -101,13 +102,15 @@ Next.js 16 App Router with **`output: "export"`** (fully static: no runtime serv
 `globals.css` defines the visual language; prefer its tokens and utilities to ad-hoc values:
 - **Colour tokens:** `primary` `#10B981` (emerald), `accent` `#F59E0B`, `secondary` `#0EA5E9`, `cta` `#F97316`, plus `background`, `foreground`, `card`, `muted` and `surface`.
 - **Utilities:** `glass*`, `text-gradient*`, `bg-gradient-*`, `py-section*`, `text-display-*`, and many `animate-*` keyframes.
-- **Dark site chrome:** `#0F172A` / `#0B1222` navy.
-- **Dark mode** exists only inside `ThemeScope` (admin and checkout). Elsewhere, `dark:` variants are inert.
-- **UI primitives** in `src/components/ui/`: `button`, `card`, `badge`, `skeleton`, `avatar`, `theme-scope`.
+- **Dark site chrome:** the `navy` / `navy-deep` / `navy-hero` tokens (`#0F172A` / `#0B1222` / `#0B1D33`). No hex colours or `cyan-*` in class names.
+- **Dark mode** exists inside `ThemeScope` (admin and checkout, visitor toggle) and `DarkScope` (account pages, forced). Elsewhere `dark:` variants are inert.
+- **UI kit** in `src/components/ui/` (shadcn-style, cva + `cn()`): `button` (variants `default|outline|ghost|destructive|link`, `loading`; use `buttonVariants` for links styled as buttons), `input`, `textarea`, `label`, `select` (native), `checkbox`, `card`, `badge`, `skeleton`, `spinner`, `empty-state`, `dialog` and `sheet` (Radix + framer-motion), `avatar`, `theme-scope`, `dark-scope`. Use these instead of hand-styled controls: controls `rounded-xl`, surfaces `rounded-2xl`, pills `rounded-full`.
+- **Loading:** layout-true `<Skeleton>` shapes (never "Loading…" text); a spinner only inside a busy control (`Button loading`). Nothing may hide content on first paint (no full-screen overlay, no `opacity:0` entrance for content in the static HTML).
+- **Motion tokens:** `src/lib/motion.ts` (`DURATION`, `EASE`, `SPRING`, `transition()`); Tailwind `ease-out` and `ease-in-out` use the same curves. Spec and audit: `specs/002-ui-polish-consistency/`.
 
 ### Animation
-- Default to inline framer-motion inside the component, **always gated on `useReducedMotion()`**.
-- `src/components/MotionWrapper.tsx` has shared wrappers (`FadeUp`, `StaggerContainer`/`StaggerItem`, `MagneticButton`, …) used across ~15 components; reuse them.
+- Default to inline framer-motion inside the component, **always gated on `useReducedMotion()`**, with values from `src/lib/motion.ts`.
+- `src/components/MotionWrapper.tsx` has the scroll-in reveals (`FadeUp`, `ScaleIn`, `StaggerContainer`/`StaggerItem`). They render visible in the static HTML and only hide content that starts below the fold. Reuse them.
 - `src/hooks/useReveal.ts` and the `reveal-*` CSS classes are legacy, barely used.
 
 ### Conventions
