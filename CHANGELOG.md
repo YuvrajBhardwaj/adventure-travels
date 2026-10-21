@@ -28,6 +28,17 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
   - **Browser code:** it now contains the Supabase project.
   - No test account or booking was created.
 
+### 22 Oct 2026: Modern icons on the trek overview tiles, stat strip and price card; nicer price card — uncommitted
+- **For visitors:** the 11 "Key Facts" tiles on every trek page (difficulty, duration, altitude, season, group size, basecamp, suitable for, accommodation, fitness, offloading, cloakroom) use modern line icons (Lucide) in soft gradient chips, each in a brand colour (emerald, sky, amber, orange; difficulty keeps its own colour). Tiles lift slightly on hover and the icon eases up. Same words and "Know more" pop-ups.
+- **Four-box strip under the trek photo** (duration, max elevation, group size, best season): Lucide icons in larger tinted chips (sky, green, orange, amber) on white cards with a soft shadow; same values and labels.
+- **Price card on trek pages** (the "Trek Cost" box):
+  - a soft green-to-sky header with the price in large type and "Joshimath to Joshimath" as a pill
+  - room-sharing prices in a tidy table; the rating as a star pill
+  - Lucide icons in tinted chips for What's Included, the info buttons, the three link tiles (Inclusions, Terms, Scholarships), the Optional extras and the trust row (replacing the 🔒 and ✓ characters)
+  - the next batch as a highlighted strip and a friendlier "Call Our Mountain Experts" block
+  - every word, price, phone number and button is unchanged; the "10% OFF" and "No-cost EMI · Free Trek Date Change" lines were restyled only (they are still open owner decisions)
+- **Code:** `adventure-travel/src/app/treks/[id]/TrekDetailClient.tsx` (`QuickInfo`): hand-drawn SVGs replaced with Lucide icons plus a `TILE_TONES` map. No new packages. Checked at 390 and 1280 px; lint and type-check clean.
+
 ### 22 Oct 2026: Site-wide UI consistency and polish; course booking fallback; local API runner — branch `preview/trek-slideshows`, preview deploy
 - **For visitors:**
   - **One look everywhere.** The same buttons, fields, dropdowns, pop-ups and side drawers on every page; off-brand cyan, violet and indigo are gone; brand colours unchanged. The account pages stay dark navy but use the same components.

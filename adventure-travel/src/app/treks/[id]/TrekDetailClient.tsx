@@ -13,7 +13,39 @@ import { useAuth } from "@/contexts/AuthContext";
 import { BackendUnavailableError, createTrekBooking } from "@/lib/auth";
 import WhatsAppFallback from "@/components/WhatsAppFallback";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
-import { Flower2, Leaf, Mountain, Snowflake, Sprout, Sun } from "lucide-react";
+import {
+  Backpack,
+  BadgeCheck,
+  BedDouble,
+  CalendarDays,
+  Car,
+  ChevronRight,
+  ClipboardList,
+  FileCheck2,
+  Flower2,
+  Footprints,
+  Gauge,
+  GraduationCap,
+  HeartPulse,
+  Info,
+  Leaf,
+  Lock,
+  Luggage,
+  MapPin,
+  Mountain,
+  Phone,
+  ShieldCheck,
+  Snowflake,
+  Sprout,
+  Star,
+  Sun,
+  Tent,
+  Timer,
+  UserCheck,
+  Users,
+  UtensilsCrossed,
+  type LucideIcon,
+} from "lucide-react";
 import { useDepartures, type DeparturesState } from "./useDepartures";
 import {
   batchLabel, datesBadge, groupByMonth, isBookable, seasonStrip, seatLabel, seatStatus,
@@ -29,6 +61,7 @@ import WallpaperCarousel, { type WallpaperSlide } from "@/components/WallpaperCa
 import ScrollProgressRing from "@/components/ScrollProgressRing";
 import Price, { PriceNote } from "@/components/Price";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input as TextInput } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -596,10 +629,7 @@ function PriceRoute({ trek, className }: { trek: Trek; className: string }) {
   if (!route) return null;
   return (
     <p className={`flex items-center gap-1 ${className}`}>
-      <svg className="h-3.5 w-3.5 shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
+      <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-600" strokeWidth={2} aria-hidden />
       <span className="sr-only">Price covers </span>
       {route}
     </p>
@@ -638,97 +668,102 @@ function BookingCard({
   const badge = badgeKind ? DATES_BADGE[badgeKind] : null;
   const nextBatch = dates.departures.find(isBookable);
 
-  const INCLUDED_UI = [
-    { icon: "tent", label: trek.stay?.label ?? "Twin Sharing Tent Accommodation", info: "inc-tent" as QuickInfoId },
-    { icon: "card", label: "All Permits & Entry Fees", info: "inc-permits" as QuickInfoId },
-    { icon: "med", label: "Daily Medical & Safety Check-ups", info: "inc-medical" as QuickInfoId },
-    { icon: "meal", label: "Freshly Cooked Meals on Trail", info: "inc-meals" as QuickInfoId },
+  const INCLUDED_UI: { icon: string; tone: Tone; label: string; info: QuickInfoId }[] = [
+    { icon: "tent", tone: "amber", label: trek.stay?.label ?? "Twin Sharing Tent Accommodation", info: "inc-tent" },
+    { icon: "card", tone: "sky", label: "All Permits & Entry Fees", info: "inc-permits" },
+    { icon: "med", tone: "emerald", label: "Daily Medical & Safety Check-ups", info: "inc-medical" },
+    { icon: "meal", tone: "orange", label: "Freshly Cooked Meals on Trail", info: "inc-meals" },
   ];
 
+  const BOOKING_ICONS: Record<string, LucideIcon> = {
+    tent: Tent,
+    card: FileCheck2,
+    med: HeartPulse,
+    meal: UtensilsCrossed,
+    taxi: Car,
+    backpack: Backpack,
+    bed: BedDouble,
+  };
   const icon = (name: string, cls: string) => {
-    const base = { className: `text-emerald-500 shrink-0 ${cls}` };
-    switch (name) {
-      case "tent":
-        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5M4.5 22.5L12 6l7.5 16.5M8.25 14.25l3.75-6 3.75 6M12 6V3.75" /></svg>;
-      case "card":
-        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" /></svg>;
-      case "med":
-        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>;
-      case "meal":
-        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 3.75v12.75M15.75 3.75a3.75 3.75 0 00-3.75 3.75v6h3.75M9.75 3.75v22.5" /></svg>;
-      case "taxi":
-        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M6 11.25L7.5 6h9l1.5 5.25M6 11.25h12M6 11.25a2.25 2.25 0 00-2.25 2.25v3a0.75 0 001.5 0v-3m14.25 0a0.75 0 001.5 0v3a2.25 2.25 0 01-2.25 2.25M6 11.25v7.5m12 3v-7.5" /></svg>;
-      case "backpack":
-        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M16 8V6a4 4 0 10-8 0v2M8 8h8M6 8h12a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2v-9a2 2 0 012-2zM9 20v-5h6v5" /></svg>;
-      case "bed":
-        return <svg {...base} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 3v18M21 6a2 2 0 00-2-2H9a2 2 0 00-2 2v8h14V6zM3 12h18M3 18h18" /></svg>;
-      case "star":
-        return <svg {...base} width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden><path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.4 4.32a1 1 0 00.95.69h4.56c.97 0 1.37 1.24.59 1.81l-3.69 2.68a1 1 0 00-.36 1.12l1.4 4.32c.3.92-.75 1.69-1.54 1.12l-3.68-2.68a1 1 0 00-1.18 0l-3.68 2.68c-.79.57-1.85-.2-1.55-1.12l1.4-4.32a1 1 0 00-.36-1.12L2 9.75c-.78-.57-.38-1.81.6-1.81h4.55a1 1 0 00.95-.69l1.4-4.32z" /></svg>;
-      default:
-        return null;
+    if (name === "star") {
+      return (
+        <svg className={`text-emerald-500 shrink-0 ${cls}`} width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+          <path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.4 4.32a1 1 0 00.95.69h4.56c.97 0 1.37 1.24.59 1.81l-3.69 2.68a1 1 0 00-.36 1.12l1.4 4.32c.3.92-.75 1.69-1.54 1.12l-3.68-2.68a1 1 0 00-1.18 0l-3.68 2.68c-.79.57-1.85-.2-1.55-1.12l1.4-4.32a1 1 0 00-.36-1.12L2 9.75c-.78-.57-.38-1.81.6-1.81h4.55a1 1 0 00.95-.69l1.4-4.32z" />
+        </svg>
+      );
     }
+    const Icon = BOOKING_ICONS[name];
+    return Icon ? <Icon className={cn("shrink-0", cls)} strokeWidth={1.75} aria-hidden /> : null;
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border-2 border-emerald-500 bg-white p-5 shadow-lg shadow-emerald-900/5 sm:p-6 dark:bg-card">
+    <div className="relative overflow-hidden rounded-2xl border border-emerald-200 bg-white shadow-xl shadow-emerald-900/10 dark:border-emerald-500/30 dark:bg-card">
       <div className="sr-only">Trek cost details</div>
 
-      {/* Header */}
-      <div className="relative z-10 flex items-start justify-between gap-3">
-        <h4 className="text-3xl font-semibold tracking-[-0.02em] text-foreground">Trek Cost</h4>
-        {badge && <Badge tone={badge.tone} className="mt-1.5 shrink-0">{badge.label}</Badge>}
+      {/* Price header */}
+      <div className="relative z-10 border-b border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-sky-50/60 px-5 pb-5 pt-5 sm:px-6 sm:pt-6 dark:border-white/10 dark:from-emerald-500/10 dark:via-transparent dark:to-sky-500/5">
+        <div className="flex items-start justify-between gap-3">
+          <h4 className="text-lg font-semibold tracking-[-0.01em] text-foreground">Trek Cost</h4>
+          {badge && <Badge tone={badge.tone} className="shrink-0">{badge.label}</Badge>}
+        </div>
+
+        <div className="mt-3">
+          <div className="flex items-center gap-2">
+            <span className="text-base font-semibold text-slate-500 line-through decoration-2 decoration-red-500/70">
+              <Price inr={oldPrice} />
+            </span>
+            <Badge tone="emerald">{discount}% OFF</Badge>
+          </div>
+          <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
+            {trek.roomSharing && <span className="text-sm text-muted">From</span>}
+            <span className="text-5xl font-bold tracking-tight text-foreground tabular-nums"><Price inr={trek.price} /></span>
+            <span className="text-sm text-muted">/ person</span>
+          </div>
+          <PriceRoute
+            trek={trek}
+            className="mt-3 w-fit rounded-full bg-white/80 px-3 py-1 text-sm font-semibold text-slate-700 ring-1 ring-emerald-200 dark:bg-white/5 dark:text-slate-200 dark:ring-emerald-500/30"
+          />
+          <PriceNote inr={trek.price} className="mt-2 text-muted" />
+        </div>
       </div>
 
-      {/* Price */}
-      <div className="relative z-10 mt-2">
-        <div className="flex items-center gap-2">
-          <span className="text-base font-semibold text-slate-500 line-through decoration-2 decoration-red-500/70">
-            <Price inr={oldPrice} />
-          </span>
-          <Badge tone="emerald">{discount}% OFF</Badge>
-        </div>
-        <div className="mt-1 flex items-baseline gap-1.5">
-          {trek.roomSharing && <span className="text-sm text-muted">From</span>}
-          <span className="text-4xl font-bold tracking-tight text-foreground"><Price inr={trek.price} /></span>
-          <span className="text-sm text-muted">/ person</span>
-        </div>
-        <PriceRoute trek={trek} className="mt-1 text-sm font-semibold text-slate-700 dark:text-slate-200" />
-        <PriceNote inr={trek.price} className="mt-2 text-muted" />
+      <div className="relative z-10 p-5 pt-4 sm:p-6 sm:pt-5">
         {trek.roomSharing && (
-          <ul className="mt-3 divide-y divide-slate-100 rounded-xl border border-slate-200 text-sm dark:divide-white/10 dark:border-white/10">
+          <ul className="mb-4 divide-y divide-slate-200/80 overflow-hidden rounded-xl bg-slate-50 text-sm ring-1 ring-slate-200/80 dark:divide-white/10 dark:bg-white/5 dark:ring-white/10">
             {trek.roomSharing.map((r) => (
-              <li key={r.label} className="flex items-center justify-between gap-3 px-3 py-2">
+              <li key={r.label} className="flex items-center justify-between gap-3 px-3.5 py-2.5">
                 <span className="text-slate-700 dark:text-slate-200">
                   {r.label} <span className="text-xs text-muted">· {r.perRoom} per room</span>
                 </span>
-                <span className="font-bold text-foreground"><Price inr={r.price} /></span>
+                <span className="font-bold text-foreground tabular-nums"><Price inr={r.price} /></span>
               </li>
             ))}
           </ul>
         )}
-      </div>
 
-      {/* Trust + rating */}
-      <div className="relative z-10 mt-4 space-y-2">
-        {rating != null && (
-          <p className="flex items-center gap-1.5 text-sm font-semibold text-emerald-700">
-            <span className="flex" aria-hidden>{[...Array(5)].map((_, i) => <span key={i}>{icon("star", "h-4 w-4 text-amber-400")}</span>)}</span>
-            <span>{rating}</span>
-            {reviews > 0 && (
-              <span className="font-medium text-muted">· {reviews >= 1000 ? `${(reviews / 1000).toFixed(1)}k+` : `${reviews}+`} people rated this trek</span>
-            )}
-          </p>
-        )}
-        <p className="text-xs text-muted">All-inclusive · No-cost EMI · Free Trek Date Change</p>
-      </div>
+        {/* Trust + rating */}
+        <div className="space-y-2">
+          {rating != null && (
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold">
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-amber-700 ring-1 ring-amber-200/70 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20">
+                <Star className="h-3.5 w-3.5 fill-current" aria-hidden />
+                <span>{rating}</span>
+              </span>
+              {reviews > 0 && (
+                <span className="font-medium text-muted">· {reviews >= 1000 ? `${(reviews / 1000).toFixed(1)}k+` : `${reviews}+`} people rated this trek</span>
+              )}
+            </p>
+          )}
+          <p className="text-xs text-muted">All-inclusive · No-cost EMI · Free Trek Date Change</p>
+        </div>
 
       {/* Included */}
       <div className="relative z-10 mt-5">
-        <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted">What&apos;s Included</p>
+        <p className="mb-2.5 mt-5 text-sm font-semibold text-foreground">What&apos;s Included</p>
         <ul className="space-y-2.5">
           {INCLUDED_UI.map((item) => (
             <li key={item.label} className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
-              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-100 dark:bg-emerald-500/10 dark:ring-emerald-500/20">
+              <span className={cn("flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ring-1", TILE_TONES[item.tone])}>
                 {icon(item.icon, "h-5 w-5")}
               </span>
               <span className="flex-1 break-words">{item.label}</span>
@@ -739,9 +774,7 @@ function BookingCard({
                 aria-label={`More about ${item.label}`}
                 className="-my-1 -mr-2 h-11 w-11 flex-shrink-0 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
               >
-                <svg className="h-4.5 w-4.5" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-                </svg>
+                <Info className="h-[18px] w-[18px]" strokeWidth={1.75} aria-hidden />
               </Button>
             </li>
           ))}
@@ -756,8 +789,9 @@ function BookingCard({
           />
         )}
         {nextBatch && (
-          <p className="mt-4 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm">
-            <span className="text-xs font-bold uppercase tracking-wider text-muted">Next batch</span>
+          <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-0.5 rounded-xl bg-emerald-50/70 px-3 py-2.5 text-sm ring-1 ring-emerald-100 dark:bg-emerald-500/10 dark:ring-emerald-500/20">
+            <CalendarDays className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
+            <span className="text-xs font-semibold text-muted">Next batch</span>
             <span className="font-semibold text-foreground">{batchLabel(nextBatch.start, trek.days)}</span>
             <span className={`text-xs font-bold ${SEAT_STYLE[seatStatus(nextBatch)].text}`}>{seatLabel(nextBatch)}</span>
           </p>
@@ -774,21 +808,9 @@ function BookingCard({
         <div className="mt-3 grid grid-cols-3 gap-2">
           {(
             [
-              {
-                tab: "What's Included" as Tab,
-                label: "Inclusions & Exclusions",
-                path: "M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z",
-              },
-              {
-                tab: "T&C" as Tab,
-                label: "Terms & Conditions",
-                path: "M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z",
-              },
-              {
-                tab: "Scholarships" as Tab,
-                label: "Scholarships & Waivers",
-                path: "M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5",
-              },
+              { tab: "What's Included" as Tab, label: "Inclusions & Exclusions", icon: ClipboardList, tone: "emerald" as Tone },
+              { tab: "T&C" as Tab, label: "Terms & Conditions", icon: ShieldCheck, tone: "sky" as Tone },
+              { tab: "Scholarships" as Tab, label: "Scholarships & Waivers", icon: GraduationCap, tone: "amber" as Tone },
             ]
           ).map((box) => (
             <button
@@ -796,10 +818,13 @@ function BookingCard({
               onClick={() => onNav(box.tab)}
               className="group flex flex-col items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-1.5 py-3 text-center transition-[color,background-color,border-color,transform] duration-150 ease-out hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 motion-reduce:transition-none motion-reduce:hover:translate-y-0 dark:border-white/10 dark:bg-card dark:hover:bg-emerald-950/30"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-100 transition-colors duration-150 ease-out group-hover:bg-white dark:bg-emerald-500/10 dark:ring-emerald-500/20">
-                <svg className="h-5 w-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" d={box.path} />
-                </svg>
+              <span
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ring-1 transition-transform duration-200 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100",
+                  TILE_TONES[box.tone]
+                )}
+              >
+                <box.icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
               </span>
               <span className="text-[11px] font-bold leading-tight text-foreground">{box.label}</span>
             </button>
@@ -811,10 +836,10 @@ function BookingCard({
 
       {/* Optional extras */}
       <div className="relative z-10 mt-5 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
-        <p className="mb-1 text-xs font-bold uppercase tracking-wider text-muted">Optional</p>
+        <p className="mb-2 text-sm font-semibold text-foreground">Optional</p>
         <ul className="space-y-2.5">
           <li className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
-            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-slate-50 ring-1 ring-slate-100 dark:bg-white/5 dark:ring-white/10">
+            <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 ring-1 ring-slate-200/70 dark:bg-white/5 dark:text-slate-300 dark:ring-white/10">
               {icon("backpack", "h-5 w-5")}
             </span>
             <span>
@@ -822,7 +847,7 @@ function BookingCard({
             </span>
           </li>
           <li className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
-            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-slate-50 ring-1 ring-slate-100 dark:bg-white/5 dark:ring-white/10">
+            <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 ring-1 ring-slate-200/70 dark:bg-white/5 dark:text-slate-300 dark:ring-white/10">
               {icon("bed", "h-5 w-5")}
             </span>
             <span>
@@ -833,32 +858,35 @@ function BookingCard({
       </div>
 
       {/* Trust row */}
-      <div className="relative z-10 mt-4 grid grid-cols-2 gap-4 border-t border-slate-100 pt-4 text-[13px] font-semibold leading-snug text-slate-500 dark:border-white/10 dark:text-slate-400">
+      <div className="relative z-10 mt-4 grid grid-cols-2 gap-3 rounded-xl bg-slate-50 p-3 text-[13px] font-semibold leading-snug text-slate-600 ring-1 ring-slate-200/70 dark:bg-white/5 dark:text-slate-300 dark:ring-white/10">
         <div className="flex items-start gap-2">
-          <span aria-hidden>🔒</span>
+          <Lock className="mt-px h-4 w-4 shrink-0 text-emerald-600" strokeWidth={2} aria-hidden />
           <span>Secure payment</span>
         </div>
         <div className="flex items-start gap-2">
-          <span aria-hidden className="text-emerald-600">✓</span>
+          <BadgeCheck className="mt-px h-4 w-4 shrink-0 text-emerald-600" strokeWidth={2} aria-hidden />
           <span>Pay 30% advance or in full</span>
         </div>
       </div>
 
       {/* Call experts */}
-      <div className="relative z-10 mt-5 rounded-2xl bg-orange-50 p-3 text-center dark:bg-orange-950/20">
-        <p className="w-full rounded-xl bg-orange-100 p-2 text-lg font-semibold text-foreground shadow-sm dark:bg-orange-900/30">
+      <div className="relative z-10 mt-5 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 p-4 text-center ring-1 ring-orange-100 dark:from-orange-950/30 dark:to-amber-950/10 dark:ring-orange-400/20">
+        <p className="flex items-center justify-center gap-2.5 text-base font-semibold text-foreground">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 text-orange-600 ring-1 ring-orange-200/70 dark:from-orange-400/20 dark:to-orange-400/5 dark:text-orange-300 dark:ring-orange-400/20">
+            <Phone className="h-[18px] w-[18px]" strokeWidth={1.75} aria-hidden />
+          </span>
           Call Our Mountain Experts!
         </p>
         <div className="mt-2 flex flex-wrap items-center justify-center gap-1 text-sm text-slate-800 dark:text-slate-200">
-          <a href="tel:+917817912062" className="inline-flex min-h-11 items-center rounded-xl px-2.5 font-semibold transition-colors duration-150 ease-out hover:bg-orange-100 hover:underline">+91 78179 12062</a>
-          <span className="h-4 w-px bg-slate-900/40 dark:bg-white/30" aria-hidden />
-          <a href="tel:+918650561564" className="inline-flex min-h-11 items-center rounded-xl px-2.5 font-semibold transition-colors duration-150 ease-out hover:bg-orange-100 hover:underline">+91 86505 61564</a>
+          <a href="tel:+917817912062" className="inline-flex min-h-11 items-center rounded-xl px-2.5 font-semibold tabular-nums transition-colors duration-150 ease-out hover:bg-orange-100 hover:underline dark:hover:bg-orange-400/10">+91 78179 12062</a>
+          <span className="h-4 w-px bg-slate-900/30 dark:bg-white/30" aria-hidden />
+          <a href="tel:+918650561564" className="inline-flex min-h-11 items-center rounded-xl px-2.5 font-semibold tabular-nums transition-colors duration-150 ease-out hover:bg-orange-100 hover:underline dark:hover:bg-orange-400/10">+91 86505 61564</a>
         </div>
       </div>
 
       {/* CTA */}
       <div className="relative z-10 mt-4 space-y-2">
-        <Button size="lg" onClick={onViewDates} className="w-full">
+        <Button size="lg" onClick={onViewDates} className="h-12 w-full text-base shadow-lg shadow-emerald-900/20">
           View All Dates &amp; Register
         </Button>
         <Button
@@ -870,27 +898,32 @@ function BookingCard({
           Request Information
         </Button>
       </div>
+      </div>
     </div>
   );
 }
 
 /* ─── Stat Card ─── */
+const STAT_ICONS: Record<string, { Icon: LucideIcon; tone: Tone }> = {
+  clock: { Icon: Timer, tone: "sky" },
+  mountain: { Icon: Mountain, tone: "emerald" },
+  people: { Icon: Users, tone: "orange" },
+  calendar: { Icon: CalendarDays, tone: "amber" },
+};
+
 function StatCard({ icon, label, value, sub }: { icon: string; label: string; value: string; sub?: string }) {
-  const icons: Record<string, ReactNode> = {
-    clock: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-    mountain: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>,
-    people: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>,
-    calendar: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>,
-  };
+  const stat = STAT_ICONS[icon];
   return (
-    <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-surface rounded-2xl">
-      <div className="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center flex-shrink-0">
-        {icons[icon]}
-      </div>
-      <div>
-        <div className="font-bold text-foreground text-sm">{value}</div>
-        <div className="text-xs text-muted">{label}</div>
-        {sub && <div className="text-[10px] text-muted">{sub}</div>}
+    <div className="flex items-center gap-3.5 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-surface">
+      {stat && (
+        <div className={cn("flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ring-1", TILE_TONES[stat.tone])}>
+          <stat.Icon className="h-6 w-6" strokeWidth={1.75} aria-hidden />
+        </div>
+      )}
+      <div className="min-w-0">
+        <div className="text-base font-bold leading-tight text-foreground">{value}</div>
+        <div className="text-xs font-medium text-muted">{label}</div>
+        {sub && <div className="text-[11px] text-muted">{sub}</div>}
       </div>
     </div>
   );
@@ -898,6 +931,16 @@ function StatCard({ icon, label, value, sub }: { icon: string; label: string; va
 
 /* ─── Overview Tab ─── */
 /* ─── Quick Info strip (IndiaHikes-style) ─── */
+type Tone = "emerald" | "sky" | "amber" | "orange";
+
+// Brand colours only. Soft gradient chip, hairline ring, readable icon colour in light and dark.
+const TILE_TONES: Record<Tone, string> = {
+  emerald: "from-emerald-100 to-emerald-50 text-emerald-600 ring-emerald-200/70 dark:from-emerald-400/20 dark:to-emerald-400/5 dark:text-emerald-300 dark:ring-emerald-400/20",
+  sky: "from-sky-100 to-sky-50 text-sky-600 ring-sky-200/70 dark:from-sky-400/20 dark:to-sky-400/5 dark:text-sky-300 dark:ring-sky-400/20",
+  amber: "from-amber-100 to-amber-50 text-amber-600 ring-amber-200/70 dark:from-amber-400/20 dark:to-amber-400/5 dark:text-amber-300 dark:ring-amber-400/20",
+  orange: "from-orange-100 to-orange-50 text-orange-600 ring-orange-200/70 dark:from-orange-400/20 dark:to-orange-400/5 dark:text-orange-300 dark:ring-orange-400/20",
+};
+
 function QuickInfo({ trek }: { trek: Trek }) {
   const totalHours = trek.itinerary.reduce((sum, d) => sum + d.hours, 0);
   const ft = Math.round(trek.maxAltitude * 3.28084);
@@ -917,121 +960,24 @@ function QuickInfo({ trek }: { trek: Trek }) {
   // Kept after closing (open: false) so the dialog can animate out with its content.
   const [openModal, setOpenModal] = useState<{ id: QuickInfoId; open: boolean } | null>(null);
 
-  const items: { id: QuickInfoId; label: string; value: string; color?: string; icon: ReactNode }[] = [
-    {
-      id: "difficulty",
-      label: "Trek Difficulty",
-      value: trek.difficulty,
-      color: DIFFICULTY_COLORS[trek.difficulty],
-      icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <path d="M2 20h.01M7 20v-4M12 20v-8M17 20V8M22 4v16" />
-        </svg>
-      ),
-    },
-    {
-      id: "duration",
-      label: "Trek Duration",
-      value: `${trek.days} Days · ${totalHours}h Trekking`,
-      icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 7v5l3 2" />
-        </svg>
-      ),
-    },
+  const items: { id: QuickInfoId; label: string; value: string; color?: string; icon: LucideIcon; tone: Tone }[] = [
+    { id: "difficulty", label: "Trek Difficulty", value: trek.difficulty, color: DIFFICULTY_COLORS[trek.difficulty], icon: Gauge, tone: "emerald" },
+    { id: "duration", label: "Trek Duration", value: `${trek.days} Days · ${totalHours}h Trekking`, icon: Timer, tone: "sky" },
     {
       id: "altitude",
       label: "Highest Altitude",
       value: `${trek.maxAltitude.toLocaleString("en-IN")} m (${ft.toLocaleString("en-IN")} ft)`,
-      icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <path d="M8 3l4 8 5-5 5 15H2L8 3z" />
-        </svg>
-      ),
+      icon: Mountain,
+      tone: "emerald",
     },
-    {
-      id: "season",
-      label: "Best Season",
-      value: trek.bestSeason,
-      icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-        </svg>
-      ),
-    },
-    {
-      id: "group",
-      label: "Group Size",
-      value: trek.groupSize ? `Max ${trek.groupSize} Trekkers` : "Small Groups",
-      icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.128 9.128 0 002.625-.372M12 15a3 3 0 110-6 3 3 0 010 6zm6.874 4.124A5.998 5.998 0 0018.714 15m-1.028-6.418a5.99 5.99 0 00-1.929-.5M15 6.128a5.998 5.998 0 00-7.462 2.04M6.002 15.9a5.998 5.998 0 00-1.929.5" />
-        </svg>
-      ),
-    },
-    {
-      id: "basecamp",
-      label: "Basecamp",
-      value: trek.location ?? trek.region,
-      icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-        </svg>
-      ),
-    },
-    {
-      id: "age",
-      label: "Suitable For",
-      value: AGE_BY_DIFFICULTY[trek.difficulty],
-      icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-        </svg>
-      ),
-    },
-    {
-      id: "accommodation",
-      label: "Accommodation",
-      value: trek.stay?.label ?? "Tents & Mountain Lodges",
-      icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <path d="M4 20L12 4l8 16H4zM12 4v6" />
-        </svg>
-      ),
-    },
-    {
-      id: "fitness",
-      label: "Fitness Criteria",
-      value: FITNESS_BY_DIFFICULTY[trek.difficulty],
-      icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-        </svg>
-      ),
-    },
-    {
-      id: "offloading",
-      label: "Offloading",
-      value: "Available",
-      icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <path d="M21 8l-9-5-9 5v8l9 5 9-5V8zM3 8l9 5 9-5M12 13v8" />
-        </svg>
-      ),
-    },
-    {
-      id: "cloakroom",
-      label: "Cloakroom",
-      value: "Available at Basecamp",
-      icon: (
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 5.25h4a1 1 0 011 1v1h-6v-1a1 1 0 011-1zm-6.25 2.25h16.5" />
-        </svg>
-      ),
-    },
+    { id: "season", label: "Best Season", value: trek.bestSeason, icon: Sun, tone: "amber" },
+    { id: "group", label: "Group Size", value: trek.groupSize ? `Max ${trek.groupSize} Trekkers` : "Small Groups", icon: Users, tone: "sky" },
+    { id: "basecamp", label: "Basecamp", value: trek.location ?? trek.region, icon: MapPin, tone: "orange" },
+    { id: "age", label: "Suitable For", value: AGE_BY_DIFFICULTY[trek.difficulty], icon: UserCheck, tone: "emerald" },
+    { id: "accommodation", label: "Accommodation", value: trek.stay?.label ?? "Tents & Mountain Lodges", icon: Tent, tone: "amber" },
+    { id: "fitness", label: "Fitness Criteria", value: FITNESS_BY_DIFFICULTY[trek.difficulty], icon: Footprints, tone: "orange" },
+    { id: "offloading", label: "Offloading", value: "Available", icon: Backpack, tone: "sky" },
+    { id: "cloakroom", label: "Cloakroom", value: "Available at Basecamp", icon: Luggage, tone: "emerald" },
   ];
 
   return (
@@ -1041,24 +987,30 @@ function QuickInfo({ trek }: { trek: Trek }) {
           <button
             key={item.id}
             onClick={() => setOpenModal({ id: item.id, open: true })}
-            className="group rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition-[border-color,transform] duration-150 ease-out hover:border-emerald-300 active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100 dark:border-white/10 dark:bg-card dark:hover:border-emerald-700"
+            className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition-[border-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-900/10 active:translate-y-0 active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100 dark:border-white/10 dark:bg-card dark:hover:border-emerald-700"
           >
             <div className="flex items-start justify-between">
               <div
-                className="mb-2 flex h-9 w-9 items-center justify-center rounded-full"
-                style={{ backgroundColor: `${item.color ?? "#10b981"}1a`, color: item.color ?? "#10b981" }}
+                className={cn(
+                  "mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ring-1 transition-transform duration-200 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100",
+                  !item.color && TILE_TONES[item.tone]
+                )}
+                style={
+                  item.color
+                    ? { backgroundImage: `linear-gradient(135deg, ${item.color}2e, ${item.color}0d)`, color: item.color, boxShadow: `inset 0 0 0 1px ${item.color}33` }
+                    : undefined
+                }
               >
-                {item.icon}
+                <item.icon className="h-[22px] w-[22px]" strokeWidth={1.75} aria-hidden />
               </div>
-              <svg
-                className="mt-1 h-3.5 w-3.5 text-muted opacity-40 transition-[color,opacity,transform] duration-150 ease-out group-hover:translate-x-0.5 group-hover:text-emerald-600 group-hover:opacity-100 motion-reduce:transition-none"
-                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-              </svg>
+              <ChevronRight
+                className="mt-1 h-4 w-4 text-muted opacity-40 transition-[color,opacity,transform] duration-150 ease-out group-hover:translate-x-0.5 group-hover:text-emerald-600 group-hover:opacity-100 motion-reduce:transition-none"
+                strokeWidth={2.25}
+                aria-hidden
+              />
             </div>
-            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted">{item.label}</h4>
-            <p className="mt-0.5 text-sm font-bold leading-snug text-foreground">{item.value}</p>
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted">{item.label}</h4>
+            <p className="mt-0.5 text-[15px] font-bold leading-snug text-foreground">{item.value}</p>
             {/* Always shown on touch screens; a hover hint where there's a mouse. */}
             <span className="mt-1 block text-[11px] font-semibold text-emerald-700 transition-opacity duration-150 ease-out pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:group-focus-visible:opacity-100">
               Know more
