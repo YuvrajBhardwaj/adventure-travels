@@ -48,7 +48,7 @@ That covers most of the items below. The manual steps are listed in case you pre
 ## 3. Go live
 - [ ] **You:** Switch Razorpay to live keys and register a live webhook. Decide whether to accept international cards.
 - [ ] **You or Dev:** Run the 5 SQL files on the **production** database and set the Production variables in Vercel.
-- [ ] **Dev:** Merge `preview/trek-slideshows` into `main`, after step 2 passes. This updates the live site. Then bring local `main` back in step with GitHub.
+- [x] **Dev:** Merge `preview/trek-slideshows` into `main` (done 23 Oct, live), after step 2 passes. This updates the live site. Then bring local `main` back in step with GitHub.
 - [ ] **You:** Make one real ₹1 booking and payment, then refund it in Razorpay.
 
 ## 4. Decisions needed from you
@@ -84,6 +84,7 @@ That covers most of the items below. The manual steps are listed in case you pre
   - [ ] Contact, FAQ and cancellation-policy pages lost their decorative header photos (text-only headers); OK?
   - [ ] Still open from the visitor test: a signed-out visitor's trek reservation is sent to /signup and loses the form (D-01); "4.8 (341 Reviews)"-style ratings and "4.9 / 1,200+ Google Reviews" need to be real or removed; the activities page says "17 handcrafted treks" next to "9+"; the 404 page is bare (no links back); /checkout, /dashboard, /admin redirect to login with no "please log in" note.
   - [ ] **Dev:** convert the six hero `.MOV` videos to small MP4/WebM (needs ffmpeg; they're 1.3–7 MB each) and replace the Video band's poster that has a burned-in caption.
+- [ ] **You (now that it's live):** in Razorpay (Test Mode) set the webhook URL to `https://www.himalayanarcadventure.com/api/razorpay-webhook` with the secret from `.env.setup`; when ready for real money, switch to **live** Razorpay keys (tell Claude to load them); rotate the Gmail App Password (it was shared in chat); Search Console → submit `sitemap.xml` and request indexing for the home page.
 - [ ] **Traffic and bookings plan** is in `adventure-travel/docs/seo/2026-10-21-traffic-and-bookings-plan.md`: Google Business Profile, first reviews, Search Console, the 308 redirect, directory listings, WhatsApp Business, 13 questions only you can answer.
 - [x] ~~Commit the navbar redesign and the `.gitignore` change~~ (done: `1be764a`, pushed to the preview branch).
 - [x] **Dev:** Commit `CHANGELOG.md`, `TODO.md` and the `CLAUDE.md` note. (done: committed with `52938f8`)

@@ -28,6 +28,11 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
   - **Browser code:** it now contains the Supabase project.
   - No test account or booking was created.
 
+### 23 Oct 2026: **Live** — everything on `preview/trek-slideshows` is now on www.himalayanarcadventure.com (`main` = `8dd5d99`)
+- **For visitors:** the live site now has the redesign, dark checkout, new site icon, accounts, booking emails and online payments (Razorpay **Test Mode**: no real money is taken yet).
+- **Backend:** Vercel **Production** env vars added: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `BOOKING_TO_EMAIL`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` (Supabase keys and `CRON_SECRET` were already there). Production uses the same Supabase project as the preview (`sdhtgmlkzcknmeakxgdz`). Merged `main`'s favicon hotfix (`a42c960`) into the branch (kept the newer icons), then fast-forwarded `main`.
+- **Checks:** www returns 200 for /, /treks, a trek page, /courses, /contact, /checkout and the new icon; the payment API answers "Please sign in" (configured). The apex domain still redirects with 307 (should be 308, set in Vercel).
+
 ### 23 Oct 2026: **Backend** Gmail sending and Razorpay test keys switched on (Preview) — no code change
 - **Business:** sign-up confirmation, password-reset and booking emails now go out from himalayanarcadventure@gmail.com (Gmail App Password via Supabase custom SMTP and the site's email outbox). Online payments are on in **Razorpay Test Mode** on the preview; no real money moves.
 - **Backend:** `node scripts/setup-backend.mjs` re-run (all 6 SQL files idempotent, Supabase Auth custom SMTP on, `.env.local` refreshed). Added to Vercel **Preview** (branch `preview/trek-slideshows`): `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `BOOKING_TO_EMAIL`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`. Preview redeployed: https://adventure-travels-pxak51ega-yuvrajbhardwaj2s-projects.vercel.app. Production unchanged.
