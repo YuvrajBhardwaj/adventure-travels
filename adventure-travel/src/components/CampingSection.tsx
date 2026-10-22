@@ -220,7 +220,7 @@ export default function CampingSection() {
             </div>
           </FadeUp>
         </div>
-        <div className="mt-8 flex snap-x snap-mandatory scroll-pl-4 items-end gap-3 sm:scroll-pl-6 lg:scroll-pl-[max(2rem,calc((100vw-80rem)/2+2rem))] overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:px-6 lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))] [&::-webkit-scrollbar]:hidden">
+        <div data-lenis-prevent-touch className="mt-8 flex overscroll-x-contain snap-x snap-mandatory scroll-pl-4 items-end gap-3 sm:scroll-pl-6 lg:scroll-pl-[max(2rem,calc((100vw-80rem)/2+2rem))] overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:px-6 lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))] [&::-webkit-scrollbar]:hidden">
           {ALL_MOMENTS.map((src, i) => (
             <button
               key={src}

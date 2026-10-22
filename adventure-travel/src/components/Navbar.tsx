@@ -10,6 +10,7 @@ import { treks, DIFFICULTY_COLORS } from "@/data/treks";
 import DesktopSearch from "@/components/DesktopSearch";
 import Price from "@/components/Price";
 import NoPhoto from "@/components/NoPhoto";
+import { ElevationLine } from "@/components/ElevationLine";
 import { buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -392,8 +393,9 @@ export default function Navbar() {
                                 <ul className="grid grid-cols-4 gap-4">
                                   {MENU_TREKS.map((t) => (
                                     <li key={t.slug}>
-                                      <Link href={`/treks/${t.slug}`} onClick={() => setOpenMenu(null)} className="group/card block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">
-                                        <span className="relative block aspect-[4/3] overflow-hidden rounded-xl bg-white/5">
+                                      <Link href={`/treks/${t.slug}`} onClick={() => setOpenMenu(null)} className="group/card block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">
+                                        {/* Same card language as the home trek rail: photo, name over it, big numerals, real elevation line. */}
+                                        <span className="relative block aspect-[4/5] overflow-hidden rounded-2xl bg-white/5">
                                           {t.image ? (
                                             // eslint-disable-next-line @next/next/no-img-element
                                             <img
@@ -401,22 +403,26 @@ export default function Navbar() {
                                               alt=""
                                               loading="lazy"
                                               decoding="async"
-                                              className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover/card:scale-[1.05] motion-reduce:transition-none"
+                                              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover/card:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover/card:scale-100"
                                             />
                                           ) : (
                                             <NoPhoto className="h-full w-full" />
                                           )}
-                                          <span className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent" aria-hidden />
-                                          <span
-                                            className="absolute left-2 top-2 rounded-full px-2 py-0.5 text-[11px] font-semibold text-white"
-                                            style={{ backgroundColor: DIFFICULTY_COLORS[t.difficulty] }}
-                                          >
-                                            {t.difficulty}
+                                          <span className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/35 to-transparent" aria-hidden />
+                                          <span className="absolute left-3 top-3 font-nav text-[10px] font-semibold uppercase tracking-[0.14em] text-white/85">{t.difficulty}</span>
+                                          <span className="absolute inset-x-0 bottom-0 block px-3 pb-3">
+                                            <span className="block font-heading text-[17px] font-semibold leading-tight text-white transition-colors duration-150 ease-out group-hover/card:text-emerald-200">{t.name}</span>
+                                            <span className="mt-1.5 flex items-baseline gap-3 font-heading text-white">
+                                              <span className="text-xl font-semibold tabular-nums">{t.days}<span className="ml-0.5 font-nav text-[10px] font-medium text-white/70"> days</span></span>
+                                              <span className="text-xl font-semibold tabular-nums">{t.maxAltitude.toLocaleString("en-IN")}<span className="ml-0.5 font-nav text-[10px] font-medium text-white/70"> m</span></span>
+                                            </span>
+                                            <span className="mt-1.5 block h-5 text-emerald-400">
+                                              <ElevationLine profile={t.elevationProfile} peak strokeWidth={1.5} />
+                                            </span>
                                           </span>
                                         </span>
-                                        <span className="mt-2.5 block text-[15px] font-semibold leading-snug text-white transition-colors duration-150 ease-out group-hover/card:text-emerald-200">{t.name}</span>
-                                        <span className="mt-0.5 block text-[13px] text-white/55">
-                                          {t.days} days · {t.maxAltitude.toLocaleString("en-IN")} m · from <Price inr={t.price} />
+                                        <span className="mt-2 block text-[13px] text-white/60">
+                                          from <Price inr={t.price} /> / person
                                         </span>
                                       </Link>
                                     </li>

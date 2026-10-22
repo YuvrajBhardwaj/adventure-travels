@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, useAnimate, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import type { Course } from "@/data/courses";
 import CourseVideoBackdrop from "@/components/CourseVideoBackdrop";
+import WallpaperCarousel from "@/components/WallpaperCarousel";
 import SmartImage from "@/components/SmartImage";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import Price, { PriceNote } from "@/components/Price";
@@ -308,6 +309,8 @@ export default function CourseDetailClient({ course }: Props) {
 
   const typeTone = TYPE_TONES[course.type] ?? "sky";
   const images = course.gallery || [course.image];
+  // Hero slideshow: the cover first, then the gallery photos (videos are left to the gallery tab).
+  const heroSlides = [...new Set([course.image, ...images].filter((src) => !/\.(mp4|mov|webm)$/i.test(src)))].map((src) => ({ src }));
 
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   // Switch tab and center it in the strip. Panel scrolling happens in a
@@ -464,11 +467,18 @@ export default function CourseDetailClient({ course }: Props) {
       {/* Cinematic video template behind every course sub-page — real course footage when available */}
       <CourseVideoBackdrop video={course.video ?? TYPE_VIDEOS[course.type] ?? TYPE_VIDEOS.Skiing} poster={course.image} />
 
-      {/* Hero over the footage: left aligned, one big line, one quiet facts line */}
-      <section ref={heroRef} className="relative z-10 flex min-h-[82vh] items-end overflow-hidden">
+      {/* Hero: a photo slideshow of this course (like the trek pages), text left aligned on top. */}
+      <section ref={heroRef} className="relative z-10">
+      <WallpaperCarousel
+        slides={heroSlides}
+        label={`Photos from the ${course.name}`}
+        className="min-h-[82vh]"
+        scrimClassName="bg-gradient-to-t from-black/80 via-black/35 to-black/45"
+      >
+      <div className="flex min-h-[82vh] items-end">
         <motion.div
           style={shouldReduceMotion ? undefined : { y: heroContentY, opacity: heroContentOpacity }}
-          className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14 sm:pb-20 pt-32"
+          className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 sm:pb-28 pt-32"
         >
           <Link href="/courses" className="mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl text-white/80 transition-colors duration-150 ease-out hover:text-white">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
@@ -502,6 +512,8 @@ export default function CourseDetailClient({ course }: Props) {
           </p>
           <a href="#course-content" className="sr-only focus:not-sr-only focus:mt-4 focus:inline-block focus:text-white">Scroll</a>
         </motion.div>
+      </div>
+      </WallpaperCarousel>
       </section>
 
       {/* Tabs + Content — glass card floating over the footage */}

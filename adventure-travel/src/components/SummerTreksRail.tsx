@@ -104,7 +104,7 @@ export default function SummerTreksRail() {
       </div>
 
       {/* the rail runs off the right edge on purpose: more to scroll */}
-      <ul className="mt-12 flex snap-x snap-mandatory scroll-pl-4 gap-5 sm:scroll-pl-6 overflow-x-auto px-4 pb-4 [scrollbar-width:none] sm:px-6 lg:scroll-pl-[max(2rem,calc((100vw-80rem)/2+2rem))] lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))] lg:pr-8 [&::-webkit-scrollbar]:hidden">
+      <ul data-lenis-prevent-touch className="mt-12 flex overscroll-x-contain snap-x snap-mandatory scroll-pl-4 gap-5 sm:scroll-pl-6 overflow-x-auto px-4 pb-4 [scrollbar-width:none] sm:px-6 lg:scroll-pl-[max(2rem,calc((100vw-80rem)/2+2rem))] lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))] lg:pr-8 [&::-webkit-scrollbar]:hidden">
         {byPopularity().slice(0, 8).map((trek) => (
           <li key={trek.id} className="w-[72vw] max-w-[320px] shrink-0 snap-start sm:w-[300px]">
             <TrekPhotoCard trek={trek} />

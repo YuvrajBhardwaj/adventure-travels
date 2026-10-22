@@ -91,7 +91,7 @@ export default function WelcomeChooser() {
   return (
     <section aria-labelledby="where-to-heading" className="relative bg-background py-20 md:py-28">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:gap-12 lg:px-8">
-        <div className="lg:col-span-4">
+        <div className="min-w-0 lg:col-span-4">
           {/* the page's one small label */}
           <p className="font-nav text-xs font-semibold uppercase tracking-[0.28em] text-muted">Himalayan Arc Adventure</p>
           <h2 id="where-to-heading" className="mt-4 font-heading text-4xl font-medium leading-[1.04] tracking-[-0.025em] text-foreground sm:text-5xl">
@@ -136,7 +136,8 @@ export default function WelcomeChooser() {
         </div>
 
         {/* What's inside the highlighted door */}
-        <div className="lg:col-span-8">
+        {/* min-w-0: a grid column otherwise grows to fit the card row, so the row never scrolls on phones. */}
+        <div className="min-w-0 lg:col-span-8">
           <div className="flex items-end justify-between gap-4 border-b border-foreground/15 pb-3">
             <p className="font-nav text-xs font-semibold uppercase tracking-[0.2em] text-muted">Inside {active.label}</p>
             <Link
@@ -153,10 +154,10 @@ export default function WelcomeChooser() {
               animate={{ opacity: 1 }}
               exit={reduceMotion ? undefined : { opacity: 0 }}
               transition={transition("base")}
-              className="mt-5 flex gap-4 overflow-x-auto pb-3 [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:gap-x-10 sm:gap-y-0 sm:overflow-visible sm:pb-0 [&::-webkit-scrollbar]:hidden"
+              data-lenis-prevent-touch className="mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-3 [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:gap-x-10 sm:gap-y-0 sm:overflow-visible sm:pb-0 [&::-webkit-scrollbar]:hidden"
             >
               {active.items.map((item) => (
-                <li key={item.key} className="w-[58vw] max-w-[240px] shrink-0 sm:w-auto sm:max-w-none">
+                <li key={item.key} className="w-[58vw] max-w-[240px] shrink-0 snap-start sm:w-auto sm:max-w-none">
                   <Link
                     href={item.href}
                     className="group flex flex-col gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:flex-row sm:items-center sm:gap-4 sm:border-b sm:border-foreground/10 sm:py-3"

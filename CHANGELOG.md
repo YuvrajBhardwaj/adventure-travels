@@ -28,6 +28,13 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
   - **Browser code:** it now contains the Supabase project.
   - No test account or booking was created.
 
+### 23 Oct 2026: Swipeable home rows, course slideshows, new Treks menu cards — `main`
+- **For visitors:**
+  - **Home on phones:** the "Where to today?" cards (treks, courses, destinations), the trek rail and the camping filmstrip now swipe sideways. The "Where to today?" row could not scroll at all (its column grew to fit every card and the page clipped it, hiding "See all treks →" too); the smooth-scroll library also no longer captures sideways swipes on these rows.
+  - **Course pages** (skiing, snowboarding, backcountry): the header is now a photo slideshow of that course's own gallery, like the trek pages, with arrows, dots, pause and swipe.
+  - **Treks hover menu:** the four featured treks use the same card as the home page: tall photo, name over it, days and altitude as big numbers, the trek's elevation line, price underneath.
+- **Checks:** type-check clean; a simulated finger swipe on a 390px phone moves all three home rows (242, 301 and 488 px); screenshots of the course slideshow (desktop and phone) and the menu.
+
 ### 23 Oct 2026: **Live** — everything on `preview/trek-slideshows` is now on www.himalayanarcadventure.com (`main` = `8dd5d99`)
 - **For visitors:** the live site now has the redesign, dark checkout, new site icon, accounts, booking emails and online payments (Razorpay **Test Mode**: no real money is taken yet).
 - **Backend:** Vercel **Production** env vars added: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `BOOKING_TO_EMAIL`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` (Supabase keys and `CRON_SECRET` were already there). Production uses the same Supabase project as the preview (`sdhtgmlkzcknmeakxgdz`). Merged `main`'s favicon hotfix (`a42c960`) into the branch (kept the newer icons), then fast-forwarded `main`.
