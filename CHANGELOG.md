@@ -28,6 +28,10 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
   - **Browser code:** it now contains the Supabase project.
   - No test account or booking was created.
 
+### 23 Oct 2026: Permanent redirect himalayanarcadventure.com → www (308) — Vercel setting, no code change
+- **SEO:** the bare domain answered with Vercel's default **307 Temporary** redirect because it wasn't attached to the project. It is now attached to the `adventure-travels` project as a **308 Permanent** redirect to `www.himalayanarcadventure.com` (checked: `/` and `/favicon.ico` both return 308). This tells Google that www is the one real address, which helps it settle the site's listing and favicon.
+- **Favicon check (as Googlebot):** icon links are on the home page, `/favicon.ico` (16/32/48 px) and `/favicon.png` (192 px) load as images, robots.txt doesn't block them. The grey globe in Google is now only waiting for Google to re-crawl.
+
 ### 23 Oct 2026: One trek row on the home page — `main`
 - **For visitors:** the home page showed treks twice ("Inside treks" small cards, then a "Trek the range in bloom" photo rail). Now "Inside treks" uses the big photo cards (photo, name, days and altitude, elevation line, short description, price) as one swipeable row, and the separate rail section is removed. Courses and destinations keep their own cards.
 - **Content:** the removed rail's heading and intro line ("Trek the range in bloom", "18 treks across Uttarakhand & Himachal Pradesh…") are no longer on the home page; the same 8 treks and links are still there.
