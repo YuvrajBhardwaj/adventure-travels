@@ -26,9 +26,9 @@ That covers most of the items below. The manual steps are listed in case you pre
 - [x] ~~Run the 5 SQL files~~ (done 19 Oct by the setup script, and verified).
 - [x] ~~Supabase Auth: confirm email, site URL, redirect URLs~~ (done 19 Oct by the setup script).
 - [ ] **You: admin rights.** Sign up on the site with your email, put that email in `ADMIN_EMAIL` in `adventure-travel/.env.setup`, and run `node scripts/setup-backend.mjs` again (or tell Claude the email).
-- [ ] **You: Gmail App Password** into `.env.setup` (`SMTP_USER`, `SMTP_PASS`), then re-run the script. Until then Supabase only emails your own team, a few per hour, so customers can't confirm their sign-ups.
+- [x] **You: Gmail App Password** (done 23 Oct; **rotate it before go-live**, it was shared in chat) into `.env.setup` (`SMTP_USER`, `SMTP_PASS`), then re-run the script. Until then Supabase only emails your own team, a few per hour, so customers can't confirm their sign-ups.
 - [ ] **You (optional):** Supabase → Authentication → Providers → Google, for "Continue with Google". It needs a Google Cloud OAuth client.
-- [ ] **You:** Razorpay in **Test mode**: copy the keys into `.env.setup` and re-run the script. Then add a webhook to `https://<site>/api/razorpay-webhook` for `payment.captured`, `order.paid` and `payment.failed`.
+- [x] **You:** Razorpay in **Test mode** (keys done 23 Oct; **still to do: add the webhook in the Razorpay dashboard**): copy the keys into `.env.setup` and re-run the script. Then add a webhook to `https://<site>/api/razorpay-webhook` for `payment.captured`, `order.paid` and `payment.failed`.
 - [x] ~~Make up a `CRON_SECRET`~~ (the setup script generated one, 19 Oct).
 - [x] ~~Supabase keys into Vercel **Preview**~~ (done 21 Oct with the logged-in Vercel CLI; the preview is redeployed and connected). **Production** gets them at go-live (§3). The local `.env.local` is done too, and the running dev server already picked it up.
 - [ ] **Dev:** after you add the SMTP and Razorpay keys to `.env.setup`, load them into `.env.local` and Vercel Preview the same way, then redeploy the preview.
@@ -86,16 +86,16 @@ That covers most of the items below. The manual steps are listed in case you pre
   - [ ] **Dev:** convert the six hero `.MOV` videos to small MP4/WebM (needs ffmpeg; they're 1.3–7 MB each) and replace the Video band's poster that has a burned-in caption.
 - [ ] **Traffic and bookings plan** is in `adventure-travel/docs/seo/2026-10-21-traffic-and-bookings-plan.md`: Google Business Profile, first reviews, Search Console, the 308 redirect, directory listings, WhatsApp Business, 13 questions only you can answer.
 - [x] ~~Commit the navbar redesign and the `.gitignore` change~~ (done: `1be764a`, pushed to the preview branch).
-- [ ] **Dev:** Commit `CHANGELOG.md`, `TODO.md` and the `CLAUDE.md` note.
+- [x] **Dev:** Commit `CHANGELOG.md`, `TODO.md` and the `CLAUDE.md` note. (done: committed with `52938f8`)
 - [x] ~~Re-save the sideways Panpatia photos and put them back in the slideshow~~ (done 19 Oct).
 - [x] ~~Favicon missing in Google results~~ (done 19 Oct). `apple-touch-icon.png` was a camping photo, not a square icon. Live via hotfix `a42c960` on `main`, and committed on `preview/trek-slideshows` too.
-- [ ] **Dev:** (covered by the UI plan, US2/US3) Still waiting for JavaScript before showing: card and gallery photos (`SmartImage` starts invisible), the home hero slides and several home sections, and the home FAQ, which arrives as a hidden streamed block. Same fix pattern as the trek pages; this mainly helps load speed.
+- [x] **Dev:** (covered by the UI plan, US2/US3) Still waiting for JavaScript before showing: card and gallery photos (`SmartImage` starts invisible), the home hero slides and several home sections, and the home FAQ, which arrives as a hidden streamed block. Same fix pattern as the trek pages; this mainly helps load speed. (done 22 Oct)
 - [x] ~~Run the SEO/SMO agent~~ (done 19 Oct). The report is `adventure-travel/docs/seo/2026-10-19-audit-and-plan.md`.
 - [ ] **Dev:** Work through the report's prioritised actions. Done 19 Oct: #6 and #7 hub pages, #9 link-preview images, #10 logo badge, #14 noindex on account pages. Next up: the Inner Line Permit guide (needs your facts: documents, office, processing days), a "related treks" block on trek pages, and #15 a home-page h1 that says what we do.
-- [ ] **Dev:** Switch `QuickInfoModal.tsx` to the new season parser (`src/lib/season.ts`). Its own parser mis-reads ranges like "Mar–Jun & Sept–Dec" in the "Best season" pop-up.
+- [x] **Dev:** Switch `QuickInfoModal.tsx` to the new season parser (`src/lib/season.ts`). Its own parser mis-reads ranges like "Mar–Jun & Sept–Dec" in the "Best season" pop-up. (done 22 Oct)
 - [ ] **You:** After the next deploy, request indexing in Search Console for `/treks-from-joshimath` and `/winter-treks-uttarakhand`.
 - [x] ~~"Where to today?" pop-up on the home page~~ (done 19 Oct). It is now a normal section under the home hero instead of a full-screen gate. Not live until the branch is merged.
-- [ ] **Dev:** The preloader covers every page until the site's JavaScript has loaded, plus 600 ms. It slows down when pages appear (load speed is a Google ranking signal). Shorten it, or skip it after the first visit.
+- [x] **Dev:** The preloader covers every page until the site's JavaScript has loaded, plus 600 ms. It slows down when pages appear (load speed is a Google ranking signal). Shorten it, or skip it after the first visit. (done 22 Oct: removed)
 - [ ] **Dev:** Downsize and watermark the 35 trek videos as well. This needs `ffmpeg`, which isn't installed here.
 - [ ] **You:** Fix or recreate the Facebook and YouTube pages. The links on the site returned errors, so they were removed from the site's profile list.
 - [ ] **Dev:** Fix the 9 remaining lint warnings (all minor: unused variables and similar).

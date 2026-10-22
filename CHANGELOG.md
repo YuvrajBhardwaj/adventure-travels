@@ -28,6 +28,11 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
   - **Browser code:** it now contains the Supabase project.
   - No test account or booking was created.
 
+### 23 Oct 2026: **Backend** Gmail sending and Razorpay test keys switched on (Preview) — no code change
+- **Business:** sign-up confirmation, password-reset and booking emails now go out from himalayanarcadventure@gmail.com (Gmail App Password via Supabase custom SMTP and the site's email outbox). Online payments are on in **Razorpay Test Mode** on the preview; no real money moves.
+- **Backend:** `node scripts/setup-backend.mjs` re-run (all 6 SQL files idempotent, Supabase Auth custom SMTP on, `.env.local` refreshed). Added to Vercel **Preview** (branch `preview/trek-slideshows`): `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `BOOKING_TO_EMAIL`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`. Preview redeployed: https://adventure-travels-pxak51ega-yuvrajbhardwaj2s-projects.vercel.app. Production unchanged.
+- **Checks:** `POST /api/create-order` now answers 401 "Please sign in" (configured, not 503) and the webhook rejects unsigned calls with 400 "Invalid signature". No test booking or payment made yet.
+
 ### 22 Oct 2026: Redesign so the site reads as authored, not template-built; dark checkout; visitor-test fixes — uncommitted
 - **Why:** an independent design review found the site built from the same few pieces everywhere (tracked-caps label + heading + grey line + link on every section, one card for everything, centred dark-overlay heroes, tinted icon squares, a SaaS-style stats strip, traffic-light cards) and a very common heading font. A visitor test walked every journey on phone and laptop with all form submits intercepted.
 - **For visitors:**
