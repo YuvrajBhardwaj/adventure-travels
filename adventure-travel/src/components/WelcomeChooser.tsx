@@ -3,12 +3,13 @@
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { byPopularity, treks } from "@/data/treks";
+import { byPopularity, treks, type Trek } from "@/data/treks";
 import { courses } from "@/data/courses";
 import { destinations } from "@/data/destinations";
 import Price from "@/components/Price";
 import SmartImage from "@/components/SmartImage";
 import NoPhoto from "@/components/NoPhoto";
+import { TrekPhotoCard } from "@/components/SummerTreksRail";
 import { transition } from "@/lib/motion";
 
 interface PreviewItem {
@@ -18,6 +19,8 @@ interface PreviewItem {
   image?: string;
   meta: string;
   price?: number;
+  /** Treks render as the full photo card (the same card as the old home rail, now shown only here). */
+  trek?: Trek;
 }
 
 interface Tile {
@@ -42,6 +45,7 @@ function buildTiles(): Tile[] {
       image: t.image,
       meta: `${t.days} days · ${t.difficulty}`,
       price: t.price,
+      trek: t,
     }));
 
   const courseItems = courses.map<PreviewItem>((c) => ({
@@ -154,9 +158,18 @@ export default function WelcomeChooser() {
               animate={{ opacity: 1 }}
               exit={reduceMotion ? undefined : { opacity: 0 }}
               transition={transition("base")}
-              data-lenis-prevent-touch className="mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-3 [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:gap-x-10 sm:gap-y-0 sm:overflow-visible sm:pb-0 [&::-webkit-scrollbar]:hidden"
+              data-lenis-prevent-touch
+              className={
+                active.items[0]?.trek
+                  ? "mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  : "mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-3 [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:gap-x-10 sm:gap-y-0 sm:overflow-visible sm:pb-0 [&::-webkit-scrollbar]:hidden"
+              }
             >
-              {active.items.map((item) => (
+              {active.items.map((item) => item.trek ? (
+                <li key={item.key} className="w-[66vw] max-w-[260px] shrink-0 snap-start sm:w-[240px]">
+                  <TrekPhotoCard trek={item.trek} />
+                </li>
+              ) : (
                 <li key={item.key} className="w-[58vw] max-w-[240px] shrink-0 snap-start sm:w-auto sm:max-w-none">
                   <Link
                     href={item.href}

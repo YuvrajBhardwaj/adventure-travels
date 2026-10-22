@@ -28,6 +28,10 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
   - **Browser code:** it now contains the Supabase project.
   - No test account or booking was created.
 
+### 23 Oct 2026: One trek row on the home page — `main`
+- **For visitors:** the home page showed treks twice ("Inside treks" small cards, then a "Trek the range in bloom" photo rail). Now "Inside treks" uses the big photo cards (photo, name, days and altitude, elevation line, short description, price) as one swipeable row, and the separate rail section is removed. Courses and destinations keep their own cards.
+- **Content:** the removed rail's heading and intro line ("Trek the range in bloom", "18 treks across Uttarakhand & Himachal Pradesh…") are no longer on the home page; the same 8 treks and links are still there.
+
 ### 23 Oct 2026: Swipeable home rows, course slideshows, new Treks menu cards — `main`
 - **For visitors:**
   - **Home on phones:** the "Where to today?" cards (treks, courses, destinations), the trek rail and the camping filmstrip now swipe sideways. The "Where to today?" row could not scroll at all (its column grew to fit every card and the page clipped it, hiding "See all treks →" too); the smooth-scroll library also no longer captures sideways swipes on these rows.

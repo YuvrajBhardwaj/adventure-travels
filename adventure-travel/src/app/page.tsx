@@ -6,7 +6,6 @@ import StatsStrip from "@/components/StatsStrip";
 import FindYourTrek from "@/components/FindYourTrek";
 import WhyTrekWithUs from "@/components/WhyTrekWithUs";
 import HowItWorks from "@/components/HowItWorks";
-import SummerTreksRail from "@/components/SummerTreksRail";
 import SnowSchool from "@/components/SnowSchool";
 import CampingSection from "@/components/CampingSection";
 import VideoShowcase from "@/components/VideoShowcase";
@@ -40,7 +39,6 @@ export default function Home() {
           <WelcomeChooser />
           <StatsStrip />
           <FindYourTrek />
-          <SummerTreksRail />
           <SnowSchool />
           <WhyTrekWithUs />
           <CampingSection />
