@@ -71,25 +71,25 @@ export default function HimalayanMap() {
   const regionTreks = getRegionTreks(activeRegion);
 
   return (
-    <section className="py-section-sm bg-gradient-to-b from-background/70 via-background/40 to-accent/10">
+    <section className="bg-background py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <FadeUp className="mx-auto mb-8 max-w-2xl text-center sm:mb-10">
-          <span className="font-nav text-xs font-bold uppercase tracking-[0.3em] text-accent">Explore</span>
-          <h2 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-[-0.02em] text-foreground sm:mt-4 sm:text-4xl">
+        <FadeUp className="max-w-2xl">
+          <p className="sr-only">Explore</p>
+          <h2 className="font-heading text-4xl font-medium leading-[1.04] tracking-[-0.025em] text-foreground sm:text-5xl lg:text-6xl">
             Interactive Himalayan Map
           </h2>
-          <p className="mt-3 text-base leading-relaxed text-muted sm:text-lg">
+          <p className="mt-4 text-base leading-relaxed text-muted sm:text-lg">
             Select a region on the map to see every trek available there.
           </p>
         </FadeUp>
 
-        <div className="grid grid-cols-1 items-start gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
-          <FadeUp className="lg:col-span-2">
-            <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-lg shadow-black/5 sm:p-8 dark:border-white/10 dark:bg-card">
+        <div className="mt-10 grid grid-cols-1 items-start gap-10 lg:mt-14 lg:grid-cols-12 lg:gap-14">
+          <FadeUp className="lg:col-span-7">
+            <div className="border-y border-foreground/15 py-6 sm:py-8">
               <svg viewBox="0 0 600 230" className="h-auto w-full" role="group" aria-label="Select a Himalayan region">
                 <defs>
                   <pattern id="himalayan-grid" width="24" height="24" patternUnits="userSpaceOnUse">
-                    <path d="M24 0H0V24" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-slate-100 dark:text-white/5" />
+                    <path d="M24 0H0V24" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-foreground/10" />
                   </pattern>
                 </defs>
                 <rect width="600" height="230" fill="url(#himalayan-grid)" />
@@ -104,7 +104,7 @@ export default function HimalayanMap() {
                         fill={`${region.color}${selected ? "44" : "22"}`}
                         stroke={region.color}
                         strokeWidth={selected ? 3 : 1.5}
-                        className="cursor-pointer transition-colors duration-150 ease-out focus:outline-none"
+                        className="cursor-pointer transition-colors duration-150 ease-out focus:outline-none focus-visible:stroke-foreground"
                         tabIndex={0}
                         role="button"
                         aria-label={`${region.name}: ${count} ${count === 1 ? "trek" : "treks"}`}
@@ -142,10 +142,10 @@ export default function HimalayanMap() {
                 })}
               </svg>
 
-              <div className="mt-6 flex flex-wrap justify-center gap-4">
+              <div className="font-nav mt-5 flex flex-wrap gap-x-6 gap-y-2">
                 {regions.map((region) => (
                   <div key={region.id} className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full" style={{ backgroundColor: region.color }} />
+                    <span className="h-[3px] w-5" style={{ backgroundColor: region.color }} aria-hidden />
                     <span className="text-xs text-muted">{region.name}</span>
                   </div>
                 ))}
@@ -153,48 +153,40 @@ export default function HimalayanMap() {
             </div>
           </FadeUp>
 
-          <FadeUp delay={0.2}>
+          <FadeUp delay={0.1} className="lg:col-span-5">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={activeRegion.id}
-                initial={{ opacity: 0, x: reduceMotion ? 0 : 20 }}
+                initial={{ opacity: 0, x: reduceMotion ? 0 : 12 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: reduceMotion ? 0 : -20 }}
+                exit={{ opacity: 0, x: reduceMotion ? 0 : -12 }}
                 transition={transition("base")}
-                className="rounded-2xl border border-slate-100 bg-white p-5 shadow-lg shadow-black/5 sm:p-6 dark:border-white/10 dark:bg-card"
               >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ backgroundColor: `${activeRegion.color}20` }}>
-                    <svg className="h-5 w-5" style={{ color: activeRegion.color }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-heading text-lg font-semibold text-foreground">{activeRegion.name}</h3>
-                    <p className="text-sm text-muted">
-                      {regionTreks.length} {regionTreks.length === 1 ? "trek" : "treks"} available
-                    </p>
-                  </div>
+                <div className="flex items-end justify-between gap-4 border-b-2 pb-4" style={{ borderColor: activeRegion.color }}>
+                  <h3 className="font-heading text-3xl font-medium leading-tight tracking-[-0.02em] text-foreground sm:text-4xl">
+                    {activeRegion.name}
+                  </h3>
+                  <p className="font-nav shrink-0 text-right text-sm text-muted">
+                    <span className="block font-heading text-4xl leading-none tabular-nums text-foreground">{regionTreks.length}</span>
+                    {regionTreks.length === 1 ? "trek" : "treks"} available
+                  </p>
                 </div>
 
-                <ul className="mb-6 space-y-1">
+                <ul className="mt-2 mb-6 sm:columns-2 sm:gap-x-6">
                   {regionTreks.map((trek) => (
-                    <li key={trek.slug}>
+                    <li key={trek.slug} className="break-inside-avoid">
                       <Link
                         href={`/treks/${trek.slug}`}
-                        className="flex min-h-9 items-center gap-2 rounded-lg px-1 text-sm text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        className="flex min-h-11 items-center justify-between gap-2 border-b border-foreground/10 text-sm text-foreground/80 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       >
-                        <svg className="h-4 w-4 shrink-0 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
                         {trek.name}
+                        <span aria-hidden className="text-muted">→</span>
                       </Link>
                     </li>
                   ))}
                 </ul>
 
-                <Link href="/treks" className={cn(buttonVariants(), "h-auto min-h-11 w-full whitespace-normal py-2.5 text-center")}>
+                <Link href="/treks" className={cn(buttonVariants(), "h-auto min-h-11 w-full whitespace-normal py-2.5 text-center sm:w-auto sm:px-8")}>
                   Browse all treks
                 </Link>
               </motion.div>

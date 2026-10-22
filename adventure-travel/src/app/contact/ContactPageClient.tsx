@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { FadeUp, StaggerContainer, StaggerItem } from "@/components/MotionWrapper";
+import { FadeUp } from "@/components/MotionWrapper";
 import { transition } from "@/lib/motion";
 
 const FAQS = [
@@ -85,135 +85,58 @@ export default function ContactPage() {
     setWhatsappUrl(`https://wa.me/917817912062?text=${text}`);
   };
 
-  const infoCard = "flex gap-4 rounded-2xl border border-emerald-100 bg-emerald-50 p-5 sm:p-6 dark:bg-emerald-950/30";
-  const infoIcon = "flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50";
-  const infoLink = "block text-foreground transition-colors duration-150 ease-out hover:text-emerald-600";
+  const infoLink = "block text-foreground transition-colors duration-150 ease-out hover:text-emerald-700";
+  const quickLink =
+    "group inline-flex min-h-11 items-center gap-3 font-heading text-2xl font-semibold text-foreground underline decoration-slate-300 decoration-1 underline-offset-[6px] transition-colors duration-150 ease-out hover:text-emerald-700 hover:decoration-emerald-600 sm:text-3xl";
 
   return (
     <div className="min-h-screen bg-white dark:bg-background">
-      {/* Hero Banner */}
-      <section className="relative h-[45vh] min-h-[320px] flex items-center justify-center">
-        <img
-          src="https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=1400&q=80"
-          alt="Himalayan mountains"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="relative z-10 text-center px-4 sm:px-6">
-          <p className="text-emerald-400 font-semibold text-sm tracking-widest uppercase mb-3">
-            Get in Touch
-          </p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.02em] text-white mb-4">
-            Plan Your Himalayan Adventure
-          </h1>
-          <p className="text-white/70 text-lg max-w-xl mx-auto">
-            Our team is here to help you plan your next Himalayan trekking adventure. Reach out today.
-          </p>
+      {/* Header — words only. The form is the job; the human options sit right here, above it on phones. */}
+      <section className="border-b border-slate-200 dark:border-white/10">
+        <div className="mx-auto grid max-w-7xl items-end gap-8 px-4 pb-10 pt-28 sm:px-6 sm:pb-14 sm:pt-36 lg:grid-cols-12 lg:gap-12 lg:px-8">
+          <div className="lg:col-span-7">
+            <p className="mb-4 text-sm text-muted">Get in Touch</p>
+            <h1 className="font-heading text-[2.5rem] font-semibold leading-[1.04] tracking-[-0.025em] text-foreground sm:text-6xl">
+              Plan Your Himalayan Adventure
+            </h1>
+            <p className="mt-5 max-w-xl text-lg text-muted">
+              Our team is here to help you plan your next Himalayan trekking adventure. Reach out today.
+            </p>
+          </div>
+          <div className="flex flex-col items-start gap-1 lg:col-span-5 lg:items-end">
+            <a href="https://wa.me/917817912062" target="_blank" rel="noopener noreferrer" className={quickLink}>
+              <svg className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641l-.442 1.768a1.875 1.875 0 002.261 2.261l1.768-.442c.6-.154 1.194.154 1.641.586A9.49 9.49 0 0012 20.25z" />
+              </svg>
+              WhatsApp
+            </a>
+            <a href="tel:+917817912062" className={quickLink}>
+              <svg className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+              </svg>
+              +91 78179 12062
+            </a>
+          </div>
         </div>
       </section>
 
       {/* Main Contact Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-section-sm">
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-12">
-          {/* Left Column – Contact Info */}
-          <div className="lg:w-1/2">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground mb-3">Let&apos;s Start Planning Your Trek</h2>
-            <p className="text-base text-muted mb-8 max-w-lg">
-              Whether you&apos;re a first-time trekker or an experienced mountaineer, our team will craft the perfect Himalayan journey for you.
-            </p>
-
-            <div className="space-y-4">
-              {/* Phone */}
-              <div className={infoCard}>
-                <div className={infoIcon}>
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground mb-1">Phone</h4>
-                  <a href="tel:+917817912062" className={`${infoLink} py-1`}>+91 78179 12062</a>
-                  <a href="tel:+918650561564" className={`${infoLink} py-1`}>+91 86505 61564</a>
-                  <p className="text-sm text-muted mt-1">Mon–Fri · 9AM–6PM IST</p>
-                </div>
-              </div>
-
-              {/* Email */}
-              <div className={infoCard}>
-                <div className={infoIcon}>
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                  </svg>
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-semibold text-foreground mb-1">Email</h4>
-                  <a href="mailto:himalayanarcadventure@gmail.com" className={`${infoLink} break-words py-1`}>himalayanarcadventure@gmail.com</a>
-                  <p className="text-sm text-muted mt-1">We&apos;ll respond within 24 hours</p>
-                </div>
-              </div>
-
-              {/* Office */}
-              <div className={infoCard}>
-                <div className={infoIcon}>
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground mb-2">Office</h4>
-                  <div className="space-y-2">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Gurugram Office</p>
-                      <p className="text-sm text-muted">M3M Marina, Sector 68</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Uttarakhand Office</p>
-                      <p className="text-sm text-muted">Chamoli, Joshimath, Near Military Hospital</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Why Choose Us */}
-            <FadeUp className="mt-8">
-              <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5 sm:p-6 dark:bg-emerald-950/30">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Why Choose Himalayan Arc Adventure?</h3>
-                <div className="space-y-3">
-                  {[
-                    "15+ years of Himalayan trekking expertise",
-                    "5000+ happy trekkers across India",
-                    "24/7 support during treks",
-                  ].map((item) => (
-                    <div key={item} className="flex items-center gap-3 text-foreground">
-                      <span className="w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center flex-shrink-0">
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} aria-hidden>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                      </span>
-                      <span className="text-sm">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </FadeUp>
-          </div>
-
-          {/* Right Column – Contact Form */}
-          <div className="lg:w-1/2">
-            <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm sm:p-8 dark:border-white/10 dark:bg-card">
-              <h2 className="text-2xl font-bold tracking-[-0.02em] text-foreground mb-6">Send us a Message</h2>
-              <p className="-mt-4 mb-5 text-sm text-muted">We&apos;ll prepare your message in WhatsApp. You can review and send it there.</p>
+      <section className="mx-auto max-w-7xl px-4 py-section-sm sm:px-6 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+          {/* Contact Form (first on phones) */}
+          <div className="order-1 min-w-0 lg:order-2 lg:col-span-7">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-8 dark:border-white/10 dark:bg-card">
+              <h2 className="mb-2 font-heading text-2xl font-semibold tracking-[-0.02em] text-foreground sm:text-3xl">Send us a Message</h2>
+              <p className="mb-6 text-sm text-muted">We&apos;ll prepare your message in WhatsApp. You can review and send it there.</p>
 
               {whatsappUrl ? (
-                <div role="status" className="text-center py-12">
-                  <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                <div role="status" className="py-10">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-2">Your message is ready</h3>
+                  <h3 className="mb-2 font-heading text-xl font-semibold text-foreground">Your message is ready</h3>
                   <p className="text-muted">Open WhatsApp and press Send to contact our team.</p>
                   <a
                     href={whatsappUrl}
@@ -223,13 +146,13 @@ export default function ContactPage() {
                   >
                     Open WhatsApp
                   </a>
-                  <Button variant="link" onClick={() => setWhatsappUrl(null)} className="mx-auto mt-2 flex min-h-11">
+                  <Button variant="link" onClick={() => setWhatsappUrl(null)} className="mt-2 flex min-h-11">
                     Edit message
                   </Button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate className="space-y-5">
-                  <div className="grid md:grid-cols-2 gap-5">
+                  <div className="grid gap-5 md:grid-cols-2">
                     <div>
                       <Label htmlFor="contact-name">Name</Label>
                       <Input
@@ -310,50 +233,98 @@ export default function ContactPage() {
               )}
             </div>
           </div>
+
+          {/* Contact details — a plain ruled list */}
+          <div className="order-2 min-w-0 lg:order-1 lg:col-span-5">
+            <h2 className="mb-3 font-heading text-3xl font-semibold tracking-[-0.02em] text-foreground">Let&apos;s Start Planning Your Trek</h2>
+            <p className="mb-8 max-w-lg text-base text-muted">
+              Whether you&apos;re a first-time trekker or an experienced mountaineer, our team will craft the perfect Himalayan journey for you.
+            </p>
+
+            <div className="divide-y divide-slate-200 border-y border-slate-200 dark:divide-white/10 dark:border-white/10">
+              {/* Phone */}
+              <div className="py-5">
+                <h3 className="mb-1 text-sm font-semibold text-muted">Phone</h3>
+                <a href="tel:+917817912062" className={`${infoLink} py-1 text-lg`}>+91 78179 12062</a>
+                <a href="tel:+918650561564" className={`${infoLink} py-1 text-lg`}>+91 86505 61564</a>
+                <p className="mt-1 text-sm text-muted">Mon–Fri · 9AM–6PM IST</p>
+              </div>
+
+              {/* Email */}
+              <div className="min-w-0 py-5">
+                <h3 className="mb-1 text-sm font-semibold text-muted">Email</h3>
+                <a href="mailto:himalayanarcadventure@gmail.com" className={`${infoLink} py-1 text-lg [overflow-wrap:anywhere]`}>himalayanarcadventure@gmail.com</a>
+                <p className="mt-1 text-sm text-muted">We&apos;ll respond within 24 hours</p>
+              </div>
+
+              {/* Office */}
+              <div className="py-5">
+                <h3 className="mb-2 text-sm font-semibold text-muted">Office</h3>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-base font-medium text-foreground">Gurugram Office</p>
+                    <p className="text-sm text-muted">M3M Marina, Sector 68</p>
+                  </div>
+                  <div>
+                    <p className="text-base font-medium text-foreground">Uttarakhand Office</p>
+                    <p className="text-sm text-muted">Chamoli, Joshimath, Near Military Hospital</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Why Choose Us */}
+            <FadeUp className="mt-10">
+              <h3 className="mb-3 font-heading text-lg font-semibold text-foreground">Why Choose Himalayan Arc Adventure?</h3>
+              <ul className="divide-y divide-slate-200 border-y border-slate-200 text-sm text-foreground dark:divide-white/10 dark:border-white/10">
+                {[
+                  "15+ years of Himalayan trekking expertise",
+                  "5000+ happy trekkers across India",
+                  "24/7 support during treks",
+                ].map((item) => (
+                  <li key={item} className="py-3">{item}</li>
+                ))}
+              </ul>
+            </FadeUp>
+          </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="bg-surface dark:bg-background py-section-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeUp className="text-center mb-10 sm:mb-12">
-            <span className="text-sm font-semibold tracking-widest uppercase text-emerald-600">FAQ</span>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground">Frequently Asked Questions</h2>
+      {/* FAQ Section — heading left, ruled questions right */}
+      <section className="bg-surface py-section-sm dark:bg-background">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8">
+          <FadeUp className="lg:col-span-4">
+            <p className="text-sm text-muted">FAQ</p>
+            <h2 className="mt-2 font-heading text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">Frequently Asked Questions</h2>
           </FadeUp>
 
-          <StaggerContainer className="grid md:grid-cols-2 gap-4 sm:gap-6 max-w-5xl mx-auto items-start">
+          <div className="divide-y divide-slate-300 border-y border-slate-300 dark:divide-white/10 dark:border-white/10 lg:col-span-8">
             {FAQS.map((faq, i) => (
-              <StaggerItem key={i}>
-                <div className="rounded-2xl border border-slate-200/70 bg-white shadow-sm dark:border-white/10 dark:bg-card">
-                  <button
-                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    aria-expanded={openFaq === i}
-                    aria-controls={`contact-faq-panel-${i}`}
-                    className="w-full flex items-start justify-between gap-4 rounded-2xl p-5 sm:p-6 text-left"
+              <div key={i}>
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  aria-expanded={openFaq === i}
+                  aria-controls={`contact-faq-panel-${i}`}
+                  className="flex min-h-11 w-full items-start justify-between gap-4 py-5 text-left"
+                >
+                  <h3 className="font-heading text-lg font-semibold text-foreground">{faq.q}</h3>
+                  <svg
+                    className={`mt-1 h-5 w-5 flex-shrink-0 text-muted transition-transform duration-150 ease-out motion-reduce:transition-none ${openFaq === i ? "rotate-180" : ""}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    aria-hidden
                   >
-                    <h3 className="font-bold text-foreground">{faq.q}</h3>
-                    <svg
-                      className={`w-5 h-5 text-muted flex-shrink-0 mt-0.5 transition-transform duration-150 ease-out motion-reduce:transition-none ${openFaq === i ? "rotate-180" : ""}`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      aria-hidden
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </button>
-                  <Collapse open={openFaq === i} id={`contact-faq-panel-${i}`}>
-                    <div className="px-5 pb-5 sm:px-6 sm:pb-6">
-                      <p className="text-muted text-sm leading-relaxed pt-3 border-t border-slate-100 dark:border-white/10">
-                        {faq.a}
-                      </p>
-                    </div>
-                  </Collapse>
-                </div>
-              </StaggerItem>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </button>
+                <Collapse open={openFaq === i} id={`contact-faq-panel-${i}`}>
+                  <p className="max-w-2xl pb-5 text-sm leading-relaxed text-muted">{faq.a}</p>
+                </Collapse>
+              </div>
             ))}
-          </StaggerContainer>
+          </div>
         </div>
       </section>
     </div>

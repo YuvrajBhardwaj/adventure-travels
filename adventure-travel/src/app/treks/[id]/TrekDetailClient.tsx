@@ -58,7 +58,6 @@ import ScholarshipsTab from "./ScholarshipsTab";
 import { printItinerary } from "./printItinerary";
 import NoPhoto from "@/components/NoPhoto";
 import WallpaperCarousel, { type WallpaperSlide } from "@/components/WallpaperCarousel";
-import ScrollProgressRing from "@/components/ScrollProgressRing";
 import Price, { PriceNote } from "@/components/Price";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -233,7 +232,10 @@ function galleryMedia(trek: Trek): string[] {
 function getHeroSlides(trek: Trek): WallpaperSlide[] {
   const photos = galleryMedia(trek).filter((src) => !/\.(mp4|mov)$/i.test(src));
   const ordered = trek.image ? [trek.image, ...photos.filter((src) => src !== trek.image)] : photos;
-  return ordered.map((src) => ({ src: src.includes("images.unsplash.com") ? src.replace(/([?&])w=\d+/, "$1w=1920") : src }));
+  // Upgrading Unsplash widths can turn two different-size copies of one photo into the same URL,
+  // so drop duplicates after it (otherwise the slideshow repeats a photo and React sees duplicate keys).
+  const sources = ordered.map((src) => (src.includes("images.unsplash.com") ? src.replace(/([?&])w=\d+/, "$1w=1920") : src));
+  return [...new Set(sources)].map((src) => ({ src }));
 }
 
 export default function TrekDetailClient({ trek }: { trek: Trek }) {
@@ -336,7 +338,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-background">
+    <main id="main" className="min-h-screen bg-white dark:bg-background">
       {/* Breadcrumb */}
       <div className="bg-slate-50 dark:bg-surface pt-20">
         <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
@@ -357,7 +359,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
         controls="top"
         className="h-[50vh] min-h-[350px]"
         scrimClassName="bg-gradient-to-t from-black/80 via-black/40 to-black/20"
-        fallback={<NoPhoto className="w-full h-full" />}
+        fallback={<NoPhoto className="w-full h-full" profile={trek.elevationProfile} />}
       >
         {/* Wishlist & Share */}
         <div className="absolute top-6 right-6 flex items-center gap-3">
@@ -586,8 +588,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
         defaultMessage={`I'd like details about the ${trek.name} trek. Please share available dates and booking details.`}
       />
 
-      <ScrollProgressRing className="bottom-28 right-4 lg:bottom-8 lg:right-6" />
-    </div>
+    </main>
   );
 }
 
@@ -1010,7 +1011,7 @@ function QuickInfo({ trek }: { trek: Trek }) {
               />
             </div>
             <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted">{item.label}</h4>
-            <p className="mt-0.5 text-[15px] font-bold leading-snug text-foreground">{item.value}</p>
+            <p className="mt-0.5 break-words text-[15px] font-bold leading-snug text-foreground">{item.value}</p>
             {/* Always shown on touch screens; a hover hint where there's a mouse. */}
             <span className="mt-1 block text-[11px] font-semibold text-emerald-700 transition-opacity duration-150 ease-out pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:group-focus-visible:opacity-100">
               Know more
@@ -2023,6 +2024,7 @@ function Field({ label, id, type = "text", value, onChange, required, min, error
         required={required}
         min={min}
         placeholder={placeholder}
+        name={id}
         autoComplete={autoComplete}
         invalid={!!error}
         aria-describedby={error ? `${id}-err` : undefined}

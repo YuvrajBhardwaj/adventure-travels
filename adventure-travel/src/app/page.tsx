@@ -22,9 +22,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const FAQV2 = dynamic(() => import("@/components/FAQV2"), {
   loading: () => (
-    <div className="py-section bg-background/70 backdrop-blur-md">
-      <div className="mx-auto max-w-7xl px-6">
-        <Skeleton className="h-64 rounded-2xl" />
+    <div className="bg-background py-20 md:py-28">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:px-8">
+        <Skeleton className="h-40 rounded-2xl lg:col-span-4" />
+        <Skeleton className="h-64 rounded-2xl lg:col-span-8" />
       </div>
     </div>
   ),
@@ -35,16 +36,16 @@ export default function Home() {
     <SmoothScrollProvider>
       <main className="relative overflow-x-hidden">
         <SeasonSplitHero />
-        <div className="relative z-10 pb-24 md:pb-0">
+        <div className="relative z-10">
           <WelcomeChooser />
           <StatsStrip />
           <FindYourTrek />
           <SummerTreksRail />
           <SnowSchool />
-          <CampingSection />
-          <VideoShowcase />
           <WhyTrekWithUs />
+          <CampingSection />
           <StoriesTestimonials />
+          <VideoShowcase />
           <HimalayanMap />
           <UnlockRestrictedUttarakhand />
           <HowItWorks />

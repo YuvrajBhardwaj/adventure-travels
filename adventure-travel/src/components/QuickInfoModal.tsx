@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Trek } from "@/data/treks";
 import { DIFFICULTY_COLORS } from "@/data/treks";
 import Price from "@/components/Price";
+import { seasonMonths } from "@/lib/season";
 
 export type QuickInfoId =
   | "difficulty" | "duration" | "altitude" | "season" | "group"
@@ -49,31 +50,14 @@ function UL({ items }: { items: React.ReactNode[] }) {
   );
 }
 
-function seasonMonths(bestSeason: string): Set<string> {
-  const hit = new Set<string>();
-  MONTHS.forEach((m) => {
-    if (bestSeason.toLowerCase().includes(m.toLowerCase())) hit.add(m);
-  });
-  // fill range: if bestSeason looks like "A – B" or "A to B", include months between
-  const idxs = MONTHS.map((m) => (hit.has(m) ? MONTHS.indexOf(m) : -1)).filter((i) => i >= 0);
-  if (idxs.length >= 2 && hit.size <= 3) {
-    for (let i = Math.min(...idxs); i <= Math.max(...idxs); i++) hit.add(MONTHS[i]);
-    // wrap-around ranges (e.g. Oct – Mar)
-    if (Math.max(...idxs) - Math.min(...idxs) > 6 && hit.size < MONTHS.length) {
-      hit.clear();
-      MONTHS.forEach((_, i) => { if (i >= Math.min(...idxs) || i <= Math.max(...idxs)) hit.add(MONTHS[i]); });
-    }
-  }
-  return hit;
-}
-
 export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string; body: React.ReactNode } {
   const ft = Math.round(trek.maxAltitude * 3.28084);
   const totalHours = trek.itinerary.reduce((s, d) => s + d.hours, 0);
   const longestDay = trek.itinerary.reduce((a, b) => (b.hours > a.hours ? b : a), trek.itinerary[0]);
   const basecamp = trek.location ?? trek.region;
   const isUttarakhand = trek.region.includes("Uttarakhand");
-  const months = seasonMonths(trek.bestSeason);
+  // Whole ranges, wrapping past December ("Sep–Jun"); bracketed notes are ignored.
+  const months = new Set(seasonMonths(trek.bestSeason).map((i) => MONTHS[i]));
 
   switch (id) {
     case "difficulty":

@@ -3,79 +3,43 @@
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/MotionWrapper";
 import { buttonVariants } from "@/components/ui/button";
 
-// Inline SVG Icon components matching the codebase pattern
-function ShieldCheckIcon({ className = "w-5 h-5" }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-    </svg>
-  );
-}
-
 function MailIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
       <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
     </svg>
   );
 }
 
-function TicketIcon({ className = "w-5 h-5" }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-4.5-1.5h.008v.008h-.008v-.008zm0-3h.008v.008h-.008v-.008zm0-3h.008v.008h-.008v-.008zm0-3h.008v.008h-.008v-.008zm-3.75-4.5h7.5a2.25 2.25 0 012.25 2.25v.75a2.25 2.25 0 010 4.5v.75a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75a2.25 2.25 0 010-4.5v-.75a2.25 2.25 0 012.25-2.25z" />
-    </svg>
-  );
-}
-
-function CloudIcon({ className = "w-5 h-5" }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" />
-    </svg>
-  );
-}
-
-function ChevronRightIcon({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-    </svg>
-  );
-}
-
+// The refund ladder: the percentage is the visual, the colour only says "more" (green) to "none" (orange).
 const REFUND_TIERS = [
   {
     window: "25+ days before",
+    pct: "90%",
     cash: "90% cash refund",
     voucher: "100% as a Trek Voucher",
-    color: "bg-emerald-500",
-    lightColor: "bg-emerald-50 dark:bg-emerald-950/30",
-    borderColor: "border-emerald-200 dark:border-emerald-800/40",
+    tone: "text-emerald-600 dark:text-emerald-400",
   },
   {
     window: "24–15 days before",
+    pct: "70%",
     cash: "70% cash refund",
     voucher: "80% as a Trek Voucher",
-    color: "bg-emerald-400",
-    lightColor: "bg-emerald-50 dark:bg-emerald-950/30",
-    borderColor: "border-emerald-200 dark:border-emerald-800/40",
+    tone: "text-emerald-600 dark:text-emerald-400",
   },
   {
     window: "14–10 days before",
+    pct: "50%",
     cash: "50% cash refund",
     voucher: "70% as a Trek Voucher",
-    color: "bg-amber-500",
-    lightColor: "bg-amber-50 dark:bg-amber-950/30",
-    borderColor: "border-amber-200 dark:border-amber-800/40",
+    tone: "text-amber-600 dark:text-amber-400",
   },
   {
     window: "9–1 days before",
+    pct: "0%",
     cash: "No refund",
     voucher: "10% Trek Voucher",
-    color: "bg-orange-500",
-    lightColor: "bg-orange-50 dark:bg-orange-950/30",
-    borderColor: "border-orange-200 dark:border-orange-800/40",
+    tone: "text-orange-600 dark:text-orange-400",
   },
 ];
 
@@ -97,179 +61,131 @@ const VOUCHER_POINTS = [
   "To redeem, reply to your voucher email or WhatsApp your trek coordinator on +91 78179 12062 with your voucher code and preferred batch date.",
 ];
 
+const HAIRLINE = "border-slate-200 dark:border-white/10";
+
 export default function CancellationPolicyPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-background">
-      {/* ─── Hero Section ─── */}
-      <section className="relative h-[45vh] min-h-[320px] flex items-center justify-center overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1400&q=80"
-          alt="Himalayan mountain range"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-navy/70 via-navy/50 to-navy/80" />
-        <div className="relative z-10 text-center px-4 sm:px-6 max-w-3xl mx-auto">
-          <div
-            className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6"
-          >
-            <ShieldCheckIcon className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-white/90">
-              Transparent &amp; Fair
-            </span>
-          </div>
-          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.02em] text-white mb-4 leading-tight">
+      {/* ─── Header: words only, left aligned ─── */}
+      <section className={`border-b ${HAIRLINE}`}>
+        <div className="mx-auto max-w-6xl px-4 pb-10 pt-28 sm:px-6 sm:pb-14 sm:pt-36 lg:px-8">
+          <p className="mb-4 text-sm text-muted">Transparent &amp; Fair</p>
+          <h1 className="max-w-4xl font-heading text-[2.5rem] font-semibold leading-[1.04] tracking-[-0.025em] text-foreground sm:text-6xl lg:text-7xl">
             Cancellation &amp; Refund Policy
           </h1>
-          <p className="text-white/70 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
             Note: No refund on unutilized services of the package, if any.
           </p>
         </div>
       </section>
 
       {/* ─── Refund Schedule ─── */}
-      <section className="py-section px-4 sm:px-6 lg:px-8 bg-surface dark:bg-background">
-        <div className="max-w-6xl mx-auto">
-          <FadeUp className="text-center mb-10 sm:mb-14">
-            <span className="text-sm font-semibold tracking-widest uppercase text-accent">
-              Refund Schedule
-            </span>
-            <h2 className="mt-4 font-heading text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground leading-tight">
-              When You Cancel, Here&apos;s What Happens
-            </h2>
-            <p className="mt-4 text-lg text-muted max-w-2xl mx-auto">
-              To cancel your booking, email{" "}
-              <strong className="text-foreground">support@himalayanarcadventure.com</strong>{" "}
-              with your booking reference number. Cancellation requests cannot be
-              taken over phone calls or messages.
+      <section className="py-section-sm">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-12 lg:gap-16">
+            <FadeUp className="lg:col-span-4">
+              <p className="text-sm text-muted">Refund Schedule</p>
+              <h2 className="mt-2 font-heading text-3xl font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-4xl">
+                When You Cancel, Here&apos;s What Happens
+              </h2>
+              <p className="mt-4 text-base leading-relaxed text-muted">
+                To cancel your booking, email{" "}
+                <strong className="text-foreground">support@himalayanarcadventure.com</strong>{" "}
+                with your booking reference number. Cancellation requests cannot be
+                taken over phone calls or messages.
+              </p>
+            </FadeUp>
+
+            <StaggerContainer className={`divide-y border-y ${HAIRLINE} divide-slate-200 dark:divide-white/10 lg:col-span-8`} staggerDelay={0.08}>
+              {REFUND_TIERS.map((tier) => (
+                <StaggerItem key={tier.window}>
+                  <div className="grid grid-cols-[5.5rem_1fr] items-center gap-4 py-5 sm:grid-cols-[8rem_1fr] sm:gap-6 sm:py-6">
+                    <span className={`font-heading text-5xl font-semibold leading-none tracking-[-0.03em] tabular-nums sm:text-6xl ${tier.tone}`}>
+                      {tier.pct}
+                    </span>
+                    <div>
+                      <h3 className="font-heading text-lg font-semibold text-foreground sm:text-xl">{tier.window}</h3>
+                      <p className="mt-1 text-sm font-semibold text-foreground">{tier.cash}</p>
+                      <p className="text-sm leading-relaxed text-muted">or {tier.voucher}</p>
+                    </div>
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </div>
+
+          {/* Start day + the rules that apply to every refund */}
+          <FadeUp className={`mt-14 grid gap-6 border-t pt-10 lg:grid-cols-12 lg:gap-16 ${HAIRLINE}`}>
+            <div className="lg:col-span-4">
+              <h3 className="font-heading text-xl font-semibold text-foreground">On the start day / no-show</h3>
+              <p className="mt-3 leading-relaxed text-muted">
+                <strong className="text-foreground">No refund, no voucher.</strong>
+              </p>
+            </div>
+            <ul className={`divide-y text-sm leading-relaxed text-muted divide-slate-200 dark:divide-white/10 lg:col-span-8`}>
+              {REFUND_NOTE.map((n) => (
+                <li key={n.text} className="py-3 first:pt-0">
+                  {n.text}
+                </li>
+              ))}
+            </ul>
+          </FadeUp>
+
+          {/* ─── We cancel / abandoned mid-way / vouchers ─── */}
+          <FadeUp className={`mt-14 grid gap-4 border-t pt-10 lg:grid-cols-12 lg:gap-16 ${HAIRLINE}`}>
+            <h3 className="font-heading text-xl font-semibold text-foreground lg:col-span-4">
+              In the rare event that we cancel a trek
+            </h3>
+            <p className="text-base leading-relaxed text-muted lg:col-span-8">
+              We almost never cancel. But for lockdowns, natural calamities
+              (snowstorms, thunderstorms, floods, landslides, earthquakes,
+              bad weather), political unrest, curfews, or government orders,
+              we issue a voucher for the <strong className="text-foreground">full amount</strong>{" "}
+              paid — or arrange an alternate trek. The voucher is valid for
+              one year and can be extended in emergencies.{" "}
+              <strong className="text-foreground">No cash refund</strong> is
+              made in this case.
             </p>
           </FadeUp>
 
-          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-10 sm:mb-14" staggerDelay={0.1}>
-            {REFUND_TIERS.map((tier) => (
-              <StaggerItem key={tier.window} className="h-full">
-                <div
-                  className={`h-full rounded-2xl p-5 sm:p-6 border transition-transform duration-200 ease-out hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${tier.lightColor} ${tier.borderColor}`}
-                >
-                  <div
-                    className={`w-12 h-12 rounded-xl ${tier.color} flex items-center justify-center mb-4`}
-                  >
-                    <span className="text-white font-heading font-bold text-lg">
-                      {tier.cash.includes("90") ? "90%" : tier.cash.includes("70") ? "70%" : tier.cash.includes("50") ? "50%" : "0%"}
-                    </span>
-                  </div>
-                  <h3 className="font-heading font-semibold text-foreground text-lg mb-3">
-                    {tier.window}
-                  </h3>
-                  <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-                    {tier.cash}
-                  </p>
-                  <p className="text-sm text-muted leading-relaxed mt-1">
-                    or {tier.voucher}
-                  </p>
-                </div>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
+          <FadeUp className={`mt-10 grid gap-4 border-t pt-10 lg:grid-cols-12 lg:gap-16 ${HAIRLINE}`}>
+            <h3 className="font-heading text-xl font-semibold text-foreground lg:col-span-4">
+              If a trek is abandoned mid-way
+            </h3>
+            <p className="text-base leading-relaxed text-muted lg:col-span-8">
+              There is <strong className="text-foreground">no refund</strong>{" "}
+              if you cannot complete a trek due to natural calamities,
+              unrest, government orders, or if your trek leader sends you
+              back for a safety or health issue. Instead, use our{" "}
+              <strong className="text-foreground">
+                &ldquo;Come Back &amp; Trek Again&rdquo;
+              </strong>{" "}
+              feature (not applicable on winter treks): email us for a
+              Refcode, then rebook the <em>same</em> trek next season with it
+              — no extra trek fee. Offloading, travel, and rental fees are
+              not included.
+            </p>
+          </FadeUp>
 
-          <FadeUp>
-            <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-card p-5 sm:p-6 md:p-8">
-              <h3 className="font-heading text-xl font-bold text-foreground mb-4">
-                On the start day / no-show
-              </h3>
-              <p className="text-muted leading-relaxed">
-                <strong className="text-foreground">No refund, no voucher.</strong>
-              </p>
-              <div className="h-px w-full bg-slate-200 dark:bg-white/10 my-6" />
-              <ul className="grid gap-3 md:grid-cols-2">
-                {REFUND_NOTE.map((n) => (
-                  <li key={n.text} className="flex items-start gap-3 text-sm leading-relaxed text-muted">
-                    <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
-                      <ChevronRightIcon className="w-3 h-3" />
-                    </span>
-                    <span>{n.text}</span>
+          <FadeUp className={`mt-10 grid gap-4 border-t pt-10 lg:grid-cols-12 lg:gap-16 ${HAIRLINE}`}>
+            <h3 className="font-heading text-xl font-semibold text-foreground lg:col-span-4">Trek Vouchers</h3>
+            <div className="lg:col-span-8">
+              <ul className="space-y-3">
+                {VOUCHER_POINTS.map((v) => (
+                  <li key={v} className="text-base leading-relaxed text-muted">
+                    {v}
                   </li>
                 ))}
               </ul>
-            </div>
-          </FadeUp>
-
-          {/* ─── Bordered callout: we cancel / abandoned mid-way / vouchers ─── */}
-          <FadeUp className="mt-8">
-            <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-700/40 p-5 sm:p-6 md:p-8 mb-8">
-              <div className="flex gap-3">
-                <CloudIcon className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-heading text-lg font-bold text-foreground">
-                    In the rare event that we cancel a trek
-                  </h3>
-                  <p className="mt-2 text-sm md:text-base leading-relaxed text-muted">
-                    We almost never cancel. But for lockdowns, natural calamities
-                    (snowstorms, thunderstorms, floods, landslides, earthquakes,
-                    bad weather), political unrest, curfews, or government orders,
-                    we issue a voucher for the <strong className="text-foreground">full amount</strong>{" "}
-                    paid — or arrange an alternate trek. The voucher is valid for
-                    one year and can be extended in emergencies.{" "}
-                    <strong className="text-foreground">No cash refund</strong> is
-                    made in this case.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </FadeUp>
-
-          <FadeUp>
-            <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-card p-5 sm:p-6 md:p-8 mb-8">
-              <div className="flex gap-3">
-                <ShieldCheckIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-heading text-lg font-bold text-foreground">
-                    If a trek is abandoned mid-way
-                  </h3>
-                  <p className="mt-2 text-sm md:text-base leading-relaxed text-muted">
-                    There is <strong className="text-foreground">no refund</strong>{" "}
-                    if you cannot complete a trek due to natural calamities,
-                    unrest, government orders, or if your trek leader sends you
-                    back for a safety or health issue. Instead, use our{" "}
-                    <strong className="text-foreground">
-                      &ldquo;Come Back &amp; Trek Again&rdquo;
-                    </strong>{" "}
-                    feature (not applicable on winter treks): email us for a
-                    Refcode, then rebook the <em>same</em> trek next season with it
-                    — no extra trek fee. Offloading, travel, and rental fees are
-                    not included.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </FadeUp>
-
-          <FadeUp>
-            <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-card p-5 sm:p-6 md:p-8">
-              <div className="flex gap-3">
-                <TicketIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-heading text-lg font-bold text-foreground">
-                    Trek Vouchers
-                  </h3>
-                  <ul className="mt-3 space-y-2">
-                    {VOUCHER_POINTS.map((v) => (
-                      <li key={v} className="flex items-start gap-3 text-sm md:text-base leading-relaxed text-muted">
-                        <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-500" />
-                        <span>{v}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <a
-                    href="https://wa.me/917817912062?text=Hi!%20I'd%20like%20to%20redeem%20my%20Trek%20Voucher."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={buttonVariants({ className: "mt-5 px-6" })}
-                  >
-                    <MailIcon className="w-4 h-4" />
-                    Redeem your voucher
-                  </a>
-                </div>
-              </div>
+              <a
+                href="https://wa.me/917817912062?text=Hi!%20I'd%20like%20to%20redeem%20my%20Trek%20Voucher."
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonVariants({ className: "mt-6 px-6" })}
+              >
+                <MailIcon className="w-4 h-4" />
+                Redeem your voucher
+              </a>
             </div>
           </FadeUp>
         </div>

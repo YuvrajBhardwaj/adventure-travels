@@ -17,10 +17,13 @@ const inter = Inter({
   display: "swap",
 });
 
+// Variable font: one file covers every weight, plus optical size (finer detail at large sizes)
+// and SOFT (rounder terminals). It is the voice of headings; Space Grotesk stays for nav and data.
 const fraunces = Fraunces({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["600", "700", "800", "900"],
+  weight: "variable",
+  axes: ["opsz", "SOFT"],
   display: "swap",
 });
 
@@ -102,7 +105,7 @@ export const metadata: Metadata = {
   // included, so every file must be a real square image of its declared size.
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "48x48 256x256" },
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
       { url: "/favicon.png", type: "image/png", sizes: "192x192" },
     ],
     apple: { url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" },

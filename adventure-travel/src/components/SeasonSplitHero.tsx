@@ -7,7 +7,10 @@ import { buttonVariants } from "@/components/ui/button";
 import { DURATION, EASE } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-type Slide = { type: "image" | "video"; src: string; alt: string };
+type Slide = { type: "image" | "video"; src: string; alt: string; poster?: string };
+
+// Posters for the winter videos: our own Auli snowboarding photos, so the video box shows a photo until (and unless) the clip loads.
+const WINTER_POSTERS = ["/assets/snowboarding/IMG_5472.jpg", "/assets/snowboarding/IMG_4063.jpg", "/assets/snowboarding/IMG_5455.jpeg"];
 
 // Summer — trek imagery (real expedition photos from our treks)
 const SUMMER_SLIDES: Slide[] = [
@@ -19,12 +22,12 @@ const SUMMER_SLIDES: Slide[] = [
 
 // Winter — snowboarding videos only (right side = videos)
 const WINTER_SLIDES: Slide[] = [
-  { type: "video", src: "/assets/snowboarding/IMG_5201.MOV", alt: "Snowboarding run at Auli — video" },
-  { type: "video", src: "/assets/snowboarding/IMG_4222.MOV", alt: "Snowboarding powder spray — video" },
-  { type: "video", src: "/assets/snowboarding/IMG_5198.MOV", alt: "Snowboarder carving — video" },
-  { type: "video", src: "/assets/snowboarding/IMG_5272.MOV", alt: "Auli snow run — video" },
-  { type: "video", src: "/assets/snowboarding/IMG_5220.MOV", alt: "Snowboarding descent — video" },
-  { type: "video", src: "/assets/snowboarding/IMG_1477.MOV", alt: "Mountain snowboarding — video" },
+  { type: "video", src: "/assets/snowboarding/IMG_5201.MOV", alt: "Snowboarding run at Auli — video", poster: WINTER_POSTERS[0] },
+  { type: "video", src: "/assets/snowboarding/IMG_4222.MOV", alt: "Snowboarding powder spray — video", poster: WINTER_POSTERS[1] },
+  { type: "video", src: "/assets/snowboarding/IMG_5198.MOV", alt: "Snowboarder carving — video", poster: WINTER_POSTERS[2] },
+  { type: "video", src: "/assets/snowboarding/IMG_5272.MOV", alt: "Auli snow run — video", poster: WINTER_POSTERS[0] },
+  { type: "video", src: "/assets/snowboarding/IMG_5220.MOV", alt: "Snowboarding descent — video", poster: WINTER_POSTERS[1] },
+  { type: "video", src: "/assets/snowboarding/IMG_1477.MOV", alt: "Mountain snowboarding — video", poster: WINTER_POSTERS[2] },
 ];
 
 function CarouselLayer({
@@ -49,6 +52,24 @@ function CarouselLayer({
 }) {
   const [idx, setIdx] = useState(0);
   const mediaRefs = useRef<(HTMLImageElement | HTMLVideoElement | null)[]>([]);
+  // Videos are attached (and so downloaded) only once a slide is first shown, and never on
+  // data-saver / slow connections or under reduced motion: those visitors get the poster photo.
+  const [videoOk, setVideoOk] = useState(false);
+  const [attached, setAttached] = useState<number[]>([0]);
+  useEffect(() => {
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    const lowData =
+      Boolean(conn?.saveData) ||
+      (conn?.effectiveType ? /(^|-)2g$|3g/.test(conn.effectiveType) : false) ||
+      window.matchMedia("(prefers-reduced-data: reduce)").matches;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setVideoOk(!reduceMotion && !lowData);
+  }, [reduceMotion]);
+  useEffect(() => {
+    if (frozen) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setAttached((a) => (a.includes(idx) ? a : [...a, idx]));
+  }, [idx, frozen]);
 
   // Every slide stays MOUNTED — no remounts, so a video never loses its decoded
   // frame mid-transition. Only the active video plays; paused ones hold their
@@ -57,11 +78,10 @@ function CarouselLayer({
     mediaRefs.current.forEach((el, i) => {
       if (!el || el.tagName !== "VIDEO") return;
       const v = el as HTMLVideoElement;
-      if (i === idx && !frozen) void v.play().catch(() => {});
+      if (i === idx && !frozen && videoOk) void v.play().catch(() => {});
       else v.pause();
-      v.preload = i === idx || i === (idx + 1) % slides.length ? "auto" : "metadata";
     });
-  }, [idx, slides.length, frozen]);
+  }, [idx, slides.length, frozen, videoOk, attached]);
 
   useEffect(() => {
     if (reduceMotion || paused || slides.length <= 1) return;
@@ -86,14 +106,24 @@ function CarouselLayer({
             }
             className="absolute inset-0"
           >
-            {slide.type === "video" ? (
+            {slide.type === "video" && !videoOk && slide.poster ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={slide.poster}
+                alt={slide.alt}
+                loading={i === 0 ? undefined : "lazy"}
+                decoding="async"
+                className="h-full w-full object-cover object-center"
+              />
+            ) : slide.type === "video" ? (
               <video
                 ref={(el) => { mediaRefs.current[i] = el; }}
-                src={slide.src}
+                src={videoOk && attached.includes(i) ? slide.src : undefined}
+                poster={slide.poster}
                 muted
                 loop
                 playsInline
-                preload={i === 0 ? "auto" : "metadata"}
+                preload="none"
                 className="h-full w-full object-cover object-center"
                 aria-label={slide.alt}
               />
@@ -291,7 +321,7 @@ export default function SeasonSplitHero() {
 
         <div className="mt-auto flex flex-col gap-4 lg:gap-3">
           <div className="flex flex-col">
-            <h1 className="font-heading font-bold leading-none text-white drop-shadow-lg">
+            <h1 className="font-heading font-semibold leading-[0.95] tracking-[-0.03em] text-white drop-shadow-lg">
               <span className="block pb-1 text-display-xl">ONE RANGE.</span>
               <span className="block pb-2 text-display-xl text-white/95">TWO SEASONS.</span>
             </h1>

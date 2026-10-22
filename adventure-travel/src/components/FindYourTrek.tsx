@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { treks, DIFFICULTY_COLORS, REGIONS } from "@/data/treks";
-import { FadeUp, StaggerContainer, StaggerItem } from "./MotionWrapper";
+import { treks, REGIONS } from "@/data/treks";
+import { FadeUp } from "./MotionWrapper";
 import Price from "@/components/Price";
 
 // Copy mirrors the FAQ: Easy/Moderate need no prior experience; Challenging/Strenuous
@@ -27,83 +27,89 @@ const levelStats = LEVELS.map((level) => {
   };
 }).filter((l) => l.count > 0);
 
+const topAltitude = Math.max(...levelStats.map((l) => l.maxAltitude), 1);
+
 const regionStats = REGIONS.filter((r) => r !== "All Regions").map((region) => ({
   region,
   count: treks.filter((t) => t.region === region).length,
 }));
 
+// Difficulty is a staircase, not four colours: on desktop each step stands higher than the last.
+const STEP_HEIGHT = [
+  "lg:min-h-[21rem] lg:bg-foreground/[0.02]",
+  "lg:min-h-[24rem] lg:bg-foreground/[0.035]",
+  "lg:min-h-[27rem] lg:bg-foreground/[0.05]",
+  "lg:min-h-[30rem] lg:bg-foreground/[0.065]",
+];
+
 export default function FindYourTrek() {
   return (
-    <section className="relative bg-background py-section">
+    <section className="relative bg-background py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeUp>
-          <div className="flex items-center gap-3">
-            <span className="h-px w-10 bg-primary" aria-hidden />
-            <span className="font-nav text-xs font-bold uppercase tracking-[0.3em] text-primary">
-              FIND YOUR TREK
-            </span>
-          </div>
-          <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-foreground tracking-[-0.02em] sm:text-4xl">
+          <p className="sr-only">FIND YOUR TREK</p>
+          <h2 className="max-w-3xl font-heading text-4xl font-medium leading-[1.04] tracking-[-0.025em] text-foreground sm:text-5xl lg:text-6xl">
             Which trek is right for you?
           </h2>
-          <p className="mt-3 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+          <p className="mt-5 max-w-md text-base leading-relaxed text-muted">
             Start with how much mountain experience you have. We&apos;ll show only the routes that fit.
           </p>
         </FadeUp>
 
-        <StaggerContainer className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" staggerDelay={0.07}>
-          {levelStats.map((l) => (
-            <StaggerItem key={l.difficulty}>
+        <ol className="mt-12 grid border-t border-foreground/20 lg:mt-16 lg:grid-cols-4 lg:items-end lg:border-t-0">
+          {levelStats.map((l, i) => (
+            <li key={l.difficulty} className="contents">
               <Link
                 href={`/treks?difficulty=${encodeURIComponent(l.difficulty)}`}
-                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-foreground/10 bg-card shadow-sm transition-[transform,border-color,background-color] duration-200 ease-out hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 hover:shadow-lg hover:shadow-black/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className={`group relative flex flex-col border-b border-foreground/15 py-7 transition-colors duration-150 ease-out hover:bg-foreground/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none lg:border-b-0 lg:border-t-2 lg:border-t-foreground lg:px-6 lg:pb-8 lg:pt-6 ${STEP_HEIGHT[i] ?? ""}`}
               >
-                <span aria-hidden className="h-1.5 w-full" style={{ backgroundColor: DIFFICULTY_COLORS[l.difficulty] }} />
-                <div className="flex flex-1 flex-col p-5 sm:p-6">
-                  <span
-                    className="inline-flex w-fit rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white"
-                    style={{ backgroundColor: DIFFICULTY_COLORS[l.difficulty] }}
-                  >
-                    {l.difficulty}
-                  </span>
-                  <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">{l.label}</h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{l.blurb}</p>
+                <span className="font-heading text-4xl font-medium leading-none tracking-[-0.02em] text-foreground sm:text-5xl">
+                  {l.difficulty}
+                </span>
+                <h3 className="font-nav mt-3 text-sm font-medium text-foreground">{l.label}</h3>
+                <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted">{l.blurb}</p>
 
-                  <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-foreground/10 pt-4 text-sm">
-                    <div>
-                      <dt className="text-[11px] uppercase tracking-wider text-muted">Duration</dt>
-                      <dd className="font-semibold text-foreground">
-                        {l.minDays === l.maxDays ? `${l.minDays} days` : `${l.minDays}–${l.maxDays} days`}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-[11px] uppercase tracking-wider text-muted">Up to</dt>
-                      <dd className="font-semibold text-foreground">{l.maxAltitude.toLocaleString("en-IN")} m</dd>
-                    </div>
-                  </dl>
+                <dl className="mt-6 flex gap-8">
+                  <div>
+                    <dt className="font-nav text-[11px] uppercase tracking-[0.14em] text-muted">Duration</dt>
+                    <dd className="mt-1 font-heading text-2xl tabular-nums text-foreground">
+                      {l.minDays === l.maxDays ? `${l.minDays} days` : `${l.minDays}–${l.maxDays} days`}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="font-nav text-[11px] uppercase tracking-[0.14em] text-muted">Up to</dt>
+                    <dd className="mt-1 font-heading text-2xl tabular-nums text-foreground">
+                      {l.maxAltitude.toLocaleString("en-IN")} m
+                    </dd>
+                  </div>
+                </dl>
 
-                  <p className="mt-4 flex items-center justify-between text-sm font-semibold text-primary">
-                    <span>
-                      {l.count} {l.count === 1 ? "trek" : "treks"} · from <Price inr={l.fromPrice} />
-                    </span>
-                    <span aria-hidden className="transition-transform duration-150 ease-out group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
-                      →
-                    </span>
-                  </p>
+                {/* altitude bar: the highest point of this level, against our highest overall */}
+                <div className="mt-5 h-px bg-foreground/15" aria-hidden>
+                  <div className="h-[3px] -translate-y-px bg-primary" style={{ width: `${Math.round((l.maxAltitude / topAltitude) * 100)}%` }} />
                 </div>
+
+                <p className="mt-auto flex items-center justify-between gap-3 pt-6 text-sm text-foreground">
+                  <span>
+                    {l.count} {l.count === 1 ? "trek" : "treks"} · from <Price inr={l.fromPrice} />
+                  </span>
+                  <span aria-hidden className="text-primary transition-transform duration-150 ease-out group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
+                    →
+                  </span>
+                </p>
               </Link>
-            </StaggerItem>
+            </li>
           ))}
-        </StaggerContainer>
+        </ol>
 
         <FadeUp delay={0.1}>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <span className="text-sm text-muted">Or browse by region:</span>
+          <div className="mt-10 flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="mr-2 text-sm text-muted">Or browse by region:</span>
             {regionStats.map((r) => (
               <Link
                 key={r.region}
                 href={`/treks?region=${encodeURIComponent(r.region)}`}
-                className="inline-flex min-h-11 items-center gap-1 rounded-full border border-foreground/15 bg-card px-4 text-sm font-medium text-foreground transition-colors duration-150 ease-out hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="inline-flex min-h-11 items-center gap-1 px-2 text-sm font-medium text-foreground underline decoration-foreground/25 underline-offset-4 transition-colors duration-150 ease-out hover:text-primary hover:decoration-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 {r.region} <span className="text-muted">({r.count})</span>
               </Link>

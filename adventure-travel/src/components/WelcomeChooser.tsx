@@ -89,85 +89,79 @@ export default function WelcomeChooser() {
   const active = tiles.find((t) => t.id === activeId) ?? tiles[0];
 
   return (
-    <section aria-labelledby="where-to-heading" className="relative overflow-hidden bg-navy-deep py-section-sm">
-      {/* soft aurora behind everything */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 h-96 w-[48rem] -translate-x-1/2 rounded-full bg-emerald-500/15 blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-sky-500/10 blur-3xl" />
-      </div>
+    <section aria-labelledby="where-to-heading" className="relative bg-background py-20 md:py-28">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:gap-12 lg:px-8">
+        <div className="lg:col-span-4">
+          {/* the page's one small label */}
+          <p className="font-nav text-xs font-semibold uppercase tracking-[0.28em] text-muted">Himalayan Arc Adventure</p>
+          <h2 id="where-to-heading" className="mt-4 font-heading text-4xl font-medium leading-[1.04] tracking-[-0.025em] text-foreground sm:text-5xl">
+            Where to today?
+          </h2>
+          <p className="mt-4 max-w-xs text-base leading-relaxed text-muted">Pick a door. You can always change your mind.</p>
 
-      <div className="relative mx-auto flex max-w-5xl flex-col items-center px-4 sm:px-6 lg:px-8">
-        <p className="font-nav text-xs font-bold uppercase tracking-[0.35em] text-emerald-400">Himalayan Arc Adventure</p>
-        <h2 id="where-to-heading" className="mt-3 text-center font-heading text-3xl font-bold tracking-[-0.02em] text-white sm:text-4xl">
-          Where to today?
-        </h2>
-        <p className="mt-3 text-center text-sm text-white/60">Pick a door. You can always change your mind.</p>
-
-        {/* Profile-style tiles: each one shows what's inside it below */}
-        <div role="group" aria-label="Sections" className="mt-9 flex flex-wrap justify-center gap-4 sm:gap-8">
-          {tiles.map((tile, i) => {
-            const isActive = tile.id === activeId;
-            return (
-              <button
-                key={tile.id}
-                ref={(el) => {
-                  tileRefs.current[i] = el;
-                }}
-                type="button"
-                aria-pressed={isActive}
-                onMouseEnter={() => setActiveId(tile.id)}
-                onFocus={() => setActiveId(tile.id)}
-                onClick={() => setActiveId(tile.id)}
-                onKeyDown={(e) => onTileKey(e, i)}
-                className="group flex w-[100px] flex-col items-center gap-3 rounded-2xl text-center sm:w-[150px] lg:w-[170px]"
-              >
-                <span
-                  className={`relative block aspect-square w-full overflow-hidden rounded-2xl bg-slate-800 transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none ${
-                    isActive ? "scale-105 ring-4 ring-white" : "ring-0 ring-white/0 opacity-80"
+          {/* three doors as a typographic index; each shows what's inside it */}
+          <div role="group" aria-label="Sections" className="mt-8 flex gap-x-7 gap-y-1 lg:flex-col lg:gap-0">
+            {tiles.map((tile, i) => {
+              const isActive = tile.id === activeId;
+              return (
+                <button
+                  key={tile.id}
+                  ref={(el) => {
+                    tileRefs.current[i] = el;
+                  }}
+                  type="button"
+                  aria-pressed={isActive}
+                  onMouseEnter={() => setActiveId(tile.id)}
+                  onFocus={() => setActiveId(tile.id)}
+                  onClick={() => setActiveId(tile.id)}
+                  onKeyDown={(e) => onTileKey(e, i)}
+                  className={`group relative min-h-11 border-foreground/15 text-left transition-colors duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none lg:flex lg:items-baseline lg:justify-between lg:border-t lg:py-4 ${
+                    isActive ? "text-foreground" : "text-foreground/45 hover:text-foreground/75"
                   }`}
                 >
-                  {tile.image ? (
-                    <SmartImage src={tile.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                  ) : (
-                    <NoPhoto className="absolute inset-0 h-full w-full" />
-                  )}
-                  <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                </span>
-                <span>
-                  <span className={`block font-heading text-base font-semibold transition-colors duration-150 ease-out sm:text-lg ${isActive ? "text-white" : "text-white/55"}`}>
+                  <span className="block font-heading text-xl font-medium tracking-[-0.015em] sm:text-2xl lg:text-3xl">
                     {tile.label}
                   </span>
-                  <span className="block text-xs text-white/40">{tile.sub}</span>
-                </span>
-              </button>
-            );
-          })}
+                  <span className="font-nav block text-xs tabular-nums text-muted">{tile.sub}</span>
+                  <span
+                    aria-hidden
+                    className={`absolute inset-x-0 bottom-0 h-[2px] origin-left bg-primary transition-transform duration-200 ease-out motion-reduce:transition-none lg:inset-x-0 lg:bottom-auto lg:top-[-1px] ${
+                      isActive ? "scale-x-100" : "scale-x-0"
+                    }`}
+                  />
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* What's inside the highlighted tile */}
-        <div className="mt-10 w-full">
-          <div className="mb-3 flex items-end justify-between gap-4">
-            <p className="font-nav text-xs font-bold uppercase tracking-[0.25em] text-white/50">Inside {active.label}</p>
-            <Link href={active.href} className="inline-flex min-h-11 items-center text-sm font-semibold text-emerald-400 underline-offset-4 hover:underline">
+        {/* What's inside the highlighted door */}
+        <div className="lg:col-span-8">
+          <div className="flex items-end justify-between gap-4 border-b border-foreground/15 pb-3">
+            <p className="font-nav text-xs font-semibold uppercase tracking-[0.2em] text-muted">Inside {active.label}</p>
+            <Link
+              href={active.href}
+              className="inline-flex min-h-11 items-center text-sm font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-[6px] hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
               See all {active.label.toLowerCase()} →
             </Link>
           </div>
           <AnimatePresence mode="wait" initial={false}>
             <motion.ul
               key={active.id}
-              initial={reduceMotion ? false : { opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={reduceMotion ? undefined : { opacity: 0, x: -16 }}
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={reduceMotion ? undefined : { opacity: 0 }}
               transition={transition("base")}
-              className="flex gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="mt-5 flex gap-4 overflow-x-auto pb-3 [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:gap-x-10 sm:gap-y-0 sm:overflow-visible sm:pb-0 [&::-webkit-scrollbar]:hidden"
             >
               {active.items.map((item) => (
-                <li key={item.key} className="w-[200px] shrink-0 sm:w-[230px]">
+                <li key={item.key} className="w-[58vw] max-w-[240px] shrink-0 sm:w-auto sm:max-w-none">
                   <Link
                     href={item.href}
-                    className="group block overflow-hidden rounded-2xl bg-white/5 ring-1 ring-white/10 transition-[transform,background-color] duration-200 ease-out hover:-translate-y-1 hover:bg-white/10 hover:ring-white/30 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                    className="group flex flex-col gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:flex-row sm:items-center sm:gap-4 sm:border-b sm:border-foreground/10 sm:py-3"
                   >
-                    <span className="relative block aspect-[16/10] overflow-hidden">
+                    <span className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden rounded-xl sm:aspect-square sm:w-16">
                       {item.image ? (
                         <SmartImage
                           src={item.image}
@@ -178,15 +172,25 @@ export default function WelcomeChooser() {
                         <NoPhoto className="absolute inset-0 h-full w-full" />
                       )}
                     </span>
-                    <span className="block p-3">
-                      <span className="block truncate text-sm font-semibold text-white">{item.name}</span>
-                      <span className="mt-0.5 block truncate text-xs text-white/50">{item.meta}</span>
+                    <span className="block min-w-0 flex-1">
+                      <span className="block truncate font-heading text-lg font-medium leading-tight text-foreground group-hover:text-primary">
+                        {item.name}
+                      </span>
+                      <span className="font-nav mt-0.5 block truncate text-xs text-muted">{item.meta}</span>
                       {item.price ? (
-                        <span className="mt-1 block text-xs font-semibold text-emerald-400">
+                        <span className="mt-0.5 block text-xs text-foreground/80 sm:hidden">
                           From <Price inr={item.price} />
                         </span>
                       ) : null}
                     </span>
+                    {item.price ? (
+                      <span className="hidden shrink-0 text-right text-xs text-muted sm:block">
+                        From{" "}
+                        <span className="block text-sm font-medium text-foreground">
+                          <Price inr={item.price} />
+                        </span>
+                      </span>
+                    ) : null}
                   </Link>
                 </li>
               ))}

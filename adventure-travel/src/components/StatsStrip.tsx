@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useInView, useReducedMotion } from "framer-motion";
-import { stats } from "@/data/treks";
+import { stats, treks } from "@/data/treks";
+import { ElevationLine } from "@/components/ElevationLine";
 
 const format = (n: number) => n.toLocaleString("en-IN");
 
@@ -36,7 +37,7 @@ function CountUp({ value, suffix, phase }: { value: number; suffix: string; phas
   return (
     <>
       <span ref={ref}>{format(value)}</span>
-      <span className="text-primary">{suffix}</span>
+      {suffix && <span className="ml-0.5 text-[0.42em] text-muted">{suffix}</span>}
     </>
   );
 }
@@ -55,19 +56,28 @@ export default function StatsStrip() {
 
   const phase = !armed ? "static" : inView ? "run" : "armed";
 
+  // The strip's one graphic is the profile of our highest route, so the line is real data.
+  const highest = [...treks].sort((a, b) => b.maxAltitude - a.maxAltitude)[0];
+
   return (
-    <section ref={ref} className="relative border-y border-foreground/10 bg-background/80 py-12 backdrop-blur-sm">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-y-10 px-4 sm:px-6 md:grid-cols-4 md:divide-x md:divide-foreground/10 lg:px-8">
-        {stats.map((s) => (
-          <div key={s.label} className="px-4 text-center">
-            <p className="font-heading text-3xl font-bold tabular-nums tracking-[-0.02em] text-foreground md:text-5xl">
-              <CountUp value={s.value} suffix={s.suffix} phase={phase} />
-            </p>
-            <p className="font-nav mt-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted">
-              {s.label}
-            </p>
-          </div>
-        ))}
+    <section ref={ref} className="relative border-y border-foreground/10 bg-card pt-10 md:pt-14">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4 md:gap-x-0">
+          {stats.map((s) => (
+            <div
+              key={s.label}
+              className="flex flex-col-reverse justify-end md:border-l md:border-foreground/15 md:pl-6 md:first:border-l-0 md:first:pl-0"
+            >
+              <dt className="font-nav mt-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted">{s.label}</dt>
+              <dd className="font-heading text-5xl font-normal leading-none tabular-nums tracking-[-0.03em] text-foreground md:text-6xl lg:text-7xl">
+                <CountUp value={s.value} suffix={s.suffix} phase={phase} />
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <div className="mt-8 h-14 text-emerald-500 md:mt-10 md:h-24" aria-hidden>
+          <ElevationLine profile={highest.elevationProfile} peak strokeWidth={1.5} />
+        </div>
       </div>
     </section>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FadeUp, StaggerContainer, StaggerItem, ScaleIn } from "./MotionWrapper";
+import { FadeUp } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 
@@ -63,105 +63,77 @@ export default function VideoShowcase() {
   const rest = REELS.slice(1, 5);
 
   return (
-    <section className="relative bg-gradient-to-b from-background to-slate-950 py-section">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <FadeUp>
-          <div className="flex items-center gap-3">
-            <span className="h-px w-10 bg-accent" aria-hidden />
-            <span className="font-nav text-xs font-bold uppercase tracking-[0.3em] text-accent">
-              WATCH THE TREKS
-            </span>
-          </div>
-          <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-foreground tracking-[-0.02em] sm:text-4xl">
-            Real footage from the trail
-          </h2>
-          <p className="mt-3 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-            No stock clips — these are treks our groups actually walked, shot on
-            the trail. Tap any reel to watch.
-          </p>
-        </FadeUp>
+    <section className="relative bg-navy-deep text-white">
+      {/* Full-bleed band: the featured reel's poster with one big line */}
+      <div className="relative isolate flex min-h-[36rem] items-end overflow-hidden md:min-h-[46rem]">
+        <SmartImage src={featured.poster} alt={featured.title} className="absolute inset-0 z-0 h-full w-full object-cover" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/35 to-navy-deep/20" />
+        <div className="relative mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 md:pb-14 lg:px-8">
+          <p className="sr-only">WATCH THE TREKS</p>
+          <FadeUp>
+            <h2 className="max-w-3xl font-heading text-5xl font-medium leading-[1.0] tracking-[-0.03em] sm:text-6xl lg:text-8xl">
+              Real footage from the trail
+            </h2>
+            <p className="mt-5 max-w-md text-base leading-relaxed text-white/80 sm:text-lg">
+              No stock clips — these are treks our groups actually walked, shot on the trail. Tap any reel to watch.
+            </p>
+          </FadeUp>
 
-        {/* Featured video */}
-        <ScaleIn className="mt-10">
-          <button
-            type="button"
-            onClick={() => play(featured)}
-            className="group relative block w-full overflow-hidden rounded-2xl border border-white/10 text-left shadow-2xl shadow-black/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            aria-label={`Play ${featured.title} video`}
-          >
-            <div className="relative aspect-[16/9] overflow-hidden sm:aspect-[21/9]">
-              <SmartImage
-                src={featured.poster}
-                alt={featured.title}
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
-              {/* Play badge */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/20 backdrop-blur-md ring-1 ring-white/40 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:transition-none">
-                  <svg className="ml-1 h-8 w-8 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <div className="mt-8 flex items-center gap-4 border-t border-white/25 pt-5">
+            <button
+              type="button"
+              onClick={() => play(featured)}
+              className="group inline-flex min-h-14 items-center gap-4 rounded-full text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            >
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white text-navy-deep transition-transform duration-200 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100">
+                <svg className="ml-0.5 h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </span>
+              <span className="text-sm font-semibold">
+                Watch reel
+                <span className="sr-only">: {featured.title} video</span>
+              </span>
+            </button>
+            <div className="ml-auto text-right">
+              <p className="font-nav text-[11px] font-medium uppercase tracking-[0.16em] text-white/70">{featured.region}</p>
+              <h3 className="font-heading text-xl font-medium sm:text-2xl">{featured.title}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* The other reels: an edge-to-edge row of stills */}
+      <ul className="grid grid-cols-2 gap-px bg-white/15 lg:grid-cols-4">
+        {rest.map((reel) => (
+          <li key={reel.slug} className="bg-navy-deep">
+            <button
+              type="button"
+              onClick={() => play(reel)}
+              className="group relative block w-full text-left focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white"
+              aria-label={`Play ${reel.title} video`}
+            >
+              <span className="relative block aspect-[4/5] overflow-hidden sm:aspect-[4/3]">
+                <SmartImage
+                  src={reel.poster}
+                  alt={reel.title}
+                  className="absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                />
+                <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-navy-deep/85 via-transparent to-transparent" />
+                <span className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-white text-navy-deep">
+                  <svg className="ml-0.5 h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </span>
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between p-5 sm:p-6">
-                <div>
-                  <p className="font-nav text-[10px] font-bold uppercase tracking-[0.25em] text-accent">
-                    {featured.region}
-                  </p>
-                  <h3 className="mt-1 font-heading text-xl font-semibold text-white sm:text-2xl">
-                    {featured.title}
-                  </h3>
-                </div>
-                <span className="hidden text-sm font-semibold text-white/80 sm:block">
-                  Watch reel →
+                <span className="absolute inset-x-0 bottom-0 block p-4">
+                  <span className="font-nav block text-[10px] font-medium uppercase tracking-[0.16em] text-white/70">{reel.region}</span>
+                  <span className="mt-0.5 block font-heading text-lg font-medium leading-tight">{reel.title}</span>
                 </span>
-              </div>
-            </div>
-          </button>
-        </ScaleIn>
-
-        {/* Reel grid */}
-        <StaggerContainer
-          className="mt-6 grid gap-6 grid-cols-2 lg:grid-cols-4"
-          staggerDelay={0.06}
-        >
-          {rest.map((reel) => (
-            <StaggerItem key={reel.slug}>
-              <button
-                type="button"
-                onClick={() => play(reel)}
-                className="group relative block w-full overflow-hidden rounded-2xl border border-white/10 text-left shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                aria-label={`Play ${reel.title} video`}
-              >
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <SmartImage
-                    src={reel.poster}
-                    alt={reel.title}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
-                  <span className="absolute inset-0 flex items-center justify-center">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md ring-1 ring-white/40 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:transition-none">
-                      <svg className="ml-0.5 h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </span>
-                  </span>
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <p className="font-nav text-[9px] font-bold uppercase tracking-[0.2em] text-accent">
-                      {reel.region}
-                    </p>
-                    <h4 className="mt-0.5 font-heading text-sm font-semibold text-white">
-                      {reel.title}
-                    </h4>
-                  </div>
-                </div>
-              </button>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
-      </div>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
 
       {/* Video modal */}
       <Dialog open={open} onOpenChange={setOpen}>
@@ -192,6 +164,7 @@ export default function VideoShowcase() {
                   controls
                   controlsList="nodownload"
                   autoPlay
+                  preload="none"
                   playsInline
                 />
               </div>

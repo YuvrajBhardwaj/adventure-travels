@@ -558,31 +558,19 @@ export default function FAQPage() {
   }, [searchQuery]);
   const noResults = matches !== null && matches.size === 0;
 
-  const ctaSecondary = cn(
-    buttonVariants({ variant: "outline", size: "lg" }),
-    "w-full gap-2.5 border-white/25 bg-white/15 px-7 text-white backdrop-blur-sm hover:bg-white/25 focus-visible:ring-white focus-visible:ring-offset-emerald-600 sm:w-auto"
-  );
+  const ctaQuiet =
+    "inline-flex min-h-11 items-center gap-2.5 rounded-xl text-base font-semibold text-white underline underline-offset-4 outline-none transition-colors duration-150 ease-out hover:text-white/80 focus-visible:ring-2 focus-visible:ring-white";
 
   return (
     <div className="min-h-screen bg-white dark:bg-background">
-      {/* ─── Hero Section ─── */}
-      <section className="relative min-h-[280px] sm:min-h-[320px] flex items-center justify-center overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1400&q=80"
-          alt="Himalayan landscape"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-navy/75 via-navy/50 to-navy/85" />
-        <div className="relative z-10 text-center px-4 sm:px-6 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6">
-            <span className="text-xs sm:text-sm font-medium text-white/95">
-              Knowledge Base &amp; Help Center
-            </span>
-          </div>
-          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.02em] text-white mb-4 leading-tight">
+      {/* ─── Header: words only, left aligned ─── */}
+      <section className="border-b border-slate-200 dark:border-white/10">
+        <div className="mx-auto max-w-7xl px-4 pb-10 pt-28 sm:px-6 sm:pb-14 sm:pt-36 lg:px-8">
+          <p className="mb-4 text-sm text-muted">Knowledge Base &amp; Help Center</p>
+          <h1 className="max-w-4xl font-heading text-[2.5rem] font-semibold leading-[1.04] tracking-[-0.025em] text-foreground sm:text-6xl lg:text-7xl">
             Frequently Asked Questions
           </h1>
-          <p className="text-white/80 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
             Everything you need to know about trekking in Uttarakhand and Himachal
             Pradesh — from booking and fitness to gear, safety, and trail experiences.
           </p>
@@ -590,8 +578,8 @@ export default function FAQPage() {
       </section>
 
       {/* ─── Search & Navigation Bar ─── */}
-      <section className="sticky top-20 z-30 bg-white/90 dark:bg-card/90 backdrop-blur-md border-b border-slate-100 dark:border-white/10 py-3 sm:py-4 px-4 sm:px-6 lg:px-8 shadow-sm">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+      <section className="sticky top-20 z-30 bg-white dark:bg-card border-b border-slate-100 dark:border-white/10 py-3 sm:py-4 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
           {/* Search Bar */}
           <div className="relative w-full sm:w-72 flex-shrink-0">
             <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
@@ -619,7 +607,7 @@ export default function FAQPage() {
                   className={cn(
                     "min-h-11 shrink-0 rounded-full px-4 font-heading text-xs font-semibold whitespace-nowrap transition-colors duration-150 ease-out motion-reduce:transition-none",
                     active
-                      ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/25"
+                      ? "bg-emerald-600 text-white "
                       : "bg-surface dark:bg-white/5 text-muted hover:text-foreground hover:bg-slate-200 dark:hover:bg-white/10"
                   )}
                 >
@@ -632,8 +620,9 @@ export default function FAQPage() {
       </section>
 
       {/* ─── FAQ Content Section ─── */}
-      <section className="py-section-sm px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
+      <section className="py-section-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl">
           {noResults && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -662,7 +651,7 @@ export default function FAQPage() {
                 <div key={cat.id} className="flex flex-col gap-6" hidden={!visible}>
                   {searchQuery && visible && (
                     <div className="border-b border-slate-100 dark:border-white/10 pb-2">
-                      <h3 className="font-heading text-xl font-bold text-foreground">
+                      <h3 className="font-heading text-xl font-semibold text-foreground">
                         {cat.title}
                       </h3>
                     </div>
@@ -677,53 +666,39 @@ export default function FAQPage() {
                       return (
                         <div key={itemKey} hidden={matches ? !matches.has(itemKey) : false}>
                           <StaggerItem>
-                            <div
-                              className={cn(
-                                "rounded-2xl border transition-colors duration-200 ease-out motion-reduce:transition-none",
-                                isOpen
-                                  ? "bg-primary/5 border-primary/20 shadow-sm"
-                                  : "bg-white dark:bg-card border-slate-200/70 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
-                              )}
-                            >
+                            <div className="border-b border-slate-200 dark:border-white/10">
                               <button
                                 onClick={() => setOpenIndex(isOpen ? null : itemKey)}
-                                className="w-full min-h-11 flex items-center justify-between gap-4 rounded-2xl p-5 sm:p-6 text-left"
+                                className="flex min-h-11 w-full items-center justify-between gap-4 py-5 text-left"
                                 aria-expanded={isOpen}
                                 aria-controls={panelId}
                               >
-                                <span className="font-heading text-base md:text-lg font-semibold text-foreground">
+                                <span className="font-heading text-base font-semibold text-foreground md:text-lg">
                                   {faq.q}
                                 </span>
-                                <span
+                                <ChevronDownIcon
                                   className={cn(
-                                    "flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center transition-colors duration-150 ease-out",
-                                    isOpen ? "bg-primary text-white" : "bg-surface text-foreground"
+                                    "h-5 w-5 flex-shrink-0 text-muted transition-transform duration-200 ease-out motion-reduce:transition-none",
+                                    isOpen && "rotate-180"
                                   )}
-                                >
-                                  <ChevronDownIcon
-                                    className={cn(
-                                      "h-4 w-4 transition-transform duration-200 ease-out motion-reduce:transition-none",
-                                      isOpen && "rotate-180"
-                                    )}
-                                  />
-                                </span>
+                                />
                               </button>
 
                               <Collapse open={isOpen} id={panelId}>
-                                <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-slate-100 dark:border-white/10 space-y-4">
-                                  <p className="text-muted text-base leading-relaxed">
+                                <div className="space-y-4 pb-6">
+                                  <p className="max-w-3xl text-muted text-base leading-relaxed">
                                     {faq.a}
                                   </p>
 
                                   {faq.related && faq.related.length > 0 && (
-                                    <div className="pt-3 border-t border-slate-100 dark:border-white/10 flex flex-wrap items-center gap-2">
-                                      <span className="text-xs font-semibold text-foreground/70 uppercase tracking-wider">
+                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                                      <span className="font-semibold text-foreground/70">
                                         Related:
                                       </span>
                                       {faq.related.map((rel, rIdx) => (
                                         <span
                                           key={rIdx}
-                                          className="text-xs bg-surface dark:bg-white/5 text-emerald-700 px-3 py-1 rounded-full font-medium"
+                                          className="font-medium text-emerald-700 dark:text-emerald-400"
                                         >
                                           {rel}
                                         </span>
@@ -742,50 +717,38 @@ export default function FAQPage() {
               );
             })}
           </div>
+          </div>
         </div>
       </section>
 
       {/* ─── Final CTA Section ─── */}
-      <section className="py-section-sm px-4 sm:px-6 lg:px-8 bg-surface dark:bg-background">
-        <div className="max-w-4xl mx-auto">
-          <FadeUp>
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-emerald-600 to-emerald-700 px-5 py-10 sm:p-10 md:p-14 text-center">
-              <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2" />
-              <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/5 rounded-full translate-x-1/3 translate-y-1/3" />
-
-              <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center mx-auto mb-6 text-white">
-                  <MessageCircleIcon className="w-8 h-8" />
-                </div>
-                <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-white mb-3">
-                  Still have questions? Talk to our Trek Experts
-                </h2>
-                <p className="text-white/80 text-lg max-w-xl mx-auto mb-8">
-                  Whether you need help choosing between Uttarakhand snow treks or Himachal alpine passes, we&apos;re here to guide you.
-                </p>
-                <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center justify-center gap-3 sm:gap-4">
-                  <a
-                    href="https://wa.me/917817912062"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(
-                      buttonVariants({ size: "lg" }),
-                      "w-full gap-2.5 bg-white px-7 text-emerald-700 shadow-lg hover:bg-white/90 focus-visible:ring-white focus-visible:ring-offset-emerald-600 sm:w-auto"
-                    )}
-                  >
-                    <MessageCircleIcon className="w-5 h-5" />
-                    WhatsApp Support
-                  </a>
-                  <a href="tel:+917817912062" className={ctaSecondary}>
-                    <PhoneIcon className="w-5 h-5" />
-                    Call Us
-                  </a>
-                  <a href="mailto:himalayanarcadventure@gmail.com" className={ctaSecondary}>
-                    <MailIcon className="w-5 h-5" />
-                    Email Support
-                  </a>
-                </div>
-              </div>
+      <section className="bg-navy py-section-sm px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <FadeUp className="max-w-2xl">
+            <h2 className="font-heading text-3xl sm:text-4xl font-semibold tracking-[-0.02em] text-white mb-4">
+              Still have questions? Talk to our Trek Experts
+            </h2>
+            <p className="text-white/80 text-lg mb-8">
+              Whether you need help choosing between Uttarakhand snow treks or Himachal alpine passes, we&apos;re here to guide you.
+            </p>
+            <div className="flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8">
+              <a
+                href="https://wa.me/917817912062"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ size: "lg" }), "gap-2.5 px-7 focus-visible:ring-offset-navy")}
+              >
+                <MessageCircleIcon className="w-5 h-5" />
+                WhatsApp Support
+              </a>
+              <a href="tel:+917817912062" className={ctaQuiet}>
+                <PhoneIcon className="w-5 h-5" />
+                Call Us
+              </a>
+              <a href="mailto:himalayanarcadventure@gmail.com" className={ctaQuiet}>
+                <MailIcon className="w-5 h-5" />
+                Email Support
+              </a>
             </div>
           </FadeUp>
         </div>

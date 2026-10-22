@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, type ReactNode } from "react";
+import { useState, useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, useAnimate, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import type { Course } from "@/data/courses";
@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import WhatsAppFallback from "@/components/WhatsAppFallback";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
-import { EASE, transition } from "@/lib/motion";
+import { transition } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 type Tab = "overview" | "dates" | "itinerary" | "gallery" | "included" | "book";
@@ -58,6 +58,19 @@ const TYPE_TONES: Record<string, "sky" | "slate" | "amber"> = {
 };
 
 const WA_BASE = "https://wa.me/917817912062?text=";
+
+/** Phone: a 10-digit Indian mobile (optionally with 0, 91 or +91), or any +country number of 8-15 digits. Spaces, dashes and brackets are ignored. */
+function isValidPhone(raw: string): boolean {
+  const v = raw.trim().replace(/[\s\-()]/g, "");
+  return /^(?:\+?91|0)?[6-9]\d{9}$/.test(v) || /^\+\d{8,15}$/.test(v);
+}
+
+/** Today as YYYY-MM-DD in the visitor's time zone. Empty on the server, so the static HTML and hydration agree. */
+function localToday(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+const subscribeNever = () => () => {};
 
 const STAY_LABELS: Record<"base" | "full", string> = {
   base: "Without lodging & food",
@@ -263,6 +276,9 @@ export default function CourseDetailClient({ course }: Props) {
     groupSize: "1",
     message: "",
   });
+  const [bookErrors, setBookErrors] = useState<Record<string, string>>({});
+  const clearBookError = (key: string) => setBookErrors((prev) => (prev[key] ? { ...prev, [key]: "" } : prev));
+  const today = useSyncExternalStore(subscribeNever, localToday, () => "");
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [bookError, setBookError] = useState("");
@@ -372,6 +388,17 @@ export default function CourseDetailClient({ course }: Props) {
     e.preventDefault();
     setBookError("");
     setBookUnavailable(false);
+    const invalid: Record<string, string> = {};
+    if (!bookingForm.name.trim()) invalid.name = "Please enter your name.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bookingForm.email.trim())) invalid.email = "Enter a valid email address.";
+    if (!isValidPhone(bookingForm.phone)) invalid.phone = "Enter a valid phone number (10 digits, or with +country code).";
+    if (!bookingForm.date) invalid.date = "Pick a date in the future.";
+    else if (bookingForm.date < localToday()) invalid.date = "Pick a date in the future.";
+    setBookErrors(invalid);
+    if (Object.keys(invalid).length > 0) {
+      document.getElementById(`cb-${Object.keys(invalid)[0]}`)?.focus();
+      return;
+    }
     setSubmitting(true);
     try {
       // Attach the login (if any) so the booking lands in the user's account.
@@ -437,54 +464,43 @@ export default function CourseDetailClient({ course }: Props) {
       {/* Cinematic video template behind every course sub-page — real course footage when available */}
       <CourseVideoBackdrop video={course.video ?? TYPE_VIDEOS[course.type] ?? TYPE_VIDEOS.Skiing} poster={course.image} />
 
-      {/* Cinematic hero over the footage */}
-      <section ref={heroRef} className="relative z-10 flex min-h-[92vh] items-end overflow-hidden">
+      {/* Hero over the footage: left aligned, one big line, one quiet facts line */}
+      <section ref={heroRef} className="relative z-10 flex min-h-[82vh] items-end overflow-hidden">
         <motion.div
           style={shouldReduceMotion ? undefined : { y: heroContentY, opacity: heroContentOpacity }}
-          className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-32"
+          className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14 sm:pb-20 pt-32"
         >
-          <Link href="/courses" className="mb-4 inline-flex min-h-11 items-center gap-2 rounded-xl text-white/80 transition-colors duration-150 ease-out hover:text-white">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+          <Link href="/courses" className="mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl text-white/80 transition-colors duration-150 ease-out hover:text-white">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             All Courses
           </Link>
           {/* No entrance animation: the hero copy is the first paint (motion contract rule 5). */}
-          <div>
-            <span className="inline-block px-4 py-1.5 rounded-full bg-white/15 text-white text-[11px] font-semibold uppercase tracking-[0.2em] mb-5 backdrop-blur-sm border border-white/20">
-              Auli Snow Sports Academy · The Experience
-            </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-5 font-heading leading-[1.02] [text-shadow:0_2px_30px_rgba(2,6,23,0.6)]">
-              {course.name}
-            </h1>
-            <p className="text-base sm:text-lg text-white/85 max-w-2xl mb-8 line-clamp-3 [text-shadow:0_1px_12px_rgba(2,6,23,0.7)]">
-              {course.shortDescription}
-            </p>
-            <div className="flex flex-wrap gap-3">
-              {[
-                { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", label: course.duration },
-                { icon: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z", label: course.location },
-                { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: course.level },
-                { icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", label: "Certified" },
-              ].map((item) => (
-                <span key={item.label} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 text-white text-sm backdrop-blur-sm border border-white/15">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} /></svg>
-                  {item.label}
-                </span>
-              ))}
+          <div className="grid items-end gap-8 lg:grid-cols-12 lg:gap-12">
+            <div className="lg:col-span-8">
+              <p className="mb-4 text-sm text-white/80">Auli Snow Sports Academy · The Experience</p>
+              <h1 className="font-heading text-[2.6rem] font-semibold leading-[1.02] tracking-[-0.025em] text-white sm:text-6xl lg:text-7xl [text-shadow:0_2px_30px_rgba(2,6,23,0.6)]">
+                {course.name}
+              </h1>
+              <p className="mt-6 max-w-2xl text-base sm:text-lg text-white/85 line-clamp-3 [text-shadow:0_1px_12px_rgba(2,6,23,0.7)]">
+                {course.shortDescription}
+              </p>
+            </div>
+            <div className="lg:col-span-4 lg:text-right">
+              <p className="font-heading text-5xl font-semibold leading-none tracking-[-0.03em] text-white sm:text-6xl [text-shadow:0_2px_30px_rgba(2,6,23,0.6)]">
+                {course.duration}
+              </p>
+              <p className="mt-2 text-sm text-white/75">{course.dates}</p>
             </div>
           </div>
-
-          {/* Scroll cue */}
-          <motion.a
-            href="#course-content"
-            className="mt-12 flex flex-col items-center gap-2 text-white/60 transition-colors duration-150 ease-out hover:text-white"
-            animate={shouldReduceMotion ? undefined : { y: [0, 8, 0] }}
-            transition={shouldReduceMotion ? undefined : { repeat: Infinity, duration: 2, ease: EASE.inOut }}
-          >
-            <span className="text-[10px] font-semibold uppercase tracking-[0.25em]">Scroll</span>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 13l-7 7-7-7m14-8l-7 7-7-7" />
-            </svg>
-          </motion.a>
+          <p className="mt-8 border-t border-white/20 pt-4 text-sm text-white/80">
+            {[course.location, course.level, "Certified"].map((label, i) => (
+              <span key={label}>
+                {i > 0 && <span aria-hidden className="mx-2 text-white/40">·</span>}
+                {label}
+              </span>
+            ))}
+          </p>
+          <a href="#course-content" className="sr-only focus:not-sr-only focus:mt-4 focus:inline-block focus:text-white">Scroll</a>
         </motion.div>
       </section>
 
@@ -930,7 +946,7 @@ export default function CourseDetailClient({ course }: Props) {
                           </div>
                         </div>
                       )}
-                      <form onSubmit={handleBook} className="space-y-4">
+                      <form onSubmit={handleBook} noValidate className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="cb-name">Full Name</Label>
@@ -940,8 +956,11 @@ export default function CourseDetailClient({ course }: Props) {
                             required
                             autoComplete="name"
                             value={bookingForm.name}
-                            onChange={(e) => setBookingForm({ ...bookingForm, name: e.target.value })}
+                            onChange={(e) => { setBookingForm({ ...bookingForm, name: e.target.value }); clearBookError("name"); }}
+                            aria-invalid={!!bookErrors.name}
+                            aria-describedby={bookErrors.name ? "cb-name-err" : undefined}
                           />
+                          {bookErrors.name && <p id="cb-name-err" className="mt-1 text-xs text-red-600">{bookErrors.name}</p>}
                         </div>
                         <div>
                           <Label htmlFor="cb-email">Email</Label>
@@ -951,8 +970,11 @@ export default function CourseDetailClient({ course }: Props) {
                             required
                             autoComplete="email"
                             value={bookingForm.email}
-                            onChange={(e) => setBookingForm({ ...bookingForm, email: e.target.value })}
+                            onChange={(e) => { setBookingForm({ ...bookingForm, email: e.target.value }); clearBookError("email"); }}
+                            aria-invalid={!!bookErrors.email}
+                            aria-describedby={bookErrors.email ? "cb-email-err" : undefined}
                           />
+                          {bookErrors.email && <p id="cb-email-err" className="mt-1 text-xs text-red-600">{bookErrors.email}</p>}
                         </div>
                         <div>
                           <Label htmlFor="cb-phone">Phone</Label>
@@ -963,8 +985,11 @@ export default function CourseDetailClient({ course }: Props) {
                             inputMode="tel"
                             autoComplete="tel"
                             value={bookingForm.phone}
-                            onChange={(e) => setBookingForm({ ...bookingForm, phone: e.target.value })}
+                            onChange={(e) => { setBookingForm({ ...bookingForm, phone: e.target.value }); clearBookError("phone"); }}
+                            aria-invalid={!!bookErrors.phone}
+                            aria-describedby={bookErrors.phone ? "cb-phone-err" : undefined}
                           />
+                          {bookErrors.phone && <p id="cb-phone-err" className="mt-1 text-xs text-red-600">{bookErrors.phone}</p>}
                         </div>
                         <div>
                           <Label htmlFor="cb-date">Preferred Date</Label>
@@ -972,9 +997,13 @@ export default function CourseDetailClient({ course }: Props) {
                             id="cb-date"
                             type="date"
                             required
+                            min={today || undefined}
                             value={bookingForm.date}
-                            onChange={(e) => setBookingForm({ ...bookingForm, date: e.target.value })}
+                            onChange={(e) => { setBookingForm({ ...bookingForm, date: e.target.value }); clearBookError("date"); }}
+                            aria-invalid={!!bookErrors.date}
+                            aria-describedby={bookErrors.date ? "cb-date-err" : undefined}
                           />
+                          {bookErrors.date && <p id="cb-date-err" className="mt-1 text-xs text-red-600">{bookErrors.date}</p>}
                         </div>
                         <div>
                           <Label htmlFor="cb-group">Group Size</Label>

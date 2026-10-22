@@ -76,6 +76,14 @@ That covers most of the items below. The manual steps are listed in case you pre
   - [ ] A signed-out visitor submitting a trek reservation is sent to /signup before WhatsApp opens and loses the form. Always hand the details to WhatsApp first?
   - [ ] The footer newsletter shows a success message but saves nothing: wire it up or replace it with a WhatsApp sign-up.
   - [ ] Booking-boost ideas from the agents (sticky Pay bar on phones, a WhatsApp button on every trek card and booking card, a balance-due banner on the dashboard, a trust line under the hero buttons): say which to build.
+- [ ] **Favicon in Google (globe icon instead of the logo).** New simple icon built 22 Oct (see CHANGELOG). **You:** say "go live" for a favicon-only fix to production (or merge the whole preview). Then in Search Console: URL Inspection, enter `https://www.himalayanarcadventure.com/`, "Request indexing". Google usually takes days to a few weeks to swap the icon after it re-crawls; the globe stays until then. Google also wants the home page and icon not blocked (they aren't).
+- [ ] **Browser tests (Puppeteer) added** (`npm run test:e2e`, 6 checks). **Dev:** next, add checks for the signed-in flows once there is a test account (dashboard, checkout, admin), and decide whether to run them automatically on every push (GitHub Actions is free for this size).
+- [ ] **Redesign (22 Oct) — your call on:**
+  - [ ] Look at the preview once it's pushed and say what you like or don't; the home section order changed.
+  - [ ] Trek cards now show each trek's highest point; keep or drop?
+  - [ ] Contact, FAQ and cancellation-policy pages lost their decorative header photos (text-only headers); OK?
+  - [ ] Still open from the visitor test: a signed-out visitor's trek reservation is sent to /signup and loses the form (D-01); "4.8 (341 Reviews)"-style ratings and "4.9 / 1,200+ Google Reviews" need to be real or removed; the activities page says "17 handcrafted treks" next to "9+"; the 404 page is bare (no links back); /checkout, /dashboard, /admin redirect to login with no "please log in" note.
+  - [ ] **Dev:** convert the six hero `.MOV` videos to small MP4/WebM (needs ffmpeg; they're 1.3–7 MB each) and replace the Video band's poster that has a burned-in caption.
 - [ ] **Traffic and bookings plan** is in `adventure-travel/docs/seo/2026-10-21-traffic-and-bookings-plan.md`: Google Business Profile, first reviews, Search Console, the 308 redirect, directory listings, WhatsApp Business, 13 questions only you can answer.
 - [x] ~~Commit the navbar redesign and the `.gitignore` change~~ (done: `1be764a`, pushed to the preview branch).
 - [ ] **Dev:** Commit `CHANGELOG.md`, `TODO.md` and the `CLAUDE.md` note.

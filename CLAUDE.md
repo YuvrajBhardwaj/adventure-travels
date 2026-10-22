@@ -32,6 +32,7 @@ npx vercel dev               # dev server that also runs the api/ functions
 npm run lint                 # eslint
 npx tsc --noEmit             # type-check
 npm test                     # vitest: api/_lib/__tests__ and src/lib/__tests__
+npm run test:e2e             # Puppeteer browser checks in e2e/ against a running site (E2E_BASE_URL, default http://localhost:3000); never creates real bookings
 npx vitest run src/lib/__tests__/season.test.ts   # one test file
 npx vitest run -t "orderAmount"                    # tests matching a name
 npm run build                # static export to out/
@@ -50,7 +51,7 @@ node scripts/setup-backend.mjs [--dry-run]   # Supabase migrations + auth config
 Next.js 16 App Router with **`output: "export"`** (fully static: no runtime server, no `headers()` or middleware, `images.unoptimized`) · React 19 · TypeScript (strict) · Tailwind CSS v4 · framer-motion (+ gsap) · Supabase (Auth + Postgres) · Vercel Node functions + Cron · Razorpay · nodemailer.
 
 - **Tailwind:** v4 has no `tailwind.config`. The theme is the `@theme inline { … }` block in `src/app/globals.css`.
-- **Fonts:** headings and nav use Space Grotesk (theme tokens plus an `h1–h6` base style), body text Inter, display Fraunces.
+- **Fonts:** headings use Fraunces (variable serif, theme token plus an `h1–h6` base style); Space Grotesk for nav and small data labels; Inter for body text.
 - **Path alias:** `@/*` → `src/*`.
 
 ## Architecture
@@ -101,9 +102,10 @@ Next.js 16 App Router with **`output: "export"`** (fully static: no runtime serv
 ### Design system
 `globals.css` defines the visual language; prefer its tokens and utilities to ad-hoc values:
 - **Colour tokens:** `primary` `#10B981` (emerald), `accent` `#F59E0B`, `secondary` `#0EA5E9`, `cta` `#F97316`, plus `background`, `foreground`, `card`, `muted` and `surface`.
-- **Utilities:** `glass*`, `text-gradient*`, `bg-gradient-*`, `py-section*`, `text-display-*`, and many `animate-*` keyframes.
+- **Utilities:** `glass*`, `bg-gradient-*`, `py-section*`, `text-display-*`, and many `animate-*` keyframes. No gradient text (the old `text-gradient*` utilities were removed).
+- **Type:** headings use Fraunces (soft serif, variable) via `font-heading` and the h1–h6 base rule; Space Grotesk (`font-nav`) is for nav and small data labels, Inter for body. `ElevationLine` (`src/components/ElevationLine.tsx`) draws a trek's `elevationProfile` as the site's signature graphic.
 - **Dark site chrome:** the `navy` / `navy-deep` / `navy-hero` tokens (`#0F172A` / `#0B1222` / `#0B1D33`). No hex colours or `cyan-*` in class names.
-- **Dark mode** exists inside `ThemeScope` (admin and checkout, visitor toggle) and `DarkScope` (account pages, forced). Elsewhere `dark:` variants are inert.
+- **Dark mode** is fixed, with no toggle: `ThemeScope` (checkout and admin, navy page shell) and `DarkScope` (account pages) force `.dark` on their subtree. Elsewhere `dark:` variants are inert.
 - **UI kit** in `src/components/ui/` (shadcn-style, cva + `cn()`): `button` (variants `default|outline|ghost|destructive|link`, `loading`; use `buttonVariants` for links styled as buttons), `input`, `textarea`, `label`, `select` (native), `checkbox`, `card`, `badge`, `skeleton`, `spinner`, `empty-state`, `dialog` and `sheet` (Radix + framer-motion), `avatar`, `theme-scope`, `dark-scope`. Use these instead of hand-styled controls: controls `rounded-xl`, surfaces `rounded-2xl`, pills `rounded-full`.
 - **Loading:** layout-true `<Skeleton>` shapes (never "Loading…" text); a spinner only inside a busy control (`Button loading`). Nothing may hide content on first paint (no full-screen overlay, no `opacity:0` entrance for content in the static HTML).
 - **Motion tokens:** `src/lib/motion.ts` (`DURATION`, `EASE`, `SPRING`, `transition()`); Tailwind `ease-out` and `ease-in-out` use the same curves. Spec and audit: `specs/002-ui-polish-consistency/`.

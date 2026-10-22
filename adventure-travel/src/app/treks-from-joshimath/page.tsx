@@ -37,9 +37,9 @@ export default function TreksFromJoshimathPage() {
       }
     >
       {PERMIT_TOURS.length > 0 && (
-        <section aria-labelledby="permits" className="rounded-2xl bg-slate-50 p-5 sm:p-6">
-          <h2 id="permits" className="font-heading text-2xl font-bold tracking-[-0.02em] text-slate-900 sm:text-3xl">Permit tours to the Tibet border</h2>
-          <p className="mt-3 max-w-3xl text-slate-600">
+        <section aria-labelledby="permits" className="border-t border-slate-200 pt-12 lg:grid lg:grid-cols-12 lg:gap-10">
+          <h2 id="permits" className="font-heading text-3xl font-medium tracking-[-0.02em] text-slate-900 sm:text-4xl lg:col-span-5">Permit tours to the Tibet border</h2>
+          <p className="mt-4 max-w-2xl text-slate-600 lg:col-span-7 lg:mt-1">
             {PERMIT_TOURS.map((t, i) => (
               <span key={t.slug}>
                 {i > 0 && (i === PERMIT_TOURS.length - 1 ? " and " : ", ")}
@@ -56,13 +56,14 @@ export default function TreksFromJoshimathPage() {
         </section>
       )}
 
-      <section aria-labelledby="auli" className="rounded-2xl bg-slate-50 p-5 sm:p-6">
-        <h2 id="auli" className="font-heading text-2xl font-bold tracking-[-0.02em] text-slate-900 sm:text-3xl">Winter in Auli</h2>
-        <p className="mt-3 max-w-3xl text-slate-600">Our ski and snowboard school runs in Auli, just above Joshimath:</p>
+      <section aria-labelledby="auli" className="border-t border-slate-200 pt-12 lg:grid lg:grid-cols-12 lg:gap-10">
+        <h2 id="auli" className="font-heading text-3xl font-medium tracking-[-0.02em] text-slate-900 sm:text-4xl lg:col-span-5">Winter in Auli</h2>
+        <div className="mt-4 lg:col-span-7 lg:mt-1">
+        <p className="max-w-2xl text-slate-600">Our ski and snowboard school runs in Auli, just above Joshimath:</p>
         <ul className="mt-3 flex flex-wrap gap-2">
           {courses.map((c) => (
             <li key={c.slug}>
-              <Link href={`/courses/${c.slug}`} className="inline-flex min-h-11 items-center rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-800 transition-colors duration-150 ease-out hover:border-emerald-400 hover:text-emerald-700">
+              <Link href={`/courses/${c.slug}`} className="inline-flex min-h-11 items-center rounded-full border border-slate-300 bg-white px-4 text-sm font-medium text-slate-800 transition-colors duration-150 ease-out hover:border-emerald-400 hover:text-emerald-700">
                 {c.name}
               </Link>
             </li>
@@ -71,6 +72,7 @@ export default function TreksFromJoshimathPage() {
         <p className="mt-4 text-sm text-slate-600">
           Looking for snow on foot? See <Link href="/winter-treks-uttarakhand" className="font-semibold text-emerald-700 hover:underline">winter treks in Uttarakhand</Link>.
         </p>
+        </div>
       </section>
     </TrekHub>
   );

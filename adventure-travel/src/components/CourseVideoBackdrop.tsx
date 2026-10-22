@@ -38,7 +38,7 @@ export default function CourseVideoBackdrop({ video, poster }: { video: string; 
   }, [showVideo]);
 
   return (
-    <div className="fixed inset-0 z-0" aria-hidden>
+    <div className="fixed inset-0 z-0 bg-navy-deep" aria-hidden>
       {/* poster under the video: instant paint, also the reduced-motion / error view */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={poster} alt="" className="absolute inset-0 h-full w-full object-cover" decoding="async" />

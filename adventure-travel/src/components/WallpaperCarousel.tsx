@@ -88,7 +88,7 @@ export default function WallpaperCarousel({
       <ArrowButton dir="prev" onClick={() => go(-1)} />
       {slides.map((s, i) => (
         <button
-          key={s.src}
+          key={`${i}-${s.src}`}
           type="button"
           onClick={() => setIdx(i)}
           aria-label={`Show photo ${i + 1} of ${n}${s.caption ? `: ${s.caption}` : ""}`}

@@ -2,14 +2,16 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { treks, REGIONS, priceRoute, byPopularity } from "@/data/treks";
+import { treks, REGIONS, priceRoute, byPopularity, type Trek } from "@/data/treks";
 import { destinations } from "@/data/destinations";
 import SmartImage from "@/components/SmartImage";
 import NoPhoto from "@/components/NoPhoto";
 import Price from "@/components/Price";
 import WallpaperCarousel from "@/components/WallpaperCarousel";
+import { ElevationLine } from "@/components/ElevationLine";
+import { cn } from "@/lib/utils";
 import { SearchX } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -31,7 +33,10 @@ const HERO_SLIDES = HERO_PHOTOS.flatMap(({ slug, src }) => {
   const trek = treks.find((t) => t.slug === slug);
   return trek ? [{ src, caption: trek.name, href: `/treks/${slug}` }] : [];
 });
-const HERO_HEIGHT = "h-[58vh] min-h-[400px] max-h-[640px]";
+const HERO_HEIGHT = "h-64 rounded-2xl sm:h-80 lg:h-[26rem]";
+// Real data for the header: the lowest and highest "highest point" across all routes.
+const ALTITUDE_LOW = Math.min(...treks.map((t) => t.maxAltitude));
+const ALTITUDE_HIGH = Math.max(...treks.map((t) => t.maxAltitude));
 
 const DIFFICULTIES = ["All Levels", "Easy", "Moderate", "Challenging", "Strenuous"] as const;
 const DURATION_OPTIONS = [
@@ -48,13 +53,6 @@ const PRICE_OPTIONS = [
 ];
 const SORT_OPTIONS = ["Sort by Popularity", "Price: Low to High", "Price: High to Low", "Duration: Short to Long", "Difficulty: Easy to Hard"];
 const DIFFICULTY_ORDER: Record<string, number> = { Easy: 0, Moderate: 1, Challenging: 2, Strenuous: 3 };
-
-const DIFF_BADGE: Record<string, { bg: string; text: string }> = {
-  Easy: { bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-600 dark:text-green-400" },
-  Moderate: { bg: "bg-yellow-100 dark:bg-yellow-900/30", text: "text-yellow-600 dark:text-yellow-400" },
-  Challenging: { bg: "bg-orange-100 dark:bg-orange-900/30", text: "text-orange-600 dark:text-orange-400" },
-  Strenuous: { bg: "bg-red-100 dark:bg-red-900/30", text: "text-red-600 dark:text-red-400" },
-};
 
 export default function TreksPage() {
   // Filters start at "everything", so the static HTML lists all treks (crawlable links to
@@ -146,31 +144,46 @@ export default function TreksPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-background">
-      {/* Navy strip under the fixed navbar, so no light line shows between it and the hero. */}
-      <div aria-hidden className="h-20 bg-navy" />
-      {/* Hero Banner */}
-      <WallpaperCarousel slides={HERO_SLIDES} label="Photos from our treks" className={HERO_HEIGHT}>
-        <div className="mx-auto flex h-full max-w-7xl flex-col items-center justify-center px-4 pb-20 text-center sm:px-6 sm:pb-12 lg:px-8">
-          <h1 className="mb-4 text-4xl font-bold tracking-[-0.02em] text-white sm:text-5xl [text-shadow:0_2px_24px_rgba(0,0,0,0.55)]">All Trekking Adventures</h1>
-          <p className="mx-auto max-w-2xl text-lg text-white/90 sm:text-xl [text-shadow:0_1px_12px_rgba(0,0,0,0.7)]">
-            Explore our complete collection of world-class trekking itineraries, from beginner-friendly walks to extreme mountain expeditions.
-          </p>
+    <main id="main" className="min-h-screen bg-white dark:bg-background">
+      {/* Editorial header: navy under the fixed navbar, title and data left, the photo slideshow right as a framed picture. */}
+      <header className="bg-navy text-white">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 pb-10 pt-28 sm:px-6 lg:grid-cols-12 lg:items-end lg:gap-12 lg:px-8 lg:pb-14 lg:pt-32">
+          <div className="lg:col-span-5 lg:pb-1">
+            <h1 className="font-heading text-5xl font-medium leading-[0.98] tracking-[-0.02em] sm:text-6xl xl:text-7xl">All Trekking Adventures</h1>
+            <p className="mt-5 max-w-md text-base leading-relaxed text-white/75 sm:text-lg">
+              Explore our complete collection of world-class trekking itineraries, from beginner-friendly walks to extreme mountain expeditions.
+            </p>
+            <div className="mt-8 border-t border-white/15 pt-4">
+              <p className="font-heading text-4xl font-medium tabular-nums leading-none sm:text-5xl">
+                {ALTITUDE_LOW.toLocaleString("en-IN")} – {ALTITUDE_HIGH.toLocaleString("en-IN")}
+                <span className="ml-1.5 font-nav text-lg font-normal text-white/60">m</span>
+              </p>
+              <p className="mt-2 text-sm text-white/60">Highest points of our routes, lowest to highest</p>
+            </div>
+          </div>
+          <div className="lg:col-span-7">
+            <WallpaperCarousel
+              slides={HERO_SLIDES}
+              label="Photos from our treks"
+              className={HERO_HEIGHT}
+              scrimClassName="bg-gradient-to-t from-black/55 via-transparent to-transparent"
+            />
+          </div>
         </div>
-      </WallpaperCarousel>
+      </header>
 
       {/* Main Content */}
       <section className="py-section-sm mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-8 lg:flex-row">
-          {/* Left Sidebar */}
-          <div className="lg:w-1/4">
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-card sm:p-6 lg:sticky lg:top-24">
+        <div className="flex flex-col gap-6 lg:flex-row lg:gap-12">
+          {/* Filters: hairlines, no panel. A collapsible row on phones, a sticky column on desktop. */}
+          <aside className="lg:w-60 lg:shrink-0">
+            <div className="border-y border-slate-200 lg:sticky lg:top-24 lg:border-y-0">
               <button
                 type="button"
                 onClick={() => setFiltersOpen((open) => !open)}
                 aria-expanded={filtersOpen}
                 aria-controls="trek-filter-controls"
-                className="-my-2 flex min-h-11 w-full items-center justify-between rounded-xl lg:hidden"
+                className="flex min-h-12 w-full items-center justify-between rounded-xl lg:hidden"
               >
                 <span className="flex items-center gap-2 font-semibold text-foreground">
                   <svg className="h-5 w-5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
@@ -182,13 +195,10 @@ export default function TreksPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                 </svg>
               </button>
-              <div className="mb-5 hidden items-center gap-2 lg:flex">
-                <svg className="h-5 w-5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-                </svg>
-                <h3 className="text-lg font-semibold text-foreground">Filters</h3>
+              <div className="mb-5 hidden border-b border-slate-200 pb-3 lg:block">
+                <h3 className="text-2xl font-medium text-foreground">Filters</h3>
               </div>
-              <div id="trek-filter-controls" className={`${filtersOpen ? "block" : "hidden"} mt-5 space-y-5 lg:mt-0 lg:block`}>
+              <div id="trek-filter-controls" className={`${filtersOpen ? "block" : "hidden"} space-y-5 pb-5 pt-1 lg:block lg:pb-0 lg:pt-0`}>
                 <div>
                   <Label htmlFor="trek-search">Search</Label>
                   <Input
@@ -230,17 +240,17 @@ export default function TreksPage() {
                     {PRICE_OPTIONS.map((p, i) => <option key={i} value={i}>{p.label}</option>)}
                   </Select>
                 </div>
-                <Button variant="ghost" onClick={clearFilters} className="w-full text-emerald-700 hover:text-emerald-800">
+                <Button variant="link" onClick={clearFilters} className="h-11 px-0 text-emerald-700 hover:text-emerald-800">
                   Clear All Filters
                 </Button>
               </div>
             </div>
-          </div>
+          </aside>
 
-          {/* Right Content */}
-          <div className="lg:w-3/4">
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-muted sm:text-base">Showing <span className="font-semibold text-foreground">{filtered.length}</span> of {treks.length} adventures</p>
+          {/* Results */}
+          <div className="min-w-0 flex-1">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
+              <p className="text-sm text-muted sm:text-base">Showing <span className="font-heading text-lg font-medium tabular-nums text-foreground">{filtered.length}</span> of {treks.length} adventures</p>
               <Select aria-label="Sort treks" value={sort} onChange={(e) => setSort(e.target.value)} wrapperClassName="w-full sm:w-auto" className="sm:w-64">
                 {SORT_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
               </Select>
@@ -254,51 +264,52 @@ export default function TreksPage() {
                 action={<Button variant="outline" onClick={clearFilters}>Clear all filters</Button>}
               />
             ) : (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
-                {filtered.map((trek) => (
-                  <TrekCard key={trek.id} trek={trek} />
+              // The first trek runs wide on desktop; the rest sit two across.
+              <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:gap-x-8 lg:gap-y-10">
+                {filtered.map((trek, i) => (
+                  <TrekCard key={trek.id} trek={trek} featured={i === 0} />
                 ))}
               </div>
             )}
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
 
-/** Also used by the trek hub pages (src/components/TrekHub.tsx). */
-export function TrekCard({ trek }: { trek: (typeof treks)[0] }) {
-  const badge = DIFF_BADGE[trek.difficulty] || DIFF_BADGE.Moderate;
+/**
+ * The site's signature trek card, also used by the trek hub pages (src/components/TrekHub.tsx).
+ * Photo first and edge to edge (or the trek's own altitude line when it has no photo), the name in
+ * Fraunces over a bottom scrim, highest point and days as the big numerals. The whole card is the link.
+ * Sizes follow the card's own width (container queries), so it holds in one, two or three columns.
+ * `featured` lets it span both columns of a two-column grid and go landscape on desktop.
+ */
+export function TrekCard({ trek, featured = false }: { trek: Trek; featured?: boolean }) {
+  const route = priceRoute(trek);
 
-  // Surface: rounded-2xl, one shadow step on hover/focus, transform-only motion (a 4px lift, photo zoom).
   return (
     <Link
       href={`/treks/${trek.slug}`}
-      className="group relative block overflow-hidden rounded-2xl shadow-md transition-transform duration-200 ease-out hover:-translate-y-1 hover:shadow-xl focus-visible:-translate-y-1 focus-visible:shadow-xl motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:focus-visible:translate-y-0"
+      className={cn(
+        "group @container relative block aspect-[4/5] overflow-hidden rounded-2xl bg-navy-deep ring-1 ring-slate-900/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
+        featured && "md:col-span-2 md:aspect-[16/9]"
+      )}
     >
-      {/* Full-bleed image */}
       {trek.image ? (
         <SmartImage
           src={trek.image}
           alt={trek.name}
-          className="h-80 w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100 sm:h-96"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
         />
       ) : (
-        <NoPhoto className="h-80 w-full sm:h-96" />
+        <NoPhoto className="absolute inset-0 h-full w-full" profile={trek.elevationProfile} label={trek.region} />
       )}
 
-      {/* Readability gradient */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/20 to-black/10" />
+      {/* Bottom scrim: the card's text always sits on solid navy-to-clear, whatever the photo. */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[80%] bg-gradient-to-t from-navy-deep via-navy-deep/80 to-transparent" />
 
-      {/* Difficulty Badge */}
-      <div className="absolute left-4 top-4 z-20">
-        <span className={`rounded-full px-3 py-1 text-sm font-medium ${badge.text} ${badge.bg} backdrop-blur-sm`}>
-          {trek.difficulty}
-        </span>
-      </div>
-
-      {/* Rating Badge */}
+      {/* Rating (unchanged size; owner decision pending) */}
       {trek.rating && (
         <div className="absolute right-4 top-4 z-20 rounded-full bg-black/40 px-3 py-1 backdrop-blur-sm">
           <div className="flex items-center gap-1">
@@ -311,42 +322,49 @@ export function TrekCard({ trek }: { trek: (typeof treks)[0] }) {
         </div>
       )}
 
-      {/* Overlaid content */}
-      <div className="absolute inset-x-0 bottom-0 z-20 p-5 sm:p-6">
-        <div className="mb-1 flex items-center text-sm text-white/80">
-          <svg className="mr-1 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          {trek.location || trek.region}
-        </div>
-        <h3 className="mb-2 text-lg font-semibold tracking-[-0.01em] text-white transition-colors duration-150 ease-out group-hover:text-emerald-300 sm:text-xl">{trek.name}</h3>
+      <div className={cn("absolute inset-x-0 bottom-0 z-20 p-4 @xs:p-5", featured && "md:max-w-2xl md:p-7")}>
+        <p className="truncate text-xs text-white/70 @xs:text-sm">{trek.location || trek.region}</p>
+        <h3 className={cn("mt-1 font-heading text-2xl font-medium leading-[1.08] tracking-[-0.01em] text-white @xs:text-[1.75rem]", featured && "md:text-4xl")}>
+          {trek.name}
+        </h3>
 
-        <div className="mb-3 flex items-center justify-between gap-3 text-sm text-white/80">
-          <div className="flex items-center">
-            <svg className="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-              <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-            </svg>
-            {trek.days} days
+        {/* The route's own altitude profile. Photo-less cards draw it large in the panel instead. */}
+        {trek.image && (
+          <div className="mt-3 h-9 text-emerald-400">
+            <ElevationLine profile={trek.elevationProfile} />
           </div>
-          <div className="flex items-center">
-            <svg className="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-              <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" />
-            </svg>
-            Max {trek.groupSize || 15}
+        )}
+
+        <div className={cn("flex items-end gap-6 @xs:gap-8", trek.image ? "mt-3" : "mt-5")}>
+          <div>
+            <p className="font-heading text-3xl font-medium tabular-nums leading-none text-white @xs:text-4xl">
+              {trek.maxAltitude.toLocaleString("en-IN")}
+              <span className="font-nav text-sm font-normal text-white/70"> m</span>
+            </p>
+            <p className="mt-1.5 text-xs text-white/60">Highest point</p>
+          </div>
+          <div>
+            <p className="font-heading text-3xl font-medium tabular-nums leading-none text-white @xs:text-4xl">
+              {trek.days}
+              <span className="font-nav text-sm font-normal text-white/70"> days</span>
+            </p>
+            <p className="mt-1.5 text-xs text-white/60">Duration</p>
+          </div>
+          <div className="ml-auto text-right text-xs leading-snug text-white/70 @xs:text-sm">
+            <p className="text-white/90">{trek.difficulty}</p>
+            <p>Max {trek.groupSize || 15}</p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-white/20 pt-3">
-          <div className="flex min-w-0 flex-col">
-            <span className="text-2xl font-bold leading-tight text-white"><Price inr={trek.price} /></span>
-            <span className="whitespace-nowrap text-xs text-white/70">per person</span>
-            {priceRoute(trek) && <span className="truncate text-xs font-medium text-white/90">{priceRoute(trek)}</span>}
-          </div>
-          {/* Looks like the primary Button; the whole card is the link, so this is a span. */}
-          <span className={buttonVariants({ className: "h-10 shrink-0 px-4 group-hover:bg-emerald-700" })}>
-            Reserve Spot
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/20 pt-3">
+          <p className="min-w-0 text-sm text-white/70">
+            <span className="text-base font-semibold text-white"><Price inr={trek.price} /></span> per person
+            {route && <span className="block truncate text-xs text-white/60">{route}</span>}
+          </p>
+          {/* The whole card is the link, so the call to action is an arrow; its words stay for screen readers. */}
+          <span className="sr-only">Reserve Spot</span>
+          <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/30 text-white transition-colors duration-150 ease-out group-hover:border-white group-hover:bg-white group-hover:text-navy">
+            <svg className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" /><path strokeLinecap="round" strokeLinejoin="round" d="m12 5 7 7-7 7" />
             </svg>
           </span>

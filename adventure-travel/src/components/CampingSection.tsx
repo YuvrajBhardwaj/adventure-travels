@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FadeUp, StaggerContainer, StaggerItem, ScaleIn } from "./MotionWrapper";
+import { FadeUp } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
 import ContactPopup from "./ContactPopup";
 import { Button } from "@/components/ui/button";
@@ -77,6 +77,9 @@ const GENERAL_ENQUIRY: Camp = {
   gallery: [HERO_IMAGE, "/assets/camping/camp-06.jpg", "/assets/camping/camp-08.jpg"],
 };
 
+/** Mixed crops for the filmstrip, so the photos are not all cut the same way. */
+const FILM_CROPS = ["h-64 w-44", "h-64 w-72", "h-64 w-56", "h-64 w-44", "h-64 w-80"];
+
 /** Round icon controls on the dark lightbox: 48px targets, shared focus outline. */
 const lightboxControl =
   "absolute z-10 flex h-12 w-12 items-center justify-center rounded-full bg-black/40 text-white/80 transition-colors duration-150 ease-out hover:bg-black/60 hover:text-white";
@@ -107,171 +110,136 @@ export default function CampingSection() {
 
   const step = (delta: number) => setShown((i) => (i + delta + ALL_MOMENTS.length) % ALL_MOMENTS.length);
 
-  const cardClass =
-    "group block h-full w-full cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-white/5 text-left backdrop-blur-sm transition-[transform,border-color,background-color] duration-200 ease-out hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 hover:border-emerald-400/40 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400";
-
   return (
-    <section className="relative overflow-hidden bg-navy py-section text-white">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-24 right-1/4 h-96 w-96 rounded-full bg-emerald-500/10 blur-[120px]" />
-        <div className="absolute -bottom-24 left-1/5 h-96 w-96 rounded-full bg-amber-500/10 blur-[120px]" />
-      </div>
-
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Block 1 — intro */}
-        <div className="grid items-center gap-10 lg:grid-cols-2">
+    <section className="relative bg-background">
+      {/* Full-bleed photo band with one big line */}
+      <div className="relative isolate flex min-h-[34rem] items-end overflow-hidden bg-navy-deep text-white md:min-h-[44rem]">
+        <SmartImage
+          src={HERO_IMAGE}
+          alt="Tent camped under Himalayan stars"
+          className="absolute inset-0 z-0 h-full w-full object-cover"
+        />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/30 to-navy-deep/10" />
+        <div className="relative mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 md:pb-16 lg:px-8">
+          <p className="sr-only">Camping</p>
           <FadeUp>
-            <div className="flex items-center gap-3">
-              <span className="h-px w-10 bg-amber-400" aria-hidden />
-              <span className="font-nav text-xs font-bold uppercase tracking-[0.3em] text-amber-400">
-                Camping
-              </span>
-            </div>
-            <h2 className="mt-4 font-heading text-3xl font-bold leading-tight tracking-[-0.02em] sm:text-4xl">
+            <h2 className="max-w-4xl font-heading text-5xl font-medium leading-[1.0] tracking-[-0.03em] sm:text-6xl lg:text-8xl">
               Camp Beyond the Ordinary
             </h2>
-            <p className="mt-2 font-heading text-lg font-semibold text-emerald-300">
+            <p className="mt-5 max-w-xl font-heading text-xl font-normal text-white/90 sm:text-2xl">
               Discover the quieter side of the Himalayas.
             </p>
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">
-              From the slopes of Auli and forests around Joshimath to the remote
-              landscapes of Tapovan, Niti Valley and Malari, discover camping
-              experiences designed for people who want to go beyond conventional
-              tourism.
+            <p className="font-nav mt-6 text-xs tracking-[0.1em] text-white/70">Auli · Joshimath · Tapovan · Niti · Malari</p>
+          </FadeUp>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+        {/* Editorial two-column: what we do and why (left), where (right) */}
+        <div className="grid gap-14 lg:grid-cols-12 lg:gap-16">
+          <FadeUp className="lg:col-span-5">
+            <p className="text-lg leading-relaxed text-foreground/80 sm:text-xl">
+              From the slopes of Auli and forests around Joshimath to the remote landscapes of Tapovan, Niti Valley and
+              Malari, discover camping experiences designed for people who want to go beyond conventional tourism.
             </p>
-            <Button
-              size="lg"
-              onClick={() => setSelected(GENERAL_ENQUIRY)}
-              className="mt-6 bg-white px-6 font-bold text-navy shadow-none hover:bg-amber-300 hover:shadow-none focus-visible:ring-offset-navy"
-            >
+            <Button size="lg" onClick={() => setSelected(GENERAL_ENQUIRY)} className="mt-6 px-6">
               Explore Camping
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12l-7.5 7.5M21 12H3" />
               </svg>
             </Button>
+
+            <div className="mt-14 border-t border-foreground/15 pt-8">
+              <p className="sr-only">Why camp with us</p>
+              <h3 className="font-heading text-3xl font-medium leading-[1.1] tracking-[-0.02em] text-foreground">
+                There is another Himalaya beyond the tourist map.
+              </h3>
+              <p className="mt-5 text-base leading-relaxed text-muted">
+                Some places aren’t famous. Some don’t have hundreds of reviews. Some don’t even have a proper tourist
+                itinerary. That’s exactly why we want you to experience them.
+              </p>
+              <p className="mt-4 text-base leading-relaxed text-muted">
+                Himalayan Arc Adventure creates carefully planned camping experiences around lesser-explored Himalayan
+                landscapes, combining camping, local exploration, short hikes, nature, photography, food and adventure.
+              </p>
+              <p className="mt-6 font-heading text-xl font-medium text-foreground">
+                Your camp. Your people. <span className="text-amber-700">Your mountains.</span>
+              </p>
+            </div>
           </FadeUp>
 
-          <ScaleIn>
-            <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10">
-              <SmartImage
-                src={HERO_IMAGE}
-                alt="Tent camped under Himalayan stars"
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              <span className="absolute bottom-4 left-4 rounded-full bg-black/50 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-amber-300 backdrop-blur-sm">
-                Auli · Joshimath · Tapovan · Niti · Malari
-              </span>
-            </div>
-          </ScaleIn>
+          <FadeUp delay={0.05} className="lg:col-span-7">
+            <h3 className="font-heading text-2xl font-medium tracking-[-0.015em] text-foreground sm:text-3xl">Choose Your Mountain</h3>
+            <ul className="mt-6 border-t border-foreground/20">
+              {CAMPS.map((camp) => (
+                <li key={camp.name} className="border-b border-foreground/15">
+                  <button
+                    type="button"
+                    onClick={() => setSelected(camp)}
+                    className="group flex min-h-24 w-full cursor-pointer items-center gap-4 py-4 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:gap-6"
+                  >
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-heading text-2xl font-medium leading-tight tracking-[-0.015em] text-foreground group-hover:text-primary sm:text-3xl">
+                        {camp.name}
+                      </span>
+                      <span className="mt-1 block text-sm leading-relaxed text-muted">{camp.points}</span>
+                    </span>
+                    <span className="relative block h-20 w-20 shrink-0 overflow-hidden rounded-xl sm:h-24 sm:w-32">
+                      <SmartImage
+                        src={camp.image}
+                        alt={camp.name}
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
+                      />
+                    </span>
+                  </button>
+                </li>
+              ))}
+              <li className="border-b border-foreground/15">
+                <button
+                  type="button"
+                  onClick={() => setSelected(CUSTOM_CAMP)}
+                  className="group flex min-h-24 w-full cursor-pointer flex-col justify-center py-4 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >
+                  <span className="font-heading text-2xl font-medium tracking-[-0.015em] text-amber-700 sm:text-3xl">CUSTOM CAMPS</span>
+                  <span className="mt-1 text-sm leading-relaxed text-muted">Tell us where you want to go. We’ll help design the experience.</span>
+                  <span className="mt-2 text-sm font-semibold text-amber-700 group-hover:underline">Design my camp →</span>
+                </button>
+              </li>
+            </ul>
+          </FadeUp>
         </div>
+      </div>
 
-        {/* Block 2 — choose your mountain */}
-        <FadeUp delay={0.05}>
-          <h3 className="mt-16 text-center font-heading text-2xl font-bold sm:text-3xl">
-            Choose Your Mountain
-          </h3>
-        </FadeUp>
-
-        <StaggerContainer className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" staggerDelay={0.06}>
-          {CAMPS.map((camp) => (
-            <StaggerItem key={camp.name}>
-              <button type="button" onClick={() => setSelected(camp)} className={cardClass}>
-                <div className="relative h-40 overflow-hidden">
-                  <SmartImage
-                    src={camp.image}
-                    alt={camp.name}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                  <h4 className="absolute bottom-3 left-5 font-heading text-lg font-semibold tracking-wide">
-                    {camp.name.toUpperCase()}
-                  </h4>
-                </div>
-                <p className="p-5 text-sm leading-relaxed text-white/60">{camp.points}</p>
-              </button>
-            </StaggerItem>
-          ))}
-
-          <StaggerItem>
+      {/* Real moments, shot on our camps: a filmstrip with mixed crops, bleeding off both edges */}
+      <div className="border-t border-foreground/10 bg-card py-14 md:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <FadeUp>
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <h3 className="font-heading text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">Moments from our camps</h3>
+              <p className="font-nav text-sm text-muted">Shot by our teams — not stock.</p>
+            </div>
+          </FadeUp>
+        </div>
+        <div className="mt-8 flex snap-x snap-mandatory scroll-pl-4 items-end gap-3 sm:scroll-pl-6 lg:scroll-pl-[max(2rem,calc((100vw-80rem)/2+2rem))] overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:px-6 lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))] [&::-webkit-scrollbar]:hidden">
+          {ALL_MOMENTS.map((src, i) => (
             <button
+              key={src}
               type="button"
-              onClick={() => setSelected(CUSTOM_CAMP)}
-              className="group flex h-full min-h-[220px] w-full cursor-pointer flex-col justify-center rounded-2xl border border-dashed border-amber-400/40 bg-amber-400/5 p-5 text-left sm:p-6 transition-[transform,border-color,background-color] duration-200 ease-out hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 hover:bg-amber-400/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
+              onClick={() => openPhoto(i)}
+              aria-label={`View camp photo ${i + 1} of ${ALL_MOMENTS.length}`}
+              className={cn(
+                "relative shrink-0 snap-start cursor-zoom-in overflow-hidden rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+                FILM_CROPS[i % FILM_CROPS.length]
+              )}
             >
-              <h4 className="font-heading text-lg font-semibold tracking-wide text-amber-300">
-                CUSTOM CAMPS
-              </h4>
-              <p className="mt-2 text-sm leading-relaxed text-white/60">
-                Tell us where you want to go. We’ll help design the experience.
-              </p>
-              <span className="mt-4 text-xs font-semibold text-amber-300 group-hover:underline">
-                Design my camp →
-              </span>
+              <SmartImage
+                src={src}
+                alt={`Real camp moment ${i + 1} — Himalayan camping with Himalayan Arc Adventure`}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
             </button>
-          </StaggerItem>
-        </StaggerContainer>
-
-        {/* Block 3 — real moments, shot on our camps */}
-        <FadeUp delay={0.05}>
-          <div className="mt-16 flex flex-wrap items-end justify-between gap-3">
-            <h3 className="font-heading text-2xl font-bold sm:text-3xl">
-              Moments from our camps
-            </h3>
-            <p className="text-sm text-white/50">Shot by our teams — not stock.</p>
-          </div>
-        </FadeUp>
-        <FadeUp delay={0.1}>
-          <div className="mt-6 flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {ALL_MOMENTS.map((src, i) => (
-              <button
-                key={src}
-                type="button"
-                onClick={() => openPhoto(i)}
-                aria-label={`View camp photo ${i + 1} of ${ALL_MOMENTS.length}`}
-                className="relative h-48 w-72 flex-shrink-0 snap-start overflow-hidden rounded-2xl border border-white/10 cursor-zoom-in focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
-              >
-                <SmartImage
-                  src={src}
-                  alt={`Real camp moment ${i + 1} — Himalayan camping with Himalayan Arc Adventure`}
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-                <span className="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 transition-opacity duration-200 ease-out hover:opacity-100">
-                  <svg className="h-8 w-8 text-white drop-shadow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 7.5v6m3-3h-6M21 21l-5.2-5.2" />
-                  </svg>
-                </span>
-              </button>
-            ))}
-          </div>
-        </FadeUp>
-
-        {/* Block 4 — manifesto */}
-        <FadeUp delay={0.05}>
-          <div className="mx-auto mt-16 max-w-3xl text-center">
-            <p className="font-nav text-xs font-bold uppercase tracking-[0.3em] text-emerald-400">
-              Why camp with us
-            </p>
-            <h3 className="mt-4 font-heading text-2xl font-bold leading-snug sm:text-3xl md:text-4xl">
-              There is another Himalaya beyond the tourist map.
-            </h3>
-            <p className="mt-6 text-base leading-relaxed text-white/60 sm:text-lg">
-              Some places aren’t famous. Some don’t have hundreds of reviews.
-              Some don’t even have a proper tourist itinerary. That’s exactly
-              why we want you to experience them.
-            </p>
-            <p className="mt-4 text-base leading-relaxed text-white/60 sm:text-lg">
-              Himalayan Arc Adventure creates carefully planned camping experiences
-              around lesser-explored Himalayan landscapes, combining camping,
-              local exploration, short hikes, nature, photography, food and
-              adventure.
-            </p>
-            <p className="mt-8 font-heading text-lg font-bold tracking-wide text-white">
-              Your camp. Your people. <span className="text-amber-300">Your mountains.</span>
-            </p>
-          </div>
-        </FadeUp>
+          ))}
+        </div>
       </div>
 
       <ContactPopup

@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState, type VideoHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
 // ponytail: don't fetch below-fold videos until they're near the viewport,
 // so thumbnails don't compete with the hero for bandwidth.
 export default function LazyVideo({
   src,
   rootMargin = "400px",
+  className,
   ...props
 }: VideoHTMLAttributes<HTMLVideoElement> & { src: string; rootMargin?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -34,5 +36,6 @@ export default function LazyVideo({
     return () => io.disconnect();
   }, [near, rootMargin]);
 
-  return <video ref={ref} src={near ? src : undefined} {...props} />;
+  // bg-navy-deep: until the file is fetched the box is dark, never an empty white square.
+  return <video ref={ref} src={near ? src : undefined} className={cn("bg-navy-deep", className)} {...props} />;
 }

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { DIFFICULTY_COLORS, priceRoute, type Trek } from "@/data/treks";
+import { priceRoute, type Trek } from "@/data/treks";
 import { MONTHS, seasonMonths } from "@/lib/season";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import Price from "@/components/Price";
+import { ElevationLine } from "@/components/ElevationLine";
 import { TrekCard } from "@/app/treks/TreksPageClient";
 
 /**
@@ -42,33 +43,55 @@ export function TrekHub({
       },
     ],
   };
-  const th = "px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500";
+  const th = "px-3 py-3 text-left text-xs font-medium text-slate-500";
+  // The route this page tops out on: a real number and a real profile for the header.
+  const highest = treks.reduce<Trek | undefined>((best, t) => (!best || t.maxAltitude > best.maxAltitude ? t : best), undefined);
 
   return (
-    <div className="min-h-screen bg-white">
+    <main id="main" className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
 
       {/* Runs under the fixed navbar, so there's no light strip between the two. */}
       <header className="bg-navy text-white">
-        <div className="mx-auto max-w-7xl px-4 pb-14 pt-32 sm:px-6 lg:px-8">
-          <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-2 text-sm text-white/60">
-            <Link href="/" className="transition-colors duration-150 ease-out hover:text-white">Home</Link>
-            <span aria-hidden>/</span>
-            <Link href="/treks" className="transition-colors duration-150 ease-out hover:text-white">Treks</Link>
-            <span aria-hidden>/</span>
-            <span className="text-white/90">{title}</span>
-          </nav>
-          <h1 className="font-heading text-4xl font-bold tracking-[-0.02em] sm:text-5xl">{title}</h1>
-          <div className="mt-5 max-w-3xl space-y-3 text-lg leading-relaxed text-white/80">{intro}</div>
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 pb-12 pt-28 sm:px-6 lg:grid-cols-12 lg:items-end lg:gap-12 lg:px-8 lg:pb-16 lg:pt-36">
+          <div className="lg:col-span-7">
+            <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-2 text-sm text-white/60">
+              <Link href="/" className="inline-flex min-h-11 items-center transition-colors duration-150 ease-out hover:text-white">Home</Link>
+              <span aria-hidden>/</span>
+              <Link href="/treks" className="inline-flex min-h-11 items-center transition-colors duration-150 ease-out hover:text-white">Treks</Link>
+              <span aria-hidden>/</span>
+              <span className="text-white/90">{title}</span>
+            </nav>
+            <h1 className="font-heading text-5xl font-medium leading-[0.98] tracking-[-0.02em] sm:text-6xl xl:text-7xl">{title}</h1>
+            <div className="mt-6 max-w-xl space-y-3 text-base leading-relaxed text-white/75 sm:text-lg">{intro}</div>
+          </div>
+          {highest && (
+            <div className="border-t border-white/15 pt-4 lg:col-span-5">
+              <p className="text-sm text-white/60">
+                Highest point on this page:{" "}
+                <Link href={`/treks/${highest.slug}`} className="text-white/90 underline decoration-white/30 underline-offset-4 transition-colors duration-150 ease-out hover:text-white">{highest.name}</Link>
+              </p>
+              <p className="mt-2 font-heading text-6xl font-medium tabular-nums leading-none sm:text-7xl">
+                {highest.maxAltitude.toLocaleString("en-IN")}
+                <span className="ml-2 font-nav text-xl font-normal text-white/60">m</span>
+              </p>
+              <div className="mt-5 h-20 text-emerald-400 sm:h-24">
+                <ElevationLine profile={highest.elevationProfile} strokeWidth={2} />
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
-      <main className="py-section-sm mx-auto max-w-7xl space-y-16 px-4 sm:px-6 lg:px-8">
-        <section aria-labelledby="compare">
-          <h2 id="compare" className="font-heading text-3xl font-bold tracking-[-0.02em] text-slate-900 sm:text-4xl">Compare the treks</h2>
-          <div className="relative mt-5 overflow-x-auto rounded-2xl border border-slate-200">
-            <table className="w-full min-w-[760px] text-sm">
-              <thead className="bg-slate-50">
+      <div className="py-section-sm mx-auto max-w-7xl space-y-16 px-4 sm:px-6 lg:px-8">
+        <section aria-labelledby="compare" className="lg:grid lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-3">
+            <h2 id="compare" className="font-heading text-3xl font-medium tracking-[-0.02em] text-slate-900 sm:text-4xl">Compare the treks</h2>
+            <p className="mt-3 max-w-xs text-sm text-slate-500">Prices are per person. Tap a trek for its day-by-day itinerary, what&apos;s included and dates.</p>
+          </div>
+          <div className="relative mt-6 overflow-x-auto lg:col-span-9 lg:mt-0">
+            <table className="w-full min-w-[760px] border-y border-slate-200 text-sm">
+              <thead className="border-b border-slate-300">
                 <tr>
                   <th scope="col" className={th}>Trek</th>
                   <th scope="col" className={th}>Days</th>
@@ -78,21 +101,18 @@ export function TrekHub({
                   <th scope="col" className={`${th} text-right`}>From</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-200">
                 {treks.map((t) => (
                   <tr key={t.slug} className="align-top">
-                    <th scope="row" className="px-4 py-3 text-left font-semibold">
-                      <Link href={`/treks/${t.slug}`} className="text-slate-900 transition-colors duration-150 ease-out hover:text-emerald-600">{t.name}</Link>
+                    <th scope="row" className="px-3 py-4 text-left">
+                      <Link href={`/treks/${t.slug}`} className="font-heading text-lg font-medium text-slate-900 transition-colors duration-150 ease-out hover:text-emerald-700">{t.name}</Link>
                     </th>
-                    <td className="px-4 py-3 tabular-nums">{t.days}</td>
-                    <td className="whitespace-nowrap px-4 py-3 tabular-nums">{t.maxAltitude.toLocaleString("en-IN")} m</td>
-                    <td className="whitespace-nowrap px-4 py-3">
-                      <span className="mr-2 inline-block h-2 w-2 rounded-full" style={{ backgroundColor: DIFFICULTY_COLORS[t.difficulty] }} aria-hidden />
-                      {t.difficulty}
-                    </td>
-                    <td className="px-4 py-3">{t.bestSeason}</td>
-                    <td className="whitespace-nowrap px-4 py-3 text-right">
-                      <span className="font-semibold"><Price inr={t.price} /></span>
+                    <td className="px-3 py-4 font-heading text-lg tabular-nums text-slate-900">{t.days}</td>
+                    <td className="whitespace-nowrap px-3 py-4 text-slate-600"><span className="font-heading text-lg tabular-nums text-slate-900">{t.maxAltitude.toLocaleString("en-IN")}</span> m</td>
+                    <td className="whitespace-nowrap px-3 py-4 text-slate-600">{t.difficulty}</td>
+                    <td className="px-3 py-4 text-slate-600">{t.bestSeason}</td>
+                    <td className="whitespace-nowrap px-3 py-4 text-right">
+                      <span className="font-heading text-lg font-medium tabular-nums text-slate-900"><Price inr={t.price} /></span>
                       {priceRoute(t) && <span className="block text-xs text-slate-500">{priceRoute(t)}</span>}
                     </td>
                   </tr>
@@ -100,35 +120,36 @@ export function TrekHub({
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-xs text-slate-500">Prices are per person. Tap a trek for its day-by-day itinerary, what&apos;s included and dates.</p>
         </section>
 
-        <section aria-labelledby="season">
-          <h2 id="season" className="font-heading text-3xl font-bold tracking-[-0.02em] text-slate-900 sm:text-4xl">When to go</h2>
-          <div className="relative mt-5 overflow-x-auto rounded-2xl border border-slate-200">
-            <table className="w-full min-w-[760px] text-sm">
-              <thead className="bg-slate-50">
+        <section aria-labelledby="season" className="border-t border-slate-200 pt-12 lg:grid lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-3">
+            <h2 id="season" className="font-heading text-3xl font-medium tracking-[-0.02em] text-slate-900 sm:text-4xl">When to go</h2>
+          </div>
+          <div className="relative mt-6 overflow-x-auto lg:col-span-9 lg:mt-0">
+            <table className="w-full min-w-[760px] border-y border-slate-200 text-sm">
+              <thead className="border-b border-slate-300">
                 <tr>
                   <th scope="col" className={th}>Trek</th>
                   {MONTHS.map((m) => (
-                    <th key={m} scope="col" className="px-1 py-3 text-center text-xs font-semibold text-slate-500">{m}</th>
+                    <th key={m} scope="col" className="px-1 py-3 text-center text-xs font-medium text-slate-500">{m}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-200">
                 {treks.map((t) => {
                   const open = new Set(seasonMonths(t.bestSeason));
                   return (
                     <tr key={t.slug}>
-                      <th scope="row" className="whitespace-nowrap px-4 py-2.5 text-left font-medium text-slate-800">{t.name}</th>
+                      <th scope="row" className="whitespace-nowrap px-3 py-3 text-left font-heading text-base font-medium text-slate-900">{t.name}</th>
                       {MONTHS.map((m, i) => (
-                        <td key={m} className="px-1 py-2.5 text-center">
+                        <td key={m} className="px-1 py-3 text-center">
                           {open.has(i) ? (
-                            <span className="inline-block h-3 w-full max-w-8 rounded-full bg-emerald-500" title={`${m}: good season`}>
+                            <span className="inline-block h-2.5 w-full max-w-8 rounded-full bg-emerald-500" title={`${m}: good season`}>
                               <span className="sr-only">{m}: good season</span>
                             </span>
                           ) : (
-                            <span className="inline-block h-3 w-full max-w-8 rounded-full bg-slate-100" aria-hidden />
+                            <span className="inline-block h-2.5 w-full max-w-8 rounded-full bg-slate-100" aria-hidden />
                           )}
                         </td>
                       ))}
@@ -140,9 +161,9 @@ export function TrekHub({
           </div>
         </section>
 
-        <section aria-labelledby="treks">
-          <h2 id="treks" className="font-heading text-3xl font-bold tracking-[-0.02em] text-slate-900 sm:text-4xl">The treks</h2>
-          <div className="mt-6 grid gap-8 md:grid-cols-2">
+        <section aria-labelledby="treks" className="border-t border-slate-200 pt-12">
+          <h2 id="treks" className="font-heading text-3xl font-medium tracking-[-0.02em] text-slate-900 sm:text-4xl">The treks</h2>
+          <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-10">
             {treks.map((t) => (
               <TrekCard key={t.slug} trek={t} />
             ))}
@@ -150,7 +171,7 @@ export function TrekHub({
         </section>
 
         {children}
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
