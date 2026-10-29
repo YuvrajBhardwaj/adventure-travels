@@ -17,6 +17,27 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 29 Oct 2026: Trek facts corrected against Trek The Himalayas — `preview/trek-slideshows`
+- **Source:** trekthehimalayas.com (as the owner asked), plus the Himalayan Club for Gupt Khal.
+- **Altitudes:**
+  - **Pangarchula:** 4,700 m → **4,600 m** (TTH: 4,600 m / 15,100 ft).
+  - **Bhrigu Lake:** 4,300 m → **4,200 m** (TTH: about 4,200 m / 13,700 ft). The FAQ said 14,100 ft; it now says about 13,700 ft.
+  - **Dronagiri Base Camp:** the highest point was 4,500 m while day 7 said 4,920 m. Now the Bagini base camp is **4,600 m** and Changabang/Bagini Glacier **4,900 m**, with a **4,900 m** maximum, matching TTH's Bagini itinerary; the elevation chart follows.
+  - Hemkund (14,100 ft) and Hampta Pass (14,100 ft) already matched TTH, so no change.
+- **Places:**
+  - **Valley of Flowers:** location changed from "Rishikesh" to **Govindghat, Chamoli**.
+  - **Satopanth:** "Joshimath" → **Mana, Badrinath**.
+  - **Brahmatal:** Lohajung is in **Chamoli, Garhwal**, not Kumaon.
+  - **Hampta day 6:** Chhatru is in **Lahaul**, not Spiti.
+  - **Gupt Khal:** links the **Gangotri and Badrinath (Mana)** sides, not Kedarnath.
+- **Counts:** the stats strip and /activities now count from the trek list itself: **21** treks (was 18, 17 and "9+" in different places), **166** total trek days (was 204), highest altitude 5,942 m.
+- **FAQ:**
+  - **Removed:** answers about Triund, Kareri Lake and Beas Kund (treks the company doesn't run). Nag Tibba became Tungnath.
+  - **Kedarkantha:** no longer says "open year-round". It is best December to April, and to be avoided in July and August.
+  - **Pickups:** the answer now matches each trek's real start town: Joshimath for the "Joshimath to Joshimath" treks, Dehradun for Sankri and Lohajung treks, Manali for Himachal, Delhi for Tungnath.
+- **Not changed (owner's call):** prices (Mana Pass, Niti Pass and Rimkhim at Rs. 5,000), whether the Joshimath treks start with the Rishikesh drive on day 1, and the Nanda Devi campsite height.
+- **Checks:** type-check clean, lint 0 errors, 70 unit tests pass.
+
 ### 29 Oct 2026: **Backend** health check, checkout seat hold, scale fixes — uncommitted
 - **Health check (live site):** every page loads; every API function answers correctly (`bookings` 400 on an empty request; `create-order`, `verify-payment`, `account` 401 "Please sign in"; `razorpay-webhook` 400 "Invalid signature"; `cron` 401; `geo` and `rates` 200). Supabase project `sdhtgmlkzcknmeakxgdz` (Mumbai) is healthy: 3 users, 3 trek bookings, 0 payments, 6 emails sent, 215 upcoming batches, 12 MB of 500 MB.
 - **Problems found on the live system:**

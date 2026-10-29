@@ -114,7 +114,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "Which Himalayan treks are best suited for absolute beginners?",
-        a: "If this is your first time on mountain trails, beginner-friendly snow treks like Kedarkantha, Brahmatal, or Nag Tibba in Uttarakhand, as well as Triund and Kareri Lake in Himachal, are ideal. These routes have moderate inclines, wide alpine views and manageable daily walking distances.",
+        a: "If this is your first time on mountain trails, beginner-friendly snow treks like Kedarkantha, Brahmatal, or Tungnath in Uttarakhand are ideal. These routes have moderate inclines, wide alpine views and manageable daily walking distances.",
         related: ["How should I prepare physically before trekking?", "What is the age limit for beginners?"],
       },
       {
@@ -186,23 +186,8 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "Why is Bhrigu Lake Trek famous for its glacial waters and meadows?",
-        a: "Bhrigu Lake sits at an altitude of 14,100 feet above Manali. It is known for its high-altitude glacial tarn that changes colour with the seasons, and wide green meadows with views of the Pir Panjal and Dhauladhar ranges.",
+        a: "Bhrigu Lake sits at an altitude of about 13,700 feet (4,200 m) above Manali. It is known for its high-altitude glacial tarn that changes colour with the seasons, and wide green meadows with views of the Pir Panjal and Dhauladhar ranges.",
         related: ["How strenuous is Bhrigu Lake Trek?", "Can beginners do Bhrigu Lake?"],
-      },
-      {
-        q: "What is the historical and geographical significance of Beas Kund?",
-        a: "Beas Kund is the sacred glacial source of the River Beas in Solang Valley, Himachal Pradesh. Surrounded by peaks like Shitidhar and Ladakhi, this moderate trek has alpine scenery and a long mythological history.",
-        related: ["How long does Beas Kund trek take?", "Best time to visit Beas Kund"],
-      },
-      {
-        q: "What makes Kareri Lake a good weekend trek in Himachal?",
-        a: "Kareri Lake is a high-altitude freshwater shallow lake fed by snowmelt from the Dhauladhar range. Lined with oak and pine forests and fast streams, it offers proper wilderness camping close to Dharamshala.",
-        related: ["Is Kareri Lake suitable for beginners?", "What is the duration of Kareri Lake trek?"],
-      },
-      {
-        q: "Why is Triund Trek popular for weekend adventurers in McLeod Ganj?",
-        a: "Triund is the classic beginner trek in Himachal Pradesh. It sits on a ridge above the Kangra Valley, facing the snow-clad Dhauladhar range, and it is an easy way to camp in the mountains under a clear sky.",
-        related: ["How long is the hike to Triund?", "Can I do Triund without a guide?"],
       },
     ],
   },
@@ -212,12 +197,12 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "What are the designated pickup locations for Uttarakhand and Himachal treks?",
-        a: "For Uttarakhand treks (Kedarkantha, Brahmatal, Valley of Flowers, etc.), pickups generally originate from Dehradun Railway Station. For Himachal treks (Hampta Pass, Bhrigu Lake, etc.), pickups originate from Manali or Chandigarh depending on the itinerary. Exact reporting times are shared in your welcome dossier.",
+        a: "It depends on the trek. Treks priced \"Joshimath to Joshimath\" (Kuari Pass, Pangarchula, Dronagiri, Valley of Flowers, Gupt Khal, Mana Pass, Niti Pass and Rimkhim) start and end in Joshimath. Kedarkantha and Har Ki Dun pick up from Dehradun for the drive to Sankri, Brahmatal and Roopkund from Dehradun for Lohajung, Hampta Pass and Bhrigu Lake from Manali, and Tungnath from Delhi. Your booking confirmation gives the exact pickup point and time.",
         related: ["What happens if my flight or train is delayed?", "Do you arrange return transport?"],
       },
       {
         q: "How should I plan my arrival at the base camp?",
-        a: "We recommend arriving at the pickup city (Dehradun, Chandigarh, or Delhi) at least one day prior to the trek start date. That gives you time to recover from the journey and reach our reporting point on time without rushing.",
+        a: "We recommend arriving at the pickup city (Joshimath, Dehradun, Manali or Delhi, depending on the trek) at least one day prior to the trek start date. That gives you time to recover from the journey and reach our reporting point on time without rushing.",
         related: ["What are recommended travel options?", "Can I park my vehicle at the base camp?"],
       },
       {
@@ -227,12 +212,12 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "Is parking available if I drive my own vehicle to the base camp?",
-        a: "Yes, secure parking arrangements can usually be coordinated at base camp villages or local hotels in Dehradun or Manali at nominal daily parking fees. Please inform our support team in advance if you plan to drive.",
+        a: "Yes, secure parking arrangements can usually be coordinated at base camp villages or local hotels in Joshimath, Dehradun or Manali at nominal daily parking fees. Please inform our support team in advance if you plan to drive.",
         related: ["Where is the base camp reporting point?", "Are transport costs included in trek fees?"],
       },
       {
         q: "How is the return journey planned after trek completion?",
-        a: "Return transport from the trek drop-off point back to the base camp city (Dehradun or Manali) is included in your package. We typically arrive back between 3:00 PM and 6:00 PM on the final day. Book your return trains or flights departing late evening or the following morning.",
+        a: "Return transport from the trek drop-off point back to the start town (Joshimath, Dehradun, Manali or Delhi) is included in your package. We typically arrive back between 3:00 PM and 6:00 PM on the final day. Book your return trains or flights departing late evening or the following morning.",
         related: ["What time does the trek finish on the last day?", "Can I book return tickets in advance?"],
       },
     ],
@@ -472,7 +457,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "Kedarkantha Trek: Best season, highest altitude, and beginner suitability",
-        a: "Kedarkantha peaks at 12,500 feet and is open year-round, with December to April the best months for snow. It is rated easy-to-moderate, which makes it the best first winter snow trek in Uttarakhand, with pine forests and summit sunrise views.",
+        a: "Kedarkantha peaks at 12,500 feet. December to April is the snow season and the best time to go; spring and autumn work too, and the monsoon months (July and August) are best avoided. It is rated easy-to-moderate, which makes it the best first winter snow trek in Uttarakhand, with pine forests and summit sunrise views.",
         related: ["View Kedarkantha Trek itinerary", "What gear do I need for Kedarkantha?"],
       },
       {
@@ -487,7 +472,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "Bhrigu Lake: High-altitude glacial tarn near Manali",
-        a: "Bhrigu Lake sits at 14,100 feet near Manali, Himachal Pradesh. Spanning 4 days from May to October, this trek is known for its wide green meadows and frozen glacial lake views. It is moderately challenging and rewarding for fit beginners.",
+        a: "Bhrigu Lake sits at about 13,700 feet near Manali, Himachal Pradesh. Spanning 4 days from May to October, this trek is known for its wide green meadows and frozen glacial lake views. It is moderately challenging and rewarding for fit beginners.",
         related: ["View Himachal Treks", "What is the best training plan for Bhrigu Lake?"],
       },
       {

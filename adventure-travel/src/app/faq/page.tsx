@@ -11,7 +11,7 @@ export const metadata = pageMetadata({
 const FAQ_DATA = [
   { q: "How does the booking process work for guided treks in Uttarakhand and Himachal?", a: "Booking a Himalayan trek takes a few minutes. Pick your trek and departure batch on our website, fill in your personal and emergency contact details, and pay securely online." },
   { q: "What payment methods do you accept for trek reservations?", a: "We accept all major credit and debit cards, net banking, UPI (Google Pay, PhonePe, Paytm), and major wallet providers through our secure payment gateway." },
-  { q: "Which Himalayan treks are best suited for absolute beginners?", a: "Beginner-friendly snow treks like Kedarkantha, Brahmatal, or Nag Tibba in Uttarakhand, as well as Triund and Kareri Lake in Himachal, are ideal." },
+  { q: "Which Himalayan treks are best suited for absolute beginners?", a: "Beginner-friendly snow treks like Kedarkantha, Brahmatal, or Tungnath in Uttarakhand are ideal." },
   { q: "What level of physical fitness is required for high-altitude trekking?", a: "High-altitude trekking needs cardiovascular endurance and leg strength. We recommend starting a cardio regimen 4 to 6 weeks before your trek." },
   { q: "What makes Kedarkantha Trek one of India's premier winter snow treks?", a: "Kedarkantha Trek has pine forests, snow-covered meadows and a 360-degree Himalayan view from the summit at 12,500 feet." },
   { q: "What is the best season for trekking in Uttarakhand and Himachal Pradesh?", a: "Summer (May-June) brings pleasant weather; Monsoon (July-August) turns the valleys green; Autumn (September-November) has the clearest skies; Winter (December-March) is for snow." },

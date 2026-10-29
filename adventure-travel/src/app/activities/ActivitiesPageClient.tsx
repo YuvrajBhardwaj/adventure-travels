@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { treks } from "@/data/treks";
 import SmartImage from "@/components/SmartImage";
 import CampingSection from "@/components/CampingSection";
 import ActivityRequestForm from "@/components/ActivityRequestForm";
@@ -14,14 +15,14 @@ const activities = [
     name: "Trekking",
     tagline: "Walk the Himalayas",
     image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
-    description: "Gentle valley walks and hard high-altitude expeditions: 17 treks we have planned ourselves across Uttarakhand and Himachal Pradesh.",
+    description: `Gentle valley walks and hard high-altitude expeditions: ${treks.length} treks we have planned ourselves across Uttarakhand and Himachal Pradesh.`,
     features: [
       "Valley of Flowers: 6 days through alpine meadows",
       "Kedarkantha: a good first winter summit",
       "Roopkund: high-altitude lake trek",
       "Har Ki Dun: old villages in a valley ringed by peaks",
     ],
-    stats: { treks: "9+", difficulty: "Easy to Expert", duration: "4-12 Days" },
+    stats: { treks: String(treks.length), difficulty: "Easy to Expert", duration: "4-12 Days" },
     cta: { label: "Explore Treks", href: "/treks" },
   },
   {
