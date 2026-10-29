@@ -75,7 +75,7 @@ export default function VideoShowcase() {
               Real footage from the trail
             </h2>
             <p className="mt-5 max-w-md text-base leading-relaxed text-white/80 sm:text-lg">
-              No stock clips — these are treks our groups actually walked, shot on the trail. Tap any reel to watch.
+              No stock clips. These are treks our groups actually walked, shot on the trail. Tap any reel to watch.
             </p>
           </FadeUp>
 

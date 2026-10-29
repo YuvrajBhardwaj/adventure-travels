@@ -2,7 +2,30 @@
 
 What's left, most urgent first. Tick items off here and record the change in [CHANGELOG.md](CHANGELOG.md).
 **You** = the business owner (accounts, dashboards, decisions). **Dev** = code work Claude or a developer can do.
-Last updated: 19 Oct 2026.
+Last updated: 29 Oct 2026.
+
+## Backend health check, 29 Oct (details in CHANGELOG)
+Works today: accounts, trek and course bookings, booking emails and the payment flow (in test mode).
+- [ ] **You: OK to apply the database update.** It holds seats for 15 minutes during payment, so a batch can't be oversold, and it adds speed fixes. Tested on the live database with everything rolled back. With your OK, Claude runs `supabase-departures.sql` and `supabase-scale.sql` (or you run `node scripts/setup-backend.mjs`).
+- [ ] **You: OK to raise the sign-up email limit from 2 to 20 an hour** (Supabase → Authentication → Rate limits). Right now the 3rd sign-up in an hour can't get its confirmation email.
+- [ ] **You: choose the admin account.** Nobody has admin rights, so `/admin` is unusable. Tell Claude which email (it must already be signed up), or set `ADMIN_EMAIL` in `.env.setup` and run the setup script.
+- [ ] **You: switch Razorpay to live keys and register the webhook.** The live site still takes test payments only, so real customers can't pay online.
+- [ ] **You: upgrade Vercel to Pro (about $20 a month).** Hobby is for non-commercial use only, and it pauses the site when a monthly limit runs out. At today's page weight that's around 10,000 visitors a month (100 GB of bandwidth, 1M requests).
+- [ ] **You (before traffic grows):** move email from Gmail (about 500 a day) to a transactional sender such as Brevo, Resend, Amazon SES or Zoho ZeptoMail. Then consider Supabase Pro ($25 a month): daily backups, no pausing, 100k monthly users instead of 50k.
+- [ ] **Dev:** deploy the 29 Oct changes (commit and push to `main`). This also moves the server functions to Mumbai, next to the database.
+- [ ] **Dev:** shrink the hero videos (14.7 MB home page on desktop, 38 MB of `.MOV` files). Needs ffmpeg (`winget install ffmpeg`).
+- [ ] **Dev:** the admin lists load at most 500 bookings per type and 1,000 customers, and search runs only over those. Move search into the database before about 1,000 customers.
+- [ ] **Dev:** cut background link prefetching (55 requests per desktop home visit) to save Vercel request quota.
+
+## MakeMyTrip-style booking flow (asked 29 Oct; needs your choices)
+Already there: live batch dates with seats left, a price locked on the server, a 30% advance or full payment, UPI-first Razorpay, a dashboard with "Pay balance" and "Cancel", booking emails and (from 29 Oct) a 15-minute seat hold.
+- [ ] Book without losing the form: sign in or sign up inside the booking step (today a signed-out visitor is sent to `/signup` and loses what they typed).
+- [ ] A review step before payment: trip summary, price breakdown (per person, room tier, GST if it applies, total, amount now), and a "seats held 14:59" timer.
+- [ ] Traveller details per person (name, age, gender, ID for permits) and an emergency contact.
+- [ ] A confirmation page plus a downloadable voucher or invoice (PDF) with the booking ID; WhatsApp confirmation.
+- [ ] My Trips: Upcoming, Completed and Cancelled tabs; cancel with a refund preview from the cancellation policy; request a date change.
+- [ ] Offers: coupon codes and an early-bird price. **You:** which offers, and is GST charged on top of the listed prices?
+- [ ] Add-ons: Rishikesh or Dehradun pickup, gear rental, trek insurance. **You:** which, and at what price?
 
 ## 0. Do these first (5 minutes each, big effect)
 - [x] ~~Ship the favicon hotfix~~ (done 19 Oct: `a42c960` pushed to `main`).
@@ -85,6 +108,15 @@ That covers most of the items below. The manual steps are listed in case you pre
   - [ ] Still open from the visitor test: a signed-out visitor's trek reservation is sent to /signup and loses the form (D-01); "4.8 (341 Reviews)"-style ratings and "4.9 / 1,200+ Google Reviews" need to be real or removed; the activities page says "17 handcrafted treks" next to "9+"; the 404 page is bare (no links back); /checkout, /dashboard, /admin redirect to login with no "please log in" note.
   - [ ] **Dev:** convert the six hero `.MOV` videos to small MP4/WebM (needs ffmpeg; they're 1.3–7 MB each) and replace the Video band's poster that has a burned-in caption.
 - [ ] **You (now that it's live):** in Razorpay (Test Mode) set the webhook URL to `https://www.himalayanarcadventure.com/api/razorpay-webhook` with the secret from `.env.setup`; when ready for real money, switch to **live** Razorpay keys (tell Claude to load them); rotate the Gmail App Password (it was shared in chat); Search Console → submit `sitemap.xml` and request indexing for the home page.
+- [ ] **Facts to check (found during the 29 Oct copy rewrite; nothing changed):**
+  - Dronagiri: day 7 reaches 4,920 m but the highest point is listed as 4,500 m.
+  - Valley of Flowers: starts from Joshimath, but its location says Rishikesh and day 1 is the Rishikesh drive (same pattern for Pangarchula and Kuari Pass). The FAQ also gives Hemkund as 14,100 ft (usually about 15,200 ft); Bhrigu Lake and Hampta Pass also show 14,100 ft.
+  - Brahmatal day 1 calls Lohajung "Kumaon"; it is in Chamoli (Garhwal). Hampta day 6 mentions Spiti; Chhatru is in Lahaul.
+  - Gupt Khal's blurb says it links Gangotri and Kedarnath, but the itinerary runs Niti to Mana/Badrinath. Satopanth lists Joshimath but runs Haridwar to Badrinath.
+  - Mana Pass, Niti Pass and Rimkhim are all priced Rs. 5,000 for 9–10 day strenuous trips: placeholders?
+  - Trek counts disagree: 18 (home stat), 17 and "9+" (activities), 21 in the data.
+  - FAQ: Kedarkantha "open year-round" vs "December to April"; FAQ says Uttarakhand pickups are from Dehradun, while hubs say Joshimath to Joshimath; FAQ names Triund, Kareri and Beas Kund, which are not in the trek list.
+  - Activities page shows skiing "From Rs.10,000" and snowboarding Rs.35,000; check against the course prices.
 - [ ] **Traffic and bookings plan** is in `adventure-travel/docs/seo/2026-10-21-traffic-and-bookings-plan.md`: Google Business Profile, first reviews, Search Console, the 308 redirect, directory listings, WhatsApp Business, 13 questions only you can answer.
 - [x] ~~Commit the navbar redesign and the `.gitignore` change~~ (done: `1be764a`, pushed to the preview branch).
 - [x] **Dev:** Commit `CHANGELOG.md`, `TODO.md` and the `CLAUDE.md` note. (done: committed with `52938f8`)

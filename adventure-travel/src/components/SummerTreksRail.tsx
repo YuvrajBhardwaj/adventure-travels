@@ -86,7 +86,7 @@ export default function SummerTreksRail() {
             <div className="lg:col-span-4 lg:col-start-9">
               <p className="font-nav text-xs font-semibold tracking-[0.12em] text-amber-700">JAN – DEC · TREKS</p>
               <p className="mt-2 text-base leading-relaxed text-muted">
-                18 treks across Uttarakhand &amp; Himachal Pradesh — filtered by difficulty, region, and real elevation
+                18 treks across Uttarakhand &amp; Himachal Pradesh. Filter by difficulty, region and real elevation
                 profiles.
               </p>
               <Link

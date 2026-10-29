@@ -4,7 +4,7 @@ import DestinationsPageClient from "./DestinationsPageClient";
 export const metadata = pageMetadata({
   title: fitTitle("Himalayan Trekking Destinations"),
   description:
-    "Explore trekking destinations across Uttarakhand and Himachal Pradesh. From the Valley of Flowers to Hampta Pass, find your perfect Himalayan adventure.",
+    "Trekking destinations across Uttarakhand and Himachal Pradesh, from the Valley of Flowers to Hampta Pass, with the guided Himalayan treks we run in each region.",
   path: "/destinations",
 });
 

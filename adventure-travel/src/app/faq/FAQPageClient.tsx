@@ -73,7 +73,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "How does the booking process work for guided treks in Uttarakhand and Himachal?",
-        a: "Booking your Himalayan trekking adventure is seamless. Select your preferred trek and departure batch on our website, fill in your personal and emergency contact details, and proceed to secure online payment. You will receive an instant booking confirmation email with your invoice and pre-trek checklist.",
+        a: "Booking a Himalayan trek takes a few minutes. Pick your trek and departure batch on our website, fill in your personal and emergency contact details, and pay securely online. You will get an instant booking confirmation email with your invoice and pre-trek checklist.",
         related: ["What payment methods do you accept?", "How do I change my trek dates?"],
       },
       {
@@ -83,27 +83,27 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "When will I receive my official booking confirmation?",
-        a: "Booking confirmations are generated instantly upon successful payment. Within 2 hours, our operations team sends out a comprehensive welcome dossier containing reporting times, pickup locations, detailed packing guides, and your dedicated trek leader's contact details.",
+        a: "Booking confirmations are generated instantly upon successful payment. Within 2 hours, our operations team sends a welcome dossier containing reporting times, pickup locations, detailed packing guides, and your dedicated trek leader's contact details.",
         related: ["What is included in the welcome dossier?", "Who do I contact after booking?"],
       },
       {
         q: "Can I change my trek departure date after booking?",
-        a: "Yes, you can request a batch change up to 7 days before your original departure date, subject to batch availability and operational feasibility. A nominal administrative fee may apply. We recommend reviewing our cancellation policy for specific guidelines.",
+        a: "Yes, you can request a batch change up to 7 days before your original departure date, subject to batch availability and operational feasibility. A small administrative fee may apply. Our cancellation policy has the specific rules.",
         related: ["What is the cancellation policy?", "Can I transfer my booking to a friend?"],
       },
       {
         q: "Do you offer special discounts for group or corporate treks?",
-        a: "Absolutely! We offer tiered discounts for group bookings of 5 or more participants. For corporate retreats, team-building expeditions, or college outdoor clubs in Uttarakhand and Himachal, we curate custom itineraries with dedicated support staff. Reach out to our team for a tailored quote.",
+        a: "Yes. We offer tiered discounts for group bookings of 5 or more participants. For corporate retreats, team-building treks or college outdoor clubs in Uttarakhand and Himachal, we plan custom itineraries with dedicated support staff. Message our team for a quote.",
         related: ["How do I book a private trek?", "What is the maximum group size?"],
       },
       {
         q: "Can I transfer my trek booking to another person?",
-        a: "Yes, you may transfer your slot to another individual up to 10 days before the trek commences. The substitute trekker must fulfill the medical and physical fitness requirements specified for that particular Himalayan route.",
+        a: "Yes, you may transfer your slot to another individual up to 10 days before the trek starts. The substitute trekker must meet the medical and physical fitness requirements specified for that particular Himalayan route.",
         related: ["What are the fitness requirements?", "Can I change my trek dates?"],
       },
       {
         q: "How are refunds handled if I cancel my trek?",
-        a: "Refunds are processed in accordance with our transparent cancellation timeline. Eligible amounts are credited directly to your original payment method within 7 to 10 business days. Non-recoverable expenses like permits already procured are deducted as outlined in our policy.",
+        a: "Refunds follow our cancellation timeline. Eligible amounts are credited directly to your original payment method within 7 to 10 business days. Non-recoverable expenses like permits already procured are deducted as outlined in our policy.",
         related: ["What is the cancellation timeline?", "Are booking fees refundable?"],
       },
     ],
@@ -114,32 +114,32 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "Which Himalayan treks are best suited for absolute beginners?",
-        a: "If you are stepping onto mountain trails for the first time, beginner-friendly snow treks like Kedarkantha, Brahmatal, or Nag Tibba in Uttarakhand, as well as Triund and Kareri Lake in Himachal, are ideal. These routes offer moderate inclines, stunning alpine views, and manageable daily walking distances.",
+        a: "If this is your first time on mountain trails, beginner-friendly snow treks like Kedarkantha, Brahmatal, or Nag Tibba in Uttarakhand, as well as Triund and Kareri Lake in Himachal, are ideal. These routes have moderate inclines, wide alpine views and manageable daily walking distances.",
         related: ["How should I prepare physically before trekking?", "What is the age limit for beginners?"],
       },
       {
         q: "What level of physical fitness is required for high-altitude trekking?",
-        a: "High-altitude trekking demands cardiovascular endurance and leg strength. We recommend starting a cardio regimen (running, cycling, or brisk swimming) 4 to 6 weeks before your trek. Being able to jog 5 km in 35 minutes comfortably prepares your heart and lungs for thin mountain air.",
+        a: "High-altitude trekking needs cardiovascular endurance and leg strength. We recommend starting a cardio regimen (running, cycling, or brisk swimming) 4 to 6 weeks before your trek. Being able to jog 5 km in 35 minutes comfortably prepares your heart and lungs for thin mountain air.",
         related: ["What training plan should I follow?", "How do I prevent altitude sickness?"],
       },
       {
         q: "What are the age limits for participating in your treks?",
-        a: "Participants generally need to be at least 10 years old for easy-to-moderate treks, accompanied by a parent or legal guardian. For strenuous or high-altitude alpine passes exceeding 13,000 feet, the minimum age is 14 years. There is no strict upper age limit provided you possess good cardiovascular health and doctor clearance if needed.",
+        a: "Participants generally need to be at least 10 years old for easy-to-moderate treks, accompanied by a parent or legal guardian. For strenuous or high-altitude alpine passes exceeding 13,000 feet, the minimum age is 14 years. There is no strict upper age limit if you have good cardiovascular health and doctor clearance if needed.",
         related: ["Can children and families join?", "Are senior citizens allowed on treks?"],
       },
       {
         q: "Do you accommodate senior citizens on Himalayan treks?",
-        a: "Yes! Many active senior trekkers in their 50s and 60s join our scenic valley and ridge treks like Valley of Flowers or Bhrigu Lake. We advise consulting your physician beforehand and informing our trek leaders of any pre-existing health conditions.",
+        a: "Yes. Many active senior trekkers in their 50s and 60s join our scenic valley and ridge treks like Valley of Flowers or Bhrigu Lake. We advise consulting your physician beforehand and informing our trek leaders of any pre-existing health conditions.",
         related: ["What medical conditions require clearance?", "How do trek leaders support participants?"],
       },
       {
-        q: "What medical conditions should be declared before embarking on a trek?",
-        a: "Transparency regarding your health is crucial for safety at altitude. You must declare asthma, epilepsy, chronic bronchitis, heart ailments, severe joint injuries, or high blood pressure during registration. Carrying prescribed medications and a doctor's fitness certificate is mandatory for chronic conditions.",
+        q: "What medical conditions should be declared before a trek?",
+        a: "Being open about your health keeps you safe at altitude. You must declare asthma, epilepsy, chronic bronchitis, heart ailments, severe joint injuries, or high blood pressure during registration. Carrying prescribed medications and a doctor's fitness certificate is mandatory for chronic conditions.",
         related: ["What first aid do trek leaders carry?", "How is altitude sickness handled?"],
       },
       {
         q: "How should I structure my training plan weeks before departure?",
-        a: "Begin your preparation 6 weeks out. Dedicate 3 days a week to cardiovascular training (running or stair climbing) and 2 days to core and lower-body strength exercises (squats, lunges, plank holds). Weekend hikes with a loaded backpack simulate trail conditions perfectly.",
+        a: "Begin your preparation 6 weeks out. Dedicate 3 days a week to cardiovascular training (running or stair climbing) and 2 days to core and lower-body strength exercises (squats, lunges, plank holds). Weekend hikes with a loaded backpack are the closest thing to trail conditions.",
         related: ["What fitness level is required?", "How do I build stamina for altitude?"],
       },
     ],
@@ -150,27 +150,27 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "What makes Kedarkantha Trek one of India's premier winter snow treks?",
-        a: "Kedarkantha Trek in the Govind Wildlife Sanctuary, Uttarakhand, offers pristine pine forests, snow-covered meadows, and a breathtaking 360-degree Himalayan summit panorama at 12,500 feet. It is celebrated for reliable winter snow from December to April and an unforgettable summit sunrise.",
+        a: "Kedarkantha Trek in the Govind Wildlife Sanctuary, Uttarakhand, has pine forests, snow-covered meadows and a 360-degree Himalayan view from the summit at 12,500 feet. It is known for reliable winter snow from December to April and its summit sunrise.",
         related: ["When is the best time for Kedarkantha?", "Is Kedarkantha suitable for first-timers?"],
       },
       {
         q: "When is the best time to experience Valley of Flowers National Park?",
-        a: "Valley of Flowers blooms in its full majesty during the monsoon season from July to August. UNESCO World Heritage-listed, this vibrant alpine valley in Uttarakhand showcases over 500 species of wild Himalayan flora nestled against snow-capped peaks.",
+        a: "Valley of Flowers is in full bloom during the monsoon, from July to August. This UNESCO World Heritage-listed alpine valley in Uttarakhand has over 500 species of wild Himalayan flowers below snow-capped peaks.",
         related: ["How difficult is the Valley of Flowers trek?", "What weather can I expect during monsoon?"],
       },
       {
         q: "Why is Har Ki Dun known as the cradle of the Himalayas?",
-        a: "Har Ki Dun is a legendary hanging valley in Uttarakhand steeped in mythological lore and ancient wooden villages. Surrounded by towering peaks like Swargarohini and Bandarpoonch, it offers a rich cultural trekking experience combined with gentle alpine terrain.",
+        a: "Har Ki Dun is a hanging valley in Uttarakhand with old wooden villages and a lot of mythology attached to it. Ringed by peaks like Swargarohini and Bandarpoonch, it combines village culture with gentle alpine terrain.",
         related: ["What is the maximum altitude of Har Ki Dun?", "Best season to visit Har Ki Dun"],
       },
       {
         q: "What are the key highlights of the Brahmatal Ridge Trek?",
-        a: "Brahmatal is famous for its frozen alpine lake, mesmerizing campsites perched beneath star-filled Himalayan skies, and uninterrupted views of snow giants like Mt. Trishul and Nanda Ghunti. It stands out as a premier winter snow trekking destination in Uttarakhand.",
+        a: "Brahmatal is known for its frozen alpine lake, campsites under clear night skies, and open views of Mt. Trishul and Nanda Ghunti. It is one of the best winter snow treks in Uttarakhand.",
         related: ["How cold does it get at Brahmatal?", "Is Brahmatal good for beginners?"],
       },
       {
         q: "What can I expect from the Kuari Pass Bugyal Trek?",
-        a: "Kuari Pass, famously known as the Curzon Trail, takes you across sweeping high-altitude meadows (bugyals) with majestic amphitheater views of Kamet, Dronagiri, and Nanda Devi. It is a photographer's paradise and an incredible moderate-grade Himalayan adventure.",
+        a: "Kuari Pass, famously known as the Curzon Trail, crosses wide high-altitude meadows (bugyals) with a ring of peaks around you: Kamet, Dronagiri and Nanda Devi. Photographers love it, and it is a moderate-grade Himalayan trek.",
         related: ["What is the highest altitude on Kuari Pass?", "Best months for Kuari Pass"],
       },
     ],
@@ -181,27 +181,27 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "What makes Hampta Pass Trek a diverse alpine crossing in Himachal?",
-        a: "Hampta Pass bridges the lush green Kullu Valley with the stark, dramatic desert landscapes of Lahaul and Spiti. Trekkers experience dense pine forests, cascading waterfalls, glacial streams, and crossing a 14,000-foot mountain pass in a single expedition.",
+        a: "Hampta Pass links the green Kullu Valley with the bare desert landscapes of Lahaul and Spiti. In one trek you walk through dense pine forests, past waterfalls and glacial streams, and cross a 14,000-foot mountain pass.",
         related: ["Are there river crossings on Hampta Pass?", "What is the best season for Hampta Pass?"],
       },
       {
         q: "Why is Bhrigu Lake Trek famous for its glacial waters and meadows?",
-        a: "Bhrigu Lake sits at an altitude of 14,100 feet above Manali. It is renowned for its high-altitude glacial tarn that changes color with the seasons and endless carpet-like green meadows that offer panoramic vistas of the Pir Panjal and Dhauladhar ranges.",
+        a: "Bhrigu Lake sits at an altitude of 14,100 feet above Manali. It is known for its high-altitude glacial tarn that changes colour with the seasons, and wide green meadows with views of the Pir Panjal and Dhauladhar ranges.",
         related: ["How strenuous is Bhrigu Lake Trek?", "Can beginners do Bhrigu Lake?"],
       },
       {
         q: "What is the historical and geographical significance of Beas Kund?",
-        a: "Beas Kund is the sacred glacial source of the River Beas in Solang Valley, Himachal Pradesh. Surrounded by towering peaks like Shitidhar and Ladakhi, this moderate trek offers pristine alpine beauty and rich mythological heritage.",
+        a: "Beas Kund is the sacred glacial source of the River Beas in Solang Valley, Himachal Pradesh. Surrounded by peaks like Shitidhar and Ladakhi, this moderate trek has alpine scenery and a long mythological history.",
         related: ["How long does Beas Kund trek take?", "Best time to visit Beas Kund"],
       },
       {
-        q: "What makes Kareri Lake a pristine weekend trek in Himachal?",
-        a: "Kareri Lake is a high-altitude freshwater shallow lake fed by snowmelt from the Dhauladhar range. Lined with oak and pine forests and dotted with gushing streams, it provides an authentic wilderness camping experience close to Dharamshala.",
+        q: "What makes Kareri Lake a good weekend trek in Himachal?",
+        a: "Kareri Lake is a high-altitude freshwater shallow lake fed by snowmelt from the Dhauladhar range. Lined with oak and pine forests and fast streams, it offers proper wilderness camping close to Dharamshala.",
         related: ["Is Kareri Lake suitable for beginners?", "What is the duration of Kareri Lake trek?"],
       },
       {
         q: "Why is Triund Trek popular for weekend adventurers in McLeod Ganj?",
-        a: "Triund is the quintessential beginner trek in Himachal Pradesh. Situated atop a ridge overlooking the Kangra Valley and the snow-clad Dhauladhar massif, it offers accessible yet rewarding mountain camping under starry skies.",
+        a: "Triund is the classic beginner trek in Himachal Pradesh. It sits on a ridge above the Kangra Valley, facing the snow-clad Dhauladhar range, and it is an easy way to camp in the mountains under a clear sky.",
         related: ["How long is the hike to Triund?", "Can I do Triund without a guide?"],
       },
     ],
@@ -217,12 +217,12 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "How should I plan my arrival at the base camp?",
-        a: "We recommend arriving at the pickup city (Dehradun, Chandigarh, or Delhi) at least one day prior to the trek start date. This allows your body to adjust to regional transit and ensures you reach our reporting point on time without rushing.",
+        a: "We recommend arriving at the pickup city (Dehradun, Chandigarh, or Delhi) at least one day prior to the trek start date. That gives you time to recover from the journey and reach our reporting point on time without rushing.",
         related: ["What are recommended travel options?", "Can I park my vehicle at the base camp?"],
       },
       {
         q: "What happens if my train or flight is delayed on reporting day?",
-        a: "If transit delays occur, inform our operations team immediately. While our scheduled group vehicles depart on time, we will guide you on how to catch up with the team via local cabs or public transport at additional cost.",
+        a: "If your train or flight is delayed, tell our operations team immediately. While our scheduled group vehicles depart on time, we will guide you on how to catch up with the team via local cabs or public transport at additional cost.",
         related: ["What is the reporting time?", "Who do I call in case of delays?"],
       },
       {
@@ -243,7 +243,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "What type of accommodation is provided during the trek?",
-        a: "During the trek, you will stay in high-quality, weather-resistant dome tents on a twin or triple-sharing basis, equipped with thick insulating sleeping mats and warm sleeping bags rated for sub-zero temperatures. On select itineraries, guesthouse or homestay stays are included.",
+        a: "During the trek, you will stay in weather-resistant dome tents on a twin or triple-sharing basis, equipped with thick insulating sleeping mats and warm sleeping bags rated for sub-zero temperatures. On select itineraries, guesthouse or homestay stays are included.",
         related: ["Can I get a private tent?", "What are the campsite facilities like?"],
       },
       {
@@ -253,17 +253,17 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "Is electricity or mobile device charging available at campsites?",
-        a: "High-altitude Himalayan campsites do not have grid electricity. We carry power banks and solar charging packs for emergency communications and medical equipment. We strongly recommend carrying your own fully charged power banks and spare camera batteries.",
+        a: "High-altitude Himalayan campsites do not have grid electricity. We carry power banks and solar charging packs for emergency communications and medical equipment. Carry your own fully charged power banks and spare camera batteries.",
         related: ["Is mobile network available on treks?", "How do I keep my phone charged?"],
       },
       {
         q: "What is the mobile network connectivity like on Uttarakhand and Himachal trails?",
-        a: "Mobile connectivity (BSNL, Jio, Airtel) is generally available during the first day of transit and base camp, but fades entirely once you ascend into alpine forests and high-altitude valleys. Enjoy the digital detox!",
+        a: "Mobile connectivity (BSNL, Jio, Airtel) is generally available during the first day of transit and base camp, but drops out once you climb into alpine forests and high-altitude valleys.",
         related: ["Can I rent a satellite phone?", "How do family members contact me in emergency?"],
       },
       {
         q: "How is drinking water sourced and purified on the trek?",
-        a: "Our mountain staff sources fresh natural spring water along the trail. This water is boiled and filtered through advanced sediment and chemical purification systems before being served to trekkers, ensuring absolute safety against waterborne illnesses.",
+        a: "Our mountain staff sources fresh natural spring water along the trail. This water is boiled and filtered for sediment and chemical purification before it is served, to protect you against waterborne illnesses.",
         related: ["Should I carry a reusable water bottle?", "Is mineral water available on trails?"],
       },
     ],
@@ -274,22 +274,22 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "What kind of meals are served during Himalayan treks?",
-        a: "We serve wholesome, freshly prepared vegetarian meals designed by nutritionists to fuel your mountain adventure. Expect a balanced mix of Indian, continental, and pahadi cuisines including porridge, poha, dal, sabzi, chapati, rice, nutritious soups, and hot desserts.",
+        a: "We serve freshly prepared vegetarian meals designed by nutritionists for long trekking days. Expect a balanced mix of Indian, continental, and pahadi cuisines including porridge, poha, dal, sabzi, chapati, rice, nutritious soups, and hot desserts.",
         related: ["Do you cater to vegan or Jain dietary requirements?", "Are hot beverages provided?"],
       },
       {
         q: "Can you accommodate vegan, gluten-free, or Jain dietary preferences?",
-        a: "Yes! Please mention your dietary requirements while booking. Our kitchen crew prepares separate Jain meals (without onion and garlic) and vegan-friendly options upon prior notice.",
+        a: "Yes. Please mention your dietary requirements while booking. Our kitchen crew prepares separate Jain meals (without onion and garlic) and vegan-friendly options upon prior notice.",
         related: ["What snacks should I carry?", "How is food hygiene maintained on the trail?"],
       },
       {
         q: "Are hot beverages and snacks provided during trekking hours?",
-        a: "Hot tea, herbal infusions, and coffee are served at breakfast, evening camp arrival, and dinner. Healthy trail snacks like dry fruits, energy bars, and freshly cooked evening soups keep your energy high throughout the day.",
+        a: "Hot tea, herbal infusions, and coffee are served at breakfast, evening camp arrival, and dinner. Trail snacks like dry fruits and energy bars, and freshly cooked evening soups, keep you going through the day.",
         related: ["What meals are included on summit day?", "Do I need to carry cooking gear?"],
       },
       {
         q: "How is kitchen hygiene maintained at high-altitude base camps?",
-        a: "Our expedition chefs and kitchen staff strictly adhere to rigorous hygiene standards. All cooking utensils are sanitized with boiling water, raw ingredients are fresh and locally sourced, and food handling protocols meet professional catering guidelines.",
+        a: "Our cooks and kitchen staff follow strict hygiene rules. All cooking utensils are sanitized with boiling water, raw ingredients are fresh and locally sourced, and food handling protocols meet professional catering guidelines.",
         related: ["What water purification methods are used?", "Who cooks the food on the trail?"],
       },
     ],
@@ -299,18 +299,18 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     title: "Trek Gear & Packing",
     faqs: [
       {
-        q: "What items are included in your comprehensive packing checklist?",
+        q: "What items are on your packing checklist?",
         a: "Your packing checklist should include waterproof trekking shoes with ankle support, 3 layers of warm clothing (thermal inner, fleece jacket, waterproof outer shell), moisture-wicking trek pants, woolen gloves, UV sunglasses, headlamp, and a 50–60L backpack.",
         related: ["Can I rent trekking gear from you?", "What shoes are best for snow treks?"],
       },
       {
         q: "Can I rent trekking shoes, jackets, and poles from base camp?",
-        a: "Yes! We offer high-quality gear rental services at our base camps for trekking poles, waterproof jackets, snow gaiters, and microspikes. Please reserve gear items in advance during booking to guarantee availability.",
+        a: "Yes. We rent out gear at our base camps for trekking poles, waterproof jackets, snow gaiters, and microspikes. Please reserve gear items in advance during booking to guarantee availability.",
         related: ["What gear is mandatory for winter treks?", "How heavy should my backpack be?"],
       },
       {
         q: "Why are proper ankle-support trekking shoes non-negotiable?",
-        a: "Himalayan trails feature uneven rocky terrain, scree, loose soil, and snow. Waterproof trekking shoes with deep lugged soles provide essential grip and ankle stability, preventing sprains and blisters.",
+        a: "Himalayan trails have uneven rocky terrain, scree, loose soil and snow. Waterproof trekking shoes with deep lugged soles give you grip and ankle stability, and prevent sprains and blisters.",
         related: ["Can I wear running shoes for trekking?", "How do I break in new trekking boots?"],
       },
       {
@@ -326,22 +326,22 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "What is the best season for trekking in Uttarakhand and Himachal Pradesh?",
-        a: "The Indian Himalayas offer year-round trekking opportunities depending on your preference. Summer (May–June) brings pleasant weather and blooming flowers; Monsoon (July–August) transforms valleys lush green; Autumn (September–November) offers crystal-clear skies; Winter (December–March) provides magical snow landscapes.",
+        a: "You can trek in the Indian Himalayas all year; it depends on what you want. Summer (May–June) brings pleasant weather and flowers; Monsoon (July–August) turns the valleys green; Autumn (September–November) has the clearest skies; Winter (December–March) is for snow.",
         related: ["When does snowfall happen in Uttarakhand?", "How cold does it get at night?"],
       },
       {
         q: "What temperature ranges can I expect during Himalayan treks?",
-        a: "Summer daytime temperatures range between 15°C to 22°C, dropping to 5°C at night. In winter, daytime temperatures hover around 5°C to 12°C, while nighttime temperatures at high-altitude campsites frequently plummet to -5°C to -12°C.",
+        a: "Summer daytime temperatures range between 15°C to 22°C, dropping to 5°C at night. In winter, daytime temperatures hover around 5°C to 12°C, while nighttime temperatures at high-altitude campsites often drop to -5°C to -12°C.",
         related: ["What thermal wear do I need for winter treks?", "How do you stay warm in sub-zero tents?"],
       },
       {
         q: "How do you handle sudden weather emergencies or heavy rain?",
-        a: "Safety is our foremost priority. Our trek leaders monitor real-time weather forecasts continuously. In case of unexpected storms or heavy snowfall, itineraries may be modified, shelter sought at safe altitudes, or alternate routes utilized with experienced mountain guides.",
+        a: "Our trek leaders keep checking live weather forecasts. In case of unexpected storms or heavy snowfall, we may change the itinerary, take shelter at a safe altitude, or switch to an alternate route with experienced mountain guides.",
         related: ["What safety equipment do trek leaders carry?", "Are emergency evacuations covered?"],
       },
       {
         q: "Is trekking safe during the monsoon season in Uttarakhand?",
-        a: "Monsoon trekking requires caution due to slippery trails and occasional landslides in lower valleys. However, high-altitude alpine routes like Valley of Flowers or Hampta Pass are exceptionally vibrant. Our experienced leaders navigate trails with meticulous safety protocols.",
+        a: "Monsoon trekking requires caution due to slippery trails and occasional landslides in lower valleys. High-altitude alpine routes like Valley of Flowers or Hampta Pass are at their greenest then. Our experienced leaders follow strict safety protocols on the trail.",
         related: ["What rain gear should I pack?", "Which treks are open during monsoon?"],
       },
     ],
@@ -352,17 +352,17 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "What medical certifications and training do your trek leaders possess?",
-        a: "All our lead guides are certified Mountaineering graduates from premier institutes (like NIM Uttarkashi or ABVIMAS Manali) and hold advanced Wilderness First Responder (WFR) and CPR certifications. They carry extensive experience navigating high-altitude Himalayan terrain.",
+        a: "All our lead guides are certified Mountaineering graduates from premier institutes (like NIM Uttarkashi or ABVIMAS Manali) and hold advanced Wilderness First Responder (WFR) and CPR certifications. They have years of experience on high-altitude Himalayan terrain.",
         related: ["What emergency medical equipment is carried?", "How do you handle acute mountain sickness?"],
       },
       {
         q: "What emergency equipment and medical kits do you carry on every trek?",
-        a: "Every trek is equipped with comprehensive first aid trauma kits, pulse oximeters to monitor blood-oxygen levels twice daily, portable oxygen cylinders, stretchers, and emergency communication radios or satellite links where cellular networks fail.",
+        a: "Every trek carries full first aid trauma kits, pulse oximeters to monitor blood-oxygen levels twice daily, portable oxygen cylinders, stretchers, and emergency communication radios or satellite links where cellular networks fail.",
         related: ["What are the symptoms of altitude sickness?", "When is an emergency evacuation triggered?"],
       },
       {
         q: "How do trek leaders manage Acute Mountain Sickness (AMS)?",
-        a: "Our leaders conduct daily health screenings including oxygen saturation and pulse checks. If early symptoms of AMS appear (headache, nausea, dizziness), immediate descent protocol is initiated, assisted by supplemental oxygen and expert mountain staff guidance.",
+        a: "Our leaders conduct daily health screenings including oxygen saturation and pulse checks. If early symptoms of AMS appear (headache, nausea, dizziness), we start descent immediately, with supplemental oxygen and our mountain staff alongside.",
         related: ["How to prevent altitude sickness naturally?", "What medicines should I carry for AMS?"],
       },
       {
@@ -378,22 +378,22 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "Are Himalayan treks safe for solo female travelers?",
-        a: "Yes, absolutely! Thousands of solo women trekkers join our expeditions across Uttarakhand and Himachal every year. Our secure group environment, verified support staff, and professional female/male trek leaders ensure an empowering, welcoming, and safe atmosphere.",
+        a: "Yes. Thousands of solo women trekkers join our expeditions across Uttarakhand and Himachal every year. Our groups, verified support staff and professional female/male trek leaders keep the trek safe and welcoming.",
         related: ["Do you have female trek leaders?", "How are tent allocations managed for solo women?"],
       },
       {
         q: "Do you have certified female trek leaders and support staff?",
-        a: "Yes, we proudly feature certified female trek leaders, nature guides, and camp coordinators on many of our popular Himalayan routes, promoting inclusivity and expert mentorship on the trail.",
+        a: "Yes, we have certified female trek leaders, nature guides and camp coordinators on many of our popular Himalayan routes.",
         related: ["What privacy facilities are available at campsites?", "How do you manage menstrual hygiene on treks?"],
       },
       {
         q: "How are tent accommodations assigned for solo women trekkers?",
-        a: "Solo female trekkers are paired with other female participants in shared dome tents. If you prefer absolute privacy, single tent upgrades can be requested during booking subject to availability.",
+        a: "Solo female trekkers are paired with other female participants in shared dome tents. If you prefer full privacy, single tent upgrades can be requested during booking subject to availability.",
         related: ["Are there separate toilet tents for women?", "What hygiene products should I pack?"],
       },
       {
         q: "How do I manage menstrual hygiene during multi-day Himalayan treks?",
-        a: "Managing periods on the trail is straightforward with proper planning. We recommend carrying eco-friendly sanitary products, biodegradable disposal bags, wet wipes, and pain relief medication. Our dedicated toilet tents and clean water supply ensure absolute comfort and privacy.",
+        a: "Managing periods on the trail is straightforward with proper planning. We recommend carrying eco-friendly sanitary products, biodegradable disposal bags, wet wipes, and pain relief medication. Our toilet tents and clean water supply give you comfort and privacy.",
         related: ["Can I trek during my period?", "What disposal facilities are available at camps?"],
       },
     ],
@@ -414,12 +414,12 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "Are campfires and evening group activities organized at campsites?",
-        a: "While traditional campfires are restricted in eco-sensitive wildlife zones to protect Himalayan forests, our evenings feature engaging group storytelling sessions, stargazing workshops, trivia games, and delicious hot meals inside our dining tents.",
+        a: "While traditional campfires are restricted in eco-sensitive wildlife zones to protect Himalayan forests, evenings are for group storytelling, stargazing sessions, trivia games and hot meals inside our dining tents.",
         related: ["Can I bring musical instruments?", "What time do lights go out at camp?"],
       },
       {
         q: "What photography opportunities can I expect in Uttarakhand and Himachal?",
-        a: "The Himalayas offer endless photographic masterpieces—golden hour sunrises hitting snowy peaks, star-studded Milky Way galactic cores over alpine tents, vibrant wildflower meadows, and candid portraits of pahadi culture and mountain wildlife.",
+        a: "Plenty: golden-hour sunrises on snowy peaks, the Milky Way over alpine tents, wildflower meadows, and portraits of pahadi villages, people and mountain wildlife.",
         related: ["How do I keep camera batteries charged in cold?", "Are drones permitted on treks?"],
       },
     ],
@@ -430,17 +430,17 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "What is your Leave No Trace (LNT) policy on mountain trails?",
-        a: "We strictly adhere to Leave No Trace principles. Every wrapper, plastic bottle, and scrap of waste generated by our trekking groups is packed back down to the base camp for responsible recycling. We leave pristine wilderness untouched.",
+        a: "We follow Leave No Trace principles strictly. Every wrapper, plastic bottle, and scrap of waste generated by our trekking groups is packed back down to the base camp for recycling.",
         related: ["How do you maintain plastic-free treks?", "How do you support local mountain communities?"],
       },
       {
         q: "How do you ensure plastic-free operations across all expeditions?",
-        a: "Single-use plastic bottles, plastic cutlery, and non-biodegradable packaging are strictly banned on our treks. We provide large filtered water drums for refilling your personal bottles and utilize eco-friendly cloth and metal storage containers.",
+        a: "Single-use plastic bottles, plastic cutlery, and non-biodegradable packaging are strictly banned on our treks. We provide large filtered water drums for refilling your personal bottles and use cloth and metal storage containers.",
         related: ["What waste management practices do you follow?", "How can trekkers contribute to eco-tourism?"],
       },
       {
         q: "How do your trekking expeditions support local Himalayan communities?",
-        a: "We believe in regenerative tourism. All our local guides, expedition chefs, porters, and mule handlers are hired directly from Himalayan villages in Uttarakhand and Himachal, ensuring fair wages, gear support, and sustainable economic empowerment.",
+        a: "All our local guides, cooks, porters and mule handlers are hired directly from Himalayan villages in Uttarakhand and Himachal, with fair wages and gear support, so the money stays in the villages.",
         related: ["How do you protect local flora and fauna?", "What is responsible tourism in the Himalayas?"],
       },
     ],
@@ -451,7 +451,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "What are the best spots for astrophotography and landscape photography?",
-        a: "High-altitude campsites like Brahmatal lake basin, Kedarkantha summit ridge, and Hampta Pass meadows offer pitch-black night skies devoid of light pollution, making them world-class locations for capturing the Milky Way and snow peak silhouettes.",
+        a: "High-altitude campsites like Brahmatal lake basin, Kedarkantha summit ridge, and Hampta Pass meadows have pitch-black night skies with no light pollution, which makes them excellent spots for photographing the Milky Way and snow peak silhouettes.",
         related: ["How do I protect camera gear from sub-zero cold?", "Are drone flights allowed on treks?"],
       },
       {
@@ -472,7 +472,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "Kedarkantha Trek: Best season, highest altitude, and beginner suitability",
-        a: "Kedarkantha peaks at 12,500 feet and is open year-round, with December to April offering peak snow experiences. It is rated as easy-to-moderate, making it the ultimate first-time winter snow trek in Uttarakhand with stunning pine forests and summit sunrise views.",
+        a: "Kedarkantha peaks at 12,500 feet and is open year-round, with December to April the best months for snow. It is rated easy-to-moderate, which makes it the best first winter snow trek in Uttarakhand, with pine forests and summit sunrise views.",
         related: ["View Kedarkantha Trek itinerary", "What gear do I need for Kedarkantha?"],
       },
       {
@@ -482,17 +482,17 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "Hampta Pass: Crossing from Kullu Valley to Lahaul & Spiti",
-        a: "Hampta Pass reaches 14,100 feet over a 5-day itinerary from June to October. It features a dramatic transition from lush green Kullu valleys to barren Spiti landscapes, including a thrilling high-altitude river crossing and glacier trek.",
+        a: "Hampta Pass reaches 14,100 feet over a 5-day itinerary from June to October. The route goes from the green Kullu valleys to barren Spiti landscapes, with a high-altitude river crossing and a stretch on glacier.",
         related: ["Explore Himachal Treks", "Is Hampta Pass suitable for beginners?"],
       },
       {
         q: "Bhrigu Lake: High-altitude glacial tarn near Manali",
-        a: "Bhrigu Lake sits at 14,100 feet near Manali, Himachal Pradesh. Spanning 4 days from May to October, this trek is famous for its vast emerald meadows and frozen glacial lake views. It is moderately challenging and rewarding for fit beginners.",
+        a: "Bhrigu Lake sits at 14,100 feet near Manali, Himachal Pradesh. Spanning 4 days from May to October, this trek is known for its wide green meadows and frozen glacial lake views. It is moderately challenging and rewarding for fit beginners.",
         related: ["View Himachal Treks", "What is the best training plan for Bhrigu Lake?"],
       },
       {
         q: "Brahmatal Trek: Frozen lake and massive summit views",
-        a: "Brahmatal Trek in Uttarakhand reaches 12,250 feet across 6 days from December to March. Celebrated for its frozen lake camping and close-up views of Mt. Trishul and Nanda Ghunti, it is an exceptional winter snow wonderland for novice trekkers.",
+        a: "Brahmatal Trek in Uttarakhand reaches 12,250 feet across 6 days from December to March. Known for camping by a frozen lake and close views of Mt. Trishul and Nanda Ghunti, it is a very good winter snow trek for novice trekkers.",
         related: ["View Brahmatal Itinerary", "What temperature to expect at Brahmatal?"],
       },
     ],
@@ -502,13 +502,13 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     title: "Contact & Support",
     faqs: [
       {
-        q: "How can I talk directly to a Trek Expert to plan my Himalayan expedition?",
-        a: "Our seasoned trek experts are available 7 days a week to help you choose the right route based on your fitness, season, and preferences. You can reach us instantly via WhatsApp, phone call, or email.",
+        q: "How can I talk directly to a Trek Expert to plan my Himalayan trek?",
+        a: "Our trek experts are available 7 days a week to help you choose the right route based on your fitness, season, and preferences. You can reach us instantly via WhatsApp, phone call, or email.",
         related: ["What are your office operating hours?", "Where are your offices located?"],
       },
       {
         q: "What are your customer support operating hours and emergency contact channels?",
-        a: "Our main office operates Monday through Saturday from 9:00 AM to 7:00 PM IST. For active treks on the mountain, our emergency operations command center provides 24/7 dedicated support to our trek leaders and families.",
+        a: "Our main office operates Monday through Saturday from 9:00 AM to 7:00 PM IST. For active treks on the mountain, our emergency operations centre supports our trek leaders and families 24/7.",
         related: ["How do I reach WhatsApp support?", "What is your official email address?"],
       },
     ],
@@ -572,7 +572,7 @@ export default function FAQPage() {
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
             Everything you need to know about trekking in Uttarakhand and Himachal
-            Pradesh — from booking and fitness to gear, safety, and trail experiences.
+            Pradesh: booking, fitness, gear, safety and life on the trail.
           </p>
         </div>
       </section>
@@ -729,7 +729,7 @@ export default function FAQPage() {
               Still have questions? Talk to our Trek Experts
             </h2>
             <p className="text-white/80 text-lg mb-8">
-              Whether you need help choosing between Uttarakhand snow treks or Himachal alpine passes, we&apos;re here to guide you.
+              Can&apos;t decide between an Uttarakhand snow trek and a Himachal alpine pass? Ask us and we&apos;ll help you choose.
             </p>
             <div className="flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8">
               <a

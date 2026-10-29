@@ -9,14 +9,14 @@ export const metadata = pageMetadata({
 });
 
 const FAQ_DATA = [
-  { q: "How does the booking process work for guided treks in Uttarakhand and Himachal?", a: "Booking your Himalayan trekking adventure is seamless. Select your preferred trek and departure batch on our website, fill in your personal and emergency contact details, and proceed to secure online payment." },
+  { q: "How does the booking process work for guided treks in Uttarakhand and Himachal?", a: "Booking a Himalayan trek takes a few minutes. Pick your trek and departure batch on our website, fill in your personal and emergency contact details, and pay securely online." },
   { q: "What payment methods do you accept for trek reservations?", a: "We accept all major credit and debit cards, net banking, UPI (Google Pay, PhonePe, Paytm), and major wallet providers through our secure payment gateway." },
   { q: "Which Himalayan treks are best suited for absolute beginners?", a: "Beginner-friendly snow treks like Kedarkantha, Brahmatal, or Nag Tibba in Uttarakhand, as well as Triund and Kareri Lake in Himachal, are ideal." },
-  { q: "What level of physical fitness is required for high-altitude trekking?", a: "High-altitude trekking demands cardiovascular endurance and leg strength. We recommend starting a cardio regimen 4 to 6 weeks before your trek." },
-  { q: "What makes Kedarkantha Trek one of India's premier winter snow treks?", a: "Kedarkantha Trek offers pristine pine forests, snow-covered meadows, and a breathtaking 360-degree Himalayan summit panorama at 12,500 feet." },
-  { q: "What is the best season for trekking in Uttarakhand and Himachal Pradesh?", a: "Summer (May-June) brings pleasant weather; Monsoon (July-August) transforms valleys lush green; Autumn (September-November) offers crystal-clear skies; Winter (December-March) provides magical snow landscapes." },
+  { q: "What level of physical fitness is required for high-altitude trekking?", a: "High-altitude trekking needs cardiovascular endurance and leg strength. We recommend starting a cardio regimen 4 to 6 weeks before your trek." },
+  { q: "What makes Kedarkantha Trek one of India's premier winter snow treks?", a: "Kedarkantha Trek has pine forests, snow-covered meadows and a 360-degree Himalayan view from the summit at 12,500 feet." },
+  { q: "What is the best season for trekking in Uttarakhand and Himachal Pradesh?", a: "Summer (May-June) brings pleasant weather; Monsoon (July-August) turns the valleys green; Autumn (September-November) has the clearest skies; Winter (December-March) is for snow." },
   { q: "What medical certifications and training do your trek leaders possess?", a: "All our lead guides are certified Mountaineering graduates from premier institutes and hold advanced Wilderness First Responder (WFR) and CPR certifications." },
-  { q: "How do trek leaders manage Acute Mountain Sickness (AMS)?", a: "Our leaders conduct daily health screenings including oxygen saturation and pulse checks. If early symptoms appear, immediate descent protocol is initiated." },
+  { q: "How do trek leaders manage Acute Mountain Sickness (AMS)?", a: "Our leaders conduct daily health screenings including oxygen saturation and pulse checks. If early symptoms appear, we start descent immediately." },
 ];
 
 export default function FAQPage() {

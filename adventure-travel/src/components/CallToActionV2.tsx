@@ -26,8 +26,8 @@ export default function CallToActionV2() {
 
           <div className="mt-8 grid gap-8 lg:grid-cols-12 lg:items-end">
             <p className="max-w-xl text-base leading-relaxed text-muted sm:text-lg lg:col-span-6">
-              Choose from our carefully curated collection of treks, each offering unique experiences and unforgettable
-              memories in the Indian Himalayas.
+              Choose from our treks in the Indian Himalayas, from easy first treks to high passes above 4,500 m in
+              Uttarakhand and Himachal.
             </p>
 
             <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-6 lg:col-span-6 lg:justify-end">

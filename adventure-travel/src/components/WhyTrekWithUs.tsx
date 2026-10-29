@@ -7,7 +7,7 @@ import { FadeUp } from "./MotionWrapper";
 const POINTS: { title: string; text: string }[] = [
   {
     title: "Licensed local guides",
-    text: "Guides from the region you're walking through — not a rotating roster of contractors.",
+    text: "Guides from the region you're walking through, not a rotating roster of contractors.",
   },
   {
     title: "Altitude-safe by design",
@@ -23,7 +23,7 @@ const POINTS: { title: string; text: string }[] = [
   },
   {
     title: "Buffer days for weather",
-    text: "We plan for the mountain, not just the itinerary — spare days are built in.",
+    text: "Spare days are built in, because mountain weather doesn't follow the itinerary.",
   },
   {
     title: "Private departures",

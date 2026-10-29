@@ -27,8 +27,8 @@ export default function UnlockRestrictedUttarakhand() {
                 Unlock Restricted Uttarakhand
               </h2>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
-                The rawest, most remote corners of the Indian Himalayas sit in the ILP-restricted Indo–Tibet frontier
-                zone. We handle the permits, you walk a land very few ever see.
+                Some of the most remote corners of the Indian Himalayas sit in the ILP-restricted Indo–Tibet frontier
+                zone. We handle the permits; you walk country that few trekkers ever reach.
               </p>
             </div>
 
@@ -57,7 +57,7 @@ export default function UnlockRestrictedUttarakhand() {
           <div className="mt-14 flex flex-col gap-5 border-t border-white/20 pt-8 sm:flex-row sm:items-center sm:justify-between">
             <p className="max-w-2xl text-base leading-relaxed text-white/75">
               <span className="font-semibold text-amber-300">Permit handled by us.</span>{" "}
-              These are frontier-zone expeditions — not open treks. Limited seats, so availability is confirmed on request.
+              These are frontier-zone expeditions, not open treks. Limited seats, so availability is confirmed on request.
             </p>
             <Link
               href="/contact"

@@ -8,8 +8,8 @@ import Price from "@/components/Price";
 // Copy mirrors the FAQ: Easy/Moderate need no prior experience; Challenging/Strenuous
 // cross passes above 4,500 m and want multi-day hiking experience.
 const LEVELS = [
-  { difficulty: "Easy", label: "First Himalayan trek", blurb: "No experience needed — reasonable fitness is enough." },
-  { difficulty: "Moderate", label: "Some hiking behind you", blurb: "No experience needed — steady days with a few big climbs." },
+  { difficulty: "Easy", label: "First Himalayan trek", blurb: "No experience needed. Reasonable fitness is enough." },
+  { difficulty: "Moderate", label: "Some hiking behind you", blurb: "No experience needed. Steady days with a few big climbs." },
   { difficulty: "Challenging", label: "Confident trekker", blurb: "High passes above 4,500 m. Multi-day hiking experience recommended." },
   { difficulty: "Strenuous", label: "High-altitude veteran", blurb: "Our hardest routes. Strong multi-day hiking experience expected." },
 ] as const;

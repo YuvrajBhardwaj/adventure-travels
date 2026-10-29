@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ course: s
     ]),
     path: `/courses/${course.slug}`,
     ...shareImage(`course-${course.slug}`),
-    imageAlt: `${course.name} — Himalayan snow sports in Auli`,
+    imageAlt: `${course.name}, Himalayan snow sports in Auli`,
     type: "article",
   });
 }

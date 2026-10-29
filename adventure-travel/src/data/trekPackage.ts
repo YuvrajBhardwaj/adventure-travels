@@ -58,7 +58,7 @@ export function getTrekPackage(trek: Trek): TrekPackage {
     trek.startsFrom
       ? `Getting to ${trek.startsFrom} and back home (flights, trains, buses)`
       : "Getting to the starting town (flights, trains, buses)",
-    "Personal trekking gear — see the Packing List tab",
+    "Personal trekking gear (see the Packing List tab)",
     "Travel and medical insurance",
     "Emergency evacuation and hospital costs",
     "Tips for guides, cooks and porters",

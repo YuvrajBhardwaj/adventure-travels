@@ -151,7 +151,7 @@ export default function TreksPage() {
           <div className="lg:col-span-5 lg:pb-1">
             <h1 className="font-heading text-5xl font-medium leading-[0.98] tracking-[-0.02em] sm:text-6xl xl:text-7xl">All Trekking Adventures</h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-white/75 sm:text-lg">
-              Explore our complete collection of world-class trekking itineraries, from beginner-friendly walks to extreme mountain expeditions.
+              Every trekking itinerary we run, from beginner-friendly walks to hard high-altitude expeditions.
             </p>
             <div className="mt-8 border-t border-white/15 pt-4">
               <p className="font-heading text-4xl font-medium tabular-nums leading-none sm:text-5xl">

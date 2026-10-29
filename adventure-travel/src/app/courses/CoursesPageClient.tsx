@@ -119,7 +119,7 @@ export default function CoursesPageClient() {
                 <span className="block">in the Himalayas</span>
               </h1>
               <p className="mt-6 max-w-xl text-lg text-white/85 [text-shadow:0_1px_12px_rgba(2,6,23,0.7)]">
-                Certified 7-day courses on the powder slopes of Auli — professionals, full equipment, and views of Nanda Devi.
+                Certified 7-day courses on the powder slopes of Auli, with professional instructors, full equipment and Nanda Devi in view.
               </p>
             </div>
 
@@ -133,7 +133,7 @@ export default function CoursesPageClient() {
           </div>
 
           <p className="mt-8 flex flex-wrap gap-x-5 gap-y-1 border-t border-white/20 pt-4 text-sm text-white/80">
-            <span>Dec 2026 — Mar 2027</span>
+            <span>Dec 2026 – Mar 2027</span>
             <span>Auli, Uttarakhand</span>
             <span>Certified Instructors</span>
           </p>
@@ -149,7 +149,7 @@ export default function CoursesPageClient() {
         <FadeUp className="mb-10 max-w-2xl sm:mb-14">
           <h2 className={cn(H2, "mb-4")}>Choose Your Course</h2>
           <p className="text-lg text-slate-600">
-            From first-timers to seasoned adventurers — structured progression tracks taught by certified mountain guides.
+            For first-timers and experienced skiers alike: step-by-step tracks taught by certified mountain guides.
           </p>
         </FadeUp>
 
@@ -238,7 +238,7 @@ export default function CoursesPageClient() {
             {[
               { title: "Certified Instructors", desc: "Professional coaches with international certifications" },
               { title: "Prime Location", desc: "Auli's 3,050m slopes with Nanda Devi views" },
-              { title: "All Equipment", desc: "Complete gear provided — no need to bring anything" },
+              { title: "All Equipment", desc: "Complete gear provided, so you don't need to bring anything" },
               { title: "Recognized Certification", desc: "Course completion certificate for your portfolio" },
             ].map((item) => (
               <StaggerItem key={item.title} className="border-t border-slate-300 pt-4">
@@ -278,7 +278,7 @@ export default function CoursesPageClient() {
         <FadeUp className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <h2 className={cn(H2, "mb-4")}>See the Slopes for Yourself</h2>
           <p className="mb-8 max-w-2xl text-lg text-slate-600">
-            Straight from our courses in Auli — hit play and turn the sound on.
+            Straight from our courses in Auli. Hit play and turn the sound on.
           </p>
           <video
             controls

@@ -127,7 +127,7 @@ export default function CampingSection() {
               Camp Beyond the Ordinary
             </h2>
             <p className="mt-5 max-w-xl font-heading text-xl font-normal text-white/90 sm:text-2xl">
-              Discover the quieter side of the Himalayas.
+              The quieter side of the Himalayas.
             </p>
             <p className="font-nav mt-6 text-xs tracking-[0.1em] text-white/70">Auli · Joshimath · Tapovan · Niti · Malari</p>
           </FadeUp>
@@ -140,7 +140,7 @@ export default function CampingSection() {
           <FadeUp className="lg:col-span-5">
             <p className="text-lg leading-relaxed text-foreground/80 sm:text-xl">
               From the slopes of Auli and forests around Joshimath to the remote landscapes of Tapovan, Niti Valley and
-              Malari, discover camping experiences designed for people who want to go beyond conventional tourism.
+              Malari, we run camps for people who want more than the usual tourist circuit.
             </p>
             <Button size="lg" onClick={() => setSelected(GENERAL_ENQUIRY)} className="mt-6 px-6">
               Explore Camping
@@ -159,8 +159,8 @@ export default function CampingSection() {
                 itinerary. That’s exactly why we want you to experience them.
               </p>
               <p className="mt-4 text-base leading-relaxed text-muted">
-                Himalayan Arc Adventure creates carefully planned camping experiences around lesser-explored Himalayan
-                landscapes, combining camping, local exploration, short hikes, nature, photography, food and adventure.
+                Himalayan Arc Adventure plans camps in lesser-explored Himalayan places, with local exploration, short
+                hikes, nature, photography, good food and a bit of adventure.
               </p>
               <p className="mt-6 font-heading text-xl font-medium text-foreground">
                 Your camp. Your people. <span className="text-amber-700">Your mountains.</span>
@@ -216,7 +216,7 @@ export default function CampingSection() {
           <FadeUp>
             <div className="flex flex-wrap items-end justify-between gap-3">
               <h3 className="font-heading text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">Moments from our camps</h3>
-              <p className="font-nav text-sm text-muted">Shot by our teams — not stock.</p>
+              <p className="font-nav text-sm text-muted">Shot by our teams. No stock photos.</p>
             </div>
           </FadeUp>
         </div>
@@ -234,7 +234,7 @@ export default function CampingSection() {
             >
               <SmartImage
                 src={src}
-                alt={`Real camp moment ${i + 1} — Himalayan camping with Himalayan Arc Adventure`}
+                alt={`Real camp moment ${i + 1}: Himalayan camping with Himalayan Arc Adventure`}
                 className="absolute inset-0 h-full w-full object-cover"
               />
             </button>
@@ -275,7 +275,7 @@ export default function CampingSection() {
             <img
               key={shown}
               src={ALL_MOMENTS[shown]}
-              alt={`Camp moment ${shown + 1} — Himalayan camping with Himalayan Arc Adventure`}
+              alt={`Camp moment ${shown + 1}: Himalayan camping with Himalayan Arc Adventure`}
               className="max-h-[85vh] max-w-full rounded-2xl object-contain shadow-2xl"
               draggable={false}
             />

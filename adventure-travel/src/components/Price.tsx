@@ -24,7 +24,7 @@ export function PriceNote({ inr, className = "" }: { inr: number; className?: st
   return (
     <p className={`text-xs leading-snug ${className}`}>
       Shown in {currency} as an estimate. You&apos;re billed <strong>Rs.{Math.round(inr).toLocaleString("en-IN")}</strong>{" "}
-      in INR — your card issuer converts it at their own rate.
+      in INR. Your card issuer converts it at their own rate.
     </p>
   );
 }

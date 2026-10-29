@@ -103,7 +103,7 @@ export default function MobileSearchButton() {
                   onClick={() => setOpen(false)}
                   className="block rounded-xl px-3.5 py-3 text-sm text-muted transition-colors duration-150 ease-out hover:bg-emerald-50 active:bg-emerald-50"
                 >
-                  No matches — see all treks filtered by &ldquo;{query.trim()}&rdquo;
+                  No matches. See all treks filtered by &ldquo;{query.trim()}&rdquo;
                 </Link>
               )}
             </div>

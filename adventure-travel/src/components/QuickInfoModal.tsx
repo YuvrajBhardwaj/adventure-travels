@@ -16,7 +16,7 @@ export type QuickInfoId =
 const AGE: Record<string, string> = { Easy: "8 – 62 years", Moderate: "10 – 60 years", Challenging: "14 – 55 years", Strenuous: "16 – 50 years" };
 const FITNESS: Record<string, string> = { Easy: "5 km in 45 mins", Moderate: "5 km in 40 mins", Challenging: "5 km in 35 mins", Strenuous: "10 km in 60 mins" };
 const EXPERIENCE: Record<string, string> = {
-  Easy: "First-timers welcome — no prior trekking experience needed.",
+  Easy: "First-timers welcome. No prior trekking experience needed.",
   Moderate: "Some prior high-altitude hiking recommended, or strong hill-walking fitness.",
   Challenging: "At least one moderate Himalayan trek under your belt.",
   Strenuous: "Multiple Himalayan treks, including one challenging/expedition-grade trek.",
@@ -86,14 +86,14 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
               <UL items={[
                 "Gentle, well-defined trails with gradual climbs and predictable terrain.",
                 "Trekking days of 4–6 hours; no technical sections or steep scrambles.",
-                "Altitude stays in a comfortable zone — ideal first Himalayan trek.",
+                "Altitude stays in a comfortable zone, so it makes a good first Himalayan trek.",
                 "Basic fitness and a positive attitude are all you need.",
               ]} />
             )}
             {trek.difficulty === "Moderate" && (
               <UL items={[
                 "Steadier climbs with some long days and steeper sections.",
-                "Expect 5–7 hours of walking on mixed terrain — forest, meadow, moraine.",
+                "Expect 5–7 hours of walking on mixed terrain: forest, meadow, moraine.",
                 "Altitude becomes a factor; a calm pace and hydration matter.",
                 "Prior day-hiking experience and regular walking fitness recommended.",
               ]} />
@@ -109,7 +109,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
             {trek.difficulty === "Strenuous" && (
               <UL items={[
                 "Expedition-grade effort: big days, high passes, remote terrain.",
-                "Technical sections — moraine, boulder zones, possible rope-fixing.",
+                "Technical sections: moraine, boulder zones, possible rope-fixing.",
                 "Extreme altitude with real AMS/HAPE/HACE risk; health checks daily.",
                 "Only for trekkers with multiple high-altitude treks and strong conditioning.",
               ]} />
@@ -144,7 +144,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
               ))}
             </div>
             <P>
-              The longest day is <strong>Day {longestDay.day} — {longestDay.title}</strong> ({longestDay.hours} hours). Pace yourself the evening
+              The longest day is <strong>Day {longestDay.day}: {longestDay.title}</strong> ({longestDay.hours} hours). Pace yourself the evening
               before, hydrate well, and pack your day-pack light.
             </P>
           </>
@@ -164,10 +164,10 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
             </P>
             <div className="mb-4 space-y-2">
               {[
-                { range: "Below 3,000 m", note: "Low altitude — minimal risk", active: trek.maxAltitude < 3000 },
-                { range: "3,000 – 4,000 m", note: "Moderate zone — acclimatise, hydrate", active: trek.maxAltitude >= 3000 && trek.maxAltitude < 4000 },
-                { range: "4,000 – 5,000 m", note: "High zone — AMS symptoms possible", active: trek.maxAltitude >= 4000 && trek.maxAltitude < 5000 },
-                { range: "Above 5,000 m", note: "Very high zone — serious acclimatisation required", active: trek.maxAltitude >= 5000 },
+                { range: "Below 3,000 m", note: "Low altitude, minimal risk", active: trek.maxAltitude < 3000 },
+                { range: "3,000 – 4,000 m", note: "Moderate zone: acclimatise, hydrate", active: trek.maxAltitude >= 3000 && trek.maxAltitude < 4000 },
+                { range: "4,000 – 5,000 m", note: "High zone: AMS symptoms possible", active: trek.maxAltitude >= 4000 && trek.maxAltitude < 5000 },
+                { range: "Above 5,000 m", note: "Very high zone: serious acclimatisation required", active: trek.maxAltitude >= 5000 },
               ].map((z) => (
                 <div
                   key={z.range}
@@ -182,9 +182,9 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
             </div>
             {trek.maxAltitude >= 3000 && (
               <UL items={[
-                "Our itinerary builds in acclimatisation — never climb higher while symptoms persist.",
+                "Our itinerary builds in acclimatisation. Never climb higher while symptoms persist.",
                 "Daily pulse and oxygen (SpO₂) checks at every camp by your trek leader.",
-                "Diamox is a personal choice — discuss with your doctor before the trek.",
+                "Diamox is a personal choice. Discuss it with your doctor before the trek.",
                 "Descend immediately if you have a severe headache, vomiting, or breathlessness at rest.",
               ]} />
             )}
@@ -212,8 +212,8 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
             </div>
             <UL items={[
               months.has("Dec") || months.has("Jan") ? "Winter window: snow-loaded trails, frozen lakes, and the clearest mountain views of the year." : "Pre-monsoon (Apr–Jun): blooming meadows and long daylight hours.",
-              months.has("Jul") || months.has("Aug") ? "Monsoon-window trek: lush greenery but pack full rain protection." : "Post-monsoon (Sep–Nov): the most stable weather and crystal-clear skies.",
-              "Shoulder months can still work — talk to our team about current trail conditions.",
+              months.has("Jul") || months.has("Aug") ? "Monsoon-window trek: lush greenery but pack full rain protection." : "Post-monsoon (Sep–Nov): the most stable weather and the clearest skies.",
+              "Shoulder months can still work. Ask our team about current trail conditions.",
             ]} />
           </>
         ),
@@ -227,8 +227,8 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
             trek.groupSize ? `This trek runs with a maximum of ${trek.groupSize} trekkers per batch.` : "We cap every departure at a small batch size.",
             "Trek leader to trekker ratio kept high enough that nobody gets left behind on the trail.",
             "Smaller groups mean safer river crossings, faster emergency response, and quieter campsites.",
-            "Meals, tents, and attention are simply better when the kitchen team isn't feeding an army.",
-            "Solo trekkers are welcome — our batches naturally mix experience levels.",
+            "Meals, tents and attention are better when the kitchen team isn't feeding an army.",
+            "Solo trekkers are welcome; our batches mix experience levels.",
           ]} />
         ),
       };
@@ -239,11 +239,11 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
         body: (
           <>
             <P>
-              The trek starts and ends at <strong>{basecamp}</strong> ({trek.region}). We coordinate a group pickup for every batch —
-              details are shared on your WhatsApp group after booking.
+              The trek starts and ends at <strong>{basecamp}</strong> ({trek.region}). We coordinate a group pickup for every batch, and
+              the details are shared on your WhatsApp group after booking.
             </P>
             <UL items={[
-              <span key="air"><strong>Nearest airport:</strong> {isUttarakhand ? "Dehradun (Jolly Grant, DED)" : "Bhuntar (KUU), near Kullu — Chandigarh (IXC) is the well-connected alternative"}</span>,
+              <span key="air"><strong>Nearest airport:</strong> {isUttarakhand ? "Dehradun (Jolly Grant, DED)" : "Bhuntar (KUU), near Kullu; Chandigarh (IXC) is the better-connected alternative"}</span>,
               <span key="rail"><strong>Nearest railhead:</strong> {isUttarakhand ? "Dehradun Railway Station" : "Chandigarh Junction"}</span>,
               <span key="road"><strong>By road:</strong> overnight Volvo/buses and shared taxis run to the base town from these hubs</span>,
               <span key="map">
@@ -257,7 +257,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
                 </a>
               </span>,
             ]} />
-            <P>Plan to arrive at the pickup city the evening before Day 1 — mountain drives start early.</P>
+            <P>Plan to arrive at the pickup city the evening before Day 1. Mountain drives start early.</P>
           </>
         ),
       };
@@ -272,8 +272,8 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
             </P>
             <H>Who should think twice</H>
             <UL items={[
-              "Trekkers with uncontrolled blood pressure, cardiac conditions, or asthma triggered by cold exertion — get a doctor's clearance first.",
-              "Anyone recovering from knee, ankle, or back injuries — descents are the real test.",
+              "Trekkers with uncontrolled blood pressure, cardiac conditions, or asthma triggered by cold exertion: get a doctor's clearance first.",
+              "Anyone recovering from knee, ankle, or back injuries. Descents are the real test.",
               treks50Plus(trek) ? "Trekkers above 58: we require a basic cardiac fitness (treadmill test) report before the trek." : "If you're above 58, a basic treadmill test report is required before joining.",
               "Minors under 18 must be accompanied by a parent or legal guardian.",
             ]} />
@@ -287,10 +287,10 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
         title: "Where you'll sleep",
         body: (
           <UL items={[
-            "High-altitude dome tents (2-sharing) with sleeping mats — tested for Himalayan wind and rain.",
+            "High-altitude dome tents (2-sharing) with sleeping mats, tested for Himalayan wind and rain.",
             "Sleeping bags rated for sub-zero temperatures, with fresh hygiene liners for every trekker.",
             "Guesthouse/lodge stay on drive-in days at the base town where the itinerary allows.",
-            "Toilet tents with dry-eco pits at wilderness campsites — we leave no trace.",
+            "Toilet tents with dry-eco pits at wilderness campsites. We leave no trace.",
             "Want a tent to yourself? Single supplements are available on request (subject to availability).",
           ]} />
         ),
@@ -310,9 +310,9 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
               <span key="1"><strong>Week 1:</strong> 3 brisk walks of 45 mins + 2 easy jogs. Start climbing stairs instead of lifts.</span>,
               <span key="2"><strong>Week 2:</strong> 3–4 walks of 60 mins carrying a 4–5 kg backpack. One longer weekend hike.</span>,
               <span key="3"><strong>Week 3:</strong> Time yourself on the target benchmark. Add hill/stair repeats (up-down, 30 mins).</span>,
-              <span key="4"><strong>Week 4:</strong> Taper — two 45-min walks, stretch daily, sleep well, and hydrate more than usual.</span>,
+              <span key="4"><strong>Week 4:</strong> Taper: two 45-min walks, stretch daily, sleep well, and hydrate more than usual.</span>,
             ]} />
-            <P>Leg strength (squats, lunges) and core (planks) twice a week will make the descents dramatically easier.</P>
+            <P>Leg strength (squats, lunges) and core (planks) twice a week will make the descents much easier.</P>
           </>
         ),
       };
@@ -324,10 +324,10 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
           <UL items={[
             "When you offload, a mule or porter carries your belongings between camps.",
             "Offloading is intended for trekkers with injuries, health issues, or genuine limitations.",
-            "Max weight: 9 kg per person — packed into our weather-resistant kit bag.",
+            "Max weight: 9 kg per person, packed into our weather-resistant kit bag.",
             "The kit bag is carried by mules or porters and reunites with you at each campsite.",
-            "You will not need your trekking backpack if you're offloading — but bring a small day pack for water, rain layers, and snacks.",
-            "Offloading slots are limited per batch — book in advance via WhatsApp.",
+            "You will not need your trekking backpack if you're offloading, but bring a small day pack for water, rain layers, and snacks.",
+            "Offloading slots are limited per batch. Book in advance via WhatsApp.",
             <span key="wa">
               <a
                 href="https://wa.me/917817912062?text=Hi!%20I'd%20like%20to%20book%20offloading%20for%20my%20trek."
@@ -352,10 +352,10 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
               base town where non-essential bags stay safe while you trek.
             </P>
             <UL items={[
-              "You won't have access to your cloakroom bag during the trek — anything you might need on the trail stays in your backpack.",
+              "You won't have access to your cloakroom bag during the trek. Anything you might need on the trail stays in your backpack.",
               "One piece of luggage can be left behind at no charge.",
               "Anything beyond one piece is chargeable at Rs. 500 per extra bag.",
-              <span key="val"><em>Note: <strong>do not leave valuables in your cloakroom bag</strong> — wallets, passports, and laptops are best carried with you. Bags are stored together in one room under team supervision, not in individual lockers.</em></span>,
+              <span key="val"><em>Note: <strong>do not leave valuables in your cloakroom bag</strong>. Wallets, passports, and laptops are best carried with you. Bags are stored together in one room under team supervision, not in individual lockers.</em></span>,
             ]} />
           </>
         ),
@@ -368,14 +368,14 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
         body: (
           <>
             <P>
-              Standard on every trek — you share a spacious dome tent with a fellow trekker of the same gender. The cost of tents is fully
+              Standard on every trek: you share a spacious dome tent with a fellow trekker of the same gender. The cost of tents is fully
               included in your trek price.
             </P>
             <UL items={[
               "High-altitude alpine dome tents, weather-tested for Himalayan wind and rain.",
               "Sleeping bags rated for sub-zero temperatures, plus a fresh hygiene liner for every trekker.",
               "Foam sleeping mats given to each person for insulation against the cold ground.",
-              "Tents are set up and taken down by our camp crew — you just walk in at the day's end.",
+              "Our camp crew sets up and takes down the tents. You walk in at the end of the day.",
               "Want a tent to yourself? Single Tent Occupancy is available on request at an extra cost.",
             ]} />
           </>
@@ -388,7 +388,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
         body: (
           <>
             <P>
-              We arrange every permit and entry fee required for your trek — so you don&apos;t handle paperwork, queue at checkposts, or pay extra
+              We arrange every permit and entry fee required for your trek, so you don&apos;t handle paperwork, queue at checkposts, or pay extra
               at the last minute.
             </P>
             <UL items={[
@@ -408,7 +408,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
         body: (
           <>
             <P>
-              Your safety is non-negotiable. Every batch carries a certified trek leader and a full first-aid kit, and every trekker gets a
+              Every batch carries a certified trek leader and a full first-aid kit, and every trekker gets a
               health check at the start of each trekking day.
             </P>
             <UL items={[
@@ -428,12 +428,12 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
         body: (
           <>
             <P>
-              Our trail kitchen serves hygienic, freshly cooked hot meals at every camp — plentiful Indian food designed for the altitude,
+              Our trail kitchen serves hygienic, freshly cooked hot meals at every camp: plenty of Indian food suited to the altitude,
               and the cost is included in your trek price.
             </P>
             <UL items={[
-              "The meals marked for each day in the itinerary — on most trekking days that's breakfast, packed lunch, evening tea & snacks, and dinner.",
-              "High-carb, high-energy meals — rotis, dal, rice, sabzi, soups, and more.",
+              "The meals marked for each day in the itinerary. On most trekking days that's breakfast, packed lunch, evening tea & snacks, and dinner.",
+              "High-carb, high-energy meals: rotis, dal, rice, sabzi, soups, and more.",
               "Hot beverages (tea, coffee, lemon tea, hot water) served through the day.",
               "Dinner and breakfast are prepared to order in our on-trail kitchen, not pre-packaged.",
               "Veg meals by default; eggs/dairy where appropriate. Vegan or Jain preferences can be arranged on request.",

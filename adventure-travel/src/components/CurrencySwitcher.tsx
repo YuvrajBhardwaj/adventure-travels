@@ -24,7 +24,7 @@ export default function CurrencySwitcher({ className = "" }: { className?: strin
       <Select
         value={mode === "auto" ? "auto" : currency}
         onChange={(e) => setCurrency(e.target.value)}
-        title="Prices are converted for display only — you are billed in INR."
+        title="Prices are converted for display only. You are billed in INR."
         wrapperClassName="w-auto"
         className="h-11 w-auto pl-3 pr-9 font-nav font-semibold lg:h-10 lg:pl-2.5 lg:pr-8 lg:text-xs dark:hover:bg-white/10"
       >

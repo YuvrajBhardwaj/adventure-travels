@@ -4,9 +4,9 @@ import CancellationPolicyPageClient from "./CancellationPolicyPageClient";
 export const metadata = pageMetadata({
   title: "Cancellation & Refund Policy",
   description:
-    "Transparent cancellation and refund policy for Himalayan trek bookings. Understand refund tiers, rescheduling options, and no-show scenarios.",
+    "Cancellation and refund policy for Himalayan trek bookings: refund tiers, trek vouchers, rescheduling options and what happens on a no-show.",
   socialTitle: "Cancellation & Refund Policy | Himalayan Arc Adventure",
-  socialDescription: "Transparent cancellation and refund policy for trek bookings.",
+  socialDescription: "Cancellation and refund policy for trek bookings.",
   path: "/cancellation-policy",
 });
 

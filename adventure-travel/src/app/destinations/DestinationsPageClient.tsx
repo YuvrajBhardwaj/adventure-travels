@@ -99,7 +99,7 @@ export default function DestinationsPage() {
                 Destinations
               </h1>
               <p className="mt-6 max-w-xl text-lg text-white/85 [text-shadow:0_1px_12px_rgba(2,6,23,0.7)]">
-                From the Himalayan peaks of Uttarakhand to the valleys of Himachal Pradesh — discover handcrafted trekking adventures in India&apos;s most stunning regions.
+                Himalayan peaks in Uttarakhand and valleys in Himachal Pradesh, and the trekking routes we run in each region.
               </p>
             </div>
             <div className="lg:col-span-4 lg:text-right">
@@ -262,7 +262,7 @@ export default function DestinationsPage() {
               Not Sure Which Destination?
             </h2>
             <p className="mb-8 text-lg text-white/80">
-              Our team will help you pick the perfect trek based on your fitness level, interests, and schedule. Every adventure is tailored just for you.
+              Our team will help you pick the right trek for your fitness level, interests and schedule.
             </p>
             <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
               <Link

@@ -14,12 +14,12 @@ const activities = [
     name: "Trekking",
     tagline: "Walk the Himalayas",
     image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
-    description: "From gentle valley walks to challenging high-altitude expeditions, discover 17 handcrafted treks across Uttarakhand and Himachal Pradesh.",
+    description: "Gentle valley walks and hard high-altitude expeditions: 17 treks we have planned ourselves across Uttarakhand and Himachal Pradesh.",
     features: [
-      "Valley of Flowers — 6 days through alpine meadows",
-      "Kedarkantha — perfect beginner winter summit",
-      "Roopkund — mysterious high-altitude lake trek",
-      "Har Ki Dun — ancient valley with panoramic peaks",
+      "Valley of Flowers: 6 days through alpine meadows",
+      "Kedarkantha: a good first winter summit",
+      "Roopkund: high-altitude lake trek",
+      "Har Ki Dun: old villages in a valley ringed by peaks",
     ],
     stats: { treks: "9+", difficulty: "Easy to Expert", duration: "4-12 Days" },
     cta: { label: "Explore Treks", href: "/treks" },
@@ -29,7 +29,7 @@ const activities = [
     name: "Camping",
     tagline: "Under the Himalayan stars",
     image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800&q=80",
-    description: "Riverside camps in Rishikesh, mountain camps in Uttarakhand, and basecamp setups for treks. Sleep under a billion stars.",
+    description: "Riverside camps in Rishikesh, mountain camps in Uttarakhand, and basecamp setups for treks. Clear skies for stargazing.",
     features: [
       "Rishikesh riverside camps with bonfires",
       "Mountain basecamp experiences",
@@ -44,12 +44,12 @@ const activities = [
     name: "Paragliding",
     tagline: "Soar over the valleys",
     image: "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?w=800&q=80",
-    description: "Tandem paragliding flights in Bir Billing and Mussoorie. Experience the Himalayas from above with certified pilots.",
+    description: "Tandem paragliding flights in Bir Billing and Mussoorie. See the Himalayas from above with certified pilots.",
     features: [
       "Tandem flights for beginners",
       "Certified & experienced pilots",
       "GoPro footage included",
-      "Bir Billing — world's best site",
+      "Bir Billing, a well-known paragliding site",
     ],
     stats: { duration: "15-30 min", altitude: "2,000m+", location: "Bir & Mussoorie" },
     cta: { label: "Book Flight", href: "/contact" },
@@ -63,27 +63,27 @@ const RESTRICTED = [
     name: "Mana Pass",
     altitude: "5,616m",
     region: "Chamoli, Uttarakhand",
-    description: "India's highest motorable pass. Ancient Indo-Tibetan trade route. Raw, desolate, breathtaking.",
+    description: "India's highest motorable pass, on an old Indo-Tibetan trade route. Bare, high and empty.",
     image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80",
-    status: "Restricted — ILP Required",
+    status: "Restricted · ILP Required",
   },
   {
     slug: "niti-pass",
     name: "Niti Pass",
     altitude: "5,360m",
     region: "Chamoli, Uttarakhand",
-    description: "Ancient Himalayan trade route at the Indo-Tibetan border. Pristine glacial landscapes untouched by tourism.",
+    description: "Old Himalayan trade route at the Indo-Tibetan border. Glacial country that sees very few tourists.",
     image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=600&q=80",
-    status: "Restricted — ILP Required",
+    status: "Restricted · ILP Required",
   },
   {
     slug: "rimkhim",
     name: "Rimkhim",
     altitude: "4,500m+",
     region: "Chamoli, Uttarakhand",
-    description: "Remote border village near the Tibet frontier. Untouched wilderness, zero crowds, pure Himalayan solitude.",
+    description: "Remote border village near the Tibet frontier. Wild country and almost no other visitors.",
     image: "https://images.unsplash.com/photo-1491555103944-7c647fd857e6?w=600&q=80",
-    status: "Restricted — ILP Required",
+    status: "Restricted · ILP Required",
   },
 ];
 
@@ -113,7 +113,7 @@ export default function ActivitiesPage() {
               Activities
             </h1>
             <p className="mt-6 max-w-lg text-lg text-white/80">
-              From Himalayan treks to snow-covered slopes, riverside camps to tandem flights — find your perfect adventure in the Indian Himalayas.
+              Himalayan treks, ski slopes in Auli, riverside camps and tandem flights. Pick what suits you in the Indian Himalayas.
             </p>
             <div className="mt-10 border-t border-white/20 pt-5">
               <p className="font-heading text-5xl font-semibold leading-none tracking-[-0.03em] sm:text-6xl">{hero.altitude}</p>
@@ -166,8 +166,8 @@ export default function ActivitiesPage() {
               Certified 7-day courses on the powder slopes of Auli.
             </p>
             <p className="mt-3 max-w-lg text-base text-muted">
-              Learn to ski or snowboard with certified instructors — complete equipment provided,
-              from beginner nursery slopes to intermediate runs, all beneath the gaze of Nanda Devi.
+              Learn to ski or snowboard with certified instructors, with all equipment provided.
+              You start on the nursery slopes and move up to intermediate runs, with Nanda Devi in view.
             </p>
             <div className="mt-8">
               <Link href="/courses" className={cn(buttonVariants({ size: "lg" }), "group px-7")}>
@@ -185,7 +185,7 @@ export default function ActivitiesPage() {
           <FadeUp className="mb-8 max-w-2xl sm:mb-10">
             <h2 className={cn(H2, "text-foreground")}>Skills Academy</h2>
             <p className="mt-4 text-lg text-muted">
-              From first-timers to seasoned adventurers — structured progression tracks taught by certified mountain guides. Learn at your pace, earn your level.
+              For first-timers and experienced people alike: step-by-step tracks taught by certified mountain guides. Learn at your pace, earn your level.
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-foreground">
               <span className="flex items-center gap-2"><span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Beginner</span>
@@ -201,7 +201,7 @@ export default function ActivitiesPage() {
                 title: <Link href="/courses/skiing-course" className="underline-offset-4 hover:underline">Alpine Skiing</Link>,
                 sub: "Auli · 7-day certified course",
                 levels: ["Snowplough", "Parallel Turns", "Off-Piste"],
-                text: "Master stance, balance, and stopping on nursery slopes. Progress through linked turns to chairlift runs with an instructor at your side.",
+                text: "Learn stance, balance and stopping on nursery slopes. Progress through linked turns to chairlift runs with an instructor at your side.",
                 price: <>From ₹10,000 <span className="text-xs font-normal text-muted">/ 7 days</span></>,
                 actions: (
                   <>
@@ -215,7 +215,7 @@ export default function ActivitiesPage() {
                 title: <Link href="/courses/snowboarding-course" className="underline-offset-4 hover:underline">Snowboarding</Link>,
                 sub: "Auli · 7-day certified course",
                 levels: ["Balance & Sliding", "Heel/Toe Turns", "Freestyle Basics"],
-                text: "From first slides to linking turns on blue runs. Build confidence with progressive coaching and all equipment included.",
+                text: "From first slides to linking turns on blue runs. Coaching builds up day by day, and all equipment is included.",
                 price: <>₹35,000 <span className="text-xs font-normal text-muted">/ 7 days</span></>,
                 actions: (
                   <>
@@ -275,7 +275,7 @@ export default function ActivitiesPage() {
           <FadeUp className="mb-10 max-w-2xl sm:mb-14">
             <h2 className={cn(H2, "text-foreground")}>What Adventure Calls You?</h2>
             <p className="mt-4 text-lg text-muted">
-              Every activity is guided, insured, and designed for unforgettable experiences. Pick your passion — we handle the rest.
+              Every activity is guided and insured. Pick one and we handle the rest.
             </p>
           </FadeUp>
 
@@ -363,7 +363,7 @@ export default function ActivitiesPage() {
             </p>
             <h2 className={cn(H2, "mb-4 text-white")}>Unlock Restricted Uttarakhand</h2>
             <p className="text-lg text-white/70">
-              These forbidden border regions are off-limits without a permit. We handle the paperwork — you explore the unexplored.
+              These border regions are off-limits without a permit. We handle the paperwork so you can go.
             </p>
           </FadeUp>
 
@@ -409,7 +409,7 @@ export default function ActivitiesPage() {
           <div className="mt-12 flex flex-col gap-5 border-t border-white/15 pt-8 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-base font-semibold text-white">We handle the ILP permit for you</p>
-              <p className="mt-1 text-sm text-white/65">Proper guidelines, hassle-free entry to restricted areas</p>
+              <p className="mt-1 text-sm text-white/65">Clear guidelines and no paperwork hassle for restricted areas</p>
             </div>
             <a
               href="https://wa.me/917817912062?text=Hi!%20I'm%20interested%20in%20restricted%20area%20trekking%20(Mana/Niti/Rimkhim)."
@@ -454,7 +454,7 @@ export default function ActivitiesPage() {
           <FadeUp className="max-w-2xl">
             <h2 className={cn(H2, "mb-5 text-white")}>Ready to Start Your Adventure?</h2>
             <p className="mb-8 text-lg text-white/80">
-              Whether it&apos;s your first trek or your fiftieth, we&apos;ll make it unforgettable. Talk to our team to plan your perfect trip.
+              First trek or fiftieth, talk to our team and we&apos;ll plan the trip around you.
             </p>
             <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
               <Link href="/contact" className={cn(buttonVariants({ size: "lg" }), "px-8 focus-visible:ring-offset-navy")}>

@@ -268,7 +268,13 @@ export default function CheckoutClient() {
       await loadRazorpay();
 
       const paidBefore = payable.amountPaid;
+      // The server holds the seats for this checkout until seatsHeldUntil; Razorpay closes
+      // its window then, so nobody pays for seats that are no longer held.
+      const holdSeconds = order.seatsHeldUntil
+        ? Math.floor((new Date(order.seatsHeldUntil).getTime() - Date.now()) / 1000)
+        : null;
       const rzp = new window.Razorpay!({
+        ...(holdSeconds && holdSeconds > 60 ? { timeout: holdSeconds } : {}),
         key: order.keyId,
         order_id: order.orderId,
         amount: order.amount,

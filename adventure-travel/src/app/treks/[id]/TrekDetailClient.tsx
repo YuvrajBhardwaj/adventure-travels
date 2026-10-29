@@ -309,7 +309,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
     const url = typeof window !== "undefined" ? window.location.href : "";
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share({ title: `${trek.name} — Himalayan Arc Adventure`, text: trek.blurb, url });
+        await navigator.share({ title: `${trek.name} | Himalayan Arc Adventure`, text: trek.blurb, url });
         return;
       } catch {
         /* user dismissed the share sheet — fall through to copy */
@@ -844,7 +844,7 @@ function BookingCard({
               {icon("backpack", "h-5 w-5")}
             </span>
             <span>
-              Backpack Offloading — <span className="font-bold text-foreground">avail on request, extra cost</span>
+              Backpack Offloading: <span className="font-bold text-foreground">avail on request, extra cost</span>
             </span>
           </li>
           <li className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
@@ -852,7 +852,7 @@ function BookingCard({
               {icon("bed", "h-5 w-5")}
             </span>
             <span>
-              Single Tent / Hotel Room Occupancy — <span className="font-bold text-foreground">on request, extra cost</span>
+              Single Tent / Hotel Room Occupancy: <span className="font-bold text-foreground">on request, extra cost</span>
             </span>
           </li>
         </ul>
@@ -876,7 +876,7 @@ function BookingCard({
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 text-orange-600 ring-1 ring-orange-200/70 dark:from-orange-400/20 dark:to-orange-400/5 dark:text-orange-300 dark:ring-orange-400/20">
             <Phone className="h-[18px] w-[18px]" strokeWidth={1.75} aria-hidden />
           </span>
-          Call Our Mountain Experts!
+          Call Our Trek Team
         </p>
         <div className="mt-2 flex flex-wrap items-center justify-center gap-1 text-sm text-slate-800 dark:text-slate-200">
           <a href="tel:+917817912062" className="inline-flex min-h-11 items-center rounded-xl px-2.5 font-semibold tabular-nums transition-colors duration-150 ease-out hover:bg-orange-100 hover:underline dark:hover:bg-orange-400/10">+91 78179 12062</a>
@@ -1061,7 +1061,7 @@ function OverviewTab({ trek }: { trek: Trek }) {
         <p className="mt-4 mb-2 text-[11px] font-bold uppercase tracking-wider text-muted">Highlights</p>
         <ul className="space-y-1.5">
           {[
-            `Small-group departure — capped at ${trek.groupSize ?? 15} trekkers`,
+            `Small-group departure, capped at ${trek.groupSize ?? 15} trekkers`,
             "All permits & national park entry fees arranged",
             "Experienced local trek leaders on every batch",
             "All camping equipment provided · Freshly cooked meals on trail",
@@ -1494,7 +1494,7 @@ function GalleryTab({ trek }: { trek: Trek }) {
             {isVideo(img) ? (
               <LazyVideo src={img} muted className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
             ) : (
-              <SmartImage src={img} alt={`${trek.name} — photo ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
+              <SmartImage src={img} alt={`${trek.name}, photo ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
             )}
             <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100">
               {isVideo(img) ? (
@@ -1568,7 +1568,7 @@ function GalleryTab({ trek }: { trek: Trek }) {
                 <motion.img
                   key={viewer.index}
                   src={current}
-                  alt={`${trek.name} — photo ${viewer.index + 1}`}
+                  alt={`${trek.name}, photo ${viewer.index + 1}`}
                   draggable={false}
                   initial={reduceMotion ? { opacity: 0 } : { scale: 0.96, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -1678,7 +1678,7 @@ const PACKING_GROUPS: {
     ],
   },
   {
-    title: "Clothing — The Layering System",
+    title: "Clothing: The Layering System",
     items: [
       { name: "Warm Beanie / Balaclava", why: "A large percentage of body heat is lost from the head.", pro: "Must cover the ears completely." },
       { name: "Moisture-Wicking T-Shirts (2)", why: "Synthetic or merino keeps you dry; cotton makes you cold.", pro: "Short or long sleeve both work." },
@@ -1696,10 +1696,10 @@ const PACKING_GROUPS: {
     title: "Equipment & Essentials",
     items: [
       { name: "Main Rucksack (50–60 L)", why: "Carried by the porter; needs a good frame and hip belt." },
-      { name: "Daypack (20–30 L)", why: "Daily carry — water, layers, snacks, camera, gloves." },
+      { name: "Daypack (20–30 L)", why: "Daily carry: water, layers, snacks, camera, gloves." },
       { name: "Sleeping Bag (Rated to −10°C)", why: "Warmth on cold mountain nights.", pro: "Confirm whether your operator provides one." },
       { name: "Sleeping Bag Liner", why: "Adds warmth and keeps the bag clean." },
-      { name: "Insulated Water Bottles (2 × 1 L)", why: "Hydration bladders freeze at altitude — use insulated bottles." },
+      { name: "Insulated Water Bottles (2 × 1 L)", why: "Hydration bladders freeze at altitude, so use insulated bottles." },
       { name: "Hydration Tablets / ORS", why: "Replaces electrolytes lost at high altitude." },
       { name: "Headlamp with Spare Batteries", why: "Essential for early-morning pass crossings.", pro: "Pack extra batteries." },
       { name: "Basic First-Aid Kit", why: "Plasters, antiseptic, pain relief and any personal medication." },
@@ -1709,10 +1709,10 @@ const PACKING_GROUPS: {
     title: "Essential Documents & Cash",
     note: "Carry copies in waterproof/ziplock bags.",
     items: [
-      { name: "Government Photo ID", why: "Verification at basecamp and forest checkpoints — Aadhaar/Voter ID/Passport." },
+      { name: "Government Photo ID", why: "Verification at basecamp and forest checkpoints (Aadhaar/Voter ID/Passport)." },
       { name: "ID Copies (2)", why: "Submitted to forest authorities for trekking permits." },
       { name: "Medical Certificate & Undertaking Form", why: "Confirms you are fit for high-altitude trekking." },
-      { name: "Cash", why: "No ATMs on the trail — carry enough for personal expenses." },
+      { name: "Cash", why: "No ATMs on the trail. Carry enough for personal expenses." },
     ],
   },
 ];
@@ -1722,14 +1722,14 @@ function PackingListTab() {
     <div>
       <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground mb-3">Packing List</h2>
       <p className="mb-6 text-sm text-muted">
-        Pack for safety and performance. Our treks call for an<strong> essential-over-extras</strong> approach — every
-        item below is a genuine need on a high-altitude Himalayan trek.
+        Pack for safety, not comfort extras. Our treks call for an<strong> essential-over-extras</strong> approach: every
+        item below is needed on a high-altitude Himalayan trek.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
         {[
           { t: "Extremity Protection", d: "UV sunglasses, waterproof gloves and a warm balaclava to protect exposed areas." },
-          { t: "Layering System", d: "Multiple synthetic or wool layers to manage temperature and moisture — never cotton." },
+          { t: "Layering System", d: "Multiple synthetic or wool layers to manage temperature and moisture. Never cotton." },
           { t: "Waterproof Footwear", d: "Mid-calf waterproof boots so your feet and ankles stay protected on snow and ice." },
         ].map((c) => (
           <div key={c.t} className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4 dark:border-emerald-800/30 dark:bg-emerald-950/20">
@@ -1886,7 +1886,7 @@ function ReservationTab({
         </div>
         <h3 className="text-xl font-bold text-foreground mb-2">Reservation Request Sent!</h3>
         <p className="text-muted max-w-sm mx-auto">
-          Thanks{form.name ? `, ${form.name.split(" ")[0]}` : ""} — our team will confirm availability
+          Thanks{form.name ? `, ${form.name.split(" ")[0]}` : ""}. Our team will confirm availability
           {form.sharing ? ` and your ${form.sharing.toLowerCase()} room` : ""} for {trek.name} within 24 hours.
         </p>
         {payHref && (

@@ -22,12 +22,12 @@ const SUMMER_SLIDES: Slide[] = [
 
 // Winter — snowboarding videos only (right side = videos)
 const WINTER_SLIDES: Slide[] = [
-  { type: "video", src: "/assets/snowboarding/IMG_5201.MOV", alt: "Snowboarding run at Auli — video", poster: WINTER_POSTERS[0] },
-  { type: "video", src: "/assets/snowboarding/IMG_4222.MOV", alt: "Snowboarding powder spray — video", poster: WINTER_POSTERS[1] },
-  { type: "video", src: "/assets/snowboarding/IMG_5198.MOV", alt: "Snowboarder carving — video", poster: WINTER_POSTERS[2] },
-  { type: "video", src: "/assets/snowboarding/IMG_5272.MOV", alt: "Auli snow run — video", poster: WINTER_POSTERS[0] },
-  { type: "video", src: "/assets/snowboarding/IMG_5220.MOV", alt: "Snowboarding descent — video", poster: WINTER_POSTERS[1] },
-  { type: "video", src: "/assets/snowboarding/IMG_1477.MOV", alt: "Mountain snowboarding — video", poster: WINTER_POSTERS[2] },
+  { type: "video", src: "/assets/snowboarding/IMG_5201.MOV", alt: "Snowboarding run at Auli (video)", poster: WINTER_POSTERS[0] },
+  { type: "video", src: "/assets/snowboarding/IMG_4222.MOV", alt: "Snowboarding powder spray (video)", poster: WINTER_POSTERS[1] },
+  { type: "video", src: "/assets/snowboarding/IMG_5198.MOV", alt: "Snowboarder carving (video)", poster: WINTER_POSTERS[2] },
+  { type: "video", src: "/assets/snowboarding/IMG_5272.MOV", alt: "Auli snow run (video)", poster: WINTER_POSTERS[0] },
+  { type: "video", src: "/assets/snowboarding/IMG_5220.MOV", alt: "Snowboarding descent (video)", poster: WINTER_POSTERS[1] },
+  { type: "video", src: "/assets/snowboarding/IMG_1477.MOV", alt: "Mountain snowboarding (video)", poster: WINTER_POSTERS[2] },
 ];
 
 function CarouselLayer({
@@ -326,7 +326,7 @@ export default function SeasonSplitHero() {
               <span className="block pb-2 text-display-xl text-white/95">TWO SEASONS.</span>
             </h1>
             <p className="max-w-xl text-base font-medium leading-relaxed text-white/80 md:text-lg">
-              Himalayan treks in Uttarakhand — and snow school at Auli.
+              Himalayan treks in Uttarakhand, and snow school at Auli.
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <Link href="/treks" className={cn(buttonVariants({ size: "lg" }), "px-7 shadow-lg")}>

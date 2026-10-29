@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     path: `/treks/${trek.slug}`,
     // Our own trek photo as a 1200×630 preview; stock or no photo → the site's default image.
     ...shareImage(trek.slug),
-    imageAlt: `${name} — Himalayan adventure in ${trek.region}`,
+    imageAlt: `${name}, a Himalayan trek in ${trek.region}`,
     type: "article",
   });
 }

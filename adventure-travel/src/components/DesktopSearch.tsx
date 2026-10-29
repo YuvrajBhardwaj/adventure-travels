@@ -130,7 +130,7 @@ export default function DesktopSearch() {
                     onClick={go}
                     className="block w-full rounded-xl px-3.5 py-3 text-left text-sm text-muted transition-colors duration-150 ease-out hover:bg-emerald-50 focus-visible:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500"
                   >
-                    No matches — see treks filtered by &ldquo;{query.trim()}&rdquo;
+                    No matches. See treks filtered by &ldquo;{query.trim()}&rdquo;
                   </button>
                 )}
               </motion.div>

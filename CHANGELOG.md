@@ -4,18 +4,48 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 **How to add an entry:** add it under [Unreleased] with the date, where the change lives (branch and commit, or "uncommitted"), and what changed for visitors, for the business and in the backend. Move entries to a dated release heading when they go live on www.himalayanarcadventure.com. Open work goes in [TODO.md](TODO.md).
 
-## Where things stand (21 Oct 2026)
+## Where things stand (29 Oct 2026)
 
 | Where | Commit | What it has |
 |---|---|---|
-| **Live site** (`main` on GitHub) | `a42c960` | Everything up to "three quick boxes on trek cost card" (15 Oct, `a630559`), plus the 19 Oct favicon hotfix. None of the 16 Oct work below. |
-| **Preview** (`preview/trek-slideshows` on GitHub) | `9133594` | Everything pushed so far (21 Oct entries below marked "uncommitted" are not in it). **Connected to Supabase** since 21 Oct: https://adventure-travels-68r7k3o37-yuvrajbhardwaj2s-projects.vercel.app. The branch link always shows the newest build: https://adventure-travels-git-preview-581130-yuvrajbhardwaj2s-projects.vercel.app. Payments and emails still need the Razorpay and SMTP keys. |
-| **Why it isn't live** | — | Vercel's Production environment still has **no environment variables**, and `next.config.ts` stops a production build without the Supabase ones. They go in at go-live, together with the merge into `main`. |
-| Local `main` | `9b522d5` | Stale: everything in it is in the preview branch, and GitHub `main` has moved on to `a42c960`. Reset it to `origin/main` before the next use. |
+| **Live site** (`main` on GitHub) | `8e94f87` | Everything up to 23 Oct. Accounts, bookings and emails work; payments run in Razorpay **Test Mode** (no real money). All 12 environment variables are set in Vercel Production. |
+| **Preview** (`preview/trek-slideshows` on GitHub) | `8e94f87` | Same as live. |
+| **Uncommitted** | — | The 29 Oct backend health check, checkout seat hold and scale fixes (first entry below). The two SQL files in it are **not applied** to the database yet. |
+| Local `main` | `9b522d5` | Stale. Reset it to `origin/main` before the next use. |
 
 ---
 
 ## [Unreleased]
+
+### 29 Oct 2026: **Backend** health check, checkout seat hold, scale fixes — uncommitted
+- **Health check (live site):** every page loads; every API function answers correctly (`bookings` 400 on an empty request; `create-order`, `verify-payment`, `account` 401 "Please sign in"; `razorpay-webhook` 400 "Invalid signature"; `cron` 401; `geo` and `rates` 200). Supabase project `sdhtgmlkzcknmeakxgdz` (Mumbai) is healthy: 3 users, 3 trek bookings, 0 payments, 6 emails sent, 215 upcoming batches, 12 MB of 500 MB.
+- **Problems found on the live system:**
+  - **Sign-up emails are limited to 2 an hour** (Supabase Auth `rate_limit_email_sent` = 2). Sign-up needs a confirmation email, so the 3rd sign-up in an hour fails.
+  - **No admin account** (0 users with the admin role), so `/admin/*` can't be used.
+  - **Payments are in Razorpay Test Mode** on the live site: real customers' cards and UPI can't pay. The Razorpay webhook isn't confirmed as registered.
+  - **Hosting is Vercel Hobby**, which Vercel limits to non-commercial use. It has no overage billing: when a monthly limit runs out, the feature is paused until the next cycle.
+  - **The functions ran in Washington DC (`iad1`)** while the database is in Mumbai, so every booking and payment request crossed the world several times.
+  - **Page weight:** the home page downloads 14.7 MB on desktop and 7.1 MB on a phone, mostly the `.MOV` hero videos. Desktop home makes 110 requests, 55 of them background link prefetches. Trek and course pages are about 1.6–2.5 MB.
+- **For visitors:** when someone pays for a listed trek batch, their seats are now held for 15 minutes (like a flight seat hold), and the Razorpay window closes when the hold ends. Two people can no longer both pay for the last seats of a batch.
+- **Backend:**
+  - `supabase-departures.sql`: new column `trek_bookings.seats_held_until` and the function `hold_trek_seats()` (server only). It locks the batch row, so concurrent checkouts take turns. `trek_departure_availability()` now counts held seats.
+  - New `supabase-scale.sql` (run last): indexes for dashboards, admin lists and the reminder job; all 24 row-level security rules now evaluate `auth.uid()` / `is_admin()` once per query instead of once per row (same rules); fixed `search_path` on 3 functions; explicit table grants, because from 30 Oct 2026 Supabase stops granting new tables to the API automatically (existing tables keep theirs).
+  - `api/create-order.js` holds the seats through `departures.holdSeats()` and returns `seatsHeldUntil`; `CheckoutClient.tsx` passes it to Razorpay as `timeout`.
+  - `vercel.json`: functions now run in **Mumbai (`bom1`)**, next to the database (takes effect on the next deploy).
+  - `scripts/setup-backend.mjs` runs the new file.
+  - **Not applied yet:** both SQL files were run on the live database only inside transactions that were rolled back (results below). Applying them and raising the email limit waits for the owner's OK.
+- **Checks:**
+  - Unit tests: 70/70 pass, including 5 new seat-hold tests. Type-check and lint are clean.
+  - Rolled-back dry run on the live database: with 6 seats and 1 sold offline, a group of 3 is held, the next group of 3 is refused, and a group of 2 takes the last seats. All 24 rules were rewritten; browsers can't call the hold. Re-running all 7 setup files twice ends in the same state, with users and bookings untouched.
+  - Afterwards the database was confirmed unchanged.
+
+### 29 Oct 2026: Site copy rewritten to sound human; shared brand icons — `preview/trek-slideshows`
+- **Why:** the owner asked to use the `no-ai-slop` and `anti-ai-slop-writing` skills (and `better-icons`). The site had about 87 stock AI/marketing words ("pristine" ×19, "breathtaking" ×12, "stunning" ×11, "unforgettable" ×9, "world-class", "epic", "seamless", "experience the magic") and about 300 em dashes.
+- **For visitors:** trek, course and destination descriptions, itinerary days, the FAQ, page intros and section text now say plainly what happens and where (heights, villages, peaks, days) instead of hype. Example: Kedarkantha "Experience the magic of winter trekking… Perfect for beginners" → "Kedarkantha is a winter summit trek from Sankri in Uttarakhand, up to 3,800 m through snow and pine forest. A good first snow trek for beginners." Banned words: data 48 → 13 (all left are inside customer quotes), pages 34 → 0. Em dashes in page copy 153 → 19 (legal/payment text and a testimonial left as is).
+- **Kept exactly:** every number, price, altitude, date, place and trek name, search keywords, customer testimonials, legal and cancellation wording, payment screens, and the claims waiting for the owner's decision. "Epic Adventures" stat label is now "Treks & Expeditions"; "Bir Billing, world's best site" is now "a well-known paragliding site".
+- **Icons:** new `src/components/BrandIcon.tsx` holds the official WhatsApp, Instagram, Facebook, YouTube and Google marks (Simple Icons, fetched with the better-icons CLI). The WhatsApp button, contact pop-up, course page and footer now use it instead of separate hand-copied SVGs (same look, one source).
+- **Skills:** `no-ai-slop`, `anti-ai-slop-writing` and `better-icons` are installed in `.claude/skills/` (git-ignored) for future copy and icon work. Superdesign was not used: the repo is an unmaintained VS Code extension and its replacement is a paid web service needing an account.
+- **Checks:** type-check clean, lint 0 errors, 65 unit tests pass production build OK, all 6 browser tests pass, 70 unit tests pass.
 
 ### 21 Oct 2026: **Backend** Supabase keys in Vercel Preview — no code change
 - **Business:** the preview site now has working accounts and saves bookings to the database. The live site is unchanged.
@@ -380,34 +410,37 @@ Below, ☑ marks the files run on that project.
 | 3 | `adventure-travel/supabase-backend.sql` | Profile fields, course bookings, admin policies | ☑ 19 Oct |
 | 4 | `adventure-travel/supabase-room-sharing.sql` | Room tier on trek bookings | ☑ 19 Oct |
 | 5 | `adventure-travel/supabase-payments-v2.sql` | Advance/balance payments, audit trail, email outbox, `apply_payment()` | ☑ 19 Oct |
+| 6 | `adventure-travel/supabase-departures.sql` | Batch calendar, seats left; (29 Oct) checkout seat hold `hold_trek_seats()` | ☑ 23 Oct · 29 Oct version ☐ (dry run only) |
+| 7 | `adventure-travel/supabase-scale.sql` | Indexes, faster security rules, fixed search_path, explicit grants | ☐ (dry run only) |
 
 After running them, give the business account admin rights (snippet at the top of file 2), then sign out and back in.
 
 ### API functions (`adventure-travel/api/`, Vercel)
 | Function | Purpose | Status |
 |---|---|---|
-| `bookings` | Create trek/course bookings with the price locked | Built, on preview |
-| `create-order` | Start an advance, balance or full payment | Built, on preview |
-| `verify-payment` | Confirm a payment from the browser | Built, on preview |
-| `razorpay-webhook` | Razorpay's confirmation (the source of truth) | Built, on preview; webhook not registered |
-| `account` | Claim signed-out bookings; delete account | Built, on preview |
-| `cron` | Daily reminders and email retries | Built, on preview; runs on production only |
+| `bookings` | Create trek/course bookings with the price locked | Live (23 Oct) |
+| `create-order` | Start an advance, balance or full payment; (29 Oct, uncommitted) holds seats for 15 min | Live (23 Oct) |
+| `verify-payment` | Confirm a payment from the browser | Live (23 Oct) |
+| `razorpay-webhook` | Razorpay's confirmation (the source of truth) | Live; webhook registration in Razorpay not confirmed |
+| `account` | Claim signed-out bookings; delete account | Live (23 Oct) |
+| `cron` | Daily reminders and email retries | Live (03:30 UTC daily) |
+| Region | All functions | `iad1` (US East) live; `bom1` (Mumbai) from the next deploy |
 | `geo`, `rates` | Display currency | Live |
 | ~~`course-bookings`~~, ~~`claim-bookings`~~ | Replaced by `bookings` and `account` | Removed |
 
 ### Environment variables (Vercel → Settings, and `adventure-travel/.env.local` for local work)
 | Variable | Needed for | Set? |
 |---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Accounts, bookings, dashboard. Production build refuses to run without them | ☑ local · ☑ Vercel Preview (21 Oct) · ☐ Vercel Production |
-| `SUPABASE_SERVICE_ROLE_KEY` | Every API function | ☑ local · ☑ Vercel Preview (21 Oct, Sensitive) · ☐ Vercel Production |
-| `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | Online payments | ☐ local · ☐ Vercel |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `BOOKING_TO_EMAIL` | Booking, payment and reminder emails | ☐ local · ☐ Vercel |
-| `CRON_SECRET` | Daily reminder job | ☑ local · ☑ Vercel Preview (21 Oct, Sensitive) · ☐ Vercel Production |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Accounts, bookings, dashboard. Production build refuses to run without them | ☑ local · ☑ Vercel Preview · ☑ Vercel Production (checked 29 Oct) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Every API function | ☑ local · ☑ Vercel Preview · ☑ Vercel Production |
+| `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | Online payments (**Test Mode** keys) | ☑ local · ☑ Vercel Preview · ☑ Vercel Production |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `BOOKING_TO_EMAIL` | Booking, payment and reminder emails (Gmail) | ☑ local · ☑ Vercel Preview · ☑ Vercel Production |
+| `CRON_SECRET` | Daily reminder job | ☑ local · ☑ Vercel Preview · ☑ Vercel Production |
 
 ### Testing status
 | Check | Result |
 |---|---|
-| Unit tests (`npm test`) | 45/45 pass |
+| Unit tests (`npm test`) | 70/70 pass (29 Oct) |
 | Type-check, lint | Clean; 0 lint errors |
 | Production build | Passes (48 static pages) |
 | End-to-end scenarios V1–V22 (`specs/001-persistent-backend/quickstart.md`) | Not run; needs Supabase, Razorpay test keys and SMTP |

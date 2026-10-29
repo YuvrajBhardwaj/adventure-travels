@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import { transition } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { BrandIcon } from "@/components/BrandIcon";
 
 type Tab = "overview" | "dates" | "itinerary" | "gallery" | "included" | "book";
 
@@ -90,13 +91,13 @@ function pkgBullets(tier: { id: string }, stay: "base" | "full"): string[] {
   }
   return tier.id === "premium"
     ? [
-        "Training only — no stay or meals",
+        "Training only, no stay or meals",
         "4–5 hrs daily + HD video movement analysis",
         "Snow-science seminars, final assessment & après-ski",
         "Certificate + graduation ceremony",
       ]
     : [
-        "Training only — no stay or meals",
+        "Training only, no stay or meals",
         "3–4 hrs practical coaching daily",
         "Gliding, snow-plough turns & ski-lift basics",
         "Certificate + graduation ceremony",
@@ -174,7 +175,7 @@ function AvailabilityView({ batches, onBook }: { batches: CourseBatch[]; onBook:
   return (
     <div>
       <h2 className={cn(PANEL_H2, "mb-2")}>Upcoming Batches</h2>
-      <p className="mb-6 text-slate-600">Live availability for this course — pick a batch and reserve your spot.</p>
+      <p className="mb-6 text-slate-600">Live availability for this course. Pick a batch and reserve your spot.</p>
       <div className="mb-5 flex flex-wrap items-center gap-4 text-xs">
         {(Object.keys(CAVAIL) as CAvail[]).map((k) => (
           <span key={k} className="inline-flex items-center gap-1.5 text-slate-500">
@@ -451,7 +452,7 @@ export default function CourseDetailClient({ course }: Props) {
     `Hi! I'd like to book the ${course.name} (${course.type}) in Auli.`,
     bookingForm.date && `Preferred date: ${bookingForm.date}`,
     `Group size: ${bookingForm.groupSize}`,
-    selectedTier && `Package: ${selectedTier.name} (${STAY_LABELS[stay]}) — Rs.${total.toLocaleString("en-IN")}`,
+    selectedTier && `Package: ${selectedTier.name} (${STAY_LABELS[stay]}), Rs.${total.toLocaleString("en-IN")}`,
     bookingForm.name.trim() && `Name: ${bookingForm.name.trim()}`,
     bookingForm.phone.trim() && `Phone: ${bookingForm.phone.trim()}`,
     bookingForm.email.trim() && `Email: ${bookingForm.email.trim()}`,
@@ -572,7 +573,7 @@ export default function CourseDetailClient({ course }: Props) {
                   {packages.length > 0 && (
                     <div className="mb-10">
                       <h3 className={cn(PANEL_H3, "mb-1")}>Choose Your Package</h3>
-                      <p className="mb-4 text-sm text-slate-500">Two itineraries, each with or without stay &amp; meals — pick one and it carries through to booking.</p>
+                      <p className="mb-4 text-sm text-slate-500">Two itineraries, each with or without stay &amp; meals. The one you pick carries through to booking.</p>
                       <div className="grid gap-4 sm:grid-cols-2">
                         {packages.map(({ tier, stay: s }) => {
                           const active = tier.id === tierId && s === stay;
@@ -726,7 +727,7 @@ export default function CourseDetailClient({ course }: Props) {
                     </>
                   ) : (
                     <>
-                      <p className="mb-8 text-slate-600">A structured progression from first turns to certified confidence.</p>
+                      <p className="mb-8 text-slate-600">Step by step, from your first turns to the final certificate.</p>
                       <div className="space-y-2">
                         {course.itinerary.map((day, i) => (
                           <div key={day.day} className="relative flex gap-4">
@@ -779,7 +780,7 @@ export default function CourseDetailClient({ course }: Props) {
                         ) : (
                           <SmartImage
                             src={img}
-                            alt={`${course.name} — photo ${i + 1}`}
+                            alt={`${course.name}, photo ${i + 1}`}
                             className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.05] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                           />
                         )}
@@ -856,7 +857,7 @@ export default function CourseDetailClient({ course }: Props) {
                               // eslint-disable-next-line @next/next/no-img-element
                               <img
                                 src={images[lightbox]}
-                                alt={`${course.name} — photo ${lightbox + 1}`}
+                                alt={`${course.name}, photo ${lightbox + 1}`}
                                 className="max-h-[80vh] max-w-full rounded-2xl object-contain"
                               />
                             )}
@@ -887,7 +888,7 @@ export default function CourseDetailClient({ course }: Props) {
                 <div>
                   <div>
                     <h2 className={cn(PANEL_H2, "mb-2")}>What&apos;s Included</h2>
-                    <p className="mb-8 text-slate-600">Everything you need for a seamless mountain experience.</p>
+                    <p className="mb-8 text-slate-600">What the course fee covers.</p>
                   </div>
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {course.inclusions.map((item, i) => (
@@ -1109,7 +1110,7 @@ export default function CourseDetailClient({ course }: Props) {
                 rel="noopener noreferrer"
                 className={cn(buttonVariants({ size: "lg" }), "mb-3 w-full")}
               >
-                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                <BrandIcon brand="whatsapp" className="h-4 w-4" />
                 Book on WhatsApp
               </a>
               <Button

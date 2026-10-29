@@ -13,7 +13,7 @@ import { transition } from "@/lib/motion";
 const FAQS = [
   {
     q: "How far in advance should I book my trek?",
-    a: "We recommend booking 2–3 months in advance, especially for peak seasons (May–June and September–October). Last-minute availability is sometimes possible for smaller groups — reach out and we'll do our best.",
+    a: "We recommend booking 2–3 months in advance, especially for peak seasons (May–June and September–October). Last-minute seats are sometimes possible for smaller groups, so message us and we'll check.",
   },
   {
     q: "What's included in the trek price?",
@@ -25,7 +25,7 @@ const FAQS = [
   },
   {
     q: "What happens if weather affects my trek?",
-    a: "Safety is our top priority. If weather conditions make a route unsafe, we'll adjust the itinerary or reschedule your trek. We build buffer days into our plans specifically for this purpose.",
+    a: "If weather conditions make a route unsafe, we'll adjust the itinerary or reschedule your trek. We build buffer days into our plans specifically for this purpose.",
   },
 ];
 
@@ -100,7 +100,7 @@ export default function ContactPage() {
               Plan Your Himalayan Adventure
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted">
-              Our team is here to help you plan your next Himalayan trekking adventure. Reach out today.
+              Our Joshimath team will help you plan your next Himalayan trek. Call, WhatsApp or write to us.
             </p>
           </div>
           <div className="flex flex-col items-start gap-1 lg:col-span-5 lg:items-end">
@@ -219,7 +219,7 @@ export default function ContactPage() {
                       rows={5}
                       value={form.message}
                       onChange={(e) => setField("message", e.target.value)}
-                      placeholder="Tell us about your dream Himalayan adventure..."
+                      placeholder="Which trek, how many people, which dates?"
                       aria-invalid={!!errors.message}
                       aria-describedby={errors.message ? "contact-message-err" : undefined}
                     />
@@ -238,7 +238,7 @@ export default function ContactPage() {
           <div className="order-2 min-w-0 lg:order-1 lg:col-span-5">
             <h2 className="mb-3 font-heading text-3xl font-semibold tracking-[-0.02em] text-foreground">Let&apos;s Start Planning Your Trek</h2>
             <p className="mb-8 max-w-lg text-base text-muted">
-              Whether you&apos;re a first-time trekker or an experienced mountaineer, our team will craft the perfect Himalayan journey for you.
+              First trek or tenth, tell us your dates and fitness and we&apos;ll suggest the right Himalayan trek for you.
             </p>
 
             <div className="divide-y divide-slate-200 border-y border-slate-200 dark:divide-white/10 dark:border-white/10">

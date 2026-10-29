@@ -223,7 +223,7 @@ export default function Navbar() {
         >
           <div className={`mx-auto flex max-w-7xl items-center gap-4 px-4 transition-[height] duration-300 ease-out motion-reduce:transition-none sm:px-6 lg:px-8 ${scrolled ? "h-16" : "h-[72px]"}`}>
             {/* Brand */}
-            <Link href="/" className="group flex shrink-0 items-center gap-2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 sm:gap-3" aria-label="Himalayan Arc Adventure — home">
+            <Link href="/" className="group flex shrink-0 items-center gap-2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 sm:gap-3" aria-label="Himalayan Arc Adventure home">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/brand/badge.png"
