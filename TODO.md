@@ -2,23 +2,22 @@
 
 What's left, most urgent first. Tick items off here and record the change in [CHANGELOG.md](CHANGELOG.md).
 **You** = the business owner (accounts, dashboards, decisions). **Dev** = code work Claude or a developer can do.
-Last updated: 29 Oct 2026.
+Last updated: 5 Nov 2026.
 
 ## Backend health check, 29 Oct (details in CHANGELOG)
 Works today: accounts, trek and course bookings, booking emails and the payment flow (in test mode).
-- [ ] **You: OK to apply the database update.** It holds seats for 15 minutes during payment, so a batch can't be oversold, and it adds speed fixes. Tested on the live database with everything rolled back. With your OK, Claude runs `supabase-departures.sql` and `supabase-scale.sql` (or you run `node scripts/setup-backend.mjs`).
-- [ ] **You: OK to raise the sign-up email limit from 2 to 20 an hour** (Supabase → Authentication → Rate limits). Right now the 3rd sign-up in an hour can't get its confirmation email.
+- [x] ~~**You: apply the database update and the email limit.**~~ Done 5 Nov: with your OK, Claude ran `node scripts/setup-backend.mjs`. All 7 SQL files are applied (15-minute seat hold, speed fixes) and sign-up emails are limited to 20 an hour (was 2). Checked afterwards.
 - [ ] **You: choose the admin account.** Nobody has admin rights, so `/admin` is unusable. Tell Claude which email (it must already be signed up), or set `ADMIN_EMAIL` in `.env.setup` and run the setup script.
 - [ ] **You: switch Razorpay to live keys and register the webhook.** The live site still takes test payments only, so real customers can't pay online.
 - [ ] **You: upgrade Vercel to Pro (about $20 a month).** Hobby is for non-commercial use only, and it pauses the site when a monthly limit runs out. At today's page weight that's around 10,000 visitors a month (100 GB of bandwidth, 1M requests).
 - [ ] **You (before traffic grows):** move email from Gmail (about 500 a day) to a transactional sender such as Brevo, Resend, Amazon SES or Zoho ZeptoMail. Then consider Supabase Pro ($25 a month): daily backups, no pausing, 100k monthly users instead of 50k.
-- [ ] **Dev:** deploy the 29 Oct changes (commit and push to `main`). This also moves the server functions to Mumbai, next to the database.
+- [x] ~~**Dev:** deploy the 29 Oct changes (commit and push to `main`).~~ Done 5 Nov; the server functions now run in Mumbai, next to the database.
 - [ ] **Dev:** shrink the hero videos (14.7 MB home page on desktop, 38 MB of `.MOV` files). Needs ffmpeg (`winget install ffmpeg`).
 - [ ] **Dev:** the admin lists load at most 500 bookings per type and 1,000 customers, and search runs only over those. Move search into the database before about 1,000 customers.
 - [ ] **Dev:** cut background link prefetching (55 requests per desktop home visit) to save Vercel request quota.
 
 ## MakeMyTrip-style booking flow (asked 29 Oct; needs your choices)
-Already there: live batch dates with seats left, a price locked on the server, a 30% advance or full payment, UPI-first Razorpay, a dashboard with "Pay balance" and "Cancel", booking emails and (from 29 Oct) a 15-minute seat hold.
+Already there: live batch dates with seats left, a price locked on the server, a 30% advance or full payment, UPI-first Razorpay, a dashboard with "Pay balance" and "Cancel", booking emails and (live from 5 Nov) a 15-minute seat hold.
 - [ ] Book without losing the form: sign in or sign up inside the booking step (today a signed-out visitor is sent to `/signup` and loses what they typed).
 - [ ] A review step before payment: trip summary, price breakdown (per person, room tier, GST if it applies, total, amount now), and a "seats held 14:59" timer.
 - [ ] Traveller details per person (name, age, gender, ID for permits) and an emergency contact.

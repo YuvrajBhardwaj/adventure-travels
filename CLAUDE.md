@@ -80,7 +80,10 @@ Next.js 16 App Router with **`output: "export"`** (fully static: no runtime serv
 - **`api/cron.js`** runs daily (`vercel.json`): balance reminders, email retries, overdue count.
 - **Payments:** `create-order` (`advance` = 30%, `balance`, `full`; the rules are in `api/_lib/pricing.js` `orderAmount()`), `verify-payment` and `razorpay-webhook` all apply payments through the `apply_payment()` database function, which is exactly-once.
 - **Emails** go through the `notifications` outbox (`api/_lib/notify.js`), always **after** the database write; a failed email never undoes a booking.
-- **Database:** SQL files in `adventure-travel/`, run in this order: `supabase-schema.sql`, `supabase-activity-payments.sql`, `supabase-backend.sql`, `supabase-room-sharing.sql`, `supabase-payments-v2.sql`. All are idempotent. Triggers guard the money columns and audit status changes into `booking_status_events`.
+- **Database:** SQL files in `adventure-travel/`, run in this order (the setup script does): `supabase-schema.sql`, `supabase-activity-payments.sql`, `supabase-backend.sql`, `supabase-room-sharing.sql`, `supabase-payments-v2.sql`, `supabase-departures.sql`, `supabase-scale.sql` (last: indexes, rewrites every RLS policy to `(select auth.uid())`, explicit grants). All are idempotent. Triggers guard the money columns and audit status changes into `booking_status_events`.
+- **New tables need explicit grants** (Supabase stopped auto-granting on 30 Oct 2026): add `grant … to anon, authenticated, service_role` next to the `create table`, then RLS.
+- **Seats:** a booking holds seats once confirmed or paid, and for 15 minutes while paying (`hold_trek_seats()`, called by `create-order`, locks the batch row).
+- **Functions region:** `bom1` (Mumbai) in `vercel.json`, next to the Supabase project (`ap-south-1`).
 - **Browser side:**
   - `src/lib/auth.ts` throws `BackendUnavailableError` when Supabase isn't configured; forms then show `WhatsAppFallback`, never a fake success
   - `src/lib/admin.ts` powers `/admin/*` (bookings, customers, payments, activity) behind `AdminGate`, for users with `app_metadata.role = "admin"`

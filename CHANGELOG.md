@@ -1,21 +1,33 @@
- ☑ 19 Oct | ☑ 19 Oct | ☑ 19 Oct | ☑ 19 Oct | ☑ 19 Oct |# Changelog
+# Changelog
 
 Every change to the Himalayan Arc Adventure site, newest first. Backend changes (database, API functions, environment variables) are marked **Backend** and also summarised in the [Backend tracker](#backend-tracker) at the bottom, which shows what is built, what is deployed and what still has to be set up.
 
 **How to add an entry:** add it under [Unreleased] with the date, where the change lives (branch and commit, or "uncommitted"), and what changed for visitors, for the business and in the backend. Move entries to a dated release heading when they go live on www.himalayanarcadventure.com. Open work goes in [TODO.md](TODO.md).
 
-## Where things stand (29 Oct 2026)
+## Where things stand (5 Nov 2026)
 
 | Where | Commit | What it has |
 |---|---|---|
-| **Live site** (`main` on GitHub) | `8e94f87` | Everything up to 23 Oct. Accounts, bookings and emails work; payments run in Razorpay **Test Mode** (no real money). All 12 environment variables are set in Vercel Production. |
-| **Preview** (`preview/trek-slideshows` on GitHub) | `8e94f87` | Same as live. |
-| **Uncommitted** | — | The 29 Oct backend health check, checkout seat hold and scale fixes (first entry below). The two SQL files in it are **not applied** to the database yet. |
+| **Live site** (`main` on GitHub) | same as preview | Everything up to 5 Nov, including the copy rewrite, the trek fact fixes and the 15-minute checkout seat hold. Server functions run in Mumbai. Accounts, bookings and emails work; payments run in Razorpay **Test Mode** (no real money). All 12 environment variables are set in Vercel Production. |
+| **Preview** (`preview/trek-slideshows` on GitHub) | same as live | Same as live. |
+| **Database** (Supabase `sdhtgmlkzcknmeakxgdz`) | — | All 7 SQL files applied (latest on 5 Nov); sign-up emails limited to 20 an hour. |
 | Local `main` | `9b522d5` | Stale. Reset it to `origin/main` before the next use. |
 
 ---
 
 ## [Unreleased]
+
+### 5 Nov 2026: **Live**: copy rewrite, trek fact fixes and the checkout seat hold; **Backend** database update applied — `preview/trek-slideshows` and `main`
+- **Live on www.himalayanarcadventure.com:** the 29 Oct copy rewrite with the shared brand icons (`4a6900d`) and the Trek The Himalayas fact fixes (`79beeae`), then the seat-hold commit. Before the first push: production build of a copy, 6 browser tests and 70 unit tests all passed.
+- **For visitors:** paying for a listed trek batch now holds the group's seats for 15 minutes, and the Razorpay window closes when the hold ends, so the last seats can't be sold twice. On /treks the first card runs wide only when the cards below it fill whole rows.
+- **For the business:** sign-up confirmation emails are now limited to 20 an hour (was 2), so the 3rd sign-up in an hour gets its email.
+- **Backend, database** (owner's OK on 5 Nov): Claude ran `node scripts/setup-backend.mjs` after a dry run. All 7 SQL files ran on `sdhtgmlkzcknmeakxgdz` and the Auth settings were re-applied. Read-only check afterwards:
+  - `hold_trek_seats()` and `trek_bookings.seats_held_until` exist.
+  - 32 indexes (was 23); 24 security rules, none left in the slow per-row form.
+  - Browsers still can't insert trek bookings or call the seat hold.
+- **Backend, code:** the 29 Oct seat-hold work is committed and deployed: `create-order` with `departures.holdSeats()`, `supabase-scale.sql`, the setup-script change, and `vercel.json` with functions in Mumbai (`bom1`).
+- **Also:** removed a stray line of table text from the top of this file.
+- **Checks:** 70/70 unit tests, type-check and lint clean.
 
 ### 29 Oct 2026: Trek facts corrected against Trek The Himalayas — `preview/trek-slideshows`
 - **Source:** trekthehimalayas.com (as the owner asked), plus the Himalayan Club for Gupt Khal.
@@ -38,7 +50,7 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 - **Not changed (owner's call):** prices (Mana Pass, Niti Pass and Rimkhim at Rs. 5,000), whether the Joshimath treks start with the Rishikesh drive on day 1, and the Nanda Devi campsite height.
 - **Checks:** type-check clean, lint 0 errors, 70 unit tests pass.
 
-### 29 Oct 2026: **Backend** health check, checkout seat hold, scale fixes — uncommitted
+### 29 Oct 2026: **Backend** health check, checkout seat hold, scale fixes — committed and live 5 Nov (entry above)
 - **Health check (live site):** every page loads; every API function answers correctly (`bookings` 400 on an empty request; `create-order`, `verify-payment`, `account` 401 "Please sign in"; `razorpay-webhook` 400 "Invalid signature"; `cron` 401; `geo` and `rates` 200). Supabase project `sdhtgmlkzcknmeakxgdz` (Mumbai) is healthy: 3 users, 3 trek bookings, 0 payments, 6 emails sent, 215 upcoming batches, 12 MB of 500 MB.
 - **Problems found on the live system:**
   - **Sign-up emails are limited to 2 an hour** (Supabase Auth `rate_limit_email_sent` = 2). Sign-up needs a confirmation email, so the 3rd sign-up in an hour fails.
@@ -53,12 +65,20 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
   - New `supabase-scale.sql` (run last): indexes for dashboards, admin lists and the reminder job; all 24 row-level security rules now evaluate `auth.uid()` / `is_admin()` once per query instead of once per row (same rules); fixed `search_path` on 3 functions; explicit table grants, because from 30 Oct 2026 Supabase stops granting new tables to the API automatically (existing tables keep theirs).
   - `api/create-order.js` holds the seats through `departures.holdSeats()` and returns `seatsHeldUntil`; `CheckoutClient.tsx` passes it to Razorpay as `timeout`.
   - `vercel.json`: functions now run in **Mumbai (`bom1`)**, next to the database (takes effect on the next deploy).
-  - `scripts/setup-backend.mjs` runs the new file.
-  - **Not applied yet:** both SQL files were run on the live database only inside transactions that were rolled back (results below). Applying them and raising the email limit waits for the owner's OK.
+  - `scripts/setup-backend.mjs` runs the new file and now also sets the sign-up email limit to 20 an hour (`rate_limit_email_sent`; Supabase's default is 2).
+  - **Applied 5 Nov** (entry above). Before that, both SQL files were run on the live database only inside transactions that were rolled back (results below).
 - **Checks:**
   - Unit tests: 70/70 pass, including 5 new seat-hold tests. Type-check and lint are clean.
   - Rolled-back dry run on the live database: with 6 seats and 1 sold offline, a group of 3 is held, the next group of 3 is refused, and a group of 2 takes the last seats. All 24 rules were rewritten; browsers can't call the hold. Re-running all 7 setup files twice ends in the same state, with users and bookings untouched.
   - Afterwards the database was confirmed unchanged.
+  - **Browser test** (agent-browser, local dev server with the latest code, desktop 1440 px and phone 390 px):
+    - 12 pages load with 0 page errors, no console errors and no sideways scrolling on the phone; `/checkout` and `/dashboard` send signed-out visitors to `/login`.
+    - The trek Dates tab reads live seats from the database (`trek_departure_availability`, 200 OK; July–Sept 2027 batches shown).
+    - The footer's new brand icons render with labels.
+    - Local API (`npm run dev:api`): `create-order` and `verify-payment` answer 401 when signed out, `bookings` 400 on an empty request, so the updated code loads.
+    - Confirmed the booking gap: a signed-out visitor who fills the reservation form and submits lands on `/signup` with every field empty, and nothing reaches the server.
+    - Not covered (needs the database update applied and a test login): the seat hold, the Razorpay timeout, dashboard, checkout and admin.
+  - The checkout part of this change (`CheckoutClient.tsx`, Razorpay `timeout`) was committed with `4a6900d` and is on the preview branch. It took effect with the updated `create-order` on 5 Nov.
 
 ### 29 Oct 2026: Site copy rewritten to sound human; shared brand icons — `preview/trek-slideshows`
 - **Why:** the owner asked to use the `no-ai-slop` and `anti-ai-slop-writing` skills (and `better-icons`). The site had about 87 stock AI/marketing words ("pristine" ×19, "breathtaking" ×12, "stunning" ×11, "unforgettable" ×9, "world-class", "epic", "seamless", "experience the magic") and about 300 em dashes.
@@ -417,7 +437,7 @@ Three quick boxes on the trek cost card, per-trek inclusions, and the scholarshi
 ## Backend tracker
 
 ### Database migrations
-Run in this order, either with `node scripts/setup-backend.mjs` or in the Supabase SQL Editor. **Status: all 5 ran on 19 Oct 2026 on Supabase project `sdhtgmlkzcknmeakxgdz`**, the only project so far; the owner hasn't said yet whether it's dev or production. Verified afterwards:
+Run in this order, either with `node scripts/setup-backend.mjs` or in the Supabase SQL Editor. **Status: files 1–5 ran on 19 Oct 2026, and all 7 in their current versions on 5 Nov 2026, on Supabase project `sdhtgmlkzcknmeakxgdz`**, the only project so far; the owner hasn't said yet whether it's dev or production. Verified afterwards:
 - 8 tables, all with row-level security, and 23 policies
 - `apply_payment()` callable only by the server, not by browsers
 - browsers can no longer insert trek bookings directly.
@@ -431,8 +451,8 @@ Below, ☑ marks the files run on that project.
 | 3 | `adventure-travel/supabase-backend.sql` | Profile fields, course bookings, admin policies | ☑ 19 Oct |
 | 4 | `adventure-travel/supabase-room-sharing.sql` | Room tier on trek bookings | ☑ 19 Oct |
 | 5 | `adventure-travel/supabase-payments-v2.sql` | Advance/balance payments, audit trail, email outbox, `apply_payment()` | ☑ 19 Oct |
-| 6 | `adventure-travel/supabase-departures.sql` | Batch calendar, seats left; (29 Oct) checkout seat hold `hold_trek_seats()` | ☑ 23 Oct · 29 Oct version ☐ (dry run only) |
-| 7 | `adventure-travel/supabase-scale.sql` | Indexes, faster security rules, fixed search_path, explicit grants | ☐ (dry run only) |
+| 6 | `adventure-travel/supabase-departures.sql` | Batch calendar, seats left; (29 Oct) checkout seat hold `hold_trek_seats()` | ☑ 23 Oct · 29 Oct version ☑ 5 Nov |
+| 7 | `adventure-travel/supabase-scale.sql` | Indexes, faster security rules, fixed search_path, explicit grants | ☑ 5 Nov |
 
 After running them, give the business account admin rights (snippet at the top of file 2), then sign out and back in.
 
@@ -440,12 +460,12 @@ After running them, give the business account admin rights (snippet at the top o
 | Function | Purpose | Status |
 |---|---|---|
 | `bookings` | Create trek/course bookings with the price locked | Live (23 Oct) |
-| `create-order` | Start an advance, balance or full payment; (29 Oct, uncommitted) holds seats for 15 min | Live (23 Oct) |
+| `create-order` | Start an advance, balance or full payment; holds a trek group's seats for 15 min | Live (seat hold from 5 Nov) |
 | `verify-payment` | Confirm a payment from the browser | Live (23 Oct) |
 | `razorpay-webhook` | Razorpay's confirmation (the source of truth) | Live; webhook registration in Razorpay not confirmed |
 | `account` | Claim signed-out bookings; delete account | Live (23 Oct) |
 | `cron` | Daily reminders and email retries | Live (03:30 UTC daily) |
-| Region | All functions | `iad1` (US East) live; `bom1` (Mumbai) from the next deploy |
+| Region | All functions | `bom1` (Mumbai) from 5 Nov; was `iad1` (US East) |
 | `geo`, `rates` | Display currency | Live |
 | ~~`course-bookings`~~, ~~`claim-bookings`~~ | Replaced by `bookings` and `account` | Removed |
 
@@ -461,7 +481,7 @@ After running them, give the business account admin rights (snippet at the top o
 ### Testing status
 | Check | Result |
 |---|---|
-| Unit tests (`npm test`) | 70/70 pass (29 Oct) |
+| Unit tests (`npm test`) | 70/70 pass (5 Nov) |
 | Type-check, lint | Clean; 0 lint errors |
 | Production build | Passes (48 static pages) |
 | End-to-end scenarios V1–V22 (`specs/001-persistent-backend/quickstart.md`) | Not run; needs Supabase, Razorpay test keys and SMTP |

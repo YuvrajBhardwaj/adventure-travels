@@ -23,6 +23,7 @@ const SQL_FILES = [
   "supabase-room-sharing.sql",
   "supabase-payments-v2.sql",
   "supabase-departures.sql",
+  "supabase-scale.sql",
 ];
 const DRY = process.argv.includes("--dry-run");
 const EMAIL = /^[^\s@'"\\]+@[^\s@'"\\]+\.[^\s@'"\\]+$/;
@@ -155,6 +156,9 @@ async function main() {
           smtp_pass: cfg.SMTP_PASS,
           smtp_admin_email: cfg.SMTP_USER,
           smtp_sender_name: "Himalayan Arc Adventure",
+          // Sign-up and password emails per hour (Supabase's default is 2). 20 an hour keeps
+          // these under Gmail's ~500 a day, next to the booking emails.
+          rate_limit_email_sent: 20,
         }),
       },
     });

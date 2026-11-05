@@ -51,3 +51,48 @@ describe("findDeparture", () => {
     });
   });
 });
+
+describe("holdSeats", () => {
+  const booking = { id: "b1", slug: "kuari-pass", startDate: "2026-11-07", seats: 3 };
+  const rpcDb = (handlers) => ({ rpc: async (name, args) => handlers[name](args) });
+
+  it("holds the seats and passes on the hold's end time", async () => {
+    let called;
+    const db = rpcDb({
+      hold_trek_seats: (args) => {
+        called = args;
+        return { data: [{ ok: true, closed: false, seats_left: 2, held_until: "2026-10-29T06:00:00Z" }], error: null };
+      },
+    });
+    expect(await departures.holdSeats(db, booking)).toEqual({ problem: null, heldUntil: "2026-10-29T06:00:00Z" });
+    expect(called).toEqual({ p_booking: "b1", p_minutes: departures.HOLD_MINUTES });
+  });
+
+  it("explains why when the group doesn't fit or the batch is closed", async () => {
+    const short = rpcDb({ hold_trek_seats: () => ({ data: [{ ok: false, closed: false, seats_left: 1, held_until: null }], error: null }) });
+    expect(await departures.holdSeats(short, booking)).toEqual({
+      problem: "Only 1 seat is left on this batch. Make the group smaller or pick another date.",
+      heldUntil: null,
+    });
+    const closed = rpcDb({ hold_trek_seats: () => ({ data: [{ ok: false, closed: true, seats_left: 0, held_until: null }], error: null }) });
+    expect((await departures.holdSeats(closed, booking)).problem).toMatch(/closed/);
+  });
+
+  it("lets a private-departure date through with no hold", async () => {
+    const db = rpcDb({ hold_trek_seats: () => ({ data: [{ ok: true, closed: false, seats_left: null, held_until: null }], error: null }) });
+    expect(await departures.holdSeats(db, booking)).toEqual({ problem: null, heldUntil: null });
+  });
+
+  it("falls back to the plain seat check before the migration is run", async () => {
+    const db = rpcDb({
+      hold_trek_seats: () => ({ data: null, error: { code: "PGRST202" } }),
+      trek_departure_availability: () => ({ data: [{ start_date: "2026-11-07", closed: false, seats_left: 0 }], error: null }),
+    });
+    expect((await departures.holdSeats(db, booking)).problem).toMatch(/full/);
+  });
+
+  it("passes other database errors on", async () => {
+    const db = rpcDb({ hold_trek_seats: () => ({ data: null, error: { code: "500", message: "down" } }) });
+    await expect(departures.holdSeats(db, booking)).rejects.toEqual({ code: "500", message: "down" });
+  });
+});

@@ -264,10 +264,11 @@ export default function TreksPage() {
                 action={<Button variant="outline" onClick={clearFilters}>Clear all filters</Button>}
               />
             ) : (
-              // The first trek runs wide on desktop; the rest sit two across.
+              // The first trek runs wide on desktop; the rest sit two across. Only when the rest fill
+              // whole rows: with an even count the wide card would leave one smaller card beside it.
               <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:gap-x-8 lg:gap-y-10">
                 {filtered.map((trek, i) => (
-                  <TrekCard key={trek.id} trek={trek} featured={i === 0} />
+                  <TrekCard key={trek.id} trek={trek} featured={i === 0 && filtered.length % 2 === 1} />
                 ))}
               </div>
             )}

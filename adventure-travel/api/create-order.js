@@ -113,10 +113,13 @@ module.exports = async function handler(req, res) {
     const amount = rule.amount;
 
     // An unpaid, unconfirmed trek booking doesn't hold seats yet, so its batch may have
-    // filled since it was made: check before taking money (supabase-departures.sql).
+    // filled since it was made: hold the seats for the payment window before taking money
+    // (supabase-departures.sql). The hold is atomic, so the last seats can't be sold twice.
+    let seatsHeldUntil = null;
     if (booking.type === "trek" && booking.status === "pending" && booking.paymentState === "unpaid") {
-      const full = departures.seatProblem(await departures.findDeparture(db, booking.slug, booking.startDate), booking.seats);
-      if (full) throw new HttpError(409, full);
+      const hold = await departures.holdSeats(db, booking);
+      if (hold.problem) throw new HttpError(409, hold.problem);
+      seatsHeldUntil = hold.heldUntil;
     }
 
     const summary = {
@@ -136,6 +139,8 @@ module.exports = async function handler(req, res) {
       description,
       prefill: { name: user.user_metadata?.full_name || "", email: user.email || "", contact: user.user_metadata?.phone || "" },
       summary,
+      // When the seats stop being held for this checkout (null: nothing to hold).
+      seatsHeldUntil,
     });
 
     // Reuse an unpaid order of the same kind and amount, so refreshes and retries don't pile up orders.

@@ -30,4 +30,26 @@ function seatsFor(groupSize) {
   return Number.isInteger(n) && n > 0 ? n : 1;
 }
 
-module.exports = { seatProblem, findDeparture, seatsFor };
+const HOLD_MINUTES = 15;
+
+/**
+ * Holds a pending booking's seats while its owner pays (hold_trek_seats in
+ * supabase-departures.sql). The database locks the batch, so two checkouts for the last
+ * seats can't both succeed. Returns { problem, heldUntil }: problem is the message to show
+ * when the group doesn't fit, heldUntil is null for a private-departure date.
+ */
+async function holdSeats(db, booking, minutes = HOLD_MINUTES) {
+  const { data, error } = await db.rpc("hold_trek_seats", { p_booking: booking.id, p_minutes: minutes });
+  if (error) {
+    // Migration not run yet: fall back to the plain (non-locking) check.
+    if (error.code === "PGRST202") {
+      return { problem: seatProblem(await findDeparture(db, booking.slug, booking.startDate), booking.seats), heldUntil: null };
+    }
+    throw error;
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row || row.ok) return { problem: null, heldUntil: row?.held_until ?? null };
+  return { problem: seatProblem({ closed: row.closed, seats_left: row.seats_left }, booking.seats), heldUntil: null };
+}
+
+module.exports = { seatProblem, findDeparture, seatsFor, holdSeats, HOLD_MINUTES };
