@@ -24,18 +24,20 @@ export const SheetClose = DialogClose;
 export const SheetTitle = DialogTitle;
 export const SheetDescription = DialogDescription;
 
-type Side = "right" | "left" | "bottom";
+type Side = "right" | "left" | "bottom" | "top";
 
 const SIDES: Record<Side, string> = {
   right: "inset-y-0 right-0 h-full w-[min(88vw,420px)] rounded-l-2xl border-l",
   left: "inset-y-0 left-0 h-full w-[min(88vw,420px)] rounded-r-2xl border-r",
   bottom: "inset-x-0 bottom-0 max-h-[85dvh] w-full rounded-t-2xl border-t",
+  top: "inset-x-0 top-0 max-h-[100dvh] w-full rounded-b-2xl border-b",
 };
 
 const OFFSCREEN: Record<Side, { x?: string; y?: string }> = {
   right: { x: "100%" },
   left: { x: "-100%" },
   bottom: { y: "100%" },
+  top: { y: "-100%" },
 };
 
 type SheetContentProps = Omit<
@@ -49,7 +51,7 @@ type SheetContentProps = Omit<
   tone?: "auto" | "light" | "dark";
   hideClose?: boolean;
   closeClassName?: string;
-  /** Drag toward the edge to close (left/right sheets). */
+  /** Drag toward the edge to close (left/right sheets only; top/bottom ones scroll). */
   swipeToClose?: boolean;
 };
 
@@ -69,7 +71,7 @@ export function SheetContent({
   const { open, setOpen } = useDialogState();
   const reduce = useReducedMotion();
   const { anchorRef, dark } = useInheritedTone(tone, open);
-  const canDrag = swipeToClose && !reduce && side !== "bottom";
+  const canDrag = swipeToClose && !reduce && (side === "left" || side === "right");
 
   const onDragEnd = (_: unknown, info: PanInfo) => {
     const toward = side === "right" ? info.offset.x : -info.offset.x;

@@ -12,7 +12,7 @@ import Price from "@/components/Price";
 import NoPhoto from "@/components/NoPhoto";
 import { ElevationLine } from "@/components/ElevationLine";
 import { buttonVariants } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { transition } from "@/lib/motion";
 
@@ -73,6 +73,36 @@ const activities = [
   },
 ];
 
+type MobileLink = { label: string; href: string; count?: number };
+
+/** The phone menu: plain links; Treks and Activities open a short sub-list. */
+const MOBILE_NAV: (MobileLink & { sub?: MobileLink[] })[] = [
+  { label: "Home", href: "/" },
+  {
+    label: "Treks",
+    href: "/treks",
+    sub: [
+      { label: "All treks", href: "/treks", count: treks.length },
+      ...REGION_LINKS.map((r) => ({ label: r.region, href: `/treks?region=${encodeURIComponent(r.region)}`, count: r.count })),
+      { label: "Treks from Joshimath", href: "/treks-from-joshimath" },
+      { label: "Winter treks", href: "/winter-treks-uttarakhand" },
+    ],
+  },
+  { label: "Destinations", href: "/destinations" },
+  { label: "Courses", href: "/courses" },
+  {
+    label: "Activities",
+    href: "/activities",
+    sub: [...activities.map(({ label, href }) => ({ label, href })), { label: "All activities", href: "/activities" }],
+  },
+  { label: "FAQ", href: "/faq" },
+  { label: "Contact", href: "/contact" },
+];
+
+/** Phone-menu rows: light uppercase with open tracking, no boxes or chevrons. */
+const MOBILE_ROW =
+  "flex min-h-11 w-full items-center gap-2 rounded-sm py-2.5 text-left text-[15px] font-light uppercase tracking-[0.08em] transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500";
+
 /** Keyboard focus for rows inside the menus: inset, so the panels' overflow-hidden can't clip it. */
 const ROW_FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-400";
 
@@ -128,7 +158,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [mobileActivityOpen, setMobileActivityOpen] = useState(false);
+  const [mobileSub, setMobileSub] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState<MenuId | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -542,157 +572,100 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile menu — kit Sheet (dark, from the right, swipe to close) with a staggered list */}
-      <SheetContent side="right" tone="dark" title="Menu" hideTitle swipeToClose className="px-5 pb-8 pt-16 lg:hidden">
+      {/* Mobile menu: a light panel that drops from the top. Logo and a thin close, a hairline,
+          plain uppercase links, then a navy band with popular treks and a WhatsApp button. */}
+      <SheetContent side="top" tone="light" title="Menu" hideTitle hideClose className="border-b-0 lg:hidden">
+        <div className="flex h-[72px] shrink-0 items-center justify-between px-5">
+          <Link
+            href="/"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Himalayan Arc Adventure home"
+            className="flex items-center gap-2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/badge.png" alt="" width={192} height={192} className="h-11 w-auto rounded-full ring-1 ring-slate-200" />
+            <span className="flex flex-col leading-none">
+              <span className="whitespace-nowrap font-nav text-[15px] font-bold tracking-[-0.02em] text-navy">Himalayan Arc</span>
+              <span className="mt-1 whitespace-nowrap font-nav text-[9px] font-semibold uppercase tracking-[0.26em] text-emerald-600">Adventure</span>
+            </span>
+          </Link>
+          <SheetClose
+            aria-label="Close menu"
+            className="-mr-2 flex h-11 w-11 items-center justify-center rounded-full text-navy transition-colors duration-150 ease-out hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.25} aria-hidden>
+              <path strokeLinecap="round" d="M5 5l14 14M19 5L5 19" />
+            </svg>
+          </SheetClose>
+        </div>
+        <div className="mx-5 h-px shrink-0 bg-slate-300" aria-hidden />
+
         <motion.div
           initial="hidden"
           animate="show"
-          exit="hidden"
-          variants={{ hidden: {}, show: { transition: { staggerChildren: reduce ? 0 : 0.04, delayChildren: reduce ? 0 : 0.06 } } }}
-          className="flex flex-col"
+          variants={{ hidden: {}, show: { transition: { staggerChildren: reduce ? 0 : 0.035, delayChildren: reduce ? 0 : 0.08 } } }}
+          className="flex flex-col px-5 pb-3 pt-4"
         >
-          {[{ label: "Home", href: "/" }, ...NAV.filter((n) => n.menu !== "activities" && n.href !== "/contact")].map((link) => (
-            <MobileItem key={link.href} reduce={reduce}>
-              <Link
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                aria-current={isActive(link.href) ? "page" : undefined}
-                className={`flex items-center justify-between border-b border-white/10 py-4 font-nav text-[22px] font-semibold tracking-[-0.02em] transition-colors duration-150 ease-out ${
-                  isActive(link.href) ? "text-white" : "text-white/85 hover:text-white"
-                }`}
-              >
-                <span className="flex items-center gap-3">
-                  {isActive(link.href) && <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" aria-hidden />}
-                  {link.label}
-                </span>
-                <svg className="h-4 w-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-              {link.href === "/treks" && (
-                <div className="flex flex-wrap gap-2 border-b border-white/10 py-3">
-                  {REGION_LINKS.map((r) => (
-                    <Link
-                      key={r.region}
-                      href={`/treks?region=${encodeURIComponent(r.region)}`}
-                      onClick={() => setMobileOpen(false)}
-                      className="inline-flex min-h-11 items-center rounded-full border border-white/10 bg-white/[0.04] px-4 text-sm font-medium text-white/80 transition-[background-color,transform] duration-150 ease-out active:scale-[0.97] active:bg-white/[0.08] motion-reduce:active:scale-100"
+          {MOBILE_NAV.map((item) => {
+            const active = isActive(item.href);
+            const tone = active ? "font-normal text-emerald-700" : "text-navy hover:text-emerald-700";
+            if (!item.sub) {
+              return (
+                <MobileItem key={item.label} reduce={reduce}>
+                  <Link href={item.href} onClick={() => setMobileOpen(false)} aria-current={active ? "page" : undefined} className={cn(MOBILE_ROW, tone)}>
+                    {item.label}
+                  </Link>
+                </MobileItem>
+              );
+            }
+            const open = mobileSub === item.label;
+            return (
+              <MobileItem key={item.label} reduce={reduce}>
+                <button type="button" onClick={() => setMobileSub(open ? null : item.label)} aria-expanded={open} className={cn(MOBILE_ROW, tone)}>
+                  {item.label}
+                  <ChevronDown open={open} />
+                </button>
+                <AnimatePresence initial={false}>
+                  {open && (
+                    <motion.div
+                      initial={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                      animate={reduce ? { opacity: 1 } : { opacity: 1, height: "auto" }}
+                      exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                      transition={transition("base")}
+                      className="overflow-hidden"
                     >
-                      {r.region}
-                    </Link>
-                  ))}
-                  {DIFFICULTY_LINKS.slice(0, 2).map((d) => (
-                    <Link
-                      key={d.difficulty}
-                      href={`/treks?difficulty=${d.difficulty}`}
-                      onClick={() => setMobileOpen(false)}
-                      className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-4 text-sm font-medium text-white/80 transition-[background-color,transform] duration-150 ease-out active:scale-[0.97] active:bg-white/[0.08] motion-reduce:active:scale-100"
-                    >
-                      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: DIFFICULTY_COLORS[d.difficulty] }} aria-hidden />
-                      {d.difficulty}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </MobileItem>
-          ))}
+                      <ul className="mb-2 ml-0.5 border-l border-slate-200 pl-4">
+                        {item.sub.map((s) => (
+                          <li key={s.label}>
+                            <Link
+                              href={s.href}
+                              onClick={() => setMobileOpen(false)}
+                              className="flex min-h-10 items-center gap-2 rounded-sm text-[13px] font-light uppercase tracking-[0.07em] text-slate-600 transition-colors duration-150 ease-out hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                            >
+                              {s.label}
+                              {s.count !== undefined && <span className="font-nav text-[11px] tabular-nums text-slate-400">{s.count}</span>}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </MobileItem>
+            );
+          })}
+        </motion.div>
 
-          {/* Activities — collapsible */}
-          <MobileItem reduce={reduce} className="border-b border-white/10 py-1">
-            <button
-              type="button"
-              onClick={() => setMobileActivityOpen((v) => !v)}
-              aria-expanded={mobileActivityOpen}
-              className="flex w-full items-center justify-between py-3 text-left"
-            >
-              <span className="font-nav text-[22px] font-semibold tracking-[-0.02em] text-white/85">Activities</span>
-              <motion.span
-                animate={{ rotate: mobileActivityOpen ? 180 : 0 }}
-                transition={reduce ? { duration: 0 } : transition("base")}
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white"
-              >
-                <ChevronDown open={false} />
-              </motion.span>
-            </button>
-            <AnimatePresence initial={false}>
-              {mobileActivityOpen && (
-                <motion.div
-                  initial={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                  animate={reduce ? { opacity: 1 } : { opacity: 1, height: "auto" }}
-                  exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                  transition={transition("base")}
-                  className="overflow-hidden"
-                >
-                  <div className="flex flex-col gap-1 pb-3">
-                    {activities.map((act) => (
-                      <Link
-                        key={act.label}
-                        href={act.href}
-                        onClick={() => setMobileOpen(false)}
-                        className="flex items-center gap-3 rounded-xl bg-white/[0.04] px-3 py-3 text-sm font-medium text-white/80 transition-[background-color,color,transform] duration-150 ease-out hover:bg-white/[0.08] hover:text-white active:scale-[0.98] motion-reduce:active:scale-100"
-                      >
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-400/10 text-emerald-300">{act.icon}</span>
-                        <span className="flex flex-col">
-                          <span className="font-semibold">{act.label}</span>
-                          <span className="text-xs text-white/50">{act.description}</span>
-                        </span>
-                      </Link>
-                    ))}
-                    <Link
-                      href="/activities"
-                      onClick={() => setMobileOpen(false)}
-                      className="mt-1 flex min-h-11 items-center justify-center gap-2 rounded-xl border border-emerald-400/30 px-4 py-3 text-sm font-semibold text-emerald-300 transition-[background-color,transform] duration-150 ease-out hover:bg-emerald-400/[0.06] active:scale-[0.98] motion-reduce:active:scale-100"
-                    >
-                      All activities
-                      <ArrowRight />
-                    </Link>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </MobileItem>
-
-          <MobileItem reduce={reduce}>
-            <Link
-              href="/contact"
-              onClick={() => setMobileOpen(false)}
-              aria-current={isActive("/contact") ? "page" : undefined}
-              className="flex items-center justify-between border-b border-white/10 py-4 font-nav text-[22px] font-semibold tracking-[-0.02em] text-white/85 transition-colors duration-150 ease-out hover:text-white"
-            >
-              Contact
-              <svg className="h-4 w-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </MobileItem>
-
-          <MobileItem reduce={reduce} className="mt-6">
-            <a
-              href={WHATSAPP}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={buttonVariants({
-                size: "lg",
-                className: "h-14 w-full text-base shadow-[0_10px_30px_-10px_rgba(16,185,129,0.7)] focus-visible:ring-offset-navy-deep",
-              })}
-            >
-              <WhatsAppIcon className="h-5 w-5" />
-              Talk to our mountain experts
-            </a>
-          </MobileItem>
-
+        <div className="mx-5 h-px shrink-0 bg-slate-200" aria-hidden />
+        <div className="flex flex-wrap items-center gap-x-7 px-5 py-2">
           {user ? (
-            <MobileItem reduce={reduce} className="mt-4 flex flex-col gap-2">
-              <Link
-                href="/dashboard"
-                onClick={() => setMobileOpen(false)}
-                className="flex min-h-12 items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition-colors duration-150 ease-out hover:bg-white/10"
-              >
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 font-nav text-sm font-bold text-navy-deep">{initial}</span>
+            <>
+              <Link href="/dashboard" onClick={() => setMobileOpen(false)} className={cn(MOBILE_ROW, "w-auto gap-2.5 text-[13px] text-navy hover:text-emerald-700")}>
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 font-nav text-xs font-bold tracking-normal text-white">{initial}</span>
                 My bookings
               </Link>
               {isAdmin && (
-                <Link href="/admin/bookings" onClick={() => setMobileOpen(false)} className="flex min-h-12 items-center rounded-xl border border-white/10 px-4 text-sm font-semibold text-white/80 transition-colors duration-150 ease-out hover:bg-white/10">
+                <Link href="/admin/bookings" onClick={() => setMobileOpen(false)} className={cn(MOBILE_ROW, "w-auto text-[13px] text-navy hover:text-emerald-700")}>
                   Admin
                 </Link>
               )}
@@ -702,31 +675,52 @@ export default function Navbar() {
                   void handleLogout();
                   setMobileOpen(false);
                 }}
-                className={buttonVariants({ variant: "outline", size: "lg", className: "text-sm text-white/70 focus-visible:ring-offset-navy-deep" })}
+                className={cn(MOBILE_ROW, "w-auto text-[13px] text-slate-500 hover:text-navy")}
               >
                 Log out
               </button>
-            </MobileItem>
+            </>
           ) : (
-            <MobileItem reduce={reduce} className="mt-3 flex gap-3">
-              <Link
-                href="/login"
-                onClick={() => setMobileOpen(false)}
-                className={buttonVariants({ variant: "outline", size: "lg", className: "flex-1 text-sm focus-visible:ring-offset-navy-deep" })}
-              >
+            <>
+              <Link href="/login" onClick={() => setMobileOpen(false)} className={cn(MOBILE_ROW, "w-auto text-[13px] text-navy hover:text-emerald-700")}>
                 Log in
               </Link>
               <Link
                 href="/signup"
                 onClick={() => setMobileOpen(false)}
-                className={buttonVariants({ size: "lg", className: "flex-1 text-sm focus-visible:ring-offset-navy-deep" })}
+                className={cn(MOBILE_ROW, "w-auto text-[13px] font-normal text-emerald-700 underline decoration-emerald-500/40 underline-offset-[6px] hover:decoration-emerald-600")}
               >
                 Sign up
               </Link>
-            </MobileItem>
+            </>
           )}
+        </div>
 
-        </motion.div>
+        <div className="relative mt-2 shrink-0 bg-navy-deep px-5 pb-6 pt-6 text-white">
+          <p className="font-nav text-[11px] font-medium uppercase tracking-[0.22em] text-white/45">Popular treks</p>
+          <ul className="mt-2 pr-20">
+            {MENU_TREKS.map((t) => (
+              <li key={t.slug}>
+                <Link
+                  href={`/treks/${t.slug}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex min-h-10 items-center rounded-sm text-[13px] font-light uppercase tracking-[0.08em] text-white/80 transition-colors duration-150 ease-out hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                >
+                  {t.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <a
+            href={WHATSAPP}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Chat with us on WhatsApp"
+            className="absolute right-5 top-6 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-white shadow-[0_10px_30px_-8px_rgba(16,185,129,0.7)] transition-[transform,background-color] duration-150 ease-out hover:bg-emerald-400 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-navy-deep motion-reduce:active:scale-100"
+          >
+            <WhatsAppIcon className="h-8 w-8" />
+          </a>
+        </div>
       </SheetContent>
     </Sheet>
   );

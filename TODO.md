@@ -2,7 +2,9 @@
 
 What's left, most urgent first. Tick items off here and record the change in [CHANGELOG.md](CHANGELOG.md).
 **You** = the business owner (accounts, dashboards, decisions). **Dev** = code work Claude or a developer can do.
-Last updated: 5 Nov 2026.
+Last updated: 6 Nov 2026.
+
+- [ ] **You: check the new phone menu on the preview** (6 Nov, styled after oknadesigns.com), then say "go live" to put it on www.himalayanarcadventure.com.
 
 ## Backend health check, 29 Oct (details in CHANGELOG)
 Works today: accounts, trek and course bookings, booking emails and the payment flow (in test mode).

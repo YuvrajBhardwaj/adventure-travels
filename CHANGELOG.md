@@ -4,12 +4,12 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 **How to add an entry:** add it under [Unreleased] with the date, where the change lives (branch and commit, or "uncommitted"), and what changed for visitors, for the business and in the backend. Move entries to a dated release heading when they go live on www.himalayanarcadventure.com. Open work goes in [TODO.md](TODO.md).
 
-## Where things stand (5 Nov 2026)
+## Where things stand (6 Nov 2026)
 
 | Where | Commit | What it has |
 |---|---|---|
-| **Live site** (`main` on GitHub) | same as preview | Everything up to 5 Nov, including the copy rewrite, the trek fact fixes and the 15-minute checkout seat hold. Server functions run in Mumbai. Accounts, bookings and emails work; payments run in Razorpay **Test Mode** (no real money). All 12 environment variables are set in Vercel Production. |
-| **Preview** (`preview/trek-slideshows` on GitHub) | same as live | Same as live. |
+| **Live site** (`main` on GitHub) | `6b5fedd` | Everything up to 5 Nov, including the copy rewrite, the trek fact fixes and the 15-minute checkout seat hold. Server functions run in Mumbai. Accounts, bookings and emails work; payments run in Razorpay **Test Mode** (no real money). All 12 environment variables are set in Vercel Production. |
+| **Preview** (`preview/trek-slideshows` on GitHub) | latest | Live, plus the new phone menu (6 Nov). |
 | **Database** (Supabase `sdhtgmlkzcknmeakxgdz`) | — | All 7 SQL files applied (latest on 5 Nov); sign-up emails limited to 20 an hour. |
 | Local `main` | `9b522d5` | Stale. Reset it to `origin/main` before the next use. |
 
@@ -17,7 +17,15 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
-### 5 Nov 2026: **Live**: copy rewrite, trek fact fixes and the checkout seat hold; **Backend** database update applied — `preview/trek-slideshows` and `main`
+### 6 Nov 2026: New phone menu, styled after oknadesigns.com — `preview/trek-slideshows`
+- **For visitors (phones and tablets):** the menu now drops down from the top as a white panel instead of sliding in dark from the right. It has the logo with a thin close X, a hairline, then plain uppercase links with open letter-spacing and no boxes or arrows: Home, Treks ˅, Destinations, Courses, Activities ˅, FAQ, Contact. The page you're on shows in green.
+  - **Treks ˅** opens All treks (21), Uttarakhand (19), Himachal Pradesh (2), Treks from Joshimath and Winter treks; **Activities ˅** opens the four activities. These replace the old region and difficulty chips.
+  - Log in and Sign up (or My bookings and Log out) sit under a second hairline.
+  - A navy band at the bottom lists 4 popular treks next to a round green WhatsApp button.
+  - **FAQ** is new in the phone menu.
+- **Code:** `Navbar.tsx` (the mobile `SheetContent`, `MOBILE_NAV`, `MOBILE_ROW`); `ui/sheet.tsx` gains `side="top"`. The desktop menus are unchanged.
+- **Checks:** type-check and lint clean. In an isolated production build at 390×844 and 360×640, every menu row is 40–44 px tall, focus starts on the close button, and Escape closes the menu and returns focus to the menu button.
+: copy rewrite, trek fact fixes and the checkout seat hold; **Backend** database update applied — `preview/trek-slideshows` and `main`
 - **Live on www.himalayanarcadventure.com:** the 29 Oct copy rewrite with the shared brand icons (`4a6900d`) and the Trek The Himalayas fact fixes (`79beeae`), then the seat-hold commit. Before the first push: production build of a copy, 6 browser tests and 70 unit tests all passed.
 - **For visitors:** paying for a listed trek batch now holds the group's seats for 15 minutes, and the Razorpay window closes when the hold ends, so the last seats can't be sold twice. On /treks the first card runs wide only when the cards below it fill whole rows.
 - **For the business:** sign-up confirmation emails are now limited to 20 an hour (was 2), so the 3rd sign-up in an hour gets its email.
