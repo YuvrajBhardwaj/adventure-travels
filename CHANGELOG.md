@@ -17,7 +17,7 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
-### 6 Nov 2026: calm course pages that lead with skills and price — `preview/trek-slideshows`, uncommitted
+### 6 Nov 2026: calm course pages that lead with skills and price — `preview/trek-slideshows` `8e6acec`
 - **For visitors (asked by the owner: the course photo showed behind the whole page and pulled focus):** on every course page (`/courses/<slug>`) the photos now stay in the hero slideshow only. The hero ends in a mountain-ridge edge, and everything below sits on a plain snow-white background instead of a white card floating over a full-page photo or video.
 - **New "What you'll be able to do" track** at the top of the Overview tab: four day-by-day skills, ending with the certificate (across on desktop, down the side on phones). The steps come from each course's own itinerary, in a new `milestones` field in `src/data/courses.ts`, filled in for the 7-day and 2-week skiing and snowboarding courses. Backcountry has none yet, so the track is hidden there.
 - **Clearer value:** each package card and the price card show a per-day cost (e.g. "About Rs.1,429 a day"). The three tinted fact boxes are now one tidy row: Who it's for, Group size, Time on snow.
@@ -25,7 +25,7 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 - **Backend:** none.
 - **Checked:** `tsc`, `eslint`, the impeccable design detector (no findings); screenshots at 400 px and 1440 px on the skiing and snowboarding courses.
 
-### 6 Nov 2026: treks leave every day of their season; calendar-style Dates tab — `preview/trek-slideshows`, uncommitted
+### 6 Nov 2026: treks leave every day of their season; calendar-style Dates tab — `preview/trek-slideshows` `8e6acec`
 - **For visitors (asked by the owner, after Indiahikes and Trek The Himalayas):** a trek's Dates tab is now a calendar. Month buttons along the top (season months only), a month grid with every start date, and a "Your trek dates" panel (e.g. "Thu 17 Dec – Mon 21 Dec 2026 · Available") with **Register for this date**. No more fixed seat counts: dates show Available, Filling fast, Full (waitlist on WhatsApp) or Closed.
 - **Season calendar:** short and popular treks (Kuari Pass, Pangarchula, Valley of Flowers, Kedarkantha, Brahmatal, Har Ki Dun, Roopkund, Hampta Pass, Bhrigu Lake, Tungnath, Madhyamaheshwar) start **every day** of their season. Expeditions and permit tours (Satopanth, Nandi Kund, Dronagiri, Nanda Devi BC, Kalindi Khal, Gupt Khal, Panpatia Col, Mana Pass, Niti Pass, Rimkhim) start **every Saturday**. Windows follow the region's calendar: no Jul–Aug monsoon except monsoon treks, snow treks Dec–Apr, high passes only in June and September, Bhrigu Lake from June, Madhyamaheshwar until mid-November. Dates open 3 days ahead (21 days for expeditions, for permits) and run 12 months out. The calendar lives in `src/data/trekSeasons.ts` (`DEPARTURE_CALENDAR`); a unit test keeps it inside each trek's `bestSeason`.
 - **More reliable:** the dates are worked out in the browser, so they show even when the database is unreachable (before, the tab went empty).

@@ -1,4 +1,8 @@
 -- =============================================
+-- SUPERSEDED (6 Nov 2026): the site now generates every trek's dates from its season
+-- (src/data/trekSeasons.ts DEPARTURE_CALENDAR). Don't re-run this file; rows already seeded
+-- only act as per-date overrides (closed, tag, seat cap).
+--
 -- Himalayan Arc Adventure — proposed batch calendar, 24 Oct 2026 to 31 Oct 2027
 -- Run ONCE, after supabase-departures.sql. After that, manage dates at /admin/departures:
 -- re-running this brings back any seeded date you deleted there (it never changes or
