@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { FadeUp } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
+import { SwipeRail, RailItem } from "./SwipeRail";
+import CardSlideshow from "./CardSlideshow";
 import ContactPopup from "./ContactPopup";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
@@ -137,7 +139,7 @@ export default function CampingSection() {
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
         {/* Editorial two-column: what we do and why (left), where (right) */}
         <div className="grid gap-14 lg:grid-cols-12 lg:gap-16">
-          <FadeUp className="lg:col-span-5">
+          <FadeUp className="min-w-0 lg:col-span-5">
             <p className="text-lg leading-relaxed text-foreground/80 sm:text-xl">
               From the slopes of Auli and forests around Joshimath to the remote landscapes of Tapovan, Niti Valley and
               Malari, we run camps for people who want more than the usual tourist circuit.
@@ -168,9 +170,54 @@ export default function CampingSection() {
             </div>
           </FadeUp>
 
-          <FadeUp delay={0.05} className="lg:col-span-7">
+          <FadeUp delay={0.05} className="min-w-0 lg:col-span-7">
             <h3 className="font-heading text-2xl font-medium tracking-[-0.015em] text-foreground sm:text-3xl">Choose Your Mountain</h3>
-            <ul className="mt-6 border-t border-foreground/20">
+
+            {/* Phones and tablets: camp photo cards you swipe; each opens photos and the enquiry form */}
+            <SwipeRail label="Camps" className="mt-6 lg:hidden">
+              {CAMPS.map((camp) => (
+                <RailItem key={camp.name}>
+                  <button
+                    type="button"
+                    onClick={() => setSelected(camp)}
+                    className="group relative flex aspect-[3/4] w-full flex-col justify-end overflow-hidden rounded-3xl bg-navy p-5 text-left text-white transition-transform duration-150 ease-out active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:active:scale-100"
+                  >
+                    <CardSlideshow images={camp.gallery} alt={camp.name} className="z-0" />
+                    <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/35 to-transparent" />
+                    <span className="relative">
+                      <span className="block font-heading text-3xl font-medium leading-none tracking-[-0.02em]">{camp.name}</span>
+                      <span className="mt-3 flex flex-wrap gap-1.5">
+                        {camp.points.split(" • ").map((point) => (
+                          <span key={point} className="rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-medium ring-1 ring-white/20 backdrop-blur-md">
+                            {point}
+                          </span>
+                        ))}
+                      </span>
+                      <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300">
+                        Photos and enquiry
+                        <span aria-hidden className="transition-transform duration-150 ease-out group-hover:translate-x-0.5">→</span>
+                      </span>
+                    </span>
+                  </button>
+                </RailItem>
+              ))}
+              <RailItem>
+                <button
+                  type="button"
+                  onClick={() => setSelected(CUSTOM_CAMP)}
+                  className="group relative flex aspect-[3/4] w-full flex-col justify-end overflow-hidden rounded-3xl bg-gradient-to-br from-amber-400 to-orange-600 p-5 text-left text-white transition-transform duration-150 ease-out active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:active:scale-100"
+                >
+                  <span className="block font-heading text-3xl font-medium leading-tight">Custom camps</span>
+                  <span className="mt-2 block text-sm leading-relaxed text-white/85">Tell us where you want to go. We’ll help design the experience.</span>
+                  <span className="mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-orange-700">
+                    Design my camp
+                    <span aria-hidden className="transition-transform duration-150 ease-out group-hover:translate-x-0.5">→</span>
+                  </span>
+                </button>
+              </RailItem>
+            </SwipeRail>
+
+            <ul className="mt-6 hidden border-t border-foreground/20 lg:block">
               {CAMPS.map((camp) => (
                 <li key={camp.name} className="border-b border-foreground/15">
                   <button

@@ -11,8 +11,8 @@ import { DURATION, EASE } from "@/lib/motion";
  * viewport is hidden (instantly, unseen) and then revealed as it scrolls in.
  * Anything already on screen never animates; reduced motion stays static.
  */
-function useDeferredReveal(margin: `${number}px`) {
-  const ref = useRef<HTMLDivElement>(null);
+export function useDeferredReveal<T extends Element = HTMLDivElement>(margin: `${number}px`) {
+  const ref = useRef<T>(null);
   const reduce = useReducedMotion();
   const [deferred, setDeferred] = useState(false);
   const inView = useInView(ref, { once: true, margin });

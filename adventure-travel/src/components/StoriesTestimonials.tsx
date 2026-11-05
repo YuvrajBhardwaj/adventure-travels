@@ -1,10 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { Quote } from "lucide-react";
 import { stories } from "@/data/stories";
 import { testimonials } from "@/data/treks";
 import { FadeUp } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
+import { SwipeRail, RailItem } from "./SwipeRail";
+
+const initials = (name: string) =>
+  name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2);
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -34,8 +43,34 @@ export default function StoriesTestimonials() {
           </h2>
         </FadeUp>
 
+        {/* Phones and tablets: the reviews as cards you swipe */}
+        <SwipeRail label="Reviews" className="mt-10 lg:hidden">
+          {picks.map((t) => (
+            <RailItem key={t.name}>
+              <figure className="flex h-full flex-col rounded-3xl bg-background p-6 shadow-[0_18px_40px_-26px_rgba(15,23,42,0.35)] ring-1 ring-foreground/[0.07]">
+                <div className="flex items-center justify-between">
+                  <Quote className="h-8 w-8 text-emerald-500/60" aria-hidden />
+                  <Stars rating={t.rating} />
+                </div>
+                <blockquote className="mt-4 font-heading text-lg leading-snug tracking-[-0.01em] text-foreground">&ldquo;{t.quote}&rdquo;</blockquote>
+                <figcaption className="mt-auto flex items-center gap-3 border-t border-foreground/10 pt-4">
+                  <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 font-nav text-sm font-semibold text-emerald-800">
+                    {initials(t.name)}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block font-heading text-base font-medium text-foreground">{t.name}</span>
+                    <span className="block font-nav text-xs text-muted">
+                      {t.role} · {t.location}
+                    </span>
+                  </span>
+                </figcaption>
+              </figure>
+            </RailItem>
+          ))}
+        </SwipeRail>
+
         {/* Quote block: one voice large, two beside it */}
-        <div className="mt-14 grid gap-12 lg:mt-20 lg:grid-cols-12 lg:gap-16">
+        <div className="mt-14 hidden gap-12 lg:mt-20 lg:grid lg:grid-cols-12 lg:gap-16">
           <FadeUp className="lg:col-span-8">
             <figure>
               <Stars rating={lead.rating} />
@@ -69,8 +104,39 @@ export default function StoriesTestimonials() {
           </div>
         </div>
 
+        {/* Phones and tablets: stories as tall photo cards */}
+        <div className="mt-14 border-t border-foreground/15 pt-10 lg:hidden">
+          <p className="font-nav text-xs font-semibold uppercase tracking-[0.14em] text-muted">Stories</p>
+          <SwipeRail label="Stories" className="mt-5">
+            {featuredStories.map((story) => (
+              <RailItem key={story.id}>
+                <Link
+                  href={story.href}
+                  className="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-3xl bg-navy p-5 text-white transition-transform duration-150 ease-out active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary motion-reduce:active:scale-100"
+                >
+                  <SmartImage
+                    src={story.image}
+                    alt={story.title}
+                    className="absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none"
+                  />
+                  <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/40 to-transparent" />
+                  <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 font-nav text-[11px] font-semibold uppercase tracking-[0.12em] text-foreground shadow-sm">
+                    {story.category}
+                  </span>
+                  <span className="relative">
+                    <span className="block font-heading text-2xl font-medium leading-tight tracking-[-0.015em]">{story.title}</span>
+                    <span className="mt-2 block font-nav text-xs text-white/70">
+                      {story.author} · {story.readTime} min read
+                    </span>
+                  </span>
+                </Link>
+              </RailItem>
+            ))}
+          </SwipeRail>
+        </div>
+
         {/* Stories: one large, two ruled rows */}
-        <div className="mt-20 grid gap-10 border-t border-foreground/20 pt-10 lg:mt-28 lg:grid-cols-12 lg:gap-14">
+        <div className="mt-20 hidden gap-10 border-t border-foreground/20 pt-10 lg:mt-28 lg:grid lg:grid-cols-12 lg:gap-14">
           <Link
             href={firstStory.href}
             className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:col-span-7"

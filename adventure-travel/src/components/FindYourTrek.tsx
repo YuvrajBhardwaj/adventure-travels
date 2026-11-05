@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { treks, REGIONS } from "@/data/treks";
+import { ArrowRight } from "lucide-react";
+import { treks, REGIONS, DIFFICULTY_COLORS } from "@/data/treks";
 import { FadeUp } from "./MotionWrapper";
+import CardSlideshow from "./CardSlideshow";
+import { trekPhotos } from "@/data/trekGalleries";
+import { SwipeRail, RailItem } from "./SwipeRail";
 import Price from "@/components/Price";
 
 // Copy mirrors the FAQ: Easy/Moderate need no prior experience; Challenging/Strenuous
@@ -17,8 +21,13 @@ const LEVELS = [
 // Everything below is derived from the same data as the trek pages, so it can't drift.
 const levelStats = LEVELS.map((level) => {
   const group = treks.filter((t) => t.difficulty === level.difficulty);
+  // Phone card slideshow: our own photos from this level's treks, else any cover.
+  const own = [...new Set(group.flatMap((t) => trekPhotos(t, 4)).filter((src) => src.startsWith("/assets/")))];
+  const cover = group.find((t) => t.image)?.image;
+  const photos = own.length ? own.slice(0, 6) : cover ? [cover] : [];
   return {
     ...level,
+    photos,
     count: group.length,
     fromPrice: group.length ? Math.min(...group.map((t) => t.price)) : 0,
     minDays: group.length ? Math.min(...group.map((t) => t.days)) : 0,
@@ -56,7 +65,51 @@ export default function FindYourTrek() {
           </p>
         </FadeUp>
 
-        <ol className="mt-12 grid border-t border-foreground/20 lg:mt-16 lg:grid-cols-4 lg:items-end lg:border-t-0">
+        {/* Phones and tablets: one photo card per level, swiped sideways */}
+        <SwipeRail label="Treks by difficulty" className="mt-10 lg:hidden">
+          {levelStats.map((l, i) => (
+            <RailItem key={l.difficulty}>
+              <Link
+                href={`/treks?difficulty=${encodeURIComponent(l.difficulty)}`}
+                className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-3xl bg-navy p-5 text-white shadow-[0_18px_40px_-22px_rgba(15,23,42,0.6)] transition-transform duration-150 ease-out active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:active:scale-100"
+              >
+                {l.photos.length > 0 && <CardSlideshow images={l.photos} alt="" className="z-0" />}
+                <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-navy-deep via-navy-deep/55 to-navy-deep/5" />
+                <span className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 font-nav text-[11px] font-medium uppercase tracking-[0.14em] ring-1 ring-white/20 backdrop-blur-md">
+                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: DIFFICULTY_COLORS[l.difficulty] }} aria-hidden />
+                  Level {i + 1} of {levelStats.length}
+                </span>
+                <span className="relative">
+                  <span className="block font-heading text-4xl font-medium leading-none tracking-[-0.02em]">{l.difficulty}</span>
+                  <span className="mt-2 block font-nav text-sm font-medium text-white/90">{l.label}</span>
+                  <span className="mt-1.5 block text-[13px] leading-snug text-white/70">{l.blurb}</span>
+                  <span className="mt-4 grid grid-cols-2 gap-2">
+                    <span className="rounded-xl bg-white/10 px-3 py-2 ring-1 ring-white/15 backdrop-blur-md">
+                      <span className="block font-nav text-[10px] uppercase tracking-[0.14em] text-white/60">Duration</span>
+                      <span className="mt-0.5 block font-heading text-lg tabular-nums">
+                        {l.minDays === l.maxDays ? `${l.minDays} days` : `${l.minDays}–${l.maxDays} days`}
+                      </span>
+                    </span>
+                    <span className="rounded-xl bg-white/10 px-3 py-2 ring-1 ring-white/15 backdrop-blur-md">
+                      <span className="block font-nav text-[10px] uppercase tracking-[0.14em] text-white/60">Up to</span>
+                      <span className="mt-0.5 block font-heading text-lg tabular-nums">{l.maxAltitude.toLocaleString("en-IN")} m</span>
+                    </span>
+                  </span>
+                  <span className="mt-4 flex items-center justify-between gap-3 text-sm">
+                    <span>
+                      {l.count} {l.count === 1 ? "trek" : "treks"} · from <Price inr={l.fromPrice} />
+                    </span>
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-[0_6px_18px_-6px_rgba(16,185,129,0.8)] transition-transform duration-150 ease-out group-hover:translate-x-0.5" aria-hidden>
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
+                  </span>
+                </span>
+              </Link>
+            </RailItem>
+          ))}
+        </SwipeRail>
+
+        <ol className="mt-12 hidden border-t border-foreground/20 lg:mt-16 lg:grid lg:grid-cols-4 lg:items-end lg:border-t-0">
           {levelStats.map((l, i) => (
             <li key={l.difficulty} className="contents">
               <Link

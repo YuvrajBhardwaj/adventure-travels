@@ -7,7 +7,9 @@ import { FadeUp } from "./MotionWrapper";
 import { buttonVariants } from "@/components/ui/button";
 import { transition } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { treks } from "@/data/treks";
+import { treks, DIFFICULTY_COLORS } from "@/data/treks";
+import { ElevationLine } from "@/components/ElevationLine";
+import { SwipeRail, RailItem } from "./SwipeRail";
 
 const regions = [
   {
@@ -84,7 +86,7 @@ export default function HimalayanMap() {
         </FadeUp>
 
         <div className="mt-10 grid grid-cols-1 items-start gap-10 lg:mt-14 lg:grid-cols-12 lg:gap-14">
-          <FadeUp className="lg:col-span-7">
+          <FadeUp className="min-w-0 lg:col-span-7">
             <div className="border-y border-foreground/15 py-6 sm:py-8">
               <svg viewBox="0 0 600 230" className="h-auto w-full" role="group" aria-label="Select a Himalayan region">
                 <defs>
@@ -153,7 +155,7 @@ export default function HimalayanMap() {
             </div>
           </FadeUp>
 
-          <FadeUp delay={0.1} className="lg:col-span-5">
+          <FadeUp delay={0.1} className="min-w-0 lg:col-span-5">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={activeRegion.id}
@@ -172,7 +174,33 @@ export default function HimalayanMap() {
                   </p>
                 </div>
 
-                <ul className="mt-2 mb-6 sm:columns-2 sm:gap-x-6">
+                {/* Phones and tablets: a swipe row of small cards, each with the trek's altitude line */}
+                <SwipeRail label={`${activeRegion.name} treks`} className="mb-6 mt-5 lg:hidden">
+                  {regionTreks.map((trek) => (
+                    <RailItem key={trek.slug} className="w-[60%] sm:w-[32%]">
+                      <Link
+                        href={`/treks/${trek.slug}`}
+                        className="flex h-full flex-col rounded-2xl bg-card p-4 shadow-[0_12px_30px_-22px_rgba(15,23,42,0.4)] ring-1 ring-foreground/[0.08] transition-transform duration-150 ease-out active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:active:scale-100"
+                      >
+                        <span className="flex items-center gap-1.5 font-nav text-[10px] font-medium uppercase tracking-[0.14em] text-muted">
+                          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: DIFFICULTY_COLORS[trek.difficulty] }} aria-hidden />
+                          {trek.difficulty}
+                        </span>
+                        <span className="mt-2 line-clamp-2 font-heading text-lg font-medium leading-tight text-foreground">{trek.name}</span>
+                        <span className="mt-1 font-nav text-xs tabular-nums text-muted">
+                          {trek.days} days · {trek.maxAltitude.toLocaleString("en-IN")} m
+                        </span>
+                        <span className="mt-auto block pt-3 text-emerald-500" aria-hidden>
+                          <span className="block h-10">
+                            <ElevationLine profile={trek.elevationProfile} peak strokeWidth={1.25} />
+                          </span>
+                        </span>
+                      </Link>
+                    </RailItem>
+                  ))}
+                </SwipeRail>
+
+                <ul className="mb-6 mt-2 hidden sm:columns-2 sm:gap-x-6 lg:block">
                   {regionTreks.map((trek) => (
                     <li key={trek.slug} className="break-inside-avoid">
                       <Link

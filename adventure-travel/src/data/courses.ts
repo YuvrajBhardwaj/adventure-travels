@@ -534,3 +534,9 @@ export const courses: Course[] = [
     ],
   },
 ];
+
+/** A course's photos for a card slideshow: the cover first, then its gallery photos (no videos). */
+export function coursePhotos(course: { image: string; gallery?: string[] }, max = 6): string[] {
+  const photos = (course.gallery ?? []).filter((src) => !/\.(mp4|mov)$/i.test(src) && src !== course.image);
+  return [course.image, ...photos].slice(0, max);
+}

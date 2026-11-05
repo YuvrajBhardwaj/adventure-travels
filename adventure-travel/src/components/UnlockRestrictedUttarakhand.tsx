@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { treks } from "@/data/treks";
 import { FadeUp } from "./MotionWrapper";
 import { TrekPhotoCard } from "./SummerTreksRail";
+import { SwipeRail, RailItem } from "./SwipeRail";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -34,9 +36,13 @@ export default function UnlockRestrictedUttarakhand() {
 
             <div className="lg:col-span-5">
               <p className="font-nav text-xs font-semibold tracking-[0.12em] text-amber-300">ILP-RESTRICTED · BY PERMIT ONLY</p>
-              <ul className="mt-3 border-t border-white/20">
+              <ul className="mt-3 flex flex-wrap gap-2 lg:block lg:border-t lg:border-white/20">
                 {PERKS.map((p) => (
-                  <li key={p} className="border-b border-white/15 py-3 text-sm font-medium text-white/85">
+                  <li
+                    key={p}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white/85 ring-1 ring-white/15 lg:flex lg:rounded-none lg:border-b lg:border-white/15 lg:bg-transparent lg:px-0 lg:py-3 lg:text-sm lg:ring-0"
+                  >
+                    <Check className="h-3.5 w-3.5 text-amber-300 lg:hidden" aria-hidden />
                     {p}
                   </li>
                 ))}
@@ -45,13 +51,13 @@ export default function UnlockRestrictedUttarakhand() {
           </div>
         </FadeUp>
 
-        <ul className="mt-14 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+        <SwipeRail label="Permit-only expeditions" tone="dark" className="mt-12 lg:mt-14" desktop="lg:grid lg:grid-cols-3 lg:gap-x-6 lg:gap-y-12">
           {restricted.map((trek) => (
-            <li key={trek.id}>
+            <RailItem key={trek.id}>
               <TrekPhotoCard trek={trek} dark />
-            </li>
+            </RailItem>
           ))}
-        </ul>
+        </SwipeRail>
 
         <FadeUp delay={0.1}>
           <div className="mt-14 flex flex-col gap-5 border-t border-white/20 pt-8 sm:flex-row sm:items-center sm:justify-between">

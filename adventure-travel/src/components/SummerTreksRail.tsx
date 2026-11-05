@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { byPopularity, type Trek } from "@/data/treks";
 import { FadeUp } from "./MotionWrapper";
-import SmartImage from "./SmartImage";
+import CardSlideshow from "./CardSlideshow";
+import { trekPhotos } from "@/data/trekGalleries";
 import NoPhoto from "./NoPhoto";
 import Price from "@/components/Price";
 import { ElevationLine } from "@/components/ElevationLine";
@@ -21,10 +22,10 @@ export function TrekPhotoCard({ trek, dark = false }: { trek: Trek; dark?: boole
     >
       <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-navy">
         {trek.image ? (
-          <SmartImage
-            src={trek.image}
+          <CardSlideshow
+            images={trekPhotos(trek)}
             alt={trek.name}
-            className="absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+            className="z-0 transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
           />
         ) : (
           <NoPhoto className="absolute inset-0 h-full w-full" />

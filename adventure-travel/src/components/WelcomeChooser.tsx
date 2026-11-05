@@ -4,10 +4,10 @@ import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { byPopularity, treks, type Trek } from "@/data/treks";
-import { courses } from "@/data/courses";
+import { courses, coursePhotos } from "@/data/courses";
 import { destinations } from "@/data/destinations";
 import Price from "@/components/Price";
-import SmartImage from "@/components/SmartImage";
+import CardSlideshow from "@/components/CardSlideshow";
 import NoPhoto from "@/components/NoPhoto";
 import { TrekPhotoCard } from "@/components/SummerTreksRail";
 import { transition } from "@/lib/motion";
@@ -17,6 +17,8 @@ interface PreviewItem {
   name: string;
   href: string;
   image?: string;
+  /** Photos the card cycles through (cover first). */
+  images?: string[];
   meta: string;
   price?: number;
   /** Treks render as the full photo card (the same card as the old home rail, now shown only here). */
@@ -53,6 +55,7 @@ function buildTiles(): Tile[] {
     name: c.name,
     href: `/courses/${c.slug}`,
     image: c.image,
+    images: coursePhotos(c),
     meta: `${c.duration} · ${c.type}`,
     price: c.tiers?.length ? Math.min(...c.tiers.map((t) => t.priceBase)) : c.price,
   }));
@@ -177,10 +180,10 @@ export default function WelcomeChooser() {
                   >
                     <span className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden rounded-xl sm:aspect-square sm:w-16">
                       {item.image ? (
-                        <SmartImage
-                          src={item.image}
+                        <CardSlideshow
+                          images={item.images ?? [item.image]}
                           alt=""
-                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
+                          className="transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
                         />
                       ) : (
                         <NoPhoto className="absolute inset-0 h-full w-full" />

@@ -1,6 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
+import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { processSteps, treks } from "@/data/treks";
@@ -10,6 +12,11 @@ import { FadeUp } from "./MotionWrapper";
 export default function HowItWorks() {
   // A real route's profile runs across the top of the steps: the plan is a climb.
   const route = [...treks].sort((a, b) => b.elevationProfile.length - a.elevationProfile.length)[0];
+  // Phones and tablets: the timeline's line fills in as the steps scroll past.
+  const reduce = useReducedMotion();
+  const stepsRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: stepsRef, offset: ["start 80%", "end 55%"] });
+  const fill = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 });
 
   return (
     <section className="relative bg-surface py-20 md:py-28">
@@ -30,22 +37,31 @@ export default function HowItWorks() {
           <ElevationLine profile={route.elevationProfile} peak strokeWidth={1.5} />
         </div>
 
-        <ol className="mt-8 grid border-t border-foreground/20 lg:mt-0 lg:grid-cols-5 lg:border-t-0">
-          {processSteps.map((step) => (
-            <li
-              key={step.n}
-              className="grid grid-cols-[3.5rem_1fr] gap-x-4 border-b border-foreground/15 py-6 lg:block lg:border-b-0 lg:border-l lg:border-foreground/15 lg:px-5 lg:py-2 lg:first:border-l-0 lg:first:pl-0"
-            >
-              <span className="font-heading text-5xl font-normal leading-none tabular-nums text-foreground/30 lg:text-6xl">
-                {step.n}
-              </span>
-              <div className="lg:mt-5">
-                <h3 className="font-heading text-xl font-medium leading-tight text-foreground">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{step.text}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+        <div ref={stepsRef} className="relative mt-10 lg:mt-0">
+          <div aria-hidden className="absolute bottom-8 left-[19px] top-5 w-0.5 overflow-hidden rounded-full bg-foreground/10 lg:hidden">
+            <motion.div
+              className="h-full w-full origin-top rounded-full bg-gradient-to-b from-emerald-400 to-emerald-600"
+              style={{ scaleY: reduce ? 1 : fill }}
+            />
+          </div>
+          <ol className="grid lg:grid-cols-5">
+            {processSteps.map((step) => (
+              <li
+                key={step.n}
+                className="relative grid grid-cols-[2.5rem_1fr] gap-x-4 pb-9 lg:block lg:border-l lg:border-foreground/15 lg:px-5 lg:py-2 lg:first:border-l-0 lg:first:pl-0"
+              >
+                <span className="relative z-[1] flex h-10 w-10 items-center justify-center rounded-full bg-surface font-nav text-sm font-semibold tabular-nums text-emerald-700 ring-2 ring-emerald-500 lg:hidden">
+                  {step.n}
+                </span>
+                <span className="hidden font-heading text-6xl font-normal leading-none tabular-nums text-foreground/30 lg:block">{step.n}</span>
+                <FadeUp className="pt-1.5 lg:mt-5 lg:pt-0">
+                  <h3 className="font-heading text-xl font-medium leading-tight text-foreground">{step.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">{step.text}</p>
+                </FadeUp>
+              </li>
+            ))}
+          </ol>
+        </div>
 
         <FadeUp delay={0.1}>
           <div className="mt-12 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-6">
