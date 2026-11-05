@@ -91,6 +91,8 @@ export interface Course {
   instructorRatio?: string;
   weeklyHours?: string;
   highlights?: string[];
+  /** What a guest can do by a given day, taken from the itinerary. Shown as the skill track on the course page. */
+  milestones?: { day: number; skill: string }[];
   /** Multi-tier pricing (Basic/Premium) — falls back to `price` when absent. */
   tiers?: CourseTier[];
 }
@@ -139,6 +141,12 @@ export const courses: Course[] = [
     id: 1,
     name: "7-Day Skiing Course",
     slug: "skiing-course",
+    milestones: [
+      { day: 2, skill: "Glide, balance and stop under control with the snow-plough" },
+      { day: 4, skill: "Link turns down beginner runs without stopping" },
+      { day: 5, skill: "Ride the ski lift and take on longer runs" },
+      { day: 7, skill: "Ski independently and leave with your course certificate" },
+    ],
     type: "Skiing",
     title: "Learn to Ski in the Himalayas",
     price: 10000,
@@ -252,6 +260,12 @@ export const courses: Course[] = [
     id: 6,
     name: "14-Day International-Style Skiing Course",
     slug: "skiing-intensive-2week",
+    milestones: [
+      { day: 3, skill: "Control your speed and stop with confidence" },
+      { day: 6, skill: "Ski continuously, linking turns with rhythm" },
+      { day: 9, skill: "Link parallel turns on longer runs" },
+      { day: 13, skill: "Pass the skills assessment and earn your certificate" },
+    ],
     type: "Skiing",
     title: "Ski Auli the International Way",
     price: 18500,
@@ -337,6 +351,12 @@ export const courses: Course[] = [
     id: 2,
     name: "7-Day Snowboarding Course",
     slug: "snowboarding-course",
+    milestones: [
+      { day: 2, skill: "Control the board and stop on your heel edge" },
+      { day: 4, skill: "Link heel-side and toe-side turns" },
+      { day: 5, skill: "Learn carving basics on varied snow" },
+      { day: 7, skill: "Ride a controlled assessed descent and earn your certificate" },
+    ],
     type: "Snowboarding",
     title: "Snowboard the Himalayan Powder",
     price: 35000,
@@ -399,6 +419,12 @@ export const courses: Course[] = [
     id: 4,
     name: "2-Week Snowboard Intensive",
     slug: "snowboard-intensive-2week",
+    milestones: [
+      { day: 3, skill: "Link heel-side turns on gentle terrain" },
+      { day: 6, skill: "Link heel-to-toe turns on blue runs" },
+      { day: 11, skill: "Carve heel-side and toe-side on groomed slopes" },
+      { day: 13, skill: "Pass an assessed run on intermediate terrain and earn your certificate" },
+    ],
     type: "Snowboarding",
     title: "2-Week Snowboard Intensive in Auli",
     price: 60000,

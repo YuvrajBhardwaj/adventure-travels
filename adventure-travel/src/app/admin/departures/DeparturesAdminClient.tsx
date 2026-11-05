@@ -39,7 +39,7 @@ const defaultCapacity = (trek: Trek) => trek.groupSize ?? 12;
 
 export default function DeparturesAdminClient() {
   return (
-    <AdminGate wide title="Departures" description="Each trek's batch dates and seats. Visitors see them on the trek's Dates tab.">
+    <AdminGate wide title="Departures" description="Trek dates are generated from each trek's season (src/data/trekSeasons.ts): groups leave every day, or every Saturday for expeditions. Add a date here only to close it, tag it or cap its seats.">
       <DeparturesAdmin />
     </AdminGate>
   );

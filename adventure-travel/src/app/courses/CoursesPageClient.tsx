@@ -1,5 +1,6 @@
 "use client";
 
+import EnquireTab from "@/components/EnquireTab";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from "framer-motion";
@@ -295,6 +296,7 @@ export default function CoursesPageClient() {
           </p>
         </FadeUp>
       </section>
+      <EnquireTab subject="a course" kind="course" heading="Questions about a course?" message="I'd like to know more about your ski and snowboard courses in Auli: dates, price and availability." />
     </div>
   );
 }

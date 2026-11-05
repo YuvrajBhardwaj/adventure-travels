@@ -1,8 +1,11 @@
 import { MONTHS, seasonMonths } from "./season";
+import type { DepartureCalendar } from "@/data/trekSeasons";
 
 /**
- * The batch calendar as the trek page shows it. Batches come from Supabase
- * (supabase-departures.sql); these helpers are pure so they're unit-tested.
+ * The departure calendar as the trek page shows it. Dates are generated from the trek's
+ * season (src/data/trekSeasons.ts `DEPARTURE_CALENDAR`); rows in Supabase
+ * (supabase-departures.sql) override a date: closed, tagged or with a real seat cap.
+ * These helpers are pure so they're unit-tested.
  */
 
 /** One upcoming batch. */
@@ -37,7 +40,7 @@ export function seatLabel(d: Seats): string {
     case "full":
       return "Full";
     case "few":
-      return d.seatsLeft === 1 ? "1 seat left" : `${d.seatsLeft} seats left`;
+      return "Filling fast";
     default:
       return "Available";
   }
@@ -117,3 +120,51 @@ export function seasonStrip(bestSeason: string, highlights: Partial<Record<strin
   const open = new Set(seasonMonths(bestSeason));
   return MONTHS.map((name, month) => ({ name, month, inSeason: open.has(month), highlight: highlights[name] }));
 }
+
+const addDays = (iso: string, days: number) => new Date(utc(iso).getTime() + days * DAY_MS).toISOString().slice(0, 10);
+
+/** Is "MM-DD" inside a window? A window like ["09-15", "06-30"] wraps past December. */
+const inWindow = (md: string, [from, to]: [string, string]) => (from <= to ? md >= from && md <= to : md >= from || md <= to);
+
+/**
+ * Start dates from `today + leadDays` up to `horizonDays` ahead: every day inside the
+ * season windows, or every Saturday for a weekly trek.
+ */
+export function seasonDates(cal: DepartureCalendar, today: string, horizonDays = 365): string[] {
+  const lead = cal.leadDays ?? (cal.cadence === "daily" ? 3 : 21);
+  const out: string[] = [];
+  for (let i = lead; i <= horizonDays; i++) {
+    const iso = addDays(today, i);
+    if (cal.cadence === "weekly" && utc(iso).getUTCDay() !== 6) continue;
+    if (cal.windows.some((w) => inWindow(iso.slice(5), w))) out.push(iso);
+  }
+  return out;
+}
+
+/**
+ * One open departure per generated date; an admin row on the same date replaces it, and
+ * admin rows on other dates (special departures) are kept. Earliest first.
+ */
+export function mergeDepartures(dates: string[], rows: Departure[], capacity: number): Departure[] {
+  const byDate = new Map(rows.map((r) => [r.start, r]));
+  const list = dates.map<Departure>(
+    (start) => byDate.get(start) ?? { id: `gen-${start}`, start, capacity, seatsLeft: capacity, closed: false, tag: "" },
+  );
+  const generated = new Set(dates);
+  for (const r of rows) if (!generated.has(r.start)) list.push(r);
+  return list.sort((a, b) => a.start.localeCompare(b.start));
+}
+
+/** "Starts every day" / "Starts every Saturday". */
+export const cadenceLabel = (cal: DepartureCalendar) => (cal.cadence === "daily" ? "Starts every day" : "Starts every Saturday");
+
+const mdLabel = (md: string) => `${Number(md.slice(3))} ${MONTHS[Number(md.slice(0, 2)) - 1]}`;
+
+/** "15 Sep – 30 Jun" or "1 Jun – 30 Jun & 1 Sep – 30 Sep". */
+export const windowsLabel = (cal: DepartureCalendar) => cal.windows.map(([a, b]) => `${mdLabel(a)} – ${mdLabel(b)}`).join(" & ");
+
+/** Today in India, YYYY-MM-DD (the team's calendar, whatever the visitor's time zone). */
+export const todayInIndia = (now = new Date()) => new Date(now.getTime() + 330 * 60_000).toISOString().slice(0, 10);
+
+/** Is this date inside the trek's season windows (any weekday)? */
+export const inSeason = (cal: DepartureCalendar, iso: string) => cal.windows.some((w) => inWindow(iso.slice(5), w));

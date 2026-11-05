@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { DURATION, EASE } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 export interface WallpaperSlide {
   src: string;
@@ -36,6 +37,7 @@ export default function WallpaperCarousel({
   className = "",
   scrimClassName = "bg-gradient-to-t from-black/75 via-black/30 to-black/40",
   controls = "bottom",
+  controlsClassName,
   fallback,
   children,
 }: {
@@ -45,6 +47,8 @@ export default function WallpaperCarousel({
   scrimClassName?: string;
   /** "bottom": caption + controls along the bottom edge. "top": controls only, top-left, for heroes whose copy sits at the bottom. */
   controls?: "bottom" | "top";
+  /** Extra classes for the bottom controls row, e.g. to lift it above a shape drawn over the hero's bottom edge. */
+  controlsClassName?: string;
   /** Background shown when there are no slides. */
   fallback?: ReactNode;
   children?: ReactNode;
@@ -197,7 +201,7 @@ export default function WallpaperCarousel({
       {n > 1 && controls === "top" && <div className="absolute left-4 top-4 z-20 sm:left-6 sm:top-6">{controlButtons}</div>}
 
       {n > 1 && controls === "bottom" && (
-        <div className="absolute inset-x-0 bottom-0 z-20 mx-auto flex max-w-7xl flex-col gap-1 px-4 pb-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:pb-5 lg:px-8">
+        <div className={cn("absolute inset-x-0 bottom-0 z-20 mx-auto flex max-w-7xl flex-col gap-1 px-4 pb-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:pb-5 lg:px-8", controlsClassName)}>
           <div aria-live={playing ? "off" : "polite"} className="min-w-0">
             {slide?.caption &&
               (slide.href ? (

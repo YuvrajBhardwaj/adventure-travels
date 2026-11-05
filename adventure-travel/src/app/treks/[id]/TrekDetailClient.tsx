@@ -50,11 +50,11 @@ import {
 } from "lucide-react";
 import { useDepartures, type DeparturesState } from "./useDepartures";
 import {
-  batchLabel, datesBadge, groupByMonth, isBookable, seasonStrip, seatLabel, seatStatus,
-  type Departure, type SeatStatus,
+  batchLabel, cadenceLabel, datesBadge, dayLabel, endDate, groupByMonth, isBookable, seasonStrip, seatLabel, seatStatus,
+  inSeason, windowsLabel, type Departure, type SeatStatus,
 } from "@/lib/departures";
 import { MONTHS } from "@/lib/season";
-import { MONTH_HIGHLIGHTS } from "@/data/trekSeasons";
+import { DEPARTURE_CALENDAR, MONTH_HIGHLIGHTS } from "@/data/trekSeasons";
 import { getTrekPackage } from "@/data/trekPackage";
 import ScholarshipsTab from "./ScholarshipsTab";
 import { printItinerary } from "./printItinerary";
@@ -77,7 +77,7 @@ import { DIFFICULTY_COLORS } from "@/data/treks";
 
 const SEAT_STYLE: Record<SeatStatus, { dot: string; text: string; legend: string }> = {
   available: { dot: "bg-emerald-600", text: "text-emerald-700", legend: "Available" },
-  few: { dot: "bg-amber-500", text: "text-amber-700", legend: "Few seats left" },
+  few: { dot: "bg-amber-500", text: "text-amber-700", legend: "Filling fast" },
   full: { dot: "bg-slate-400", text: "text-slate-500", legend: "Full (join the waitlist)" },
   closed: { dot: "bg-slate-300", text: "text-slate-400", legend: "Closed" },
 };
@@ -131,7 +131,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
   });
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  const dates = useDepartures(trek.slug);
+  const dates = useDepartures(trek);
   const heroSlides = useMemo(() => getHeroSlides(trek), [trek]);
 
   const goToTab = (tab: Tab) => {
@@ -670,9 +670,13 @@ function BookingCard({
         {nextBatch && (
           <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-0.5 rounded-xl bg-emerald-50/70 px-3 py-2.5 text-sm ring-1 ring-emerald-100 dark:bg-emerald-500/10 dark:ring-emerald-500/20">
             <CalendarDays className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
-            <span className="text-xs font-semibold text-muted">Next batch</span>
+            <span className="text-xs font-semibold text-muted">Next departure</span>
             <span className="font-semibold text-foreground">{batchLabel(nextBatch.start, trek.days)}</span>
-            <span className={`text-xs font-bold ${SEAT_STYLE[seatStatus(nextBatch)].text}`}>{seatLabel(nextBatch)}</span>
+            {DEPARTURE_CALENDAR[trek.slug] ? (
+              <span className="text-xs font-bold text-emerald-700">{cadenceLabel(DEPARTURE_CALENDAR[trek.slug])}</span>
+            ) : (
+              <span className={`text-xs font-bold ${SEAT_STYLE[seatStatus(nextBatch)].text}`}>{seatLabel(nextBatch)}</span>
+            )}
           </p>
         )}
         <Button
@@ -983,24 +987,47 @@ function MonthHighlight({ text, className = "" }: { text?: string; className?: s
   );
 }
 
+const WEEKDAY_HEADS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+/** "Sat 7 Nov – Wed 11 Nov 2026". */
+const tripLabel = (start: string, days: number) => `${batchLabel(start, days)} ${endDate(start, days).slice(0, 4)}`;
+
 /**
- * Indiahikes-style batch list: months as accordions, each batch with its live seats.
- * Batches load after mount (useDepartures); the "When to go" strip below is static, so the
- * season facts are in the page HTML for search engines.
+ * Indiahikes / Trek The Himalayas-style departure calendar: the team leaves every day of the
+ * season (or every Saturday for expeditions). Month chips, a month grid, and a summary of
+ * the picked date with its Register button. Dates are computed after mount (useDepartures);
+ * the "When to go" strip below is static, so the season facts are in the page HTML.
  */
 function DatesTab({ trek, dates, onRegister }: { trek: Trek; dates: DeparturesState; onRegister: (iso: string) => void }) {
   const reduceMotion = useReducedMotion();
-  const months = useMemo(() => groupByMonth(dates.departures), [dates.departures]);
+  const cal = DEPARTURE_CALENDAR[trek.slug];
   const highlights = MONTH_HIGHLIGHTS[trek.slug] ?? {};
-  // Until the visitor opens or closes a month, the first month with an open batch is open.
-  const [picked, setPicked] = useState<string | null | undefined>(undefined);
-  const open = picked !== undefined ? picked : ((months.find((m) => m.departures.some(isBookable)) ?? months[0])?.key ?? null);
-  const askHref = `${WHATSAPP}?text=${encodeURIComponent(`Hi! When is the next ${trek.name} batch?`)}`;
+  const months = useMemo(() => groupByMonth(dates.departures), [dates.departures]);
+  const byDate = useMemo(() => new Map(dates.departures.map((d) => [d.start, d])), [dates.departures]);
+  const [pickedMonth, setPickedMonth] = useState<string | null>(null);
+  const [pickedDay, setPickedDay] = useState<string | null>(null);
+
+  // Until the visitor picks, show the first month with an open date, and its first open date.
+  const month =
+    months.find((m) => m.key === pickedMonth) ?? months.find((m) => m.departures.some(isBookable)) ?? months[0];
+  const picked = pickedDay ? byDate.get(pickedDay) : undefined;
+  const selected = picked && month && picked.start.startsWith(month.key) ? picked : month?.departures.find(isBookable);
+  const route = priceRoute(trek);
+  const askHref = `${WHATSAPP}?text=${encodeURIComponent(`Hi! When is the next ${trek.name} departure?`)}`;
 
   return (
     <div>
       <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground mb-2">Select a Date to Register</h2>
-      <p className="text-muted mb-5">Seats update live. Tap an open batch to register.</p>
+      <p className="text-muted mb-5">
+        {cal ? (
+          <>
+            <span className="font-semibold text-foreground">{cadenceLabel(cal)}</span> in season ({windowsLabel(cal)}). Pick
+            the day you start: it&apos;s a {trek.days}-day trek{route ? `, ${route}` : ""}.
+          </>
+        ) : (
+          "Pick the day you start."
+        )}
+      </p>
 
       <ul className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted" aria-label="What the labels mean">
         {(Object.keys(SEAT_STYLE) as SeatStatus[]).map((k) => (
@@ -1012,76 +1039,92 @@ function DatesTab({ trek, dates, onRegister }: { trek: Trek; dates: DeparturesSt
       </ul>
 
       {dates.status === "loading" ? (
-        <div className="space-y-3" aria-busy="true" aria-label="Loading dates">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="flex h-[52px] items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 shadow-sm">
-              <Skeleton className="h-4 w-36" />
-              <Skeleton className="h-3.5 w-14" />
+        <div aria-busy="true" aria-label="Loading dates">
+          <div className="mb-4 flex gap-2 overflow-hidden">
+            {[0, 1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-11 w-24 shrink-0 rounded-full" />
+            ))}
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4 dark:border-white/10 dark:bg-card">
+            <Skeleton className="mb-4 h-5 w-40" />
+            <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
+              {Array.from({ length: 35 }, (_, i) => (
+                <Skeleton key={i} className="h-11 rounded-xl" />
+              ))}
             </div>
-          ))}
+          </div>
         </div>
-      ) : months.length === 0 ? (
+      ) : !month ? (
         <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm sm:p-6 dark:border-white/10 dark:bg-white/5">
-          <p className="font-semibold text-foreground">
-            {dates.status === "unavailable" ? "Live dates couldn't load right now." : "No batches are listed for the coming months yet."}
-          </p>
+          <p className="font-semibold text-foreground">No departures are open for the coming months yet.</p>
           <p className="mt-1 text-muted">
-            Best season: {trek.bestSeason}. Message us for the next batch, or book a private departure for 2 or more on a date that suits you.
+            Best season: {trek.bestSeason}. Message us for the next departure, or book a private departure for 2 or more on a date that suits you.
           </p>
-          <a
-            href={askHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={buttonVariants({ className: "mt-4" })}
-          >
+          <a href={askHref} target="_blank" rel="noopener noreferrer" className={buttonVariants({ className: "mt-4" })}>
             Ask for dates on WhatsApp
           </a>
         </div>
       ) : (
-        <div className="space-y-3">
-          {months.map((m) => {
-            const isOpen = open === m.key;
-            const openCount = m.departures.filter(isBookable).length;
-            return (
-              <div key={m.key} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-card">
+        <>
+          <div className="-mx-1 mb-4 flex snap-x gap-2 overflow-x-auto px-1 pb-1" role="group" aria-label="Choose a month">
+            {months.map((m) => {
+              const active = m.key === month.key;
+              return (
                 <button
+                  key={m.key}
                   type="button"
-                  onClick={() => setPicked(isOpen ? null : m.key)}
-                  aria-expanded={isOpen}
-                  aria-controls={`month-${m.key}`}
-                  className="flex min-h-11 w-full items-center justify-between gap-3 bg-slate-50 px-4 py-3.5 text-left transition-colors duration-150 ease-out hover:bg-slate-100 focus-visible:outline-offset-[-2px] dark:bg-white/5 dark:hover:bg-white/10"
-                >
-                  <span className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
-                    <span className="font-bold text-foreground">{FULL_MONTHS[m.month]} {m.year}</span>
-                    <MonthHighlight text={highlights[MONTHS[m.month]]} className="text-sm" />
-                  </span>
-                  <span className="flex shrink-0 items-center gap-2">
-                    <span className="text-xs font-semibold text-muted">{openCount === 0 ? "Full" : `${openCount} open`}</span>
-                    <svg className={`h-5 w-5 text-emerald-700 transition-transform duration-150 ease-out motion-reduce:transition-none ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </span>
-                </button>
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.ul
-                      id={`month-${m.key}`}
-                      initial={reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
-                      animate={reduceMotion ? { opacity: 1 } : { height: "auto", opacity: 1 }}
-                      exit={reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
-                      transition={reduceMotion ? { duration: 0 } : transition("base")}
-                      className="divide-y divide-slate-100 overflow-hidden dark:divide-white/5"
-                    >
-                      {m.departures.map((d) => (
-                        <DepartureRow key={d.id} d={d} trek={trek} onRegister={onRegister} />
-                      ))}
-                    </motion.ul>
+                  onClick={() => {
+                    setPickedMonth(m.key);
+                    setPickedDay(null);
+                  }}
+                  aria-pressed={active}
+                  className={cn(
+                    "min-h-11 shrink-0 snap-start rounded-full px-4 text-sm font-semibold ring-1 transition-colors duration-150 ease-out",
+                    active
+                      ? "bg-emerald-600 text-white ring-emerald-600"
+                      : "bg-white text-slate-700 ring-slate-200 hover:bg-emerald-50 hover:ring-emerald-200 dark:bg-white/5 dark:text-slate-200 dark:ring-white/10",
                   )}
-                </AnimatePresence>
-              </div>
-            );
-          })}
-        </div>
+                >
+                  {MONTHS[m.month]} {m.year}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4 dark:border-white/10 dark:bg-card">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-1">
+              <h3 className="text-lg font-bold text-foreground">{FULL_MONTHS[month.month]} {month.year}</h3>
+              <MonthHighlight text={highlights[MONTHS[month.month]]} className="text-sm" />
+            </div>
+            <motion.div
+              key={month.key}
+              initial={reduceMotion ? false : { opacity: 0.4, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={transition("base")}
+              className="grid grid-cols-7 gap-1 sm:gap-1.5"
+              aria-label={`${FULL_MONTHS[month.month]} ${month.year} start dates`}
+              role="group"
+            >
+              {WEEKDAY_HEADS.map((w) => (
+                <span key={w} aria-hidden className="pb-1 text-center font-nav text-[11px] font-semibold uppercase tracking-wide text-muted">
+                  {w}
+                </span>
+              ))}
+              <MonthDays year={month.year} month={month.month} byDate={byDate} selected={selected?.start} onPick={setPickedDay} />
+            </motion.div>
+          </div>
+
+          {selected ? (
+            <SelectedDate d={selected} trek={trek} onRegister={onRegister} />
+          ) : (
+            <p className="mt-4 rounded-2xl bg-slate-50 p-4 text-sm text-muted dark:bg-white/5">
+              Every date this month is full or closed.{" "}
+              <a href={askHref} target="_blank" rel="noopener noreferrer" className="font-semibold text-emerald-700 underline underline-offset-2">
+                Ask us on WhatsApp
+              </a>
+            </p>
+          )}
+        </>
       )}
 
       <section aria-labelledby="when-to-go" className="mt-8">
@@ -1107,57 +1150,105 @@ function DatesTab({ trek, dates, onRegister }: { trek: Trek; dates: DeparturesSt
   );
 }
 
-function DepartureRow({ d, trek, onRegister }: { d: Departure; trek: Trek; onRegister: (iso: string) => void }) {
-  const status = seatStatus(d);
-  const label = batchLabel(d.start, trek.days);
-  const bookable = isBookable(d);
-  const row = "flex w-full items-center gap-3 px-4 py-3 text-left text-sm";
-  const dateCell = (
-    <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
-      <span className={`font-semibold ${bookable ? "text-foreground" : "text-slate-400"}`}>{label}</span>
-      {d.tag && <Badge tone="amber">{d.tag}</Badge>}
-    </span>
+/** The day cells of one month, Monday first. Days without a departure are plain, muted numbers. */
+function MonthDays({
+  year, month, byDate, selected, onPick,
+}: {
+  year: number;
+  month: number;
+  byDate: Map<string, Departure>;
+  selected?: string;
+  onPick: (iso: string) => void;
+}) {
+  const blanks = (new Date(Date.UTC(year, month, 1)).getUTCDay() + 6) % 7;
+  const count = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+  const prefix = `${year}-${String(month + 1).padStart(2, "0")}-`;
+  const cell = "relative flex h-11 items-center justify-center rounded-xl text-sm tabular-nums";
+  return (
+    <>
+      {Array.from({ length: blanks }, (_, i) => (
+        <span key={`b${i}`} aria-hidden />
+      ))}
+      {Array.from({ length: count }, (_, i) => {
+        const iso = `${prefix}${String(i + 1).padStart(2, "0")}`;
+        const d = byDate.get(iso);
+        if (!d) {
+          return (
+            <span key={iso} aria-hidden className={`${cell} text-slate-300 dark:text-slate-600`}>
+              {i + 1}
+            </span>
+          );
+        }
+        const status = seatStatus(d);
+        const isSelected = selected === iso;
+        return (
+          <button
+            key={iso}
+            type="button"
+            onClick={() => onPick(iso)}
+            aria-pressed={isSelected}
+            aria-label={`${dayLabel(iso)}, ${seatLabel(d).toLowerCase()}${d.tag ? `, ${d.tag}` : ""}`}
+            className={cn(
+              cell,
+              "font-semibold ring-1 transition-colors duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500",
+              isSelected
+                ? "bg-emerald-600 text-white ring-emerald-600"
+                : status === "available" || status === "few"
+                  ? "bg-emerald-50 text-emerald-900 ring-emerald-200 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-200 dark:ring-emerald-500/30"
+                  : status === "full"
+                    ? "bg-slate-100 text-slate-500 ring-slate-200 dark:bg-white/5 dark:ring-white/10"
+                    : "bg-transparent text-slate-400 line-through ring-slate-200 dark:ring-white/10",
+            )}
+          >
+            {i + 1}
+            {status === "few" && <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />}
+            {d.tag && <span className="absolute bottom-1 left-1/2 h-1 w-3 -translate-x-1/2 rounded-full bg-amber-400" aria-hidden />}
+          </button>
+        );
+      })}
+    </>
   );
-  const seats = <span className={`text-xs font-bold uppercase tracking-wide ${SEAT_STYLE[status].text}`}>{seatLabel(d)}</span>;
+}
 
-  if (status === "closed") {
-    return <li className={row}>{dateCell}{seats}</li>;
-  }
-  if (status === "full") {
-    const text = encodeURIComponent(`Hi! The ${trek.name} batch ${label} is full. Please add me to the waitlist.`);
-    return (
-      <li>
+/** The picked start date: its trek dates, status and the way to book it. */
+function SelectedDate({ d, trek, onRegister }: { d: Departure; trek: Trek; onRegister: (iso: string) => void }) {
+  const status = seatStatus(d);
+  const label = tripLabel(d.start, trek.days);
+  const waitlist = `${WHATSAPP}?text=${encodeURIComponent(`Hi! The ${trek.name} departure ${label} is full. Please add me to the waitlist.`)}`;
+  return (
+    <div
+      aria-live="polite"
+      className="mt-4 flex flex-col gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-emerald-500/30 dark:bg-emerald-500/10"
+    >
+      <div className="min-w-0">
+        <p className="font-nav text-[11px] font-semibold uppercase tracking-wide text-muted">Your trek dates</p>
+        <p className="mt-0.5 font-semibold text-foreground">{label}</p>
+        <p className="mt-1 flex flex-wrap items-center gap-2 text-sm">
+          <span className={`inline-flex items-center gap-1.5 font-bold ${SEAT_STYLE[status].text}`}>
+            <span className={`h-2 w-2 rounded-full ${SEAT_STYLE[status].dot}`} aria-hidden />
+            {seatLabel(d)}
+          </span>
+          <span className="text-muted">· {trek.days} days</span>
+          {d.tag && <Badge tone="amber">{d.tag}</Badge>}
+        </p>
+      </div>
+      {status === "available" || status === "few" ? (
+        <Button size="lg" onClick={() => onRegister(d.start)} className="w-full shrink-0 sm:w-auto">
+          Register for this date
+        </Button>
+      ) : status === "full" ? (
         <a
-          href={`${WHATSAPP}?text=${text}`}
+          href={waitlist}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`${label} is full. Join the waitlist on WhatsApp`}
-          className={`${row} min-h-11 transition-colors duration-150 ease-out hover:bg-slate-50 focus-visible:outline-offset-[-2px] dark:hover:bg-white/5`}
+          className={buttonVariants({ variant: "outline", size: "lg", className: "w-full shrink-0 sm:w-auto" })}
         >
-          {dateCell}
-          <span className="flex shrink-0 flex-col items-end gap-0.5">
-            {seats}
-            <span className="text-xs font-semibold text-emerald-700 underline underline-offset-2">Join waitlist</span>
-          </span>
+          Join the waitlist
         </a>
-      </li>
-    );
-  }
-  return (
-    <li>
-      <button
-        type="button"
-        onClick={() => onRegister(d.start)}
-        aria-label={`Register for ${label}, ${seatLabel(d).toLowerCase()}`}
-        className={`${row} group min-h-11 transition-colors duration-150 ease-out hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-500 dark:hover:bg-emerald-950/30`}
-      >
-        {dateCell}
-        {seats}
-        <svg className="h-4 w-4 shrink-0 text-emerald-700 transition-transform duration-150 ease-out group-hover:translate-x-0.5 motion-reduce:transition-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
-      </button>
-    </li>
+      ) : (
+        <p className="text-sm text-muted">This date is closed. Pick another day.</p>
+      )}
+    </div>
   );
 }
 
@@ -1689,11 +1780,13 @@ function ReservationTab({
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMinDate(new Date().toISOString().slice(0, 10)), []);
 
-  // With listed batches the date is a batch picker; "another date" is a private departure.
-  const batches = dates.departures.filter(isBookable);
-  const [otherDate, setOtherDate] = useState(false);
-  const pickBatch = batches.length > 0 && !otherDate;
-  const batch = batches.find((d) => d.start === form.date);
+  // Any open day of the season can be picked (every Saturday for expeditions; another
+  // in-season day is then a private departure).
+  const cal = DEPARTURE_CALENDAR[trek.slug];
+  const open = dates.departures.filter(isBookable);
+  const firstOpen = open[0]?.start;
+  const lastOpen = open[open.length - 1]?.start;
+  const batch = dates.departures.find((d) => d.start === form.date);
 
   const update = (key: keyof typeof form, value: string) => {
     setForm({ ...form, [key]: value });
@@ -1705,11 +1798,19 @@ function ReservationTab({
     if (!form.name.trim()) next.name = "Enter your full name.";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) next.email = "Enter a valid email address.";
     if (form.phone.replace(/\D/g, "").length < 7) next.phone = "Enter a valid phone number.";
-    if (!form.date) next.date = pickBatch ? "Pick a batch." : "Pick a preferred date.";
+    if (!form.date) next.date = "Pick a start date.";
     else if (minDate && form.date < minDate) next.date = "Choose a date in the future.";
+    else if (batch && !isBookable(batch)) next.date = "This date is full or closed. Pick another day.";
+    else if (!batch && cal) {
+      if (!inSeason(cal, form.date)) {
+        next.date = `This trek runs ${windowsLabel(cal)}. Pick a date in season, or message us on WhatsApp.`;
+      } else if (firstOpen && form.date < firstOpen) {
+        next.date = `The first open date is ${dayLabel(firstOpen)}: we need a few days to arrange permits and the team.`;
+      }
+    }
     const persons = Number.parseInt(form.groupSize, 10);
-    if (batch && persons > batch.seatsLeft) {
-      next.groupSize = `Only ${batch.seatsLeft} ${batch.seatsLeft === 1 ? "seat is" : "seats are"} left on this batch. Make the group smaller or pick another batch.`;
+    if (batch && isBookable(batch) && persons > batch.seatsLeft) {
+      next.groupSize = `This date has room for ${batch.seatsLeft} more. Make the group smaller or pick another day.`;
     }
     return next;
   };
@@ -1788,42 +1889,32 @@ function ReservationTab({
           <Field id="res-name" label="Full Name" value={form.name} onChange={(v) => update("name", v)} required error={errors.name} autoComplete="name" />
           <Field id="res-email" label="Email" type="email" value={form.email} onChange={(v) => update("email", v)} required error={errors.email} autoComplete="email" />
           <Field id="res-phone" label="Phone Number" type="tel" value={form.phone} onChange={(v) => update("phone", v)} required error={errors.phone} autoComplete="tel" />
-          {pickBatch ? (
-            <div>
-              <Label htmlFor="res-date">Batch</Label>
-              <Select
-                id="res-date"
-                value={batch ? form.date : ""}
-                onChange={(e) => {
-                  if (e.target.value === "other") {
-                    setOtherDate(true);
-                    update("date", "");
-                  } else update("date", e.target.value);
-                }}
-                required
-                invalid={!!errors.date}
-                aria-describedby={errors.date ? "res-date-err" : undefined}
-              >
-                <option value="">Choose a batch</option>
-                {batches.map((d) => (
-                  <option key={d.id} value={d.start}>
-                    {batchLabel(d.start, trek.days)} {d.start.slice(0, 4)} · {seatLabel(d)}
-                  </option>
-                ))}
-                <option value="other">Another date (private departure)</option>
-              </Select>
-              {errors.date && <FieldError id="res-date-err">{errors.date}</FieldError>}
-            </div>
-          ) : (
-            <div>
-              <Field id="res-date" label="Preferred Date" type="date" value={form.date} onChange={(v) => update("date", v)} required min={minDate || undefined} error={errors.date} />
-              {otherDate && (
-                <Button variant="link" onClick={() => setOtherDate(false)} className="mt-1 py-2 text-xs">
-                  Back to the listed batches
-                </Button>
-              )}
-            </div>
-          )}
+          <div>
+            <Label htmlFor="res-date">Start Date</Label>
+            <TextInput
+              id="res-date"
+              name="res-date"
+              type="date"
+              value={form.date}
+              onChange={(e) => update("date", e.target.value)}
+              required
+              min={firstOpen || minDate || undefined}
+              max={lastOpen}
+              invalid={!!errors.date}
+              aria-describedby={errors.date ? "res-date-err" : "res-date-hint"}
+            />
+            {errors.date ? (
+              <FieldError id="res-date-err">{errors.date}</FieldError>
+            ) : (
+              <p id="res-date-hint" className="mt-1.5 text-xs text-muted">
+                {batch && isBookable(batch)
+                  ? `${tripLabel(batch.start, trek.days)} · ${seatLabel(batch)}`
+                  : cal
+                    ? `${cadenceLabel(cal)}, ${windowsLabel(cal)}.${cal.cadence === "weekly" ? " Another day in season is a private departure." : ""}`
+                    : "We'll confirm the date with you."}
+              </p>
+            )}
+          </div>
         </div>
         <div>
           <Label htmlFor="res-group">Group Size</Label>

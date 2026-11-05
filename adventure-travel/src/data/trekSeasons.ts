@@ -45,3 +45,44 @@ export const MONTH_HIGHLIGHTS: Record<string, Partial<Record<MonthName, string>>
   },
   madhyamaheshwar: { May: "Long clear days", Jun: "Green meadows", Sep: "Post-monsoon greens", Oct: "Clearest views", Nov: "Crisp, clear skies" },
 };
+
+/** When groups leave on a trek: every day, or every Saturday, inside the season windows. */
+export interface DepartureCalendar {
+  cadence: "daily" | "weekly";
+  /** ["MM-DD", "MM-DD"], both days included; a window may wrap past December. */
+  windows: [from: string, to: string][];
+  /** Earliest start, in days from today (permits and logistics). Default: 3 daily, 21 weekly. */
+  leadDays?: number;
+}
+
+/**
+ * The departure calendar of every trek. Short and popular treks leave every day of their
+ * season, like Indiahikes and Trek The Himalayas; long expeditions and permit tours leave every
+ * Saturday. Windows sit inside `bestSeason` (unit-tested) and skip the Jul–Aug monsoon except
+ * where the trek is a monsoon trek. Kalindi Khal, Gupt Khal and Panpatia Col run only in the
+ * safest pass windows (June, September); Bhrigu Lake from June (snow until mid-May);
+ * Madhyamaheshwar from June (the temple opens in late May) to mid-November (it shuts after Diwali).
+ */
+export const DEPARTURE_CALENDAR: Record<string, DepartureCalendar> = {
+  "kuari-pass": { cadence: "daily", windows: [["09-15", "06-30"]] },
+  "pangarchula-peak": { cadence: "daily", windows: [["03-01", "05-31"], ["10-01", "11-30"]] },
+  "valley-of-flowers": { cadence: "daily", windows: [["07-01", "09-30"]] },
+  kedarkantha: { cadence: "daily", windows: [["12-01", "04-30"]] },
+  brahmatal: { cadence: "daily", windows: [["12-15", "03-31"]] },
+  "har-ki-dun": { cadence: "daily", windows: [["03-01", "06-30"], ["09-15", "12-15"]] },
+  roopkund: { cadence: "daily", windows: [["05-01", "06-30"], ["09-15", "10-31"]] },
+  "hampta-pass": { cadence: "daily", windows: [["06-15", "09-30"]] },
+  "bhrigu-lake": { cadence: "daily", windows: [["06-01", "10-31"]] },
+  tungnath: { cadence: "daily", windows: [["09-15", "06-30"]] },
+  madhyamaheshwar: { cadence: "daily", windows: [["06-01", "06-30"], ["09-15", "11-15"]] },
+  "satopanth-lake": { cadence: "weekly", windows: [["05-15", "06-30"], ["09-15", "10-15"]] },
+  "nandi-kund": { cadence: "weekly", windows: [["05-15", "06-30"], ["09-15", "10-15"]] },
+  "dronagiri-base-camp": { cadence: "weekly", windows: [["05-15", "06-30"], ["09-01", "10-31"]] },
+  "nanda-devi-base-camp": { cadence: "weekly", windows: [["05-15", "06-30"], ["09-01", "10-31"]] },
+  "kalindi-khal": { cadence: "weekly", windows: [["06-01", "06-30"], ["09-01", "09-30"]] },
+  "gupt-khal": { cadence: "weekly", windows: [["06-01", "06-30"], ["09-01", "09-30"]] },
+  "panpatia-col": { cadence: "weekly", windows: [["06-01", "06-30"], ["09-01", "09-30"]] },
+  "mana-pass": { cadence: "weekly", windows: [["06-01", "07-31"], ["09-01", "10-31"]] },
+  "niti-pass": { cadence: "weekly", windows: [["06-01", "07-31"], ["09-01", "10-31"]] },
+  rimkhim: { cadence: "weekly", windows: [["06-01", "07-31"], ["09-01", "10-31"]] },
+};

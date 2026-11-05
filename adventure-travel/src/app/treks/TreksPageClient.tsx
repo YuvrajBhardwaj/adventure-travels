@@ -1,5 +1,6 @@
 "use client";
 
+import EnquireTab from "@/components/EnquireTab";
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { treks, REGIONS, priceRoute, byPopularity, type Trek } from "@/data/treks";
@@ -275,6 +276,7 @@ export default function TreksPage() {
           </div>
         </div>
       </section>
+      <EnquireTab subject="a trek" kind="trek" heading="Not sure which trek?" message="I'd like help choosing a trek: dates, price and availability." />
     </main>
   );
 }

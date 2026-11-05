@@ -5,7 +5,6 @@ import Link from "next/link";
 import { motion, useAnimate, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { coursePhotos, type Course } from "@/data/courses";
 import EnquireTab from "@/components/EnquireTab";
-import CourseVideoBackdrop from "@/components/CourseVideoBackdrop";
 import WallpaperCarousel from "@/components/WallpaperCarousel";
 import SmartImage from "@/components/SmartImage";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -24,14 +23,6 @@ import { cn } from "@/lib/utils";
 import { BrandIcon } from "@/components/BrandIcon";
 
 type Tab = "overview" | "dates" | "itinerary" | "gallery" | "included" | "book";
-
-/* Stock footage fallback for course types without their own footage. */
-/* Courses with real footage carry a `video` field (e.g. /assets/snowboarding/*.MOV). */
-const TYPE_VIDEOS: Record<string, string> = {
-  Skiing: "https://videos.pexels.com/video-files/5526230/5526230-sd_960_540_25fps.mp4",
-  Snowboarding: "https://videos.pexels.com/video-files/5526230/5526230-sd_960_540_25fps.mp4",
-  Backcountry: "https://videos.pexels.com/video-files/11270206/11270206-sd_960_540_30fps.mp4",
-};
 
 const TAB_LIST: { key: Tab; label: string }[] = [
   { key: "overview", label: "Overview" },
@@ -228,6 +219,43 @@ function CourseBatchRow({ b, onBook }: { b: CourseBatch; onBook: (iso: string) =
   );
 }
 
+/** The skills a guest gains, day by day: a track across on wider screens, down the side on phones. */
+function SkillTrack({ items, duration }: { items: NonNullable<Course["milestones"]>; duration: string }) {
+  return (
+    <section aria-labelledby="course-skills-h" className="mb-12">
+      <h2 id="course-skills-h" className={cn(PANEL_H2, "mb-2")}>What you&apos;ll be able to do</h2>
+      <p className="mb-7 max-w-prose text-slate-600">The skills the {duration.toLowerCase()} plan builds, day by day.</p>
+      <ol className="grid gap-6 sm:grid-cols-4 sm:gap-5">
+        {items.map((m, i) => {
+          const last = i === items.length - 1;
+          return (
+            <li
+              key={m.day}
+              className={cn(
+                "relative flex gap-4 sm:flex-col sm:gap-3",
+                // Connector to the next stop: down on phones, across on wider screens.
+                !last &&
+                  "after:absolute after:left-5 after:top-11 after:-bottom-5 after:w-px after:bg-sky-200 sm:after:left-12 sm:after:top-5 sm:after:-right-4 sm:after:bottom-auto sm:after:h-px sm:after:w-auto"
+              )}
+            >
+              <span
+                className={cn(
+                  "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full font-nav text-sm font-bold tabular-nums",
+                  last ? "bg-sky-600 text-white shadow-md shadow-sky-900/20" : "bg-white text-sky-700 shadow-sm shadow-slate-900/10 ring-1 ring-sky-100"
+                )}
+              >
+                <span className="sr-only">Day </span>
+                {m.day}
+              </span>
+              <p className={cn("pt-2 text-[0.95rem] leading-snug sm:pt-0", last ? "font-semibold text-slate-900" : "text-slate-700")}>{m.skill}</p>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+}
+
 interface Props {
   course: Course;
 }
@@ -310,6 +338,8 @@ export default function CourseDetailClient({ course }: Props) {
   const packages = tiers.flatMap((t) => (["base", "full"] as const).map((s) => ({ tier: t, stay: s })));
 
   const typeTone = TYPE_TONES[course.type] ?? "sky";
+  const days = courseDays(course.duration);
+  const fromPrice = tiers.length > 0 ? Math.min(...tiers.map((t) => t.priceBase)) : course.price;
   const images = course.gallery || [course.image];
   // Hero slideshow: the cover first, then the gallery photos (videos are left to the gallery tab).
   const heroSlides = [...new Set([course.image, ...images].filter((src) => !/\.(mp4|mov|webm)$/i.test(src)))].map((src) => ({ src }));
@@ -465,22 +495,21 @@ export default function CourseDetailClient({ course }: Props) {
   )}`;
 
   return (
-    <div className="min-h-screen">
-      {/* Cinematic video template behind every course sub-page — real course footage when available */}
-      <CourseVideoBackdrop video={course.video ?? TYPE_VIDEOS[course.type] ?? TYPE_VIDEOS.Skiing} poster={course.image} />
-
-      {/* Hero: a photo slideshow of this course (like the trek pages), text left aligned on top. */}
-      <section ref={heroRef} className="relative z-10">
+    <div className="min-h-screen bg-background">
+      {/* Hero: a photo slideshow of this course (like the trek pages), text left aligned on top.
+          The photos stay up here; below the ridge the page is calm snow so prices and details read easily. */}
+      <section ref={heroRef} className="relative">
       <WallpaperCarousel
         slides={heroSlides}
         label={`Photos from the ${course.name}`}
         className="min-h-[82vh]"
         scrimClassName="bg-gradient-to-t from-black/80 via-black/35 to-black/45"
+        controlsClassName="bottom-7 sm:bottom-12"
       >
       <div className="flex min-h-[82vh] items-end">
         <motion.div
           style={shouldReduceMotion ? undefined : { y: heroContentY, opacity: heroContentOpacity }}
-          className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 sm:pb-28 pt-32"
+          className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-28 sm:pb-36 pt-32"
         >
           <Link href="/courses" className="mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl text-white/80 transition-colors duration-150 ease-out hover:text-white">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
@@ -516,16 +545,24 @@ export default function CourseDetailClient({ course }: Props) {
         </motion.div>
       </div>
       </WallpaperCarousel>
+      {/* Snow ridge: the photos settle into the page background along a mountain skyline. */}
+      <svg
+        aria-hidden
+        viewBox="0 0 1440 80"
+        preserveAspectRatio="none"
+        className="pointer-events-none absolute inset-x-0 -bottom-px z-10 h-8 w-full fill-background sm:h-14"
+      >
+        <path d="M0 80V54l70-12 60 9 85-29 70 21 60-15 55 18 70-27 50 11 95-30 65 24 55-13 75 21 90-36 70 25 60-12 85 22 65-17 70 15 60-10 130 9V80Z" />
+      </svg>
       </section>
 
-      {/* Tabs + Content — glass card floating over the footage */}
-      <section id="course-content" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 -mt-6">
-        <div className="rounded-2xl bg-white/95 p-4 shadow-2xl shadow-slate-950/40 ring-1 ring-white/40 backdrop-blur-xl sm:p-8">
-        <div className="flex flex-col lg:flex-row gap-12">
+      {/* Tabs + Content, on the calm snow background */}
+      <section id="course-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-28 pt-6 sm:pt-10">
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-14">
           {/* Main Content (min-w-0 lets the column shrink beside the sidebar instead of widening the page at 1024px) */}
           <div className="min-w-0 flex-1">
             {/* Tab Navigation */}
-            <div className="sticky top-16 z-30 mb-8 border-b border-slate-200 bg-white/90 backdrop-blur-md">
+            <div className="sticky top-16 z-30 mb-8 border-b border-slate-200 bg-background/90 backdrop-blur-md">
               <div role="tablist" aria-label="Course details" className="flex gap-1 overflow-x-auto py-1">
                 {TAB_LIST.map((t, i) => (
                   <button
@@ -566,6 +603,9 @@ export default function CourseDetailClient({ course }: Props) {
             <CourseTabPanel key={panel.key} index={panelIndex} active={tab === panel.key} reduceMotion={!!shouldReduceMotion}>
               {panel.key === "overview" && (
                 <div>
+                  {course.milestones && course.milestones.length > 0 && (
+                    <SkillTrack items={course.milestones} duration={course.duration} />
+                  )}
                   <div>
                     <h2 className={cn(PANEL_H2, "mb-4")}>About This Course</h2>
                     <p className="mb-8 text-base leading-relaxed text-slate-600">{course.description}</p>
@@ -595,6 +635,9 @@ export default function CourseDetailClient({ course }: Props) {
                               <Badge tone={tier.id === "premium" ? "amber" : "sky"} className="self-start text-[11px] font-bold uppercase tracking-wide">{tier.name}</Badge>
                               <span className="mt-2 font-heading text-2xl font-bold text-slate-900"><Price inr={price} /></span>
                               <span className="text-xs text-slate-500">per person · {STAY_LABELS[s]}</span>
+                              <span className="mt-1 text-xs font-medium text-sky-700">
+                                About <Price inr={Math.round(price / days)} /> a day for {days} days
+                              </span>
                               <ul className="mt-3 w-full space-y-1.5 border-t border-slate-100 pt-3">
                                 {pkgBullets(tier, s).map((b) => (
                                   <li key={b} className="flex items-start gap-2 text-xs leading-snug text-slate-600">
@@ -611,20 +654,20 @@ export default function CourseDetailClient({ course }: Props) {
                   )}
 
                   {(course.levelRequirement || course.instructorRatio || course.weeklyHours) && (
-                    <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <dl className="mb-10 grid divide-y divide-slate-200 border-y border-slate-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
                       {[
-                        { label: "Level Requirement", value: course.levelRequirement },
-                        { label: "Group Size", value: course.instructorRatio },
-                        { label: "Training Hours", value: course.weeklyHours },
+                        { label: "Who it's for", value: course.levelRequirement },
+                        { label: "Group size", value: course.instructorRatio },
+                        { label: "Time on snow", value: course.weeklyHours },
                       ]
                         .filter((f) => f.value)
                         .map((f) => (
-                          <div key={f.label} className="rounded-2xl bg-gradient-to-br from-sky-50 to-sky-50/40 p-4 ring-1 ring-sky-100">
-                            <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-sky-700">{f.label}</p>
-                            <p className="text-sm text-slate-700">{f.value}</p>
+                          <div key={f.label} className="py-4 sm:px-5 sm:first:pl-0 sm:last:pr-0">
+                            <dt className="text-sm font-semibold text-slate-900">{f.label}</dt>
+                            <dd className="mt-1 text-sm leading-relaxed text-slate-600">{f.value}</dd>
                           </div>
                         ))}
-                    </div>
+                    </dl>
                   )}
 
                   {course.highlights && (
@@ -1065,7 +1108,7 @@ export default function CourseDetailClient({ course }: Props) {
 
           {/* Sidebar */}
           <div className="lg:w-80 flex-shrink-0">
-            <div className="sticky top-24 rounded-2xl bg-white/95 p-5 shadow-xl shadow-slate-900/10 ring-1 ring-slate-100 backdrop-blur-xl sm:p-6">
+            <div className="sticky top-24 rounded-2xl bg-card p-5 shadow-xl shadow-slate-900/[0.07] sm:p-6">
               <div className="mb-4">
                 <Badge tone={typeTone} className="px-3 py-1">
                   {course.type}
@@ -1075,8 +1118,11 @@ export default function CourseDetailClient({ course }: Props) {
                 {tiers.length > 0 ? (
                   <>
                     <span className="block text-xs font-semibold uppercase tracking-wider text-slate-500">From</span>
-                    <span className="text-3xl font-bold text-slate-900"><Price inr={Math.min(...tiers.map((t) => t.priceBase))} /></span>
+                    <span className="font-heading text-3xl font-bold text-slate-900"><Price inr={fromPrice} /></span>
                     <span className="ml-1 text-slate-500">/ person</span>
+                    <span className="mt-1 block text-xs font-medium text-sky-700">
+                      About <Price inr={Math.round(fromPrice / days)} /> a day of certified coaching
+                    </span>
                     <table className="mt-3 w-full text-left text-xs">
                       <thead>
                         <tr className="text-slate-500">
@@ -1098,8 +1144,11 @@ export default function CourseDetailClient({ course }: Props) {
                   </>
                 ) : (
                   <>
-                    <span className="text-3xl font-bold text-slate-900"><Price inr={course.price} /></span>
+                    <span className="font-heading text-3xl font-bold text-slate-900"><Price inr={course.price} /></span>
                     <span className="ml-1 text-slate-500">/ person</span>
+                    <span className="mt-1 block text-xs font-medium text-sky-700">
+                      About <Price inr={Math.round(course.price / days)} /> a day of certified coaching
+                    </span>
                   </>
                 )}
               </div>
@@ -1138,7 +1187,6 @@ export default function CourseDetailClient({ course }: Props) {
               </div>
             </div>
           </div>
-        </div>
         </div>
       </section>
 

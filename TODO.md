@@ -6,6 +6,13 @@ Last updated: 6 Nov 2026.
 
 - [x] ~~**You: check the new phone menu on the preview**~~ (6 Nov, styled after oknadesigns.com). Live on 6 Nov.
 - [ ] **You: check the new phone/tablet home page on the preview** (6 Nov: swipeable photo cards, photo slideshows on cards, timeline), the redrawn mountain graphic and the "Enquire now" tab on trek and course pages, then say "go live".
+- [x] ~~**Dev:** calm course page background, day-by-day skill track and per-day prices~~ (6 Nov, on the preview branch, uncommitted).
+- [ ] **You: check the course skill steps** (`milestones` in `adventure-travel/src/data/courses.ts`) read right for each course, and send steps for the Backcountry course if you want the track there too.
+- [ ] **Dev (optional):** delete the now-unused `src/components/CourseVideoBackdrop.tsx`.
+- [x] ~~**Dev:** daily departures through each trek's season, calendar-style Dates tab~~ (6 Nov, on the preview branch, uncommitted).
+- [ ] **You: check the season windows** in `adventure-travel/src/data/trekSeasons.ts` (`DEPARTURE_CALENDAR`, also listed in CHANGELOG 6 Nov), e.g. whether Roopkund or Satopanth should run daily instead of weekly, and the 3-day / 21-day booking notice.
+- [ ] **You: decide about the old seeded Saturday dates** in the database. They still show as overrides, and some fall outside the new windows (e.g. Kuari Pass in early September). Claude can delete the ones outside the season (a live database change, needs your OK).
+- [ ] **Dev (optional, needs a SQL change):** count bookings on generated daily dates, so a busy day turns "Filling fast"/"Full" by itself. Today only dates with an admin row can fill up.
 - [ ] **Dev:** self-host the three fonts (`next/font/local`) so a Google Fonts hiccup can't fail a build again (it failed one production build on 6 Nov).
 - [ ] **Dev:** card slideshows load more photos per home visit. Shrink card photos to about 800 px (they are 1600 px today) in `scripts/prepare-photos.mjs` to save phone data and Vercel bandwidth.
 
