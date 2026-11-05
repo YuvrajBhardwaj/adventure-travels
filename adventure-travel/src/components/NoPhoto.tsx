@@ -4,7 +4,7 @@ import { ElevationLine } from "@/components/ElevationLine";
  * Stand-in where a trek has no photo yet, sized by the caller.
  *
  * With `profile` (a trek's `elevationProfile`, metres) it becomes a typographic panel: the route's
- * altitude line drawn large across a navy field, a dot on the summit, and `label` set in Fraunces.
+ * mountain range (ElevationLine) across the lower half of a navy field, and `label` set in Fraunces.
  * Without it (small slots such as nav thumbnails) it stays the quiet mountain mark in a tinted square,
  * which shrinks with the slot and never exceeds 60% of it.
  *
@@ -22,21 +22,11 @@ export default function NoPhoto({
   label?: string;
 }) {
   if (profile && profile.length >= 2) {
-    const max = Math.max(...profile);
-    const peakAt = (profile.indexOf(max) / (profile.length - 1)) * 100;
     return (
-      <div aria-hidden className={`@container relative overflow-hidden bg-gradient-to-br from-navy-hero via-navy to-navy-deep ${className}`}>
-        {/* Altitude gridlines: three hairlines the profile climbs through. */}
-        <div className="absolute inset-x-5 top-[16%] h-[25%]">
-          {[0, 50, 100].map((pct) => (
-            <div key={pct} className="absolute inset-x-0 border-t border-white/10" style={{ top: `${pct}%` }} />
-          ))}
-          <ElevationLine profile={profile} className="text-emerald-400" strokeWidth={2} />
-          {/* The line's highest point always sits 10% from the top of its box. A real circle here, because the SVG stretches. */}
-          <span
-            className="absolute top-[10%] h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-300 ring-4 ring-emerald-400/25"
-            style={{ left: `${peakAt}%` }}
-          />
+      <div aria-hidden className={`@container relative overflow-hidden bg-gradient-to-b from-navy-hero via-navy to-navy-deep ${className}`}>
+        {/* The trek's own range, snow on top, standing across the lower half of the panel. */}
+        <div className="absolute inset-x-0 bottom-0 h-[58%]">
+          <ElevationLine profile={profile} className="text-slate-300" strokeWidth={1.5} />
         </div>
         {label && (
           <p className="absolute left-5 top-5 max-w-[70%] font-heading text-[clamp(1.25rem,8cqw,3rem)] font-medium leading-none tracking-[-0.01em] text-white/90">

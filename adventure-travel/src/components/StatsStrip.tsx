@@ -75,8 +75,8 @@ export default function StatsStrip() {
             </div>
           ))}
         </dl>
-        <div className="mt-8 h-14 text-emerald-500 md:mt-10 md:h-24" aria-hidden>
-          <ElevationLine profile={highest.elevationProfile} peak strokeWidth={1.5} />
+        <div className="mt-8 h-14 text-navy md:mt-10 md:h-24" aria-hidden>
+          <ElevationLine profile={highest.elevationProfile} strokeWidth={1.5} />
         </div>
       </div>
     </section>

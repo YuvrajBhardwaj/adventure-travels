@@ -5,7 +5,7 @@ What's left, most urgent first. Tick items off here and record the change in [CH
 Last updated: 6 Nov 2026.
 
 - [x] ~~**You: check the new phone menu on the preview**~~ (6 Nov, styled after oknadesigns.com). Live on 6 Nov.
-- [ ] **You: check the new phone/tablet home page on the preview** (6 Nov: swipeable photo cards, photo slideshows on cards, timeline), then say "go live".
+- [ ] **You: check the new phone/tablet home page on the preview** (6 Nov: swipeable photo cards, photo slideshows on cards, timeline), the redrawn mountain graphic and the "Enquire now" tab on trek and course pages, then say "go live".
 - [ ] **Dev:** self-host the three fonts (`next/font/local`) so a Google Fonts hiccup can't fail a build again (it failed one production build on 6 Nov).
 - [ ] **Dev:** card slideshows load more photos per home visit. Shrink card photos to about 800 px (they are 1600 px today) in `scripts/prepare-photos.mjs` to save phone data and Vercel bandwidth.
 

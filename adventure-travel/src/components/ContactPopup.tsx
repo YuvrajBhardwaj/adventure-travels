@@ -24,9 +24,11 @@ interface ContactPopupProps {
   gallery?: string[];
   defaultMessage?: string;
   requesterName?: string;
+  /** Popup heading; defaults to "Enquire about this camp" with photos, else "Get in Touch". */
+  heading?: string;
 }
 
-export default function ContactPopup({ open, onClose, title, subtitle, image, gallery, defaultMessage, requesterName }: ContactPopupProps) {
+export default function ContactPopup({ open, onClose, title, subtitle, image, gallery, defaultMessage, requesterName, heading }: ContactPopupProps) {
   const reduce = useReducedMotion();
   const requestMessage = (defaultMessage ?? "I'd like to know more about your Himalayan adventures.").replace(/^hi(?:\s+kuldeep)?[!,]\s*/i, "");
   const [form, setForm] = useState({ name: requesterName ?? "", phone: "", message: requestMessage });
@@ -106,7 +108,7 @@ export default function ContactPopup({ open, onClose, title, subtitle, image, ga
         <div className={cn("px-6 pb-6 sm:px-8 sm:pb-8", photos.length > 0 ? "pt-6" : "pt-8")}>
           {/* asChild: Radix Slot joins classes without tailwind-merge, so the overrides go on DialogTitle. */}
           <DialogTitle asChild className="font-heading text-2xl font-bold tracking-normal text-primary mb-1 pr-10">
-            <h3>{image ? "Enquire about this camp" : "Get in Touch"}</h3>
+            <h3>{heading ?? (image ? "Enquire about this camp" : "Get in Touch")}</h3>
           </DialogTitle>
           <DialogDescription className="mt-0 text-sm text-muted mb-6">
             {subtitle ?? (

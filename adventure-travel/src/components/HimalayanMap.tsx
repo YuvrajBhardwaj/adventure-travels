@@ -190,9 +190,9 @@ export default function HimalayanMap() {
                         <span className="mt-1 font-nav text-xs tabular-nums text-muted">
                           {trek.days} days · {trek.maxAltitude.toLocaleString("en-IN")} m
                         </span>
-                        <span className="mt-auto block pt-3 text-emerald-500" aria-hidden>
+                        <span className="mt-auto block pt-3 text-navy" aria-hidden>
                           <span className="block h-10">
-                            <ElevationLine profile={trek.elevationProfile} peak strokeWidth={1.25} />
+                            <ElevationLine profile={trek.elevationProfile} compact strokeWidth={1.25} />
                           </span>
                         </span>
                       </Link>

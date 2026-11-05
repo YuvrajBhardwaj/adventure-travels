@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence, useAnimate, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { priceRoute, type Trek } from "@/data/treks";
-import { TREK_GALLERIES } from "@/data/trekGalleries";
+import { TREK_GALLERIES, trekPhotos } from "@/data/trekGalleries";
+import EnquireTab from "@/components/EnquireTab";
 import ContactPopup from "@/components/ContactPopup";
 import TermsConditions from "@/components/TermsConditions";
 import { QuickInfoModal, type QuickInfoId } from "@/components/QuickInfoModal";
@@ -464,6 +465,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
         defaultMessage={`I'd like details about the ${trek.name} trek. Please share available dates and booking details.`}
       />
 
+      <EnquireTab subject={trek.name} kind="trek" photos={trekPhotos(trek)} />
     </main>
   );
 }

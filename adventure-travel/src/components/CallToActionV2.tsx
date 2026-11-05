@@ -57,8 +57,8 @@ export default function CallToActionV2() {
           </ul>
         </div>
 
-        <div className="mt-10 h-24 text-emerald-500 md:h-36" aria-hidden>
-          <ElevationLine profile={highest.elevationProfile} peak strokeWidth={1.5} />
+        <div className="mt-10 h-24 text-navy md:h-36" aria-hidden>
+          <ElevationLine profile={highest.elevationProfile} strokeWidth={1.5} />
         </div>
       </section>
 

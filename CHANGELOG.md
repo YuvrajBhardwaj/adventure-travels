@@ -17,6 +17,20 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 6 Nov 2026: "Enquire now" side tab on trek and course pages; realistic mountain graphic — `preview/trek-slideshows`
+- **Enquire now (asked by the owner, after oknadesigns.com):** every trek and course page has an orange vertical "ENQUIRE NOW" tab pinned to the right edge, half-way down the screen, on phones and desktop. It slides in after a moment and stays in place while you scroll. Tapping it opens the enquiry popup headed "Enquire about <trek or course>", with that trek's or course's own photos, WhatsApp and Call buttons, and a form (name, phone, message pre-filled with the trek or course name) that opens WhatsApp ready to send. Code: new `EnquireTab.tsx`; `ContactPopup` gains a `heading` prop.
+- **Mountain graphic redrawn (the owner said the smooth green curve looked unprofessional):** `ElevationLine` now draws each trek's altitude profile as a mountain range instead of a chart line:
+  - a jagged ridge, with cols between the route's stops and rocky detail between them
+  - snow caps on the high ground, with tongues down the gullies
+  - shaded faces on the two highest summits
+  - a paler range behind, masked so it never shows through the front.
+  - The chart-style summit dot is gone.
+  - Colours: grey-blue rock on white sections (stats strip, closing section, desktop timeline, map cards), white ridges on photos, slate on navy.
+  - The "no photo" trek panel drops its chart gridlines and dot; the range now stands across the lower half of the panel.
+  - Small cards use a `compact` version (front ridge and snow only), to keep the page light.
+  - The drawing is seeded, so the static HTML and the browser draw the same mountains.
+- **Checks:** type-check clean, lint 0 errors. In an isolated production build, the tab opens the right popup on `/treks/kuari-pass` and `/courses/skiing-course` at 1280 px and 390 px, with no page errors.
+
 ### 6 Nov 2026: Home page on phones and tablets: swipeable photo cards, card slideshows, animated timeline — `preview/trek-slideshows`
 - **Why:** the owner said the home page looked like plain lists on phones and tablets, and asked for cards whose photos change every 1–2 seconds, like the course pages.
 - **For visitors (below 1024 px; desktop unchanged):**

@@ -331,8 +331,8 @@ export function TrekCard({ trek, featured = false }: { trek: Trek; featured?: bo
 
         {/* The route's own altitude profile. Photo-less cards draw it large in the panel instead. */}
         {trek.image && (
-          <div className="mt-3 h-9 text-emerald-400">
-            <ElevationLine profile={trek.elevationProfile} />
+          <div className="mt-3 h-9 text-white/85">
+            <ElevationLine profile={trek.elevationProfile} compact />
           </div>
         )}
 

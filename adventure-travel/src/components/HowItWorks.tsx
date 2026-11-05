@@ -33,8 +33,8 @@ export default function HowItWorks() {
           </div>
         </FadeUp>
 
-        <div className="mt-12 hidden h-20 text-emerald-500 lg:block" aria-hidden>
-          <ElevationLine profile={route.elevationProfile} peak strokeWidth={1.5} />
+        <div className="mt-12 hidden h-20 text-navy lg:block" aria-hidden>
+          <ElevationLine profile={route.elevationProfile} strokeWidth={1.5} />
         </div>
 
         <div ref={stepsRef} className="relative mt-10 lg:mt-0">

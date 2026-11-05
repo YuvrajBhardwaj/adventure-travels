@@ -75,7 +75,7 @@ export function TrekHub({
                 {highest.maxAltitude.toLocaleString("en-IN")}
                 <span className="ml-2 font-nav text-xl font-normal text-white/60">m</span>
               </p>
-              <div className="mt-5 h-20 text-emerald-400 sm:h-24">
+              <div className="mt-5 h-20 text-slate-300 sm:h-24">
                 <ElevationLine profile={highest.elevationProfile} strokeWidth={2} />
               </div>
             </div>

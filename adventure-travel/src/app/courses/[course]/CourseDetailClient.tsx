@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, useAnimate, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import type { Course } from "@/data/courses";
+import { coursePhotos, type Course } from "@/data/courses";
+import EnquireTab from "@/components/EnquireTab";
 import CourseVideoBackdrop from "@/components/CourseVideoBackdrop";
 import WallpaperCarousel from "@/components/WallpaperCarousel";
 import SmartImage from "@/components/SmartImage";
@@ -1166,6 +1167,7 @@ export default function CourseDetailClient({ course }: Props) {
           </Button>
         </div>
       </div>
+      <EnquireTab subject={course.name} kind="course" photos={coursePhotos(course)} />
     </div>
   );
 }

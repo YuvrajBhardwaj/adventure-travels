@@ -446,8 +446,8 @@ export default function Navbar() {
                                               <span className="text-xl font-semibold tabular-nums">{t.days}<span className="ml-0.5 font-nav text-[10px] font-medium text-white/70"> days</span></span>
                                               <span className="text-xl font-semibold tabular-nums">{t.maxAltitude.toLocaleString("en-IN")}<span className="ml-0.5 font-nav text-[10px] font-medium text-white/70"> m</span></span>
                                             </span>
-                                            <span className="mt-1.5 block h-5 text-emerald-400">
-                                              <ElevationLine profile={t.elevationProfile} peak strokeWidth={1.5} />
+                                            <span className="mt-1.5 block h-5 text-white/80">
+                                              <ElevationLine profile={t.elevationProfile} compact strokeWidth={1.25} />
                                             </span>
                                           </span>
                                         </span>

@@ -51,8 +51,8 @@ export function TrekPhotoCard({ trek, dark = false }: { trek: Trek; dark?: boole
               <span className="ml-1 text-xs text-white/70">m</span>
             </span>
           </p>
-          <div className="mt-2 h-9 text-emerald-300" aria-hidden>
-            <ElevationLine profile={trek.elevationProfile} peak strokeWidth={1.25} />
+          <div className="mt-2 h-9 text-white/85" aria-hidden>
+            <ElevationLine profile={trek.elevationProfile} compact strokeWidth={1.25} />
           </div>
         </div>
       </div>
