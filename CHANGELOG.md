@@ -17,6 +17,11 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 7 Nov 2026: **Backend** new Razorpay test keys (local) — no code change
+- **Asked by the owner** (a pasted "integrate Razorpay Standard Checkout" prompt with new test keys). Razorpay was already integrated, so no code was added. Checked against the prompt: order creation in paise (`api/create-order.js`, price from the server catalog, never from the browser), Checkout modal with UPI first, dismiss and `payment.failed` handling (`src/app/checkout/CheckoutClient.tsx`), HMAC-SHA256 `order_id|payment_id` check with a timing-safe compare that returns 400 and marks nothing paid on a mismatch (`api/verify-payment.js`), the webhook backstop (`api/razorpay-webhook.js`), and the Key Secret never reaching the browser (the server returns only the Key ID).
+- **Backend:** `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` replaced with the new test-mode pair in `.env.local` and `.env.setup` (both git-ignored); Razorpay accepted them (HTTP 200). **Vercel still has the old test keys** (no `VERCEL_TOKEN`; the setup script would also re-run every SQL file, so it wasn't run). The webhook secret is unchanged.
+- The new key secret was pasted in chat. It's test mode (no real money), and live keys will be a different pair anyway.
+
 ### 7 Nov 2026: walk-the-route altitude chart; trek filters that glide — `preview/trek-slideshows`
 - **For visitors (asked by the owner: more interactive, motion inspired by motionsites.ai):** motionsites.ai sells prompts for AI site builders, not code, so it served as inspiration only. Most of the site already moves (hero, menu, carousels, reveals), so the additions go where they help a traveller decide, not on every section.
   - **Trek page "Elevation Profile" (every trek):** drag along it with a finger or mouse, or use the arrow keys. A marker glides from stop to stop, the stretch already walked fills in, and a readout shows the day, the camp, the altitude and the hours on trail. It opens on the summit day. Before, it worked only by hovering tiny dots with a mouse, so it did nothing on phones or with a keyboard. Now in `src/components/RouteProfile.tsx` (replaces `MiniElevationChart`).
