@@ -8,6 +8,7 @@ Last updated: 7 Nov 2026.
 - [x] ~~**You: check the new phone/tablet home page on the preview** (6 Nov: swipeable photo cards, photo slideshows on cards, timeline), the redrawn mountain graphic and the "Enquire now" tab on trek and course pages, then say "go live".~~ Live on 7 Nov (`de34d31`, by request).
 - [x] ~~**Dev:** calm course page background, day-by-day skill track and per-day prices~~ (6 Nov, on the preview branch, uncommitted).
 - [x] ~~**Dev:** clearer Google title and description, ski school page title, new site icon~~ (7 Nov, on the preview branch, uncommitted).
+- [x] ~~**Redeploy the 7 Nov change.**~~ Claude retried it; live on 7 Nov (`8af2cf0`).
 - [ ] **You: after these go live,** open Google Search Console → URL inspection → request indexing for the home page, `/courses` and `/activities`, so Google picks up the new titles and icon sooner. Google chooses the links under the result itself; it can take a few weeks.
 - [x] ~~**Dev:** footer logo uses the new icon~~ (7 Nov).
 - [x] ~~**Dev:** Backcountry skill steps; deleted the unused `CourseVideoBackdrop.tsx`~~ (7 Nov).

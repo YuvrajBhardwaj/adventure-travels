@@ -17,7 +17,7 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
-### 7 Nov 2026: clearer Google listing and a new site icon — `preview/trek-slideshows`, uncommitted
+### 7 Nov 2026: clearer Google listing and a new site icon — `main` `a11e5e8` (live 7 Nov; the first production build failed on Vercel, a retry `8af2cf0` succeeded)
 - **Google listing (asked by the owner: the result and its links didn't say what we sell):**
   - Home page title is now "Himalayan Arc: Uttarakhand & Himachal Treks, Auli Ski School" (was "… | Treks from Joshimath & Auli Skiing").
   - New description: "Small-group treks in Uttarakhand and Himachal with local guides from Joshimath, and a ski and snowboard school in Auli. Mountain days you will remember."
