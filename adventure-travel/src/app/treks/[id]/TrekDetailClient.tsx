@@ -6,6 +6,7 @@ import Link from "next/link";
 import { priceRoute, type Trek } from "@/data/treks";
 import { TREK_GALLERIES, trekPhotos } from "@/data/trekGalleries";
 import EnquireTab from "@/components/EnquireTab";
+import RouteProfile from "@/components/RouteProfile";
 import ContactPopup from "@/components/ContactPopup";
 import TermsConditions from "@/components/TermsConditions";
 import { QuickInfoModal, type QuickInfoId } from "@/components/QuickInfoModal";
@@ -427,7 +428,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
               {/* Elevation Profile Mini */}
               <div className="bg-white dark:bg-card rounded-2xl border border-slate-200 dark:border-white/10 p-5 sm:p-6">
                 <h4 className="text-lg font-semibold text-foreground mb-3">Elevation Profile</h4>
-                <MiniElevationChart profile={trek.elevationProfile} itinerary={trek.itinerary} />
+                <RouteProfile profile={trek.elevationProfile} itinerary={trek.itinerary} />
               </div>
             </div>
           </div>
@@ -1999,148 +2000,6 @@ function Field({ label, id, type = "text", value, onChange, required, min, error
         aria-describedby={error ? `${id}-err` : undefined}
       />
       {error && <FieldError id={`${id}-err`}>{error}</FieldError>}
-    </div>
-  );
-}
-
-/* ─── Interactive Elevation Chart ─── */
-function MiniElevationChart({ profile, itinerary }: { profile: number[]; itinerary: Trek["itinerary"] }) {
-  const [hovered, setHovered] = useState<number | null>(null);
-  const max = Math.max(...profile);
-  const min = Math.min(...profile);
-  const range = max - min || 1;
-  const w = 320;
-  const h = 140;
-  const padL = 8;
-  const padR = 8;
-  const padT = 20;
-  const padB = 28;
-  const denom = profile.length > 1 ? profile.length - 1 : 1;
-
-  const pts = profile.map((v, i) => ({
-    x: padL + (i / denom) * (w - padL - padR),
-    y: padT + (1 - (v - min) / range) * (h - padT - padB),
-    alt: v,
-    day: itinerary[Math.min(i, itinerary.length - 1)],
-  }));
-  const line = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
-  const area = `${line} L ${pts[pts.length - 1].x} ${h - padB} L ${pts[0].x} ${h - padB} Z`;
-  const active = hovered !== null ? pts[hovered] : null;
-
-  return (
-    <div className="relative">
-      <svg
-        viewBox={`0 0 ${w} ${h}`}
-        className="w-full"
-        onMouseLeave={() => setHovered(null)}
-        role="img"
-        aria-label={`Elevation profile ranging from ${min.toLocaleString()}m to ${max.toLocaleString()}m across ${profile.length} points`}
-      >
-        <defs>
-          <linearGradient id="elevFill" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#10b981" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#10b981" stopOpacity="0.02" />
-          </linearGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-
-        {/* Grid lines */}
-        {[0.25, 0.5, 0.75].map((frac) => {
-          const y = padT + frac * (h - padT - padB);
-          return <line key={frac} x1={padL} y1={y} x2={w - padR} y2={y} stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="4 3" />;
-        })}
-
-        {/* Area fill */}
-        <path d={area} fill="url(#elevFill)" />
-
-        {/* Line */}
-        <path d={line} fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-
-        {/* Hover vertical line */}
-        {active && (
-          <line x1={active.x} y1={padT} x2={active.x} y2={h - padB} stroke="#10b981" strokeWidth="1" strokeDasharray="3 3" opacity="0.5" />
-        )}
-
-        {/* Data points */}
-        {pts.map((p, i) => {
-          const isHovered = hovered === i;
-          return (
-            <g key={i}>
-              {/* Hover target (invisible larger hitbox) */}
-              <circle
-                cx={p.x}
-                cy={p.y}
-                r="14"
-                fill="transparent"
-                onMouseEnter={() => setHovered(i)}
-                className="cursor-pointer"
-              />
-              {/* Visible dot */}
-              <circle
-                cx={p.x}
-                cy={p.y}
-                r={isHovered ? 5 : 3}
-                fill={isHovered ? "#10b981" : "white"}
-                stroke="#10b981"
-                strokeWidth={isHovered ? 2.5 : 2}
-                filter={isHovered ? "url(#glow)" : undefined}
-                className="pointer-events-none"
-              />
-              {/* Peak marker (highest point) */}
-              {p.alt === max && !isHovered && (
-                <circle cx={p.x} cy={p.y} r="6" fill="none" stroke="#10b981" strokeWidth="1" opacity="0.4" className="pointer-events-none" />
-              )}
-            </g>
-          );
-        })}
-
-        {/* Min/Max labels */}
-        <text x={padL + 2} y={padT - 6} className="fill-emerald-600 text-[8px] font-semibold">
-          {max.toLocaleString()}m
-        </text>
-        <text x={w - padR - 2} y={h - padB + 14} textAnchor="end" className="fill-slate-400 text-[7px]">
-          Day {pts[pts.length - 1].day?.day ?? pts.length}
-        </text>
-        <text x={padL + 2} y={h - padB + 14} className="fill-slate-400 text-[7px]">
-          Day {pts[0].day?.day ?? 1}
-        </text>
-      </svg>
-
-      {/* Tooltip */}
-      {active && active.day && (
-        <div
-          className="absolute z-10 pointer-events-none"
-          style={{
-            left: `${(active.x / w) * 100}%`,
-            top: `${(active.y / h) * 100 - 8}%`,
-            transform: `translate(${active.x > w * 0.7 ? "-100%" : "0"}, -100%)`,
-          }}
-        >
-          <div className="bg-primary text-white rounded-xl px-3 py-2 shadow-xl min-w-[140px]">
-            <div className="text-[10px] text-white/60 font-medium">Day {active.day.day}</div>
-            <div className="text-xs font-semibold leading-tight mt-0.5">{active.day.title}</div>
-            <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-white/15">
-              <span className="text-[10px] text-emerald-300 font-bold">{active.alt.toLocaleString()}m</span>
-              <span className="text-[10px] text-white/50">{active.day.hours}h trek</span>
-            </div>
-            {/* Tooltip arrow */}
-            <div className="absolute -bottom-1.5 left-3 w-3 h-3 bg-primary rotate-45" />
-          </div>
-        </div>
-      )}
-
-      {/* Day labels (first, middle, last) */}
-      <div className="flex justify-between text-[10px] text-muted mt-1 px-1">
-        <span>Start</span>
-        <span className="text-emerald-600 font-semibold">Peak {max.toLocaleString()}m</span>
-        <span>End</span>
-      </div>
     </div>
   );
 }

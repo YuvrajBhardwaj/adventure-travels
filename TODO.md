@@ -9,6 +9,9 @@ Last updated: 7 Nov 2026.
 - [x] ~~**Dev:** calm course page background, day-by-day skill track and per-day prices~~ (6 Nov, on the preview branch, uncommitted).
 - [x] ~~**Dev:** clearer Google title and description, ski school page title, new site icon~~ (7 Nov, on the preview branch, uncommitted).
 - [x] ~~**Redeploy the 7 Nov change.**~~ Claude retried it; live on 7 Nov (`8af2cf0`).
+- [x] ~~**Dev:** walk-the-route altitude chart on trek pages; gliding trek filters~~ (7 Nov, on the preview branch).
+- [ ] **You: try the new altitude chart on the preview** (any trek page, "Elevation Profile": drag along it on your phone), then say "go live".
+- [ ] **You: are the trek card star ratings real?** Cards show e.g. "★ 4.9 (623)", typed into `src/data/treks.ts`. If they aren't from real reviews (Google, TripAdvisor), remove them: invented ratings can get the site penalised by Google and break consumer-protection rules.
 - [ ] **You: after these go live,** open Google Search Console → URL inspection → request indexing for the home page, `/courses` and `/activities`, so Google picks up the new titles and icon sooner. Google chooses the links under the result itself; it can take a few weeks.
 - [x] ~~**Dev:** footer logo uses the new icon~~ (7 Nov).
 - [x] ~~**Dev:** Backcountry skill steps; deleted the unused `CourseVideoBackdrop.tsx`~~ (7 Nov).

@@ -11,6 +11,8 @@ import Price from "@/components/Price";
 import WallpaperCarousel from "@/components/WallpaperCarousel";
 import { ElevationLine } from "@/components/ElevationLine";
 import { cn } from "@/lib/utils";
+import { transition } from "@/lib/motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -82,6 +84,7 @@ export default function TreksPage() {
   const [priceIdx, setPriceIdx] = useState(0);
   const [sort, setSort] = useState("Sort by Popularity");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   const filtered = useMemo(() => {
     let result = [...treks];
@@ -267,10 +270,27 @@ export default function TreksPage() {
             ) : (
               // The first trek runs wide on desktop; the rest sit two across. Only when the rest fill
               // whole rows: with an even count the wide card would leave one smaller card beside it.
+              // When a filter changes, the cards that stay glide to their new places and the rest fade out,
+              // so it's clear what changed. No animation on first paint (initial={false}).
               <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:gap-x-8 lg:gap-y-10">
-                {filtered.map((trek, i) => (
-                  <TrekCard key={trek.id} trek={trek} featured={i === 0 && filtered.length % 2 === 1} />
-                ))}
+                <AnimatePresence initial={false} mode="popLayout">
+                  {filtered.map((trek, i) => {
+                    const featured = i === 0 && filtered.length % 2 === 1;
+                    return (
+                      <motion.div
+                        key={trek.id}
+                        layout={reduceMotion ? false : "position"}
+                        initial={{ opacity: 0, scale: reduceMotion ? 1 : 0.97 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: reduceMotion ? 1 : 0.97, transition: transition("fast", "inOut") }}
+                        transition={{ ...transition("slow"), layout: transition("slow") }}
+                        className={cn(featured && "md:col-span-2")}
+                      >
+                        <TrekCard trek={trek} featured={featured} />
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
               </div>
             )}
           </div>

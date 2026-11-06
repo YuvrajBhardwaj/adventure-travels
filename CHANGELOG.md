@@ -17,6 +17,15 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 7 Nov 2026: walk-the-route altitude chart; trek filters that glide — `preview/trek-slideshows`
+- **For visitors (asked by the owner: more interactive, motion inspired by motionsites.ai):** motionsites.ai sells prompts for AI site builders, not code, so it served as inspiration only. Most of the site already moves (hero, menu, carousels, reveals), so the additions go where they help a traveller decide, not on every section.
+  - **Trek page "Elevation Profile" (every trek):** drag along it with a finger or mouse, or use the arrow keys. A marker glides from stop to stop, the stretch already walked fills in, and a readout shows the day, the camp, the altitude and the hours on trail. It opens on the summit day. Before, it worked only by hovering tiny dots with a mouse, so it did nothing on phones or with a keyboard. Now in `src/components/RouteProfile.tsx` (replaces `MiniElevationChart`).
+  - **/treks filters:** when a filter or sort changes, the treks that stay glide to their new places and the rest fade out, instead of the list jumping. No animation on first load.
+  - Both respect "reduce motion" (no movement, instant changes) and use the site's motion timings (`src/lib/motion.ts`).
+- **Noted:** `graphify-out/` is from August and still describes the old "Expedition Happiness Treks" site; it wasn't used.
+- **Backend:** none.
+- **Checked:** `tsc`, `eslint`; in Edge at 400 px (touch drag) and 1440 px (keyboard); the filter narrows 22 → 4 with the glide; no page errors.
+
 ### 7 Nov 2026: clearer Google listing and a new site icon — `main` `a11e5e8` (live 7 Nov; the first production build failed on Vercel, a retry `8af2cf0` succeeded)
 - **Google listing (asked by the owner: the result and its links didn't say what we sell):**
   - Home page title is now "Himalayan Arc: Uttarakhand & Himachal Treks, Auli Ski School" (was "… | Treks from Joshimath & Auli Skiing").
