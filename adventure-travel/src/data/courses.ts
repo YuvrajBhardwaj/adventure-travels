@@ -495,6 +495,12 @@ export const courses: Course[] = [
     id: 3,
     name: "Backcountry Ski & Snowboard Touring",
     slug: "backcountry-skiing",
+    milestones: [
+      { day: 2, skill: "Skin uphill efficiently, with clean kick turns" },
+      { day: 4, skill: "Ski your first untracked backcountry line" },
+      { day: 5, skill: "Run a beacon, probe and shovel rescue" },
+      { day: 6, skill: "Lead yourself through a full-day tour with several descents" },
+    ],
     type: "Backcountry",
     title: "Backcountry Ski & Snowboard Touring Adventure",
     price: 45000,

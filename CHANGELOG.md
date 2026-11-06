@@ -17,6 +17,20 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 7 Nov 2026: clearer Google listing and a new site icon — `preview/trek-slideshows`, uncommitted
+- **Google listing (asked by the owner: the result and its links didn't say what we sell):**
+  - Home page title is now "Himalayan Arc: Uttarakhand & Himachal Treks, Auli Ski School" (was "… | Treks from Joshimath & Auli Skiing").
+  - New description: "Small-group treks in Uttarakhand and Himachal with local guides from Joshimath, and a ski and snowboard school in Auli. Mountain days you will remember."
+  - Link previews (WhatsApp, Facebook, X) use the longer "Himalayan Arc Adventure | Uttarakhand & Himachal Treks, Auli Ski School".
+  - `/courses` is now "Auli Ski & Snowboard School" and `/activities` "Treks, Ski School & Camping in the Himalayas", so the ski school can show as one of the links under the result.
+  - Google picks those links and sometimes rewrites titles and descriptions itself, so changes show only after it re-crawls (days to a few weeks). Requesting indexing in Search Console speeds this up.
+- **Site icon (favicon), asked by the owner because the old one looked like clip art:** the generic sun-and-peaks icon is replaced by a mark drawn from the compass logo: a navy disc, a snow peak, a blue trail climbing to it and the orange map pin on the summit. It's drawn to read at 16 px. `public/favicon.svg` is the source; `favicon.ico` (16/32/48), `favicon.png` (192), `favicon-512.png` and `apple-touch-icon.png` (180, opaque) were rendered from it.
+- **Footer:** the footer logo uses the new icon too (was the old compass picture).
+- **Backcountry course:** gets the "What you'll be able to do" skill track (skinning and kick turns, first untracked line, avalanche rescue, a full-day tour), taken from its itinerary.
+- **Code:** deleted the unused `CourseVideoBackdrop.tsx`.
+- **Backend:** none.
+- **Checked:** `tsc`, `eslint`, `npm test` (77 passed); the dev server serves the new title and icon links; icon checked at 16–96 px on light and dark backgrounds.
+
 ### 6 Nov 2026: calm course pages that lead with skills and price — `preview/trek-slideshows` `8e6acec`
 - **For visitors (asked by the owner: the course photo showed behind the whole page and pulled focus):** on every course page (`/courses/<slug>`) the photos now stay in the hero slideshow only. The hero ends in a mountain-ridge edge, and everything below sits on a plain snow-white background instead of a white card floating over a full-page photo or video.
 - **New "What you'll be able to do" track** at the top of the Overview tab: four day-by-day skills, ending with the certificate (across on desktop, down the side on phones). The steps come from each course's own itinerary, in a new `milestones` field in `src/data/courses.ts`, filled in for the 7-day and 2-week skiing and snowboarding courses. Backcountry has none yet, so the track is hidden there.

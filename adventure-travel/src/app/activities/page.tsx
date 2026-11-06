@@ -2,7 +2,7 @@ import { fitTitle, pageMetadata } from "@/lib/seo";
 import ActivitiesPageClient from "./ActivitiesPageClient";
 
 export const metadata = pageMetadata({
-  title: fitTitle("Treks, Skiing & Camping in the Himalayas"),
+  title: fitTitle("Treks, Ski School & Camping in the Himalayas"),
   description:
     "Himalayan treks, skiing and snowboarding in Auli, camping, paragliding in Bir Billing and rock climbing. Guided adventures in Uttarakhand and Himachal Pradesh.",
   path: "/activities",

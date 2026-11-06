@@ -44,11 +44,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     // The home page's title (page.tsx is a client component, so it can't export its own).
-    default: "Himalayan Arc Adventure | Treks from Joshimath & Auli Skiing",
+    default: "Himalayan Arc: Uttarakhand & Himachal Treks, Auli Ski School",
     template: "%s | Himalayan Arc Adventure",
   },
   description:
-    "Guided Himalayan treks from our Joshimath base: Kuari Pass, Pangarchula, Dronagiri, Valley of Flowers and Kedarkantha, plus skiing courses in Auli.",
+    "Small-group treks in Uttarakhand and Himachal with local guides from Joshimath, and a ski and snowboard school in Auli. Mountain days you will remember.",
   keywords: [
     "Himalayan trekking",
     "Uttarakhand treks",
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "Himalayan Arc Adventure | Treks from Joshimath & Auli Skiing",
+    title: "Himalayan Arc Adventure | Uttarakhand & Himachal Treks, Auli Ski School",
     description:
       "Kuari Pass, Pangarchula, Dronagiri and Valley of Flowers, led by our Joshimath team and priced Joshimath to Joshimath. Plus skiing in Auli.",
     images: [SOCIAL_IMAGE],
@@ -82,7 +82,7 @@ export const metadata: Metadata = {
   // so it can't be a real account. Add the real handle once the owner has one.
   twitter: {
     card: "summary_large_image",
-    title: "Himalayan Arc Adventure | Treks from Joshimath & Auli Skiing",
+    title: "Himalayan Arc Adventure | Uttarakhand & Himachal Treks, Auli Ski School",
     description:
       "Kuari Pass, Pangarchula, Dronagiri and Valley of Flowers, led by our Joshimath team and priced Joshimath to Joshimath. Plus skiing in Auli.",
     images: [SOCIAL_IMAGE],

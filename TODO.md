@@ -7,8 +7,11 @@ Last updated: 7 Nov 2026.
 - [x] ~~**You: check the new phone menu on the preview**~~ (6 Nov, styled after oknadesigns.com). Live on 6 Nov.
 - [x] ~~**You: check the new phone/tablet home page on the preview** (6 Nov: swipeable photo cards, photo slideshows on cards, timeline), the redrawn mountain graphic and the "Enquire now" tab on trek and course pages, then say "go live".~~ Live on 7 Nov (`de34d31`, by request).
 - [x] ~~**Dev:** calm course page background, day-by-day skill track and per-day prices~~ (6 Nov, on the preview branch, uncommitted).
-- [ ] **You: check the course skill steps** (`milestones` in `adventure-travel/src/data/courses.ts`) read right for each course, and send steps for the Backcountry course if you want the track there too.
-- [ ] **Dev (optional):** delete the now-unused `src/components/CourseVideoBackdrop.tsx`.
+- [x] ~~**Dev:** clearer Google title and description, ski school page title, new site icon~~ (7 Nov, on the preview branch, uncommitted).
+- [ ] **You: after these go live,** open Google Search Console → URL inspection → request indexing for the home page, `/courses` and `/activities`, so Google picks up the new titles and icon sooner. Google chooses the links under the result itself; it can take a few weeks.
+- [x] ~~**Dev:** footer logo uses the new icon~~ (7 Nov).
+- [x] ~~**Dev:** Backcountry skill steps; deleted the unused `CourseVideoBackdrop.tsx`~~ (7 Nov).
+- [ ] **You (optional):** glance at the course skill steps on each course page; tell Claude if any line is wrong.
 - [x] ~~**Dev:** daily departures through each trek's season, Calendar-style Dates tab~~ (6 Nov, on the preview branch, `8e6acec`).
 - [ ] **You: check the season windows** in `adventure-travel/src/data/trekSeasons.ts` (`DEPARTURE_CALENDAR`, also listed in CHANGELOG 6 Nov), e.g. whether Roopkund or Satopanth should run daily instead of weekly, and the 3-day / 21-day booking notice.
 - [ ] **You: decide about the old seeded Saturday dates** in the database. They still show as overrides, and some fall outside the new windows (e.g. Kuari Pass in early September). Claude can delete the ones outside the season (a live database change, needs your OK).
