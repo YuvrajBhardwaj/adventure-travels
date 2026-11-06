@@ -2,10 +2,10 @@
 
 What's left, most urgent first. Tick items off here and record the change in [CHANGELOG.md](CHANGELOG.md).
 **You** = the business owner (accounts, dashboards, decisions). **Dev** = code work Claude or a developer can do.
-Last updated: 6 Nov 2026.
+Last updated: 7 Nov 2026.
 
 - [x] ~~**You: check the new phone menu on the preview**~~ (6 Nov, styled after oknadesigns.com). Live on 6 Nov.
-- [ ] **You: check the new phone/tablet home page on the preview** (6 Nov: swipeable photo cards, photo slideshows on cards, timeline), the redrawn mountain graphic and the "Enquire now" tab on trek and course pages, then say "go live".
+- [x] ~~**You: check the new phone/tablet home page on the preview** (6 Nov: swipeable photo cards, photo slideshows on cards, timeline), the redrawn mountain graphic and the "Enquire now" tab on trek and course pages, then say "go live".~~ Live on 7 Nov (`de34d31`, by request).
 - [x] ~~**Dev:** calm course page background, day-by-day skill track and per-day prices~~ (6 Nov, on the preview branch, uncommitted).
 - [ ] **You: check the course skill steps** (`milestones` in `adventure-travel/src/data/courses.ts`) read right for each course, and send steps for the Backcountry course if you want the track there too.
 - [ ] **Dev (optional):** delete the now-unused `src/components/CourseVideoBackdrop.tsx`.

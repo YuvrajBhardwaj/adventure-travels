@@ -4,12 +4,12 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 **How to add an entry:** add it under [Unreleased] with the date, where the change lives (branch and commit, or "uncommitted"), and what changed for visitors, for the business and in the backend. Move entries to a dated release heading when they go live on www.himalayanarcadventure.com. Open work goes in [TODO.md](TODO.md).
 
-## Where things stand (6 Nov 2026)
+## Where things stand (7 Nov 2026)
 
 | Where | Commit | What it has |
 |---|---|---|
-| **Live site** (`main` on GitHub) | `2523bbd` | Everything up to 6 Nov: the new phone menu, plus the copy rewrite, the trek fact fixes and the 15-minute checkout seat hold. Server functions run in Mumbai. Accounts, bookings and emails work; payments run in Razorpay **Test Mode** (no real money). All 12 environment variables are set in Vercel Production. |
-| **Preview** (`preview/trek-slideshows` on GitHub) | latest | Live, plus the phone/tablet home page redesign and the card photo slideshows (6 Nov). |
+| **Live site** (`main` on GitHub) | `de34d31` | Everything up to 7 Nov (went live 7 Nov): the daily-departure Dates calendar, the "Enquire now" tab, the mountain graphic, the calm course pages, the phone/tablet home page and card slideshows, the new phone menu, plus the copy rewrite, the trek fact fixes and the 15-minute checkout seat hold. Server functions run in Mumbai. Accounts, bookings and emails work; payments run in Razorpay **Test Mode** (no real money). All 12 environment variables are set in Vercel Production. |
+| **Preview** (`preview/trek-slideshows` on GitHub) | `de34d31` | Same as live (fast-forwarded into `main` on 7 Nov). |
 | **Database** (Supabase `sdhtgmlkzcknmeakxgdz`) | — | All 7 SQL files applied (latest on 5 Nov); sign-up emails limited to 20 an hour. |
 | Local `main` | `9b522d5` | Stale. Reset it to `origin/main` before the next use. |
 
