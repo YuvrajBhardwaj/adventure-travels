@@ -38,8 +38,8 @@ export default function Home() {
         <SeasonSplitHero />
         <div className="relative z-10">
           <WelcomeChooser />
-          <StatsStrip />
           <FindYourTrek />
+          <StatsStrip />
           <JourneyStory />
           <SnowSchool />
           <WhyTrekWithUs />

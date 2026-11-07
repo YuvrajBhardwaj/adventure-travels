@@ -21,10 +21,10 @@ const HERO_MEDIA: { type: "image" | "video"; src: string }[] = [
   { type: "video", src: "/assets/skiing/IMG_4968.MP4" },
   { type: "video", src: "/assets/skiing/IMG_4975.MP4" },
   { type: "video", src: "/assets/skiing/IMG_5018.MP4" },
-  { type: "video", src: "/assets/snowboarding/IMG_5201.MOV" },
-  { type: "video", src: "/assets/snowboarding/IMG_4222.MOV" },
-  { type: "video", src: "/assets/snowboarding/IMG_5198.MOV" },
-  { type: "video", src: "/assets/snowboarding/IMG_5272.MOV" },
+  { type: "video", src: "/assets/snowboarding/IMG_5201.mp4" },
+  { type: "video", src: "/assets/snowboarding/IMG_4222.mp4" },
+  { type: "video", src: "/assets/snowboarding/IMG_5198.mp4" },
+  { type: "video", src: "/assets/snowboarding/IMG_5272.mp4" },
 ];
 
 const H2 = "font-heading text-3xl font-semibold tracking-[-0.02em] text-slate-900 sm:text-4xl";
@@ -286,7 +286,7 @@ export default function CoursesPageClient() {
             controlsList="nodownload"
             preload="none"
             playsInline
-            src="/assets/snowboarding/IMG_1477.MOV"
+            src="/assets/snowboarding/IMG_1477.mp4"
             poster="https://images.pexels.com/photos/848591/pexels-photo-848591.jpeg?w=1200&q=80"
             className="block max-h-[80vh] w-full rounded-2xl bg-navy object-contain"
             aria-label="Course video from Auli snow sports academy"

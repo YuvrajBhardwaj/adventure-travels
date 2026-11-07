@@ -25,9 +25,9 @@ const SUMMER_SLIDES: Slide[] = [
 // Winter — snowboarding videos only (right side = videos). The three lightest clips
 // (1.3–2.7 MB); the heavier ones (up to 6.9 MB) cost too much on phone data.
 const WINTER_SLIDES: Slide[] = [
-  { type: "video", src: "/assets/snowboarding/IMG_4222.MOV", alt: "Snowboarding powder spray (video)", poster: WINTER_POSTERS[1] },
-  { type: "video", src: "/assets/snowboarding/IMG_5201.MOV", alt: "Snowboarding run at Auli (video)", poster: WINTER_POSTERS[0] },
-  { type: "video", src: "/assets/snowboarding/IMG_5220.MOV", alt: "Snowboarding descent (video)", poster: WINTER_POSTERS[2] },
+  { type: "video", src: "/assets/snowboarding/IMG_4222.mp4", alt: "Snowboarding powder spray (video)", poster: WINTER_POSTERS[1] },
+  { type: "video", src: "/assets/snowboarding/IMG_5201.mp4", alt: "Snowboarding run at Auli (video)", poster: WINTER_POSTERS[0] },
+  { type: "video", src: "/assets/snowboarding/IMG_5220.mp4", alt: "Snowboarding descent (video)", poster: WINTER_POSTERS[2] },
 ];
 
 // The pitch's facts come from the trek data, so they stay true when treks change.

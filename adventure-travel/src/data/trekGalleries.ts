@@ -59,11 +59,11 @@ export const TREK_GALLERIES: Record<string, string[]> = {
     "/assets/dronagiri/7155162a-d858-4534-901f-e67b9acfe491.jpeg",
     "/assets/dronagiri/85943898-e5e5-4bb4-93b0-84cd940cd6b6.jpeg",
     "/assets/dronagiri/c3de05f4-7486-4ad7-bd72-ee923d6f6831.jpeg",
-    "/assets/dronagiri/220a92d7-c372-466f-b568-682143c3f75a.mov",
-    "/assets/dronagiri/390992d1-bb16-456c-9696-2b7076d7e510 (1).mov",
-    "/assets/dronagiri/da4bf970-c056-493f-9a0f-1f4a83a7227a.mov",
-    "/assets/dronagiri/da933a63-a715-4cf8-a753-0b4bab45c6a7.mov",
-    "/assets/dronagiri/fb97608f-889a-4473-a9c3-4206fddec5c4.mov",
+    "/assets/dronagiri/220a92d7-c372-466f-b568-682143c3f75a.mp4",
+    "/assets/dronagiri/390992d1-bb16-456c-9696-2b7076d7e510 (1).mp4",
+    "/assets/dronagiri/da4bf970-c056-493f-9a0f-1f4a83a7227a.mp4",
+    "/assets/dronagiri/da933a63-a715-4cf8-a753-0b4bab45c6a7.mp4",
+    "/assets/dronagiri/fb97608f-889a-4473-a9c3-4206fddec5c4.mp4",
   ],
   "pangarchula-peak": [
     "/assets/pangarchula-peak-trek/IMG_3734.jpeg",
@@ -84,7 +84,7 @@ export const TREK_GALLERIES: Record<string, string[]> = {
     "/assets/nandi-kund-trek/74d946e2-9a04-4881-b830-0579948647b8.jpeg",
     "/assets/nandi-kund-trek/b0e62e4f-a4ec-40ce-9808-2ee87c0bf2cd.jpeg",
     "/assets/nandi-kund-trek/d39028ef-4d93-4a91-b087-2f40237fc124.jpeg",
-    "/assets/nandi-kund-trek/feb980a9-026c-4e20-8207-d16c640983d6.mov",
+    "/assets/nandi-kund-trek/feb980a9-026c-4e20-8207-d16c640983d6.mp4",
   ],
   "panpatia-col": [
     "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80",
@@ -97,7 +97,7 @@ export const TREK_GALLERIES: Record<string, string[]> = {
     "/assets/panpatia-col-trek/IMG_6059.jpeg",
     "/assets/panpatia-col-trek/IMG_6060.jpeg",
     "/assets/panpatia-col-trek/IMG_6079.jpeg",
-    "/assets/panpatia-col-trek/Panpateya.mov",
+    "/assets/panpatia-col-trek/Panpateya.mp4",
   ],
   "kuari-pass": [
     "/assets/kuari-pass-trek/017bfe93-d6e9-4c29-841d-e55ba276be2b.jpeg",
@@ -112,7 +112,7 @@ export const TREK_GALLERIES: Record<string, string[]> = {
     "/assets/kuari-pass-trek/8a7f3f68-76f9-4945-98cc-8734fc98063c.jpeg",
     "/assets/kuari-pass-trek/9f773586-9c67-460f-bdd5-30d7737e3c80.jpeg",
     "/assets/kuari-pass-trek/f7d8168c-15e8-4766-946e-74358e954af2.jpeg",
-    "/assets/kuari-pass-trek/f14f4fc5-7c11-4e21-abcf-e12bf021e6dc.mov",
+    "/assets/kuari-pass-trek/f14f4fc5-7c11-4e21-abcf-e12bf021e6dc.mp4",
   ],
   "bhrigu-lake": [
     "/assets/birgu-lake/22e5257b-854d-4722-9ad9-4f63715455e0.jpeg",
@@ -123,10 +123,10 @@ export const TREK_GALLERIES: Record<string, string[]> = {
     "/assets/birgu-lake/cb3e743b-1cdd-4977-aa99-3f494072cb9a.jpeg",
     "/assets/birgu-lake/d4044abb-3f2d-4334-a52a-4048f82b359c.jpeg",
     "/assets/birgu-lake/d9f3c584-2fd9-497d-9ee0-a9c30ee52888.jpeg",
-    "/assets/birgu-lake/3551faed-4e8b-48a1-8d7c-3009f2af7229.mov",
-    "/assets/birgu-lake/96aa6578-8641-4b71-88af-a4892d9060f7.mov",
-    "/assets/birgu-lake/9b1e5436-c884-4453-b06b-3c29651bbbcc.mov",
-    "/assets/birgu-lake/c45c1e10-d795-4622-9afe-9aa19b3b325c.mov",
+    "/assets/birgu-lake/3551faed-4e8b-48a1-8d7c-3009f2af7229.mp4",
+    "/assets/birgu-lake/96aa6578-8641-4b71-88af-a4892d9060f7.mp4",
+    "/assets/birgu-lake/9b1e5436-c884-4453-b06b-3c29651bbbcc.mp4",
+    "/assets/birgu-lake/c45c1e10-d795-4622-9afe-9aa19b3b325c.mp4",
   ],
 };
 

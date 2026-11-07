@@ -17,14 +17,14 @@ const REELS: Reel[] = [
   {
     title: "Bhrigu Lake Trek",
     region: "Himachal Pradesh",
-    video: "/assets/birgu-lake/3551faed-4e8b-48a1-8d7c-3009f2af7229.mov",
+    video: "/assets/birgu-lake/3551faed-4e8b-48a1-8d7c-3009f2af7229.mp4",
     poster: "/assets/birgu-lake/22e5257b-854d-4722-9ad9-4f63715455e0.jpeg",
     slug: "bhrigu-lake",
   },
   {
     title: "Kuari Pass Trek",
     region: "Uttarakhand",
-    video: "/assets/kuari-pass-trek/f14f4fc5-7c11-4e21-abcf-e12bf021e6dc.mov",
+    video: "/assets/kuari-pass-trek/f14f4fc5-7c11-4e21-abcf-e12bf021e6dc.mp4",
     poster: "/assets/kuari-pass-trek/017bfe93-d6e9-4c29-841d-e55ba276be2b.jpeg",
     slug: "kuari-pass",
   },
@@ -38,14 +38,14 @@ const REELS: Reel[] = [
   {
     title: "Nandi Kund Trek",
     region: "Garhwal, Uttarakhand",
-    video: "/assets/nandi-kund-trek/feb980a9-026c-4e20-8207-d16c640983d6.mov",
+    video: "/assets/nandi-kund-trek/feb980a9-026c-4e20-8207-d16c640983d6.mp4",
     poster: "/assets/nandi-kund-trek/2c72f839-1d03-4194-829a-0cb0e953eb8a.jpeg",
     slug: "nandi-kund",
   },
   {
     title: "Panpatia Col Trek",
     region: "Kumaon, Uttarakhand",
-    video: "/assets/panpatia-col-trek/Panpateya.mov",
+    video: "/assets/panpatia-col-trek/Panpateya.mp4",
     poster: "/assets/panpatia-col-trek/IMG_6079.jpeg",
     slug: "panpatia-col",
   },
