@@ -113,9 +113,12 @@ export default function FooterV2() {
       setStatus("error");
       return;
     }
-    // No newsletter endpoint yet — never show a false "subscribed" success.
-    setStatus("error");
-    setEmail("");
+    // No newsletter list yet: open the visitor's email app with the request ready to send,
+    // and say so plainly — never a false "subscribed".
+    const subject = encodeURIComponent("Add me to Himalayan Arc Adventure updates");
+    const body = encodeURIComponent(`Hi! Please send trek dates and updates to ${email.trim()}.`);
+    window.location.href = `mailto:himalayanarcadventure@gmail.com?subject=${subject}&body=${body}`;
+    setStatus("success");
   };
 
   return (
@@ -315,7 +318,7 @@ export default function FooterV2() {
                       <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                       </svg>
-                      Subscribe! Adventure updates are on the way.
+                      Your email app is opening. Send the message and we&apos;ll add you.
                     </motion.p>
                   )}
                   {status === "error" && (
@@ -327,7 +330,7 @@ export default function FooterV2() {
                       transition={transition("base")}
                       className="mt-2 text-xs text-red-400"
                     >
-                      Please enter a valid email. Newsletter sign-up isn’t live yet — email himalayanarcadventure@gmail.com.
+                      Please enter a valid email address.
                     </motion.p>
                   )}
                 </AnimatePresence>

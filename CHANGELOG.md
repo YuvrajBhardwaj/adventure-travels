@@ -17,6 +17,12 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 7 Nov 2026: clearer home page hero, lighter winter videos, honest newsletter — `main`
+- **Hero:** headline "TREK UTTARAKHAND. SKI AULI." with a concrete pitch: "Guided 3–15 day treks from Rs.5,000, with permits, guide and meals included. Ski and snowboard courses at Auli in winter." The day range and the "from" price are worked out from the trek data, so they stay true. Buttons: "Browse treks" and "Auli ski courses".
+- **Winter videos 6 → 3:** the hero keeps the three lightest clips (1.3–2.7 MB) and drops the 3.6, 4.5 and 6.9 MB ones, so phones download much less.
+- **Newsletter (footer):** there is no mailing list yet, so Subscribe now opens the visitor's email app with a ready "add me to updates" message to himalayanarcadventure@gmail.com, and says exactly that. Before, a valid email showed a red "enter a valid email" error.
+- **Checked:** `tsc`, `eslint`, `npm test` (77 passed); hero checked at 390 px.
+
 ### 7 Nov 2026: Kuari Pass scroll story fixes (Moss Island style) — `preview/trek-slideshows`
 - **Context:** the owner asked for option A (one scroll story) and pointed at motionsites.ai's "Moss Island" (scroll fly-in, data tags pinned into the scene, a frosted data card, a numbered index). `JourneyStory` uses those ideas with our own photos and trek data. Note: `0c64520` (another session) put an earlier version of the story **live on `main`**.
 - **Fixes on top of the live version:** the altitude counter now shows each day's exact altitude (it ran half a chapter ahead, e.g. 2,468 m on Day 1); the descent day says "down to 1,875 m" instead of "Elev 1,875 m" over a high meadow photo; the summit tag no longer overlaps the day index; on phones the altitude card sits above the WhatsApp button; the booking ending fades the floating panels out.

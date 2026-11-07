@@ -32,7 +32,9 @@ Works today: accounts, trek and course bookings, booking emails and the payment 
 - [ ] **You: upgrade Vercel to Pro (about $20 a month).** Hobby is for non-commercial use only, and it pauses the site when a monthly limit runs out. At today's page weight that's around 10,000 visitors a month (100 GB of bandwidth, 1M requests).
 - [ ] **You (before traffic grows):** move email from Gmail (about 500 a day) to a transactional sender such as Brevo, Resend, Amazon SES or Zoho ZeptoMail. Then consider Supabase Pro ($25 a month): daily backups, no pausing, 100k monthly users instead of 50k.
 - [x] ~~**Dev:** deploy the 29 Oct changes (commit and push to `main`).~~ Done 5 Nov; the server functions now run in Mumbai, next to the database.
-- [ ] **Dev:** shrink the hero videos (14.7 MB home page on desktop, 38 MB of `.MOV` files). Needs ffmpeg (`winget install ffmpeg`).
+- [ ] **Dev:** (7 Nov: home hero cut to the 3 lightest clips; conversion still to do) shrink the hero videos (14.7 MB home page on desktop, 38 MB of `.MOV` files). Needs ffmpeg (`winget install ffmpeg`).
+- [ ] **You: Razorpay live keys** (from the 7 Nov report): put live `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` and `RAZORPAY_WEBHOOK_SECRET` in Vercel Production, register the webhook `https://www.himalayanarcadventure.com/api/razorpay-webhook` (payment.captured, order.paid, payment.failed), then make a Rs.1 live payment and refund it.
+- [ ] **You: newsletter.** Subscribe opens an email to you for now. Want a real list (e.g. Brevo or Mailchimp)? Dev can wire it then.
 - [ ] **Dev:** the admin lists load at most 500 bookings per type and 1,000 customers, and search runs only over those. Move search into the database before about 1,000 customers.
 - [ ] **Dev:** cut background link prefetching (55 requests per desktop home visit) to save Vercel request quota.
 

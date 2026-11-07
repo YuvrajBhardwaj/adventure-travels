@@ -6,6 +6,8 @@ import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useScroll,
 import { buttonVariants } from "@/components/ui/button";
 import { DURATION, EASE } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { treks } from "@/data/treks";
+import Price from "@/components/Price";
 
 type Slide = { type: "image" | "video"; src: string; alt: string; poster?: string };
 
@@ -20,15 +22,18 @@ const SUMMER_SLIDES: Slide[] = [
   { type: "image", src: "/assets/valley-of-flowers/IMG_4735.JPG.jpeg", alt: "Alpine meadow trek trail, Uttarakhand" },
 ];
 
-// Winter — snowboarding videos only (right side = videos)
+// Winter — snowboarding videos only (right side = videos). The three lightest clips
+// (1.3–2.7 MB); the heavier ones (up to 6.9 MB) cost too much on phone data.
 const WINTER_SLIDES: Slide[] = [
-  { type: "video", src: "/assets/snowboarding/IMG_5201.MOV", alt: "Snowboarding run at Auli (video)", poster: WINTER_POSTERS[0] },
   { type: "video", src: "/assets/snowboarding/IMG_4222.MOV", alt: "Snowboarding powder spray (video)", poster: WINTER_POSTERS[1] },
-  { type: "video", src: "/assets/snowboarding/IMG_5198.MOV", alt: "Snowboarder carving (video)", poster: WINTER_POSTERS[2] },
-  { type: "video", src: "/assets/snowboarding/IMG_5272.MOV", alt: "Auli snow run (video)", poster: WINTER_POSTERS[0] },
-  { type: "video", src: "/assets/snowboarding/IMG_5220.MOV", alt: "Snowboarding descent (video)", poster: WINTER_POSTERS[1] },
-  { type: "video", src: "/assets/snowboarding/IMG_1477.MOV", alt: "Mountain snowboarding (video)", poster: WINTER_POSTERS[2] },
+  { type: "video", src: "/assets/snowboarding/IMG_5201.MOV", alt: "Snowboarding run at Auli (video)", poster: WINTER_POSTERS[0] },
+  { type: "video", src: "/assets/snowboarding/IMG_5220.MOV", alt: "Snowboarding descent (video)", poster: WINTER_POSTERS[2] },
 ];
+
+// The pitch's facts come from the trek data, so they stay true when treks change.
+const FROM_PRICE = Math.min(...treks.map((t) => t.price));
+const MIN_DAYS = Math.min(...treks.map((t) => t.days));
+const MAX_DAYS = Math.max(...treks.map((t) => t.days));
 
 function CarouselLayer({
   slides,
@@ -322,15 +327,16 @@ export default function SeasonSplitHero() {
         <div className="mt-auto flex flex-col gap-4 lg:gap-3">
           <div className="flex flex-col">
             <h1 className="font-heading font-semibold leading-[0.95] tracking-[-0.03em] text-white drop-shadow-lg">
-              <span className="block pb-1 text-display-xl">ONE RANGE.</span>
-              <span className="block pb-2 text-display-xl text-white/95">TWO SEASONS.</span>
+              <span className="block pb-1 text-display-xl">TREK UTTARAKHAND.</span>
+              <span className="block pb-2 text-display-xl text-white/95">SKI AULI.</span>
             </h1>
             <p className="max-w-xl text-base font-medium leading-relaxed text-white/80 md:text-lg">
-              Himalayan treks in Uttarakhand, and snow school at Auli.
+              Guided {MIN_DAYS}–{MAX_DAYS} day treks from <Price inr={FROM_PRICE} />, with permits, guide and meals included.
+              Ski and snowboard courses at Auli in winter.
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <Link href="/treks" className={cn(buttonVariants({ size: "lg" }), "px-7 shadow-lg")}>
-                Explore treks
+                Browse treks
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </Link>
               <Link
@@ -340,7 +346,7 @@ export default function SeasonSplitHero() {
                   "border-white/70 bg-white/5 px-7 text-white backdrop-blur-sm hover:border-white hover:bg-white/15"
                 )}
               >
-                Learn to ski
+                Auli ski courses
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </Link>
             </div>
