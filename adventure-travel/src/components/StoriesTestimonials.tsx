@@ -126,7 +126,7 @@ export default function StoriesTestimonials() {
                   <span className="relative">
                     <span className="block font-heading text-2xl font-medium leading-tight tracking-[-0.015em]">{story.title}</span>
                     <span className="mt-2 block font-nav text-xs text-white/70">
-                      {story.author} · {story.readTime} min read
+                      {story.author}
                     </span>
                   </span>
                 </Link>
@@ -154,7 +154,7 @@ export default function StoriesTestimonials() {
             </h3>
             <p className="mt-3 line-clamp-2 max-w-xl text-base leading-relaxed text-muted">{firstStory.excerpt}</p>
             <p className="font-nav mt-4 text-xs font-medium text-muted">
-              {firstStory.author} · {firstStory.readTime} min read
+              {firstStory.author}
             </p>
           </Link>
 
@@ -179,7 +179,7 @@ export default function StoriesTestimonials() {
                     </h3>
                     <span className="mt-2 line-clamp-2 block text-sm leading-relaxed text-muted">{story.excerpt}</span>
                     <span className="font-nav mt-2 block text-xs text-muted">
-                      {story.author} · {story.readTime} min read
+                      {story.author}
                     </span>
                   </span>
                 </Link>

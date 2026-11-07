@@ -17,6 +17,17 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 7 Nov 2026: "The Ascent" home page redesign, part 1 — `main` (merged from `redesign/ascent`)
+- **Asked by the owner:** make the site stand out (motionsites.ai as inspiration), keep all the information. Audit first: a fresh graphify graph of `src/` (854 nodes, in `graphify-out/`), the live home page on desktop and phone, and motionsites' travel designs.
+- **For visitors:**
+  - **New hero:** a giant HIMALAYA set *behind* the peaks of our own Panpatia Col photo (the mountains are cut out into a second layer, `public/assets/hero/ascent-fg.webp`), with "One range. Two seasons.", the same pitch and buttons on the snowfield. Replaces the split summer/winter slider, whose headline was cut in two by the divider on phones.
+  - **Altitude meter:** scrolling the home page climbs from Joshimath (1,875 m) to our highest route (5,942 m). Each tick is a real trek's top altitude, and the readout names the last one you've passed. A side meter on screens 1440 px and wider, a hairline under the navbar on smaller ones.
+  - **The Range** (new section): every trek drawn as a peak at its real top altitude, laid out like a massif, with region filters, a detail card and the full list. It replaces the shape "map" (three hexagons) and the numbers strip; their facts (region lists, counts, the four headline numbers) are all in it.
+  - **Navbar:** the green button is now **Book a trek** (to /treks). Sign up stays on the login page and in the phone menu.
+  - **Stories:** the three cards no longer show made-up authors (Priya Sharma, Rahul Verma, Meera Nair) or reading times for articles that don't exist. They now say "Himalayan Arc team" and use our own photos instead of Unsplash.
+- **Code:** new `AscentHero.tsx`, `AltitudeRail.tsx`, `TheRange.tsx`. Removed `SeasonSplitHero.tsx`, `StatsStrip.tsx`, `HimalayanMap.tsx` (no longer used).
+- **Checked:** `tsc`, `eslint` (0 errors), `npm test` (77 passed); home page at 1600, 1440 and 390 px with no sideways scroll. Not yet checked: `npm run test:e2e`, Lighthouse.
+
 ### 7 Nov 2026: Home hero headline back to "ONE RANGE. TWO SEASONS." — `preview/trek-slideshows`
 - The owner asked to keep the old headline instead of "TREK UTTARAKHAND. SKI AULI." (changed in `e472dd7`). Only the two headline lines went back; the newer subtitle (days and "from" price from the trek data) and the "Browse treks" button stay.
 

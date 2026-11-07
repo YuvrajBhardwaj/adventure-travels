@@ -529,14 +529,15 @@ export default function Navbar() {
                   <Link href="/login" className="whitespace-nowrap rounded-full px-3.5 py-2 font-nav text-[15px] font-medium text-white/75 transition-colors duration-150 ease-out hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">
                     Log in
                   </Link>
+                  {/* The bar's one green button is the thing people come for; sign-up stays one click away on the login page and in the phone menu. */}
                   <Link
-                    href="/signup"
+                    href="/treks"
                     className={buttonVariants({
                       className:
                         "h-10 px-5 font-nav text-[15px] shadow-[0_6px_20px_-6px_rgba(16,185,129,0.65)] hover:shadow-[0_8px_26px_-6px_rgba(16,185,129,0.8)] focus-visible:ring-emerald-400 focus-visible:ring-offset-navy-deep",
                     })}
                   >
-                    Sign up
+                    Book a trek
                   </Link>
                 </div>
               )}
