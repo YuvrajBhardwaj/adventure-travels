@@ -327,8 +327,8 @@ export default function SeasonSplitHero() {
         <div className="mt-auto flex flex-col gap-4 lg:gap-3">
           <div className="flex flex-col">
             <h1 className="font-heading font-semibold leading-[0.95] tracking-[-0.03em] text-white drop-shadow-lg">
-              <span className="block pb-1 text-display-xl">TREK UTTARAKHAND.</span>
-              <span className="block pb-2 text-display-xl text-white/95">SKI AULI.</span>
+              <span className="block pb-1 text-display-xl">ONE RANGE.</span>
+              <span className="block pb-2 text-display-xl text-white/95">TWO SEASONS.</span>
             </h1>
             <p className="max-w-xl text-base font-medium leading-relaxed text-white/80 md:text-lg">
               Guided {MIN_DAYS}–{MAX_DAYS} day treks from <Price inr={FROM_PRICE} />, with permits, guide and meals included.
