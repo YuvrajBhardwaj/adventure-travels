@@ -24,6 +24,13 @@ Last updated: 7 Nov 2026.
 - [ ] **Dev:** self-host the three fonts (`next/font/local`) so a Google Fonts hiccup can't fail a build again (it failed one production build on 6 Nov).
 - [ ] **Dev:** card slideshows load more photos per home visit. Shrink card photos to about 800 px (they are 1600 px today) in `scripts/prepare-photos.mjs` to save phone data and Vercel bandwidth.
 
+## Redesign: "The Ascent" (branch `redesign/ascent`)
+- [x] Part 1: hero behind the peaks, altitude meter, The Range, Book-a-trek button, honest story cards.
+- [ ] **You:** look at it (local preview or a Vercel preview of the branch) and say go / change.
+- [ ] Part 2: restyle the remaining home sections to match (trek chooser, Snow School, camping, why us, FAQ, final call to action), and fold "How it works" into "Why trek with us" so the page is shorter.
+- [ ] Part 3: carry the look to /treks, trek pages and courses; check page weight (home was 19.5 MB on the live site).
+- [ ] **Decide:** the three story cards link to trek pages, not articles. Write real guides, or drop the section.
+
 ## Backend health check, 29 Oct (details in CHANGELOG)
 Works today: accounts, trek and course bookings, booking emails and the payment flow (in test mode).
 - [x] ~~**You: apply the database update and the email limit.**~~ Done 5 Nov: with your OK, Claude ran `node scripts/setup-backend.mjs`. All 7 SQL files are applied (15-minute seat hold, speed fixes) and sign-up emails are limited to 20 an hour (was 2). Checked afterwards.

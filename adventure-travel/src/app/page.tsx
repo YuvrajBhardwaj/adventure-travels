@@ -1,8 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import SeasonSplitHero from "@/components/SeasonSplitHero";
-import StatsStrip from "@/components/StatsStrip";
+import AscentHero from "@/components/AscentHero";
+import AltitudeRail from "@/components/AltitudeRail";
+import TheRange from "@/components/TheRange";
 import FindYourTrek from "@/components/FindYourTrek";
 import JourneyStory from "@/components/JourneyStory";
 import WhyTrekWithUs from "@/components/WhyTrekWithUs";
@@ -11,7 +12,6 @@ import SnowSchool from "@/components/SnowSchool";
 import CampingSection from "@/components/CampingSection";
 import VideoShowcase from "@/components/VideoShowcase";
 import StoriesTestimonials from "@/components/StoriesTestimonials";
-import HimalayanMap from "@/components/HimalayanMap";
 import CallToActionV2 from "@/components/CallToActionV2";
 import UnlockRestrictedUttarakhand from "@/components/UnlockRestrictedUttarakhand";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -35,18 +35,18 @@ export default function Home() {
   return (
     <SmoothScrollProvider>
       <main className="relative overflow-x-clip">
-        <SeasonSplitHero />
+        <AscentHero />
+        <AltitudeRail />
         <div className="relative z-10">
           <WelcomeChooser />
           <FindYourTrek />
-          <StatsStrip />
           <JourneyStory />
           <SnowSchool />
+          <TheRange />
           <WhyTrekWithUs />
           <CampingSection />
           <StoriesTestimonials />
           <VideoShowcase />
-          <HimalayanMap />
           <UnlockRestrictedUttarakhand />
           <HowItWorks />
           <FAQV2 />

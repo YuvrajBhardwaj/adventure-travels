@@ -17,6 +17,17 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 7 Nov 2026: "The Ascent" home page redesign, part 1 — `redesign/ascent` (uncommitted until this commit; not live)
+- **Asked by the owner:** make the site stand out (motionsites.ai as inspiration), keep all the information. Audit first: a fresh graphify graph of `src/` (854 nodes, in `graphify-out/`), the live home page on desktop and phone, and motionsites' travel designs.
+- **For visitors:**
+  - **New hero:** a giant HIMALAYA set *behind* the peaks of our own Panpatia Col photo (the mountains are cut out into a second layer, `public/assets/hero/ascent-fg.webp`), with "One range. Two seasons.", the same pitch and buttons on the snowfield. Replaces the split summer/winter slider, whose headline was cut in two by the divider on phones.
+  - **Altitude meter:** scrolling the home page climbs from Joshimath (1,875 m) to our highest route (5,942 m). Each tick is a real trek's top altitude, and the readout names the last one you've passed. A side meter on screens 1440 px and wider, a hairline under the navbar on smaller ones.
+  - **The Range** (new section): every trek drawn as a peak at its real top altitude, laid out like a massif, with region filters, a detail card and the full list. It replaces the shape "map" (three hexagons) and the numbers strip; their facts (region lists, counts, the four headline numbers) are all in it.
+  - **Navbar:** the green button is now **Book a trek** (to /treks). Sign up stays on the login page and in the phone menu.
+  - **Stories:** the three cards no longer show made-up authors (Priya Sharma, Rahul Verma, Meera Nair) or reading times for articles that don't exist. They now say "Himalayan Arc team" and use our own photos instead of Unsplash.
+- **Code:** new `AscentHero.tsx`, `AltitudeRail.tsx`, `TheRange.tsx`. Removed `SeasonSplitHero.tsx`, `StatsStrip.tsx`, `HimalayanMap.tsx` (no longer used).
+- **Checked:** `tsc`, `eslint` (0 errors), `npm test` (77 passed); home page at 1600, 1440 and 390 px with no sideways scroll. Not yet checked: `npm run test:e2e`, Lighthouse.
+
 ### 7 Nov 2026: clearer home page hero, lighter winter videos, honest newsletter — `main`
 - **Hero:** headline "TREK UTTARAKHAND. SKI AULI." with a concrete pitch: "Guided 3–15 day treks from Rs.5,000, with permits, guide and meals included. Ski and snowboard courses at Auli in winter." The day range and the "from" price are worked out from the trek data, so they stay true. Buttons: "Browse treks" and "Auli ski courses".
 - **Winter videos 6 → 3:** the hero keeps the three lightest clips (1.3–2.7 MB) and drops the 3.6, 4.5 and 6.9 MB ones, so phones download much less.
