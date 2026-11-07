@@ -8,8 +8,8 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 | Where | Commit | What it has |
 |---|---|---|
-| **Live site** (`main` on GitHub) | `0c64520` | Everything up to 7 Nov (latest went live 7 Nov): honest trust signals, booking form kept through sign-up, Kuari Pass scroll story, walk-the-route altitude chart, gliding trek filters, the SEO title and new icon, the daily-departure Dates calendar, "Enquire now" tab, mountain graphic, calm course pages, phone/tablet home page, phone menu, copy rewrite and trek fact fixes. Server functions run in Mumbai; payments in Razorpay **Test Mode**. |
-| **Preview** (`preview/trek-slideshows` on GitHub) | `0c64520` | Same as live (fast-forwarded into `main` on 7 Nov). |
+| **Live site** (`main` on GitHub) | `44297d7` | Everything up to 7 Nov (latest went live 7 Nov): Kuari Pass story fixes, honest trust signals, booking form kept through sign-up, Kuari Pass scroll story, walk-the-route altitude chart, gliding trek filters, the SEO title and new icon, the daily-departure Dates calendar, "Enquire now" tab, mountain graphic, calm course pages, phone/tablet home page, phone menu, copy rewrite and trek fact fixes. Server functions run in Mumbai; payments in Razorpay **Test Mode**. |
+| **Preview** (`preview/trek-slideshows` on GitHub) | `44297d7` | Same as live (fast-forwarded into `main` on 7 Nov). |
 | **Database** (Supabase `sdhtgmlkzcknmeakxgdz`) | — | All 7 SQL files applied (latest on 5 Nov); sign-up emails limited to 20 an hour. |
 | Local `main` | `9b522d5` | Stale. Reset it to `origin/main` before the next use. |
 
