@@ -36,6 +36,8 @@ type Chapter = {
   /** Where the place tag sits on the photo, in % of the frame (desktop). */
   tag: { x: number; y: number };
   night?: boolean;
+  /** A descent day: its altitude is where it ends, not where the photo is. */
+  descent?: boolean;
 };
 
 const CHAPTERS: Chapter[] = [
@@ -74,7 +76,7 @@ const CHAPTERS: Chapter[] = [
     alt: "A trekker with arms open at the prayer-flag cairn on Kuari Pass",
     heading: "Summit day on the Curzon Trail",
     text: "An early start to the pass, and a 360° view of Nanda Devi, Dronagiri and Trishul.",
-    tag: { x: 72, y: 34 },
+    tag: { x: 58, y: 46 },
   },
   {
     day: 4,
@@ -84,6 +86,7 @@ const CHAPTERS: Chapter[] = [
     heading: "Down through the meadows",
     text: "The rolling grasslands of Gorson Bugyal and Tali Lake, then down past the Auli ski slopes to Joshimath.",
     tag: { x: 60, y: 44 },
+    descent: true,
   },
 ];
 
@@ -101,8 +104,8 @@ export default function JourneyStory() {
   const flyScale = useTransform(entry, [0, 1], [1.18, 1]);
   const flyBlur = useTransform(entry, [0, 0.85], ["blur(10px)", "blur(0px)"]);
 
-  // 0 → first chapter centred, CHAPTERS.length - 1 → last chapter centred.
-  const { scrollYProgress } = useScroll({ target: stepsRef, offset: ["start center", "end center"] });
+  // Each chapter is one screen tall, so 0 = first chapter filling the screen, CHAPTERS.length - 1 = the last.
+  const { scrollYProgress } = useScroll({ target: stepsRef, offset: ["start start", "end end"] });
   const position = useTransform(scrollYProgress, [0, 1], [0, CHAPTERS.length - 1], { clamp: true });
   useMotionValueEvent(position, "change", (v) => setActive(Math.min(CHAPTERS.length - 1, Math.max(0, Math.round(v)))));
 
@@ -191,7 +194,7 @@ export default function JourneyStory() {
             <span className="absolute left-4 top-3 block min-w-44 rounded-md border border-white/25 bg-navy-deep/45 p-2.5 backdrop-blur-md">
               <span className={cn(LABEL, "inline-block rounded bg-primary px-1.5 py-0.5 text-[10px] text-white")}>{ch.place}</span>
               <span className={cn(LABEL, "mt-2 block text-[10px] tabular-nums leading-relaxed text-white/80")}>
-                Elev {stop?.altitude.toLocaleString("en-IN")} m
+                {ch.descent ? "Down to" : "Elev"} {stop?.altitude.toLocaleString("en-IN")} m
                 <br />
                 {ch.night ? "Night" : "Day"} {ch.day} / {trek.days}
                 {stop && stop.hours > 0 && !ch.night && ch.day > 1 && (
@@ -229,7 +232,7 @@ export default function JourneyStory() {
           </nav>
 
           {/* Frosted altitude card: counter, change since yesterday, the route with the walker. */}
-          <div aria-hidden className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/20 bg-white/10 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:inset-x-auto sm:bottom-8 sm:right-6 sm:w-80 sm:p-5 xl:right-[max(1.5rem,calc((100vw-80rem)/2+2rem))]">
+          <div aria-hidden className="absolute inset-x-4 bottom-24 rounded-2xl border border-white/20 bg-white/10 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:inset-x-auto sm:bottom-8 sm:right-6 sm:w-80 sm:p-5 xl:right-[max(1.5rem,calc((100vw-80rem)/2+2rem))]">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold">Altitude</p>
@@ -273,7 +276,7 @@ export default function JourneyStory() {
             const gain = s && prev ? s.altitude - prev.altitude : 0;
             return (
               <article id={`journey-ch-${i}`} key={i} className="flex min-h-[100svh] items-center">
-                <div className="mx-auto w-full max-w-7xl px-4 pb-56 sm:px-6 sm:pb-24 lg:px-8">
+                <div className="mx-auto w-full max-w-7xl px-4 pb-80 sm:px-6 sm:pb-24 lg:px-8">
                   <motion.div
                     initial={false}
                     animate={{ opacity: i === active ? 1 : 0.35 }}
@@ -291,7 +294,7 @@ export default function JourneyStory() {
                     </p>
                     <p className={cn(LABEL, "mt-5 inline-flex items-center gap-2 rounded-md bg-primary px-2 py-1 text-white")}>
                       <span aria-hidden>+</span>
-                      {c.night ? "Night" : "Day"} {c.day} · {s?.altitude.toLocaleString("en-IN")} m
+                      {c.night ? "Night" : "Day"} {c.day} · {c.descent ? "down to " : ""}{s?.altitude.toLocaleString("en-IN")} m
                     </p>
                     <span className="sr-only">Photo: {c.alt}.</span>
                   </motion.div>
@@ -303,7 +306,7 @@ export default function JourneyStory() {
           </div>
 
           {/* The end of the trail: book it. */}
-          <article className="relative flex min-h-[80svh] items-center bg-gradient-to-b from-transparent via-navy-deep/90 to-navy-deep">
+          <article className="relative flex min-h-[80svh] items-center bg-gradient-to-b from-navy-deep/60 via-navy-deep/95 to-navy-deep">
             <div className="mx-auto w-full max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
               <h3 className="max-w-2xl font-heading text-4xl font-medium leading-[1.05] tracking-[-0.025em] sm:text-5xl">Your turn to walk it.</h3>
               <p className="mt-4 text-lg text-white/75">
