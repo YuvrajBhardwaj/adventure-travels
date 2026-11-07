@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,9 +12,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+const safeNext = (v: string | null) =>
+  v && v.startsWith("/") && !v.startsWith("//") ? v : "/dashboard";
+
 export default function LoginPage() {
   const { user, setUser } = useAuth();
   const router = useRouter();
+  const [next, setNext] = useState("/dashboard");
+  // Read ?next= after mount so static export doesn't need a Suspense boundary.
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setNext(safeNext(new URLSearchParams(window.location.search).get("next")));
+    } catch {
+      /* keep dashboard default */
+    }
+  }, []);
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -24,7 +37,7 @@ export default function LoginPage() {
   const [resetMessage, setResetMessage] = useState("");
   const [sendingReset, setSendingReset] = useState(false);
 
-  if (user) { router.push("/dashboard"); return null; }
+  if (user) { router.push(next); return null; }
 
   // Same answer whether or not the email has an account, so the form can't be used to
   // find out who is registered.
@@ -56,7 +69,7 @@ export default function LoginPage() {
     try {
       const user = await signIn(form.email, form.password);
       setUser(user);
-      router.push("/dashboard");
+      router.push(next);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Login failed";
       const code = typeof err === "object" && err !== null && "code" in err ? err.code : undefined;
@@ -140,7 +153,7 @@ export default function LoginPage() {
             <GoogleSignInButton />
             <p className="text-center text-sm text-white/50">
               Don&apos;t have an account?{" "}
-              <Link href="/signup" className="font-semibold text-emerald-400 underline-offset-4 hover:underline">Sign up</Link>
+              <Link href={next === "/dashboard" ? "/signup" : `/signup?next=${encodeURIComponent(next)}`} className="font-semibold text-emerald-400 underline-offset-4 hover:underline">Sign up</Link>
             </p>
           </form>
         </Card>

@@ -332,18 +332,7 @@ export function TrekCard({ trek, featured = false }: { trek: Trek; featured?: bo
       {/* Bottom scrim: the card's text always sits on solid navy-to-clear, whatever the photo. */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[80%] bg-gradient-to-t from-navy-deep via-navy-deep/80 to-transparent" />
 
-      {/* Rating (unchanged size; owner decision pending) */}
-      {trek.rating && (
-        <div className="absolute right-4 top-4 z-20 rounded-full bg-black/40 px-3 py-1 backdrop-blur-sm">
-          <div className="flex items-center gap-1">
-            <svg className="h-4 w-4 fill-current text-amber-400" viewBox="0 0 20 20" aria-hidden>
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-            <span className="text-sm font-medium text-white">{trek.rating}</span>
-            <span className="text-sm text-white/70">({trek.reviewCount})</span>
-          </div>
-        </div>
-      )}
+      {/* Ratings removed from UI until verified review collection exists. */}
 
       <div className={cn("absolute inset-x-0 bottom-0 z-20 p-4 @xs:p-5", featured && "md:max-w-2xl md:p-7")}>
         <p className="truncate text-xs text-white/70 @xs:text-sm">{trek.location || trek.region}</p>

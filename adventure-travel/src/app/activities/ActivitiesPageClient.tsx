@@ -432,10 +432,10 @@ export default function ActivitiesPage() {
           </FadeUp>
           <dl className={cn("grid grid-cols-2 border-y md:grid-cols-4", HAIRLINE)}>
             {[
-              { value: "5,000+", label: "Happy Adventurers" },
-              { value: "100%", label: "Safety Record" },
-              { value: "4.8/5", label: "Average Rating" },
-              { value: "24/7", label: "Support" },
+              { value: "All-inclusive", label: "Permits, guide & meals" },
+              { value: "Since 2010", label: "Guiding from Joshimath" },
+              { value: "Free", label: "Date change" },
+              { value: "24/7", label: "Support on WhatsApp" },
             ].map((stat, i) => (
               <div key={stat.label} className={cn("py-6 pr-4", i % 2 === 1 && "pl-4", i > 0 && "md:border-l md:pl-6", i >= 2 && "border-t md:border-t-0", HAIRLINE)}>
                 <dd className="font-heading text-2xl font-semibold text-foreground">{stat.value}</dd>

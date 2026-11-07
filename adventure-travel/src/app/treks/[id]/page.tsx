@@ -94,15 +94,7 @@ export default async function TrekDetailPage({ params }: { params: Promise<{ id:
           validFrom: new Date().toISOString(),
         },
         provider: { "@id": ORGANIZATION_ID },
-        // Only with a real count behind it — never a made-up fallback.
-        aggregateRating:
-          trek.rating && trek.reviewCount
-            ? {
-                "@type": "AggregateRating",
-                ratingValue: trek.rating,
-                reviewCount: trek.reviewCount,
-              }
-            : undefined,
+        // No aggregateRating until verified review collection exists.
       },
       {
         "@type": "BreadcrumbList",

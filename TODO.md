@@ -38,7 +38,7 @@ Works today: accounts, trek and course bookings, booking emails and the payment 
 
 ## MakeMyTrip-style booking flow (asked 29 Oct; needs your choices)
 Already there: live batch dates with seats left, a price locked on the server, a 30% advance or full payment, UPI-first Razorpay, a dashboard with "Pay balance" and "Cancel", booking emails and (live from 5 Nov) a 15-minute seat hold.
-- [ ] Book without losing the form: sign in or sign up inside the booking step (today a signed-out visitor is sent to `/signup` and loses what they typed).
+- [x] (Partly done 7 Nov: the form is saved and restored after sign-up.) Book without losing the form: sign in or sign up inside the booking step (today a signed-out visitor is sent to `/signup` and loses what they typed).
 - [ ] A review step before payment: trip summary, price breakdown (per person, room tier, GST if it applies, total, amount now), and a "seats held 14:59" timer.
 - [ ] Traveller details per person (name, age, gender, ID for permits) and an emergency contact.
 - [ ] A confirmation page plus a downloadable voucher or invoice (PDF) with the booking ID; WhatsApp confirmation.

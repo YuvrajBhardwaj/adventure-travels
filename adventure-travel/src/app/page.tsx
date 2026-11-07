@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import SeasonSplitHero from "@/components/SeasonSplitHero";
 import StatsStrip from "@/components/StatsStrip";
 import FindYourTrek from "@/components/FindYourTrek";
+import JourneyStory from "@/components/JourneyStory";
 import WhyTrekWithUs from "@/components/WhyTrekWithUs";
 import HowItWorks from "@/components/HowItWorks";
 import SnowSchool from "@/components/SnowSchool";
@@ -33,12 +34,13 @@ const FAQV2 = dynamic(() => import("@/components/FAQV2"), {
 export default function Home() {
   return (
     <SmoothScrollProvider>
-      <main className="relative overflow-x-hidden">
+      <main className="relative overflow-x-clip">
         <SeasonSplitHero />
         <div className="relative z-10">
           <WelcomeChooser />
           <StatsStrip />
           <FindYourTrek />
+          <JourneyStory />
           <SnowSchool />
           <WhyTrekWithUs />
           <CampingSection />

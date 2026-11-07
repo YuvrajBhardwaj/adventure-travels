@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,9 +12,21 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+const safeNext = (v: string | null) =>
+  v && v.startsWith("/") && !v.startsWith("//") ? v : "/dashboard";
+
 export default function SignupPage() {
   const { user, setUser } = useAuth();
   const router = useRouter();
+  const [next, setNext] = useState("/dashboard");
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setNext(safeNext(new URLSearchParams(window.location.search).get("next")));
+    } catch {
+      /* keep dashboard default */
+    }
+  }, []);
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -22,7 +34,7 @@ export default function SignupPage() {
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [resending, setResending] = useState(false);
 
-  if (user) { router.push("/dashboard"); return null; }
+  if (user) { router.push(next); return null; }
 
   const update = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -52,7 +64,7 @@ export default function SignupPage() {
         return;
       }
       setUser(result.user);
-      router.push("/dashboard");
+      router.push(next);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Signup failed";
       setErrors({ email: msg });
@@ -95,7 +107,7 @@ export default function SignupPage() {
                   {resending ? "Sending…" : "Resend confirmation email"}
                 </Button>
                 {confirmationMessage && <p className="text-sm text-emerald-300" aria-live="polite">{confirmationMessage}</p>}
-                <Link href="/login" className={buttonVariants({ className: "w-full" })}>Go to log in</Link>
+                <Link href={next === "/dashboard" ? "/login" : `/login?next=${encodeURIComponent(next)}`} className={buttonVariants({ className: "w-full" })}>Go to log in</Link>
                 <Button variant="ghost" size="sm" onClick={() => setConfirmationEmail("")} className="min-h-11 text-white/60 dark:text-white/60">
                   Use a different email
                 </Button>
@@ -128,7 +140,7 @@ export default function SignupPage() {
                 <GoogleSignInButton />
                 <p className="text-center text-sm text-white/50">
                   Already have an account?{" "}
-                  <Link href="/login" className="font-semibold text-emerald-400 underline-offset-4 hover:underline">Log in</Link>
+                  <Link href={next === "/dashboard" ? "/login" : `/login?next=${encodeURIComponent(next)}`} className="font-semibold text-emerald-400 underline-offset-4 hover:underline">Log in</Link>
                 </p>
               </>
             )}

@@ -40,7 +40,6 @@ import {
   ShieldCheck,
   Snowflake,
   Sprout,
-  Star,
   Sun,
   Tent,
   Timer,
@@ -148,10 +147,42 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
     goToTab("Make Reservation");
   };
 
+  const DRAFT_KEY = `haa:trek-draft:${trek.slug}`;
+  // Restore a draft saved before a signed-out redirect to signup.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as Partial<typeof bookingForm>;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setBookingForm((f) => ({
+        ...f,
+        ...(saved.name ? { name: saved.name } : {}),
+        ...(saved.email ? { email: saved.email } : {}),
+        ...(saved.phone ? { phone: saved.phone } : {}),
+        ...(saved.date ? { date: saved.date } : {}),
+        ...(saved.groupSize ? { groupSize: saved.groupSize } : {}),
+        ...(saved.message ? { message: saved.message } : {}),
+        ...(saved.sharing ? { sharing: saved.sharing } : {}),
+      }));
+      sessionStorage.removeItem(DRAFT_KEY);
+      setActiveTab("Make Reservation");
+    } catch {
+      /* best-effort restore only */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleBookingSubmit = async () => {
     if (!user) {
-      // new / signed-out visitors go straight to sign-up to create an account
-      window.location.href = "/signup";
+      // Save the form so signup/login doesn't lose it, then return here after auth.
+      try {
+        sessionStorage.setItem(DRAFT_KEY, JSON.stringify(bookingForm));
+      } catch {
+        /* ignore storage failures */
+      }
+      const next = encodeURIComponent(`/treks/${trek.slug}`);
+      window.location.href = `/signup?next=${next}`;
       return;
     }
     setPayBookingId(null);
@@ -283,14 +314,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
               >
                 {trek.difficulty}
               </span>
-              {trek.rating && (
-                <span className="flex items-center gap-1 px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-semibold rounded-full">
-                  <svg className="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 20 20" aria-hidden>
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  {trek.rating} ({trek.reviewCount} Reviews)
-                </span>
-              )}
+
             </div>
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-2">{trek.name}</h1>
             <p className="flex flex-wrap items-center gap-2 text-white/80">
@@ -536,10 +560,8 @@ function BookingCard({
   onContact: () => void;
   onNav: (tab: Tab) => void;
 }) {
-  const oldPrice = Math.round((trek.price / 0.9) / 10) * 10;
-  const discount = Math.round((1 - trek.price / oldPrice) * 100);
-  const rating = trek.rating;
-  const reviews = trek.reviewCount ?? 0;
+  // Ratings removed from UI until verified review collection exists.
+
   // Kept after closing (open: false) so the dialog can animate out with its content.
   const [includedInfo, setIncludedInfo] = useState<{ id: QuickInfoId; open: boolean } | null>(null);
 
@@ -588,12 +610,6 @@ function BookingCard({
         </div>
 
         <div className="mt-3">
-          <div className="flex items-center gap-2">
-            <span className="text-base font-semibold text-slate-500 line-through decoration-2 decoration-red-500/70">
-              <Price inr={oldPrice} />
-            </span>
-            <Badge tone="emerald">{discount}% OFF</Badge>
-          </div>
           <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
             {trek.roomSharing && <span className="text-sm text-muted">From</span>}
             <span className="text-5xl font-bold tracking-tight text-foreground tabular-nums"><Price inr={trek.price} /></span>
@@ -621,19 +637,8 @@ function BookingCard({
           </ul>
         )}
 
-        {/* Trust + rating */}
+        {/* Trust */}
         <div className="space-y-2">
-          {rating != null && (
-            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold">
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-amber-700 ring-1 ring-amber-200/70 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20">
-                <Star className="h-3.5 w-3.5 fill-current" aria-hidden />
-                <span>{rating}</span>
-              </span>
-              {reviews > 0 && (
-                <span className="font-medium text-muted">· {reviews >= 1000 ? `${(reviews / 1000).toFixed(1)}k+` : `${reviews}+`} people rated this trek</span>
-              )}
-            </p>
-          )}
           <p className="text-xs text-muted">All-inclusive · No-cost EMI · Free Trek Date Change</p>
         </div>
 

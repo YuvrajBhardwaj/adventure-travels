@@ -51,9 +51,9 @@ export default function CallToActionV2() {
           </div>
 
           <ul className="font-nav mt-10 flex flex-wrap gap-x-6 gap-y-1 border-t border-foreground/15 pt-4 text-sm text-muted">
-            <li>100% Safe</li>
-            <li>4.9+ Rating</li>
-            <li>Expert Guides</li>
+            <li>Licensed guides</li>
+            <li>Permits & meals included</li>
+            <li>Free date change</li>
           </ul>
         </div>
 

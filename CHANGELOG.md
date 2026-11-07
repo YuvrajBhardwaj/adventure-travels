@@ -17,6 +17,12 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 7 Nov 2026: honest trust signals, booking form kept through sign-up, Kuari Pass scroll story — `preview/trek-slideshows`
+- **Trust (no unverified claims):** star ratings and review counts are gone from trek cards, trek pages, the price card and Google's structured data (`aggregateRating`) until real reviews are collected. The made-up "10% OFF" strike-through price is removed. "100% Safe", "4.9+ Rating", "5,000+ Happy Adventurers", "100% Safety Record" and "98% Success Rate" are replaced with facts: all-inclusive, since 2010 (as in the footer), free date change, WhatsApp support, number of regions.
+- **Booking without losing the form:** a signed-out visitor who books is sent to sign up with `?next=` back to the trek; the form is saved in the browser tab and restored on the Make Reservation tab. Log in and sign up follow `?next=` (same-site paths only).
+- **Home page:** new `JourneyStory` section: Kuari Pass told day by day with our own photos as you scroll (altitude card, chapter index; respects reduced motion).
+- **Checked:** `tsc`, `eslint` (no errors), `npm test` (77 passed).
+
 ### 7 Nov 2026: **Backend** new Razorpay test keys (local) — no code change
 - **Asked by the owner** (a pasted "integrate Razorpay Standard Checkout" prompt with new test keys). Razorpay was already integrated, so no code was added. Checked against the prompt: order creation in paise (`api/create-order.js`, price from the server catalog, never from the browser), Checkout modal with UPI first, dismiss and `payment.failed` handling (`src/app/checkout/CheckoutClient.tsx`), HMAC-SHA256 `order_id|payment_id` check with a timing-safe compare that returns 400 and marks nothing paid on a mismatch (`api/verify-payment.js`), the webhook backstop (`api/razorpay-webhook.js`), and the Key Secret never reaching the browser (the server returns only the Key ID).
 - **Backend:** `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` replaced with the new test-mode pair in `.env.local` and `.env.setup` (both git-ignored); Razorpay accepted them (HTTP 200). **Vercel still has the old test keys** (no `VERCEL_TOKEN`; the setup script would also re-run every SQL file, so it wasn't run). The webhook secret is unchanged.

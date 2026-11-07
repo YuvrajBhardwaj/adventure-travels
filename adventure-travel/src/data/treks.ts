@@ -779,5 +779,5 @@ export const stats = [
   { value: treks.length, suffix: "", label: "Treks & Expeditions" },
   { value: treks.reduce((sum, t) => sum + t.days, 0), suffix: "", label: "Total Trek Days" },
   { value: Math.max(...treks.map((t) => t.maxAltitude)), suffix: "m", label: "Highest Altitude" },
-  { value: 98, suffix: "%", label: "Success Rate" },
+  { value: new Set(treks.map((t) => t.region)).size, suffix: "", label: "Himalayan Regions" },
 ];
