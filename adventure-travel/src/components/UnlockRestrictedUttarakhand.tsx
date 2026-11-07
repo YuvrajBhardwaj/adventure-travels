@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const PERKS = [
   "ILP / permit handled by us",
   "India–Tibet frontier zone",
-  "Zero crowds, raw wilderness",
+  "Mana, Niti and Rimkhim routes",
 ];
 
 /** The page's one navy band. */
@@ -26,7 +26,7 @@ export default function UnlockRestrictedUttarakhand() {
           <div className="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-16">
             <div className="lg:col-span-7">
               <h2 className="font-heading text-4xl font-medium leading-[1.04] tracking-[-0.025em] sm:text-5xl lg:text-6xl">
-                Unlock Restricted Uttarakhand
+                Restricted-area treks in Uttarakhand
               </h2>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
                 Some of the most remote corners of the Indian Himalayas sit in the ILP-restricted Indo–Tibet frontier

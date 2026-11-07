@@ -1,176 +1,242 @@
-# Graph Report - .  (2026-07-21)
+# Graph Report - src  (2026-11-07)
 
 ## Corpus Check
-- 44 files · ~268,679 words
+- 144 files · ~110,976 words
 - Verdict: corpus is large enough that graph structure adds value.
+- Unclassified: 1 file(s) not represented in the graph (top: .css 1)
 
 ## Summary
-- 271 nodes · 335 edges · 33 communities (19 shown, 14 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.85)
-- Token cost: 0 input · 2,847 output
+- 854 nodes · 3191 edges · 38 communities (34 shown, 4 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 12 edges (avg confidence: 0.85)
+- Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `3d58c66b`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- Customer Testimonials
-- Homepage Design
-- Project Dependencies
-- UI Components
-- TypeScript Config
-- Dev Dependencies
-- Contact Page
-- Trek Data & Listings
-- Footer & Reviews
-- Documentation & Skills
-- Main Page & Navigation
-- TypeScript Root Config
-- Hero Section
-- Footer Component
-- Hero Component
-- Statistics Component
-- Trek Platform UI
-- App Layout
-- FAQ Section
-- Why Travel Section
-- Root Package
-- Opencode Config
-- Trek Destinations
-- ESLint Config
-- Next.js Config
-- PostCSS Config
-- Screenshot Scripts
-- Screenshot Scripts
-- SVG Icons
-- SVG Icons
-- SVG Icons
-- SVG Icons
-- SVG Icons
+- ref_react
+- transition
+- CheckoutClient.tsx
+- TreksPageClient.tsx
+- ref_next
+- BookingsAdminClient.tsx
+- admin.ts
+- CourseDetailClient.tsx
+- TrekDetailClient.tsx
+- cn
+- Price
+- FadeUp
+- departures.ts
+- DeparturesAdminClient.tsx
+- buttonVariants
+- motion.ts
+- app/layout.tsx
+- CurrencyContext.tsx
+- PaymentsAdminClient.tsx
+- TrekHub.tsx
+- AdminGate.tsx
+- [course]/page.tsx
+- FAQPageClient.tsx
+- fitTitle
+- Trek
+- BookingCard
+- FooterV2.tsx
+- courses.ts
+- courses/page.tsx
+- sitemap.ts
+- route.tsx
+- ReservationTab
+- CampingSection.tsx
+- treks-from-joshimath/page.tsx
+- Logo.tsx
+- cancellation-policy/page.tsx
+- dashboard/layout.tsx
+- robots.ts
 
 ## God Nodes (most connected - your core abstractions)
-1. `compilerOptions` - 16 edges
-2. `Expedition Happiness Treks` - 14 edges
-3. `FadeUp()` - 11 edges
-4. `Featured Trekking Adventures Section` - 11 edges
-5. `Stories from Fellow Adventurers - Testimonials Section` - 11 edges
-6. `StaggerContainer()` - 9 edges
-7. `StaggerItem()` - 9 edges
-8. `include` - 7 edges
-9. `Expedition Happiness Treks - Homepage` - 7 edges
-10. `Hero section UI screenshot` - 7 edges
+1. `cn()` - 122 edges
+2. `Button` - 60 edges
+3. `buttonVariants()` - 54 edges
+4. `transition()` - 50 edges
+5. `Input` - 42 edges
+6. `FadeUp()` - 41 edges
+7. `CourseDetailClient()` - 34 edges
+8. `Price()` - 34 edges
+9. `Skeleton()` - 31 edges
+10. `DashboardPage()` - 30 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Framer Motion Animator` --semantically_similar_to--> `Find Skills`  [INFERRED] [semantically similar]
-  .agents/skills/framer-motion-animator/SKILL.md → .agents/skills/find-skills/SKILL.md
-- `Frontend Design` --semantically_similar_to--> `Find Skills`  [INFERRED] [semantically similar]
-  .agents/skills/frontend-design/SKILL.md → .agents/skills/find-skills/SKILL.md
-- `Framer Motion Animator` --references--> `Next.js`  [EXTRACTED]
-  .agents/skills/framer-motion-animator/SKILL.md → adventure-travel/README.md
-- `Frontend Design` --semantically_similar_to--> `Framer Motion Animator`  [INFERRED] [semantically similar]
-  .agents/skills/frontend-design/SKILL.md → .agents/skills/framer-motion-animator/SKILL.md
-- `Framer Motion Animator` --references--> `skills.sh`  [EXTRACTED]
-  .agents/skills/framer-motion-animator/SKILL.md → .agents/skills/find-skills/SKILL.md
+- `AddBatches()` --indirect_call--> `dayLabel()`  [INFERRED]
+  adventure-travel/src/app/admin/departures/DeparturesAdminClient.tsx → adventure-travel/src/lib/departures.ts
+- `CoursesPage()` --calls--> `CoursesPageClient()`  [EXTRACTED]
+  adventure-travel/src/app/courses/page.tsx → adventure-travel/src/app/courses/CoursesPageClient.tsx
+- `ownImages()` --indirect_call--> `absoluteUrl()`  [INFERRED]
+  adventure-travel/src/app/sitemap.ts → adventure-travel/src/lib/seo.ts
+- `TreksFromJoshimathPage()` --calls--> `TrekHub()`  [EXTRACTED]
+  adventure-travel/src/app/treks-from-joshimath/page.tsx → adventure-travel/src/components/TrekHub.tsx
+- `clampY()` --indirect_call--> `H()`  [INFERRED]
+  adventure-travel/src/components/ElevationLine.tsx → adventure-travel/src/components/QuickInfoModal.tsx
 
 ## Import Cycles
 - None detected.
 
-## Hyperedges (group relationships)
-- **Agent Skills Ecosystem** — agents_skills_find_skills_skill, agents_skills_framer_motion_animator_skill, agents_skills_frontend_design_skill [INFERRED 0.90]
+## Communities (38 total, 4 thin omitted)
 
-## Communities (33 total, 14 thin omitted)
+### Community 0 - "ref_react"
+Cohesion: 0.06
+Nodes (82): Collapse(), ContactPage(), FAQS, actionsFor(), cap(), DashboardPage(), day(), KIND_LABEL (+74 more)
 
-### Community 0 - "Customer Testimonials"
-Cohesion: 0.08
-Nodes (25): Expedition Happiness Treks - Testimonials Page, Ali and Bedni Bugyal Meadows, Arjun Patel, Chandratal Lake, Expedition Happiness Treks, Hampta Pass Trek, Har Ki Dun Trek, Kavya Reddy (+17 more)
+### Community 1 - "transition"
+Cohesion: 0.06
+Nodes (63): noSubscribe(), Template(), GalleryTab(), isVideo(), DesktopSearch(), LEGACY_KEYS, LegacyDataNotice(), MobileSearchButton() (+55 more)
 
-### Community 1 - "Homepage Design"
-Cohesion: 0.13
-Nodes (24): CTA Section - Ready for Your Himalayan Adventure, Featured Trekking Adventures Section, Footer - Company Info, Quick Links, Popular Destinations, Contact, Header Navigation, Hero Section - Discover the Magic of Himalayan Adventures, Expedition Happiness Treks - Homepage, Stats Section - 7 Epic Adventures, 43 Total Trek Days, 5029m Max Elevation, 98% Success Rate, Amit Singh - Pangarchulla Peak Trek Review (+16 more)
-
-### Community 2 - "Project Dependencies"
+### Community 2 - "CheckoutClient.tsx"
 Cohesion: 0.09
-Nodes (21): dependencies, framer-motion, gsap, next, playwright, react, react-dom, name (+13 more)
+Nodes (33): CheckoutClient(), describePaid(), loadRazorpay(), longDate(), Phase, RazorpayFailure, RazorpayInstance, RazorpaySuccess (+25 more)
 
-### Community 3 - "UI Components"
-Cohesion: 0.16
-Nodes (7): images, AnimationProps, FadeUp(), StaggerContainer(), StaggerItem(), paraglidingOptions, skiPackages
+### Community 3 - "TreksPageClient.tsx"
+Cohesion: 0.09
+Nodes (32): Dest, DestinationsPage(), difficultyRanges, PopularTreks(), ALTITUDE_HIGH, ALTITUDE_LOW, DIFFICULTIES, DIFFICULTY_ORDER (+24 more)
 
-### Community 4 - "TypeScript Config"
+### Community 4 - "ref_next"
 Cohesion: 0.11
-Nodes (19): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+11 more)
+Nodes (26): LEVELS, regionStats, STEP_HEIGHT, topAltitude, getRegionTreks(), HimalayanMap(), regions, initials() (+18 more)
 
-### Community 5 - "Dev Dependencies"
+### Community 5 - "BookingsAdminClient.tsx"
 Cohesion: 0.12
-Nodes (17): devDependencies, eslint, eslint-config-next, tailwindcss, @tailwindcss/postcss, @types/node, @types/react, @types/react-dom (+9 more)
+Nodes (30): BookingsAdmin(), BookingsAdminClient(), describeEvent(), FilterSelect(), HistoryDrawer(), PAYMENT_STATES, ServerFilters, STATUSES (+22 more)
 
-### Community 6 - "Contact Page"
+### Community 6 - "admin.ts"
+Cohesion: 0.10
+Nodes (31): BatchRow(), addDepartures(), AdminCustomer, AdminPayment, BookingEvent, bookingRef(), BookingType, countDepartures() (+23 more)
+
+### Community 7 - "CourseDetailClient.tsx"
+Cohesion: 0.10
+Nodes (31): AvailabilityView(), C_CYCLE, CAvail, CAVAIL, CMONTHS, CourseBatch, CourseBatchRow(), courseDays() (+23 more)
+
+### Community 8 - "TrekDetailClient.tsx"
+Cohesion: 0.09
+Nodes (28): DATES_BADGE, FULL_MONTHS, GALLERY_IMAGES, galleryMedia(), getHeroSlides(), HIGHLIGHT_ICONS, OverviewTab(), PACKING_GROUPS (+20 more)
+
+### Community 9 - "cn"
+Cohesion: 0.17
+Nodes (24): CustomerDetail(), CustomersAdmin(), AddBatches(), defaultCapacity(), DeparturesAdmin(), ACTIONS, ActivityFeed(), browserLabel() (+16 more)
+
+### Community 10 - "Price"
+Cohesion: 0.16
+Nodes (20): CHILD_ELIGIBLE, OTHER_PERKS, ScholarshipsTab(), CardSlideshow(), offsetFor(), NoPhoto(), Price(), SmartImage() (+12 more)
+
+### Community 11 - "FadeUp"
+Cohesion: 0.16
+Nodes (22): activities, ActivitiesPage(), LEVEL_DOTS, RESTRICTED, waLink(), CancellationPolicyPage(), MailIcon(), REFUND_NOTE (+14 more)
+
+### Community 12 - "departures.ts"
+Cohesion: 0.16
+Nodes (22): DeparturesState, Row, useDepartures(), DEPARTURE_CALENDAR, DepartureCalendar, MONTH_HIGHLIGHTS, addDays(), Departure (+14 more)
+
+### Community 13 - "DeparturesAdminClient.tsx"
 Cohesion: 0.13
-Nodes (15): Get in Touch Section, Email Address, Footer Section, Gurugram Office Address, Header Navigation, Newsletter Subscription Form, Newsletter Section, Phone Numbers (+7 more)
+Nodes (15): BatchesSkeleton(), DeparturesAdminClient(), SEAT_TONE, TREKS, WEEKDAYS, AdminDeparturesPage(), metadata, LoadError() (+7 more)
 
-### Community 7 - "Trek Data & Listings"
+### Community 14 - "buttonVariants"
+Cohesion: 0.17
+Nodes (18): FAQV2, Home(), Brand, BrandIcon(), BRANDS, CallToActionV2(), CampingSection(), ContactPopup() (+10 more)
+
+### Community 15 - "motion.ts"
+Cohesion: 0.13
+Nodes (16): GALLERY_WALLPAPERS, HERO_MEDIA, CarouselLayer(), FROM_PRICE, MAX_DAYS, MIN_DAYS, SeasonSplitHero(), Slide (+8 more)
+
+### Community 16 - "app/layout.tsx"
+Cohesion: 0.12
+Nodes (14): fraunces, inter, metadata, spaceGrotesk, viewport, metadata, metadata, metadata (+6 more)
+
+### Community 17 - "CurrencyContext.tsx"
+Cohesion: 0.18
+Nodes (16): RootLayout(), Ctx, CurrencyCtx, CurrencyProvider(), Rates, readSaved(), Saved, useCurrency() (+8 more)
+
+### Community 18 - "PaymentsAdminClient.tsx"
+Cohesion: 0.24
+Nodes (14): AdminPaymentsPage(), metadata, FailedEmails(), PaymentsAdmin(), PaymentsAdminClient(), PaymentsSkeleton(), cap(), dateTime() (+6 more)
+
+### Community 19 - "TrekHub.tsx"
 Cohesion: 0.21
-Nodes (8): FeaturedAdventures(), FadeLeft(), DIFFICULTIES, DIFFICULTY_COLORS, ItineraryDay, REGIONS, Trek, treks
+Nodes (12): TrekCard(), fromPrice, metadata, SNOW_TREKS, WINTER_TREKS, WinterTreksPage(), TrekHub(), priceRoute() (+4 more)
 
-### Community 8 - "Footer & Reviews"
+### Community 20 - "AdminGate.tsx"
 Cohesion: 0.20
-Nodes (14): Expedition Happiness Treks, Website Footer, Garhwal Region Destination, Get in Touch Section, Gurugram Office, Himachal Pradesh Destination, Navigation Bar, Newsletter Signup (+6 more)
+Nodes (10): AdminActivityClient(), AdminActivityPage(), metadata, CustomersAdminClient(), AdminCustomersPage(), metadata, AdminGate(), AdminNav() (+2 more)
 
-### Community 9 - "Documentation & Skills"
+### Community 21 - "[course]/page.tsx"
 Cohesion: 0.27
-Nodes (10): Adventure Travel Project, Next.js, Geist Font, Vercel Platform, Find Skills, Skills CLI, skills.sh, Framer Motion Animator (+2 more)
+Nodes (12): CourseDetailPage(), generateMetadata(), inr(), priceSentence(), generateMetadata(), inr(), TrekDetailPage(), trekTitle() (+4 more)
 
-### Community 11 - "TypeScript Root Config"
+### Community 22 - "FAQPageClient.tsx"
 Cohesion: 0.20
-Nodes (9): exclude, include, **/*.mts, .next/dev/types/**/*.ts, next-env.d.ts, .next/types/**/*.ts, node_modules, **/*.ts (+1 more)
+Nodes (12): ChevronDownIcon(), Collapse(), FAQ_CATEGORIES, FAQCategory, FAQItemData, FAQPage(), MailIcon(), MessageCircleIcon() (+4 more)
 
-### Community 12 - "Hero Section"
+### Community 23 - "fitTitle"
+Cohesion: 0.15
+Nodes (5): metadata, metadata, metadata, metadata, fitTitle()
+
+### Community 24 - "Trek"
+Cohesion: 0.26
+Nodes (11): esc(), inr(), list(), printItinerary(), IncludedTab(), ItineraryTab(), PreviewItem, getTrekPackage() (+3 more)
+
+### Community 25 - "BookingCard"
+Cohesion: 0.27
+Nodes (13): BookingCard(), DatesTab(), MonthDays(), MonthHighlight(), PriceRoute(), SelectedDate(), cadenceLabel(), datesBadge() (+5 more)
+
+### Community 26 - "FooterV2.tsx"
+Cohesion: 0.24
+Nodes (9): CurrencySwitcher(), destinations, FooterV2(), instagramImages, legalLinks, MobileAccordion(), popularTreks, quickLinks (+1 more)
+
+### Community 27 - "courses.ts"
+Cohesion: 0.20
+Nodes (8): CourseInclusion, CourseItineraryDay, CourseTestimonial, CourseTier, SKI14_BASIC_ITINERARY, SKI14_PREMIUM_ITINERARY, SKIING_LOCAL_GALLERY, SKIING_LOCAL_VIDEOS
+
+### Community 28 - "courses/page.tsx"
+Cohesion: 0.29
+Nodes (5): CoursesPage(), durations, metadata, tiers, trainingFrom
+
+### Community 29 - "sitemap.ts"
+Cohesion: 0.38
+Nodes (5): COURSE_ROUTES, dynamic, ownImages(), STATIC_ROUTES, TREK_ROUTES
+
+### Community 31 - "ReservationTab"
 Cohesion: 0.43
-Nodes (8): Dark overlay hero design pattern, Expedition Happiness Treks, Himalayan Adventures, Navigation Bar, Hero section UI screenshot, Stats Section, Find My Perfect Trek CTA, View All Treks CTA
+Nodes (7): Field(), FieldError(), ReservationTab(), tripLabel(), batchLabel(), dayLabel(), endDate()
 
-### Community 13 - "Footer Component"
+### Community 32 - "CampingSection.tsx"
+Cohesion: 0.29
+Nodes (6): ALL_MOMENTS, Camp, CAMPS, CUSTOM_CAMP, FILM_CROPS, GENERAL_ENQUIRY
+
+### Community 33 - "treks-from-joshimath/page.tsx"
 Cohesion: 0.33
-Nodes (4): contactInfo, popularDestinations, quickLinks, socials
+Nodes (5): fromPrice, JOSHIMATH_TREKS, metadata, PERMIT_TOURS, TreksFromJoshimathPage()
 
-### Community 15 - "Statistics Component"
-Cohesion: 0.40
-Nodes (4): StatCard(), statIcons, useCountUp(), stats
-
-### Community 16 - "Trek Platform UI"
-Cohesion: 0.40
-Nodes (6): Find My Perfect Trek call-to-action button, Kuari Pass Trek - moderate 6-day trek at Rs.19999, Main navigation menu with 5 items, Pangarchula Peak Trek - challenging 6-day trek at Rs.24999, Expedition Happiness Treks - trek booking platform, View All Adventures call-to-action button
-
-### Community 17 - "App Layout"
-Cohesion: 0.40
-Nodes (3): inter, metadata, poppins
-
-### Community 20 - "Root Package"
-Cohesion: 0.50
-Nodes (3): @dietrichgebert/ponytail, dependencies, @dietrichgebert/ponytail
-
-### Community 21 - "Opencode Config"
-Cohesion: 0.50
-Nodes (3): plugin, $schema, @dietrichgebert/ponytail
-
-### Community 22 - "Trek Destinations"
-Cohesion: 0.50
-Nodes (4): Expedition Happiness Treks, Hampta Pass Trek, Satopanth Lake Trek, Valley of Flowers Trek
+### Community 34 - "Logo.tsx"
+Cohesion: 0.60
+Nodes (4): Logo(), LogoMark(), Mark(), Variant
 
 ## Knowledge Gaps
-- **112 isolated node(s):** `eslintConfig`, `nextConfig`, `name`, `version`, `private` (+107 more)
-  These have ≤1 connection - possible missing edges or undocumented components.
-- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `devDependencies` connect `Dev Dependencies` to `Project Dependencies`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Why does `compilerOptions` connect `TypeScript Config` to `TypeScript Root Config`?**
-  _High betweenness centrality (0.009) - this node is a cross-community bridge._
-- **What connects `eslintConfig`, `nextConfig`, `name` to the rest of the system?**
-  _112 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Customer Testimonials` be split into smaller, more focused modules?**
-  _Cohesion score 0.08333333333333333 - nodes in this community are weakly interconnected._
-- **Should `Homepage Design` be split into smaller, more focused modules?**
-  _Cohesion score 0.13405797101449277 - nodes in this community are weakly interconnected._
-- **Should `Project Dependencies` be split into smaller, more focused modules?**
-  _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._
-- **Should `TypeScript Config` be split into smaller, more focused modules?**
-  _Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected._
+- **Why does `cn()` connect `cn` to `ref_react`, `transition`, `CheckoutClient.tsx`, `TreksPageClient.tsx`, `ref_next`, `BookingsAdminClient.tsx`, `admin.ts`, `CourseDetailClient.tsx`, `TrekDetailClient.tsx`, `Price`, `FadeUp`, `DeparturesAdminClient.tsx`, `buttonVariants`, `motion.ts`, `CurrencyContext.tsx`, `PaymentsAdminClient.tsx`, `TrekHub.tsx`, `AdminGate.tsx`, `FAQPageClient.tsx`, `BookingCard`, `FooterV2.tsx`, `CampingSection.tsx`?**
+  _High betweenness centrality (0.106) - this node is a cross-community bridge._
+- **Should `ref_react` be split into smaller, more focused modules?**
+  _Cohesion score 0.05660377358490566 - nodes in this community are weakly interconnected._
+- **Why does `Button` connect `ref_react` to `CampingSection.tsx`, `transition`, `CheckoutClient.tsx`, `TreksPageClient.tsx`, `BookingsAdminClient.tsx`, `admin.ts`, `CourseDetailClient.tsx`, `TrekDetailClient.tsx`, `cn`, `DeparturesAdminClient.tsx`, `buttonVariants`, `PaymentsAdminClient.tsx`, `FAQPageClient.tsx`, `Trek`, `BookingCard`, `FooterV2.tsx`, `ReservationTab`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+- **Should `transition` be split into smaller, more focused modules?**
+  _Cohesion score 0.06164383561643835 - nodes in this community are weakly interconnected._
+- **Why does `transition()` connect `transition` to `ref_react`, `CheckoutClient.tsx`, `TreksPageClient.tsx`, `ref_next`, `CourseDetailClient.tsx`, `TrekDetailClient.tsx`, `cn`, `Price`, `FadeUp`, `buttonVariants`, `motion.ts`, `FAQPageClient.tsx`, `BookingCard`, `FooterV2.tsx`, `ReservationTab`?**
+  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+- **Should `CheckoutClient.tsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.0859465737514518 - nodes in this community are weakly interconnected._
+- **Should `TreksPageClient.tsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.08677098150782361 - nodes in this community are weakly interconnected._

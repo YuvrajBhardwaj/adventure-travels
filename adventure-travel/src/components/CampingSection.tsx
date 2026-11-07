@@ -126,10 +126,10 @@ export default function CampingSection() {
           <p className="sr-only">Camping</p>
           <FadeUp>
             <h2 className="max-w-4xl font-heading text-5xl font-medium leading-[1.0] tracking-[-0.03em] sm:text-6xl lg:text-8xl">
-              Camp Beyond the Ordinary
+              Tent camps in five Himalayan villages
             </h2>
             <p className="mt-5 max-w-xl font-heading text-xl font-normal text-white/90 sm:text-2xl">
-              The quieter side of the Himalayas.
+              Local food, short walks and starry skies.
             </p>
             <p className="font-nav mt-6 text-xs tracking-[0.1em] text-white/70">Auli · Joshimath · Tapovan · Niti · Malari</p>
           </FadeUp>
@@ -142,7 +142,7 @@ export default function CampingSection() {
           <FadeUp className="min-w-0 lg:col-span-5">
             <p className="text-lg leading-relaxed text-foreground/80 sm:text-xl">
               From the slopes of Auli and forests around Joshimath to the remote landscapes of Tapovan, Niti Valley and
-              Malari, we run camps for people who want more than the usual tourist circuit.
+              Malari, we run tent camps there.
             </p>
             <Button size="lg" onClick={() => setSelected(GENERAL_ENQUIRY)} className="mt-6 px-6">
               Explore Camping
@@ -154,18 +154,14 @@ export default function CampingSection() {
             <div className="mt-14 border-t border-foreground/15 pt-8">
               <p className="sr-only">Why camp with us</p>
               <h3 className="font-heading text-3xl font-medium leading-[1.1] tracking-[-0.02em] text-foreground">
-                There is another Himalaya beyond the tourist map.
+                Tapovan, Niti Valley and Malari get few visitors.
               </h3>
               <p className="mt-5 text-base leading-relaxed text-muted">
-                Some places aren’t famous. Some don’t have hundreds of reviews. Some don’t even have a proper tourist
-                itinerary. That’s exactly why we want you to experience them.
+                These villages see few visitors.
               </p>
               <p className="mt-4 text-base leading-relaxed text-muted">
                 Himalayan Arc Adventure plans camps in lesser-explored Himalayan places, with local exploration, short
                 hikes, nature, photography, good food and a bit of adventure.
-              </p>
-              <p className="mt-6 font-heading text-xl font-medium text-foreground">
-                Your camp. Your people. <span className="text-amber-700">Your mountains.</span>
               </p>
             </div>
           </FadeUp>

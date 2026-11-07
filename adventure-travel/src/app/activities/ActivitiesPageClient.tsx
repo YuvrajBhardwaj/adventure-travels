@@ -362,7 +362,7 @@ export default function ActivitiesPage() {
               </svg>
               Inner Line Permit Required
             </p>
-            <h2 className={cn(H2, "mb-4 text-white")}>Unlock Restricted Uttarakhand</h2>
+            <h2 className={cn(H2, "mb-4 text-white")}>Restricted-area treks in Uttarakhand</h2>
             <p className="text-lg text-white/70">
               These border regions are off-limits without a permit. We handle the paperwork so you can go.
             </p>

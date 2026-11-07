@@ -12,7 +12,7 @@ const POINTS: { title: string; text: string; Icon: LucideIcon }[] = [
   {
     Icon: BadgeCheck,
     title: "Licensed local guides",
-    text: "Guides from the region you're walking through, not a rotating roster of contractors.",
+    text: "Guides live in the region you're walking through.",
   },
   {
     Icon: HeartPulse,
@@ -55,10 +55,10 @@ export default function WhyTrekWithUs() {
           <div className="lg:sticky lg:top-28">
             <p className="sr-only">WHY TREK WITH US</p>
             <h2 className="font-heading text-4xl font-medium leading-[1.04] tracking-[-0.025em] text-foreground sm:text-5xl lg:text-6xl">
-              Built around safety, not shortcuts
+              Safety built into every route
             </h2>
             <p className="mt-5 max-w-sm text-base leading-relaxed text-muted sm:text-lg">
-              The Himalaya rewards preparation. Here&apos;s what&apos;s already taken care of before you lace up.
+              Acclimatisation days, route permits and a medical kit are already in every itinerary above 3,000 m.
             </p>
             <Link
               href="/faq"

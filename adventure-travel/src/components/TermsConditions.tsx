@@ -35,7 +35,7 @@ export default function TermsConditions() {
       <div className="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50 dark:bg-card p-5 sm:p-6 md:p-8 text-foreground leading-relaxed text-sm md:text-base">
         <div hidden={activeTab !== "cancellation"} className="space-y-4">
             <p>
-              <strong>Note:</strong> No refund on unutilized services of the package, if any. See the{" "}
+              <strong>Note:</strong> No refund on unused services of the package, if any. See the{" "}
               <strong>Cancellation Process &amp; Terms &amp; Conditions</strong> below.
             </p>
             <p>

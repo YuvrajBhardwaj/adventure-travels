@@ -11,7 +11,7 @@ export type PaymentPhase = "processing" | "success" | "failed" | "pending";
 const COPY: Record<PaymentPhase, { title: string; body: string }> = {
   processing: {
     title: "Confirming your payment…",
-    body: "Hang tight — please don't close or refresh this page.",
+    body: "Hang tight. Please don't close or refresh this page.",
   },
   success: {
     title: "Payment successful!",
@@ -23,7 +23,7 @@ const COPY: Record<PaymentPhase, { title: string; body: string }> = {
   },
   pending: {
     title: "Payment received",
-    body: "We're still waiting for the bank to confirm. This can take a minute — your booking will update automatically.",
+    body: "We're still waiting for the bank to confirm. This can take a minute. Your booking will update automatically.",
   },
 };
 

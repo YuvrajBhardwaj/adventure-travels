@@ -17,6 +17,14 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 7 Nov 2026: Home hero headline back to "ONE RANGE. TWO SEASONS." — `preview/trek-slideshows`
+- The owner asked to keep the old headline instead of "TREK UTTARAKHAND. SKI AULI." (changed in `e472dd7`). Only the two headline lines went back; the newer subtitle (days and "from" price from the trek data) and the "Browse treks" button stay.
+
+### 7 Nov 2026: **Backend** Razorpay webhook registered (Test Mode) — no code change
+- **Business:** Razorpay now tells the site directly when a payment succeeds or fails, so a booking is marked paid even if the customer closes the tab before the success screen.
+- **Backend:** the owner added the webhook `https://www.himalayanarcadventure.com/api/razorpay-webhook` (events `payment.captured`, `order.paid`, `payment.failed`) in Razorpay Test Mode. Checked on the live site: an event signed with the local `RAZORPAY_WEBHOOK_SECRET` returns 200 (so Vercel has the same secret), a wrong signature returns 400. The test used an ignored event type, so no booking or payment changed.
+- **Not yet checked:** whether Vercel has the new test API keys, and a full test-card payment on a real booking.
+
 ### 7 Nov 2026: clearer home page hero, lighter winter videos, honest newsletter — `main`
 - **Hero:** headline "TREK UTTARAKHAND. SKI AULI." with a concrete pitch: "Guided 3–15 day treks from Rs.5,000, with permits, guide and meals included. Ski and snowboard courses at Auli in winter." The day range and the "from" price are worked out from the trek data, so they stay true. Buttons: "Browse treks" and "Auli ski courses".
 - **Winter videos 6 → 3:** the hero keeps the three lightest clips (1.3–2.7 MB) and drops the 3.6, 4.5 and 6.9 MB ones, so phones download much less.
@@ -573,7 +581,7 @@ After running them, give the business account admin rights (snippet at the top o
 | `bookings` | Create trek/course bookings with the price locked | Live (23 Oct) |
 | `create-order` | Start an advance, balance or full payment; holds a trek group's seats for 15 min | Live (seat hold from 5 Nov) |
 | `verify-payment` | Confirm a payment from the browser | Live (23 Oct) |
-| `razorpay-webhook` | Razorpay's confirmation (the source of truth) | Live; webhook registration in Razorpay not confirmed |
+| `razorpay-webhook` | Razorpay's confirmation (the source of truth) | Live; webhook registered in Razorpay Test Mode (7 Nov) |
 | `account` | Claim signed-out bookings; delete account | Live (23 Oct) |
 | `cron` | Daily reminders and email retries | Live (03:30 UTC daily) |
 | Region | All functions | `bom1` (Mumbai) from 5 Nov; was `iad1` (US East) |

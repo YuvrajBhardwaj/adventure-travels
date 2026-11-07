@@ -74,7 +74,7 @@ export default function CancellationPolicyPage() {
             Cancellation &amp; Refund Policy
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-            Note: No refund on unutilized services of the package, if any.
+            Note: No refund on unused services of the package, if any.
           </p>
         </div>
       </section>
