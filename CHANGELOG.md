@@ -8,14 +8,21 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 | Where | Commit | What it has |
 |---|---|---|
-| **Live site** (`main` on GitHub) | `de34d31` | Everything up to 7 Nov (went live 7 Nov): the daily-departure Dates calendar, the "Enquire now" tab, the mountain graphic, the calm course pages, the phone/tablet home page and card slideshows, the new phone menu, plus the copy rewrite, the trek fact fixes and the 15-minute checkout seat hold. Server functions run in Mumbai. Accounts, bookings and emails work; payments run in Razorpay **Test Mode** (no real money). All 12 environment variables are set in Vercel Production. |
-| **Preview** (`preview/trek-slideshows` on GitHub) | `de34d31` | Same as live (fast-forwarded into `main` on 7 Nov). |
+| **Live site** (`main` on GitHub) | `0c64520` | Everything up to 7 Nov (latest went live 7 Nov): honest trust signals, booking form kept through sign-up, Kuari Pass scroll story, walk-the-route altitude chart, gliding trek filters, the SEO title and new icon, the daily-departure Dates calendar, "Enquire now" tab, mountain graphic, calm course pages, phone/tablet home page, phone menu, copy rewrite and trek fact fixes. Server functions run in Mumbai; payments in Razorpay **Test Mode**. |
+| **Preview** (`preview/trek-slideshows` on GitHub) | `0c64520` | Same as live (fast-forwarded into `main` on 7 Nov). |
 | **Database** (Supabase `sdhtgmlkzcknmeakxgdz`) | — | All 7 SQL files applied (latest on 5 Nov); sign-up emails limited to 20 an hour. |
 | Local `main` | `9b522d5` | Stale. Reset it to `origin/main` before the next use. |
 
 ---
 
 ## [Unreleased]
+
+### 7 Nov 2026: Kuari Pass scroll story fixes (Moss Island style) — `preview/trek-slideshows`
+- **Context:** the owner asked for option A (one scroll story) and pointed at motionsites.ai's "Moss Island" (scroll fly-in, data tags pinned into the scene, a frosted data card, a numbered index). `JourneyStory` uses those ideas with our own photos and trek data. Note: `0c64520` (another session) put an earlier version of the story **live on `main`**.
+- **Fixes on top of the live version:** the altitude counter now shows each day's exact altitude (it ran half a chapter ahead, e.g. 2,468 m on Day 1); the descent day says "down to 1,875 m" instead of "Elev 1,875 m" over a high meadow photo; the summit tag no longer overlaps the day index; on phones the altitude card sits above the WhatsApp button; the booking ending fades the floating panels out.
+- **Also:** the home `<main>` uses `overflow-x-clip` instead of `overflow-x-hidden` (hidden broke the pinned photo layer).
+- **Hero:** restored twice to the original "ONE RANGE. TWO SEASONS." at the owner's request; another session had changed it to "TREK UTTARAKHAND. SKI AULI." (the backup diff is in Claude's scratchpad).
+- **Checked:** `tsc`, `eslint`, impeccable detector (no findings); screenshots at 400 px and 1440 px at Day 1, the summit and the ending; no page errors.
 
 ### 7 Nov 2026: honest trust signals, booking form kept through sign-up, Kuari Pass scroll story — `preview/trek-slideshows`
 - **Trust (no unverified claims):** star ratings and review counts are gone from trek cards, trek pages, the price card and Google's structured data (`aggregateRating`) until real reviews are collected. The made-up "10% OFF" strike-through price is removed. "100% Safe", "4.9+ Rating", "5,000+ Happy Adventurers", "100% Safety Record" and "98% Success Rate" are replaced with facts: all-inclusive, since 2010 (as in the footer), free date change, WhatsApp support, number of regions.
