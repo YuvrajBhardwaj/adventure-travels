@@ -24,6 +24,11 @@ Last updated: 7 Nov 2026.
 - [ ] **Dev:** self-host the three fonts (`next/font/local`) so a Google Fonts hiccup can't fail a build again (it failed one production build on 6 Nov).
 - [ ] **Dev:** card slideshows load more photos per home visit. Shrink card photos to about 800 px (they are 1600 px today) in `scripts/prepare-photos.mjs` to save phone data and Vercel bandwidth.
 
+## Hosting
+- [ ] **Decide:** stay on Vercel (recommended) or move pages to GoDaddy with WhatsApp-only bookings. See `adventure-travel/docs/deploy-godaddy.md`.
+- [ ] **You:** upgrade to Vercel Pro when Razorpay live keys go in (Hobby is non-commercial only).
+- [ ] **You:** stop the dev server on port 3001, delete `C:/Users/yuvra/dev/adventure-travels-3d` and `.claude/worktrees/ascent`, then `git worktree prune` and `git branch -D feat/3d-mountains`.
+
 ## Redesign: "The Ascent" (branch `redesign/ascent`)
 - [x] Part 1: hero behind the peaks, altitude meter, The Range, Book-a-trek button, honest story cards.
 - [ ] **You:** look at it (local preview or a Vercel preview of the branch) and say go / change.

@@ -17,6 +17,10 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 10 Nov 2026: GoDaddy hosting guide; side branches removed — `main` (`f30a75e`)
+- **Business:** new [`adventure-travel/docs/deploy-godaddy.md`](adventure-travel/docs/deploy-godaddy.md): how to upload the built `out/` folder to GoDaddy cPanel, and why online booking and payment stop working there (the 8 `api/` functions need Node.js). Recommendation: stay on Vercel, and move to Vercel Pro when Razorpay goes live, because the free Hobby plan is for non-commercial use.
+- **Repo:** work now happens on `main` only. Deleted `preview/trek-slideshows` (local and GitHub), `redesign/ascent` and `hotfix/favicon` (all already in `main`). `feat/3d-mountains` is kept as the local tag `archive/feat-3d-mountains`; its folder `C:/Users/yuvra/dev/adventure-travels-3d` still has a dev server running and has to be removed by hand.
+
 ### 7 Nov 2026: "The Ascent" home page redesign, part 1 — `main` (merged from `redesign/ascent`)
 - **Asked by the owner:** make the site stand out (motionsites.ai as inspiration), keep all the information. Audit first: a fresh graphify graph of `src/` (854 nodes, in `graphify-out/`), the live home page on desktop and phone, and motionsites' travel designs.
 - **For visitors:**
