@@ -4,12 +4,12 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 **How to add an entry:** add it under [Unreleased] with the date, where the change lives (branch and commit, or "uncommitted"), and what changed for visitors, for the business and in the backend. Move entries to a dated release heading when they go live on www.himalayanarcadventure.com. Open work goes in [TODO.md](TODO.md).
 
-## Where things stand (7 Nov 2026)
+## Where things stand (10 Nov 2026)
 
 | Where | Commit | What it has |
 |---|---|---|
-| **Live site** (`main` on GitHub) | `44297d7` | Everything up to 7 Nov (latest went live 7 Nov): Kuari Pass story fixes, honest trust signals, booking form kept through sign-up, Kuari Pass scroll story, walk-the-route altitude chart, gliding trek filters, the SEO title and new icon, the daily-departure Dates calendar, "Enquire now" tab, mountain graphic, calm course pages, phone/tablet home page, phone menu, copy rewrite and trek fact fixes. Server functions run in Mumbai; payments in Razorpay **Test Mode**. |
-| **Preview** (`preview/trek-slideshows` on GitHub) | `44297d7` | Same as live (fast-forwarded into `main` on 7 Nov). |
+| **Live site** (`main` on GitHub) | `8399ff5` | Everything up to 10 Nov: "The Ascent" home page part 1 (HIMALAYA-behind-the-peaks hero, altitude meter, The Range, Book a trek button), plainer section copy, the daily-departure Dates calendar and all earlier work. Payments in Razorpay **Test Mode** (webhook registered). The 7 Nov production build of `b37ed2c` failed on Vercel's side; an empty redeploy commit on 10 Nov went through. |
+| **Preview** (`preview/trek-slideshows` on GitHub) | `8399ff5` | Same as live. |
 | **Database** (Supabase `sdhtgmlkzcknmeakxgdz`) | — | All 7 SQL files applied (latest on 5 Nov); sign-up emails limited to 20 an hour. |
 | Local `main` | `9b522d5` | Stale. Reset it to `origin/main` before the next use. |
 
