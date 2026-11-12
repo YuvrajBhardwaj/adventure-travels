@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import AscentHero from "@/components/AscentHero";
 import AltitudeRail from "@/components/AltitudeRail";
 import TheRange from "@/components/TheRange";
-import HomeWallpaper from "@/components/HomeWallpaper";
 import FindYourTrek from "@/components/FindYourTrek";
 import JourneyStory from "@/components/JourneyStory";
 import WhyTrekWithUs from "@/components/WhyTrekWithUs";
@@ -39,7 +38,6 @@ export default function Home() {
         <AscentHero />
         <AltitudeRail />
         <div className="relative z-10">
-          <HomeWallpaper />
           <WelcomeChooser />
           <FindYourTrek />
           <JourneyStory />

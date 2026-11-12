@@ -17,6 +17,21 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: hero becomes a slideshow of mountains with HIMALAYA behind each ridge — `main`
+- **For visitors (asked by the owner):** the hero now rotates through 5 of our photos (Panpatia Col ×2, Kuari Pass, Nandi Kund, Dronagiri). In each, the giant HIMALAYA sits behind the ridge, and people, a cairn pole or peaks stand in front of it. The caption names the trek and links to it; dots pick a photo; a pause button stops it. Autoplay stops on hover or focus and never runs under reduced motion.
+- **Removed:** the separate "Seen on our treks" photo carousel added on 12 Nov (the owner preferred the 3D hero slideshow). `HomeWallpaper.tsx` deleted.
+- **Images:** `public/assets/hero/<name>-bg.webp` and `-fg.webp` (the cut-out foreground, made by a sky flood-fill from the top edge with the ridge smoothed). Most of our photos have hazy or cloudy skies that don't cut cleanly; these five do. The old `ascent-bg/fg.webp` are replaced by `panpatia-1-*`.
+
+### 12 Nov 2026: coupon codes design (no code yet) — uncommitted
+- **Business:** design for three kinds of discount code in [`specs/003-coupons/design.md`](specs/003-coupons/design.md):
+  - **first-booking** (10% or 20%, once per person, also across re-created accounts and Gmail aliases);
+  - **partner/campaign** codes, which track which site or influencer brought each booking;
+  - **loyalty** codes, unique to one customer and usable once; a forwarded code doesn't work for anyone else.
+
+  Every code has a rupee cap.
+- **Backend (planned, not built):** new `supabase-coupons.sql` (`coupons`, `coupon_redemptions`, `redeem_coupon()`, `issue_loyalty_coupon()`, coupon columns on both booking tables); discount locked into the booking `amount` at creation in `api/bookings.js`, so payments are unchanged apart from one check in `create-order.js`; env flags `COUPONS_ENABLED` and `NEXT_PUBLIC_COUPONS_ENABLED`. No new API function (stays at 8).
+- **Review:** checked with the Elephant–Goldfish review (5 reviewers; [`specs/003-coupons/review.md`](specs/003-coupons/review.md)). Both blockers and all major findings are resolved in draft v2.
+
 ### 12 Nov 2026: home page photo carousel; HIMALAYA no longer hides under the navbar — `main`
 - **For visitors:** a full-screen "Seen on our treks" slideshow right after the hero: 9 of our own photos from 7 routes, each captioned with the trek and its top altitude and linked to the trek page (reuses `WallpaperCarousel`; new `HomeWallpaper.tsx`).
 - **Fix:** on wide, short laptop screens (e.g. 1920×860) the giant HIMALAYA sat under the navbar. It is now anchored to the ridge line and capped by screen height, checked at 1920×860, 1366×768, 1440×900 and 390×844.
