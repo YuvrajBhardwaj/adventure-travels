@@ -24,6 +24,23 @@ Last updated: 7 Nov 2026.
 - [ ] **Dev:** self-host the three fonts (`next/font/local`) so a Google Fonts hiccup can't fail a build again (it failed one production build on 6 Nov).
 - [ ] **Dev:** card slideshows load more photos per home visit. Shrink card photos to about 800 px (they are 1600 px today) in `scripts/prepare-photos.mjs` to save phone data and Vercel bandwidth.
 
+## Courses
+- [ ] **Decide:** can a ski/snowboard course really start on any day of the season, or only on fixed intake days? The Dates calendar now offers every day (like the treks). Tell Claude the intake days if they're fixed.
+
+## Coupon codes (design: `specs/003-coupons/design.md`)
+- [x] Design drafted and reviewed (Elephant–Goldfish, 12 Nov); v2 fixes both blockers.
+- [ ] **You: answer the 8 questions in §9 of the design**:
+  1. 10% or 20%, and the rupee cap;
+  2. courses too?;
+  3. exclude offline customers?;
+  4. per booking;
+  5. partner commission;
+  6. reuse after a refund;
+  7. the 48-hour payment window;
+  8. loyalty code %, validity, and whether codes are issued by hand or by email automatically.
+- [ ] **Dev:** build it in the 5 phases of design §4 (helpers + tests → migration → API → UI → rollout).
+- [ ] **You:** approve `supabase-coupons.sql` on the live database after the dry-run.
+
 ## Hosting
 - [ ] **Decide:** stay on Vercel (recommended) or move pages to GoDaddy with WhatsApp-only bookings. See `adventure-travel/docs/deploy-godaddy.md`.
 - [ ] **You:** upgrade to Vercel Pro when Razorpay live keys go in (Hobby is non-commercial only).

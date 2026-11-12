@@ -17,6 +17,11 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: course dates as a calendar, like the treks — `main`
+- **For visitors:** a course's Dates tab is now the same calendar as the trek pages: month chips, a month grid, the picked dates and **Register for this date**, which fills the booking form's date. A course can start any day of its season (e.g. Dec 2026 – Mar 2027), at least 3 days ahead, and must finish by the season's last day.
+- **Honesty fix:** the old list said "Live availability" and marked batches "Filling Fast" or "Sold Out" from a fixed repeating pattern, not from real bookings. Every open date now just says Available.
+- **Code:** new `src/components/StartDatePicker.tsx` and `src/lib/courseSeason.ts` (+ tests, 84 passing). Removed the made-up batch generator from `CourseDetailClient.tsx`.
+
 ### 13 Nov 2026: hero slideshow fixes; altitude meter removed — `main`
 - **Owner's asks:** HIMALAYA must show on every photo, slides change every 2 seconds, and the side altitude meter goes.
   - The word is never placed higher than just under the navbar (it hid under it on wide laptop screens), and phones get their own height per photo because they see only the photo's middle.

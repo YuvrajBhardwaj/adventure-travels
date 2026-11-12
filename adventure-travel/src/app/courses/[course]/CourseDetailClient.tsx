@@ -21,6 +21,8 @@ import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import { transition } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { BrandIcon } from "@/components/BrandIcon";
+import StartDatePicker from "@/components/StartDatePicker";
+import { courseStartDates } from "@/lib/courseSeason";
 
 type Tab = "overview" | "dates" | "itinerary" | "gallery" | "included" | "book";
 
@@ -96,128 +98,12 @@ function pkgBullets(tier: { id: string }, stay: "base" | "full"): string[] {
       ];
 }
 
-/* ─── Availability / batch schedule (derived from the course season + duration) ─── */
-type CAvail = "available" | "few" | "sold";
-type CourseBatch = { id: string; label: string; iso: string; days: number; price: number; availability: CAvail };
-
-const CMONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const CAVAIL: Record<CAvail, { dot: string; text: string; label: string }> = {
-  available: { dot: "bg-emerald-600", text: "text-emerald-700", label: "Available" },
-  few: { dot: "bg-amber-500", text: "text-amber-700", label: "Filling Fast" },
-  sold: { dot: "bg-red-600", text: "text-red-700", label: "Sold Out" },
-};
-const C_CYCLE: CAvail[] = ["available", "available", "few", "available", "few", "sold"];
-
+/* ─── Start dates: any day of the course season, like the treks (see src/lib/courseSeason.ts) ─── */
 function courseDays(duration: string): number {
   const m = duration.match(/\d+/);
   return m ? parseInt(m[0], 10) : 7;
 }
 
-function fmtCourseDate(year: number, monthIdx: number, day: number): string {
-  const d = new Date(year, monthIdx, day); // fixed inputs → deterministic (no hydration mismatch)
-  return `${d.getDate()} ${CMONTHS[d.getMonth()]}`;
-}
-
-// Parse the season string (e.g. "Dec 2026 — Mar 2027") + duration into upcoming batches.
-function getCourseBatches(course: Course, priceOverride?: number): CourseBatch[] {
-  const monthTokens = (course.dates.match(/[A-Za-z]{3,}/g) ?? [])
-    .map((t) => CMONTHS.findIndex((x) => x.toLowerCase() === t.slice(0, 3).toLowerCase()))
-    .filter((i) => i >= 0);
-  const years = (course.dates.match(/20\d{2}/g) ?? []).map(Number);
-  const days = courseDays(course.duration);
-
-  const startM = monthTokens[0] ?? 11;
-  const startY = years[0] ?? 2026;
-  const endM = monthTokens[1] ?? (startM + 2) % 12;
-  const endY = years[years.length - 1] ?? startY;
-
-  const months: { m: number; y: number }[] = [];
-  let m = startM;
-  let y = startY;
-  for (let guard = 0; guard < 24; guard++) {
-    months.push({ m, y });
-    if (m === endM && y === endY) break;
-    m += 1;
-    if (m > 11) { m = 0; y += 1; }
-  }
-
-  const startDays = [8, 22];
-  const out: CourseBatch[] = [];
-  let ci = 0;
-  for (const mo of months) {
-    for (const sd of startDays) {
-      const end = new Date(mo.y, mo.m, sd + days - 1);
-      out.push({
-        id: `${course.slug}-${mo.y}-${mo.m}-${sd}`,
-        label: `${fmtCourseDate(mo.y, mo.m, sd)} – ${fmtCourseDate(end.getFullYear(), end.getMonth(), end.getDate())} ${end.getFullYear()}`,
-        iso: new Date(mo.y, mo.m, sd).toISOString().slice(0, 10),
-        days,
-        price: priceOverride ?? course.price,
-        availability: C_CYCLE[ci++ % C_CYCLE.length],
-      });
-      if (out.length >= 6) break;
-    }
-    if (out.length >= 6) break;
-  }
-  return out;
-}
-
-/* Panel content has no scroll-in reveals of its own: CourseTabPanel fades the whole panel in when it is shown. */
-function AvailabilityView({ batches, onBook }: { batches: CourseBatch[]; onBook: (iso: string) => void }) {
-  return (
-    <div>
-      <h2 className={cn(PANEL_H2, "mb-2")}>Upcoming Batches</h2>
-      <p className="mb-6 text-slate-600">Live availability for this course. Pick a batch and reserve your spot.</p>
-      <div className="mb-5 flex flex-wrap items-center gap-4 text-xs">
-        {(Object.keys(CAVAIL) as CAvail[]).map((k) => (
-          <span key={k} className="inline-flex items-center gap-1.5 text-slate-500">
-            <span className={cn("h-2.5 w-2.5 rounded-full", CAVAIL[k].dot)} />
-            {CAVAIL[k].label}
-          </span>
-        ))}
-      </div>
-      <div className="space-y-2.5">
-        {batches.map((b) => (
-          <CourseBatchRow key={b.id} b={b} onBook={onBook} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function CourseBatchRow({ b, onBook }: { b: CourseBatch; onBook: (iso: string) => void }) {
-  const a = CAVAIL[b.availability];
-  const sold = b.availability === "sold";
-  return (
-    <div className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100 transition-shadow duration-150 ease-out hover:shadow-lg hover:shadow-slate-100 sm:flex-row sm:items-center">
-      <div className="min-w-0 flex-1">
-        <div className="text-sm font-semibold text-slate-900">{b.label}</div>
-        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-          <span>{b.days} Days</span>
-          <span className="inline-flex items-center gap-1.5">
-            <span className={cn("h-2 w-2 rounded-full", a.dot)} />
-            <span className={cn("font-medium", a.text)}>{a.label}</span>
-          </span>
-        </div>
-      </div>
-      <div className="flex items-center justify-between gap-3 sm:justify-end">
-        <div className="text-right">
-          <div className="text-sm font-bold text-slate-900"><Price inr={b.price} /></div>
-          <div className="text-[11px] text-slate-500">/ person</div>
-        </div>
-        <Button
-          variant={sold ? "outline" : "default"}
-          disabled={sold}
-          onClick={() => onBook(b.iso)}
-          aria-label={sold ? `${b.label} sold out` : `Book ${b.label}`}
-          className="px-6 font-bold"
-        >
-          {sold ? "Sold Out" : "Book"}
-        </Button>
-      </div>
-    </div>
-  );
-}
 
 /** The skills a guest gains, day by day: a track across on wider screens, down the side on phones. */
 function SkillTrack({ items, duration }: { items: NonNullable<Course["milestones"]>; duration: string }) {
@@ -718,7 +604,19 @@ export default function CourseDetailClient({ course }: Props) {
               )}
 
               {panel.key === "dates" && (
-                <AvailabilityView batches={getCourseBatches(course, selectedTier?.priceBase)} onBook={registerForBatch} />
+                <div>
+                  <h2 className={cn(PANEL_H2, "mb-2")}>Select a Date to Register</h2>
+                  <p className="mb-5 text-slate-600">
+                    <span className="font-semibold text-slate-900">Starts every day</span> in season ({course.dates}). Pick the day you
+                    start: it&apos;s a {courseDays(course.duration)}-day course at Auli.
+                  </p>
+                  <StartDatePicker
+                    dates={today ? courseStartDates(course.dates, courseDays(course.duration), today) : null}
+                    days={courseDays(course.duration)}
+                    what="course"
+                    onRegister={registerForBatch}
+                  />
+                </div>
               )}
 
               {panel.key === "itinerary" && (
