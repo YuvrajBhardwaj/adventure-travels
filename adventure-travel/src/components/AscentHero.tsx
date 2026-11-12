@@ -42,7 +42,7 @@ export default function AscentHero() {
       {/* The stage: 4:3 like the photo, at least as wide and as tall as the hero. */}
       <div
         aria-hidden
-        className="absolute left-1/2 top-[62%] aspect-[4/3] -translate-x-1/2 -translate-y-[62%] [container-type:inline-size]"
+        className="absolute left-1/2 top-[28%] aspect-[4/3] -translate-x-1/2 -translate-y-[28%] [container-type:inline-size]"
         style={{ width: "max(100%, calc(max(100svh, 640px) * 4 / 3))" }}
       >
         <motion.img
@@ -55,7 +55,7 @@ export default function AscentHero() {
         />
         <motion.span
           style={reduce ? undefined : { y: wordY }}
-          className="absolute inset-x-0 top-[21%] block select-none text-center font-heading font-semibold leading-none tracking-[-0.045em] text-white [font-size:min(19cqw,20.5vw)] [text-shadow:0_2px_40px_rgba(2,6,23,0.35)] max-sm:top-[27%]"
+          className="absolute inset-x-0 bottom-[61%] block select-none text-center font-heading font-semibold leading-none tracking-[-0.045em] text-white [font-size:min(19cqw,20.5vw,30svh)] [text-shadow:0_2px_40px_rgba(2,6,23,0.35)]"
         >
           HIMALAYA
         </motion.span>

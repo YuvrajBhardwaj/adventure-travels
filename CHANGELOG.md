@@ -17,6 +17,10 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 12 Nov 2026: home page photo carousel; HIMALAYA no longer hides under the navbar — `main`
+- **For visitors:** a full-screen "Seen on our treks" slideshow right after the hero: 9 of our own photos from 7 routes, each captioned with the trek and its top altitude and linked to the trek page (reuses `WallpaperCarousel`; new `HomeWallpaper.tsx`).
+- **Fix:** on wide, short laptop screens (e.g. 1920×860) the giant HIMALAYA sat under the navbar. It is now anchored to the ridge line and capped by screen height, checked at 1920×860, 1366×768, 1440×900 and 390×844.
+
 ### 10 Nov 2026: GoDaddy hosting guide; side branches removed — `main` (`f30a75e`)
 - **Business:** new [`adventure-travel/docs/deploy-godaddy.md`](adventure-travel/docs/deploy-godaddy.md): how to upload the built `out/` folder to GoDaddy cPanel, and why online booking and payment stop working there (the 8 `api/` functions need Node.js). Recommendation: stay on Vercel, and move to Vercel Pro when Razorpay goes live, because the free Hobby plan is for non-commercial use.
 - **Repo:** work now happens on `main` only. Deleted `preview/trek-slideshows` (local and GitHub), `redesign/ascent` and `hotfix/favicon` (all already in `main`). `feat/3d-mountains` is kept as the local tag `archive/feat-3d-mountains`; its folder `C:/Users/yuvra/dev/adventure-travels-3d` still has a dev server running and has to be removed by hand.
