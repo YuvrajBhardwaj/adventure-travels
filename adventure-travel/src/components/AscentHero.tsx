@@ -22,22 +22,22 @@ const BASE = 1875; // Joshimath, where every group starts
  * sky cut away (`-fg.webp`, made by a sky flood-fill from the top edge). "HIMALAYA" sits
  * between them, so peaks, people and poles stand in front of the word.
  * `aspect` is the photo's width/height; `baseline` is where the word's bottom sits, as a
- * fraction of the photo's height (set by eye per photo, just below the ridge).
+ * fraction of the photo's height (set by eye per photo, just below the ridge). Phones see
+ * only the middle of the photo, where the peaks are often higher, so `phone` sets it there.
  */
 const SLIDES = [
-  { file: "panpatia-1", slug: "panpatia-col", aspect: 4 / 3, baseline: 0.39 },
-  { file: "kuari", slug: "kuari-pass", aspect: 4 / 3, baseline: 0.43 },
-  { file: "nandi-kund", slug: "nandi-kund", aspect: 1600 / 720, baseline: 0.3 },
-  { file: "panpatia-2", slug: "panpatia-col", aspect: 4 / 3, baseline: 0.36 },
-  { file: "dronagiri-1", slug: "dronagiri-base-camp", aspect: 1600 / 722, baseline: 0.4 },
+  { file: "panpatia-1", slug: "panpatia-col", aspect: 4 / 3, baseline: 0.39, phone: 0.36 },
+  { file: "kuari", slug: "kuari-pass", aspect: 4 / 3, baseline: 0.43, phone: 0.35 },
+  { file: "panpatia-2", slug: "panpatia-col", aspect: 4 / 3, baseline: 0.36, phone: 0.27 },
+  { file: "dronagiri-1", slug: "dronagiri-base-camp", aspect: 1600 / 722, baseline: 0.4, phone: 0.4 },
 ].flatMap((s) => {
   const trek = treks.find((t) => t.slug === s.slug);
   return trek ? [{ ...s, name: trek.name, altitude: trek.maxAltitude }] : [];
 });
 
-const SLIDE_MS = 6500;
+const SLIDE_MS = 2000; // the owner asked for a 2-second change
 /** Ambient crossfade between photos (slideshow, not a UI response). */
-const FADE_S = 1.4;
+const FADE_S = 0.8;
 
 function Stage({
   slide,
@@ -54,12 +54,19 @@ function Stage({
   wordY?: MotionValue<string>;
   ridgeY?: MotionValue<string>;
 }) {
+  const focus = 0.5; // centre of the photo stays in view (like object-position: 50%)
   return (
     // The stage keeps the photo's shape and covers the hero like object-fit: cover,
     // so the word lines up with the ridge at any screen size.
     <div
-      className="absolute left-1/2 top-[28%] -translate-x-1/2 -translate-y-[28%] [container-type:inline-size]"
-      style={{ aspectRatio: String(slide.aspect), width: `max(100%, calc(max(100svh, 640px) * ${slide.aspect}))` }}
+      className="absolute top-[28%] -translate-y-[28%] [container-type:inline-size]"
+      style={{
+        aspectRatio: String(slide.aspect),
+        width: `max(100%, calc(max(100svh, 640px) * ${slide.aspect}))`,
+        // Like object-position x: which part of a photo wider than the screen stays in view.
+        left: `${focus * 100}%`,
+        transform: `translateX(-${focus * 100}%)`,
+      }}
     >
       {load && (
         <motion.img
@@ -72,8 +79,17 @@ function Stage({
         />
       )}
       <motion.span
-        style={{ bottom: `${(1 - slide.baseline) * 100}%`, ...(wordY ? { y: wordY } : {}) }}
-        className="absolute inset-x-0 block select-none text-center font-heading font-semibold leading-none tracking-[-0.045em] text-white [font-size:min(19cqw,20.5vw,30svh)] [text-shadow:0_2px_40px_rgba(2,6,23,0.35)]"
+        style={{
+          // Bottom of the word just under the ridge, but never higher than 7.5rem below the hero's
+          // top (navbar + the base/route line). Stage height = 100cqw / aspect; the stage starts
+          // 0.28 × (hero height − stage height) above the hero.
+          top: `max(calc(7.5rem - 0.28 * (max(100svh, 640px) - 100cqw / ${slide.aspect})), calc(var(--bl) * 100cqw / ${slide.aspect} - min(19cqw, 20.5vw, 30svh)))`,
+          // Centred on the part of the photo that's on screen, not on the whole photo.
+          left: `calc(${focus} * (100cqw - 100vw) + 50vw)`,
+          ...(wordY ? { y: wordY } : {}),
+          ...({ "--bd": slide.baseline, "--bp": slide.phone } as Record<string, number>),
+        }}
+        className="absolute block -translate-x-1/2 select-none [--bl:var(--bd)] max-sm:[--bl:var(--bp)] whitespace-nowrap text-center font-heading font-semibold leading-none tracking-[-0.045em] text-white [font-size:min(19cqw,20.5vw,30svh)] [text-shadow:0_2px_40px_rgba(2,6,23,0.35)]"
       >
         HIMALAYA
       </motion.span>
@@ -93,7 +109,7 @@ function Stage({
 /**
  * Home hero: a slideshow of our own mountain photos, each with a giant "HIMALAYA" set
  * behind its peaks. The first slide is in the static HTML; the rest load one ahead.
- * Autoplay stops on hover, on focus inside, with the pause button, and entirely under
+ * Changes every 2 s; stops only with the pause button, and never runs under
  * reduced motion (which also drops the scroll parallax).
  */
 export default function AscentHero() {
@@ -107,10 +123,9 @@ export default function AscentHero() {
 
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [holding, setHolding] = useState(false);
   const [loaded, setLoaded] = useState<number[]>([0]);
   const n = SLIDES.length;
-  const playing = !reduce && !paused && !holding && n > 1;
+  const playing = !reduce && !paused && n > 1;
   const slide = SLIDES[idx];
 
   useEffect(() => {
@@ -119,9 +134,9 @@ export default function AscentHero() {
     return () => clearTimeout(t);
   }, [playing, idx, n]);
 
-  // Load the current slide and the next one, so a crossfade never fades into a blank frame.
+  // Load the current slide and the next two, so a crossfade never fades into a blank frame.
   useEffect(() => {
-    const want = [idx, (idx + 1) % n];
+    const want = [idx, (idx + 1) % n, (idx + 2) % n];
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoaded((l) => (want.every((i) => l.includes(i)) ? l : [...new Set([...l, ...want])]));
   }, [idx, n]);
@@ -133,10 +148,6 @@ export default function AscentHero() {
       ref={ref}
       aria-labelledby="hero-heading"
       aria-roledescription="carousel"
-      onMouseEnter={() => setHolding(true)}
-      onMouseLeave={() => setHolding(false)}
-      onFocus={() => setHolding(true)}
-      onBlur={() => setHolding(false)}
       className="relative isolate h-[100svh] min-h-[640px] overflow-hidden bg-[#020617]"
     >
       <div aria-hidden>
@@ -172,7 +183,7 @@ export default function AscentHero() {
         </div>
 
         <div className="grid items-end gap-6 lg:grid-cols-12">
-          <div className="lg:col-span-7">
+          <div className="min-w-0 lg:col-span-7">
             <h1
               id="hero-heading"
               className="font-heading text-[clamp(2.4rem,6vw,4.75rem)] font-semibold leading-[0.95] tracking-[-0.035em] text-navy-deep"
@@ -203,7 +214,7 @@ export default function AscentHero() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 font-nav text-navy-deep lg:col-span-5 lg:items-end">
+          <div className="flex min-w-0 flex-col gap-4 font-nav text-navy-deep lg:col-span-5 lg:items-end">
             <dl className="hidden grid-cols-2 gap-x-8 lg:grid">
               <div>
                 <dt className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Treks</dt>
@@ -215,14 +226,14 @@ export default function AscentHero() {
               </div>
             </dl>
             {/* Slide controls: which photo, which trek, pause. Clear of the WhatsApp button on phones. */}
-            <div className="flex items-center gap-3 max-sm:pr-16">
+            <div className="flex min-w-0 max-w-full items-center gap-3 max-sm:pr-16">
               <Link
                 href={`/treks/${slide.slug}`}
                 className="min-w-0 truncate text-xs text-slate-600 underline-offset-4 hover:text-navy-deep hover:underline"
               >
-                Photo: {slide.name} · {slide.altitude.toLocaleString("en-IN")} m
+                Photo: {slide.name.replace(/ \(.*\)$/, "")} · {slide.altitude.toLocaleString("en-IN")} m
               </Link>
-              <div className="flex items-center" role="group" aria-label="Choose a photo">
+              <div className="flex shrink-0 items-center" role="group" aria-label="Choose a photo">
                 {SLIDES.map((s, i) => (
                   <button
                     key={s.file}
@@ -246,7 +257,7 @@ export default function AscentHero() {
                   type="button"
                   onClick={() => setPaused((p) => !p)}
                   aria-label={paused ? "Play slideshow" : "Pause slideshow"}
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-navy-deep ring-1 ring-navy-deep/20 transition-colors duration-150 ease-out hover:bg-navy-deep/5 focus-visible:outline-2 focus-visible:outline-primary"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-navy-deep ring-1 ring-navy-deep/20 transition-colors duration-150 ease-out hover:bg-navy-deep/5 focus-visible:outline-2 focus-visible:outline-primary"
                 >
                   {paused ? <Play className="h-3.5 w-3.5" aria-hidden /> : <Pause className="h-3.5 w-3.5" aria-hidden />}
                 </button>

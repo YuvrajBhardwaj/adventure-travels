@@ -17,6 +17,15 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: hero slideshow fixes; altitude meter removed — `main`
+- **Owner's asks:** HIMALAYA must show on every photo, slides change every 2 seconds, and the side altitude meter goes.
+  - The word is never placed higher than just under the navbar (it hid under it on wide laptop screens), and phones get their own height per photo because they see only the photo's middle.
+  - The Nandi Kund photo is out: a trekker stands across the word on every screen size. Four slides remain (Panpatia Col ×2, Kuari Pass, Dronagiri).
+  - Slides change every 2 s with a 0.8 s fade and keep going on hover; only the pause button (or reduced motion) stops them. The next two photos load ahead.
+  - On phones the photo caption no longer pushes the copy and buttons off the right edge.
+  - `AltitudeRail.tsx` deleted.
+- **Checked:** `tsc`, `eslint`; all four slides at 1920×860, 1440×900, 1366×768 and 390×844.
+
 ### 13 Nov 2026: hero becomes a slideshow of mountains with HIMALAYA behind each ridge — `main`
 - **For visitors (asked by the owner):** the hero now rotates through 5 of our photos (Panpatia Col ×2, Kuari Pass, Nandi Kund, Dronagiri). In each, the giant HIMALAYA sits behind the ridge, and people, a cairn pole or peaks stand in front of it. The caption names the trek and links to it; dots pick a photo; a pause button stops it. Autoplay stops on hover or focus and never runs under reduced motion.
 - **Removed:** the separate "Seen on our treks" photo carousel added on 12 Nov (the owner preferred the 3D hero slideshow). `HomeWallpaper.tsx` deleted.

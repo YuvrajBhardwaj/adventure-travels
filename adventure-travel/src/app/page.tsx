@@ -2,7 +2,6 @@
 
 import dynamic from "next/dynamic";
 import AscentHero from "@/components/AscentHero";
-import AltitudeRail from "@/components/AltitudeRail";
 import TheRange from "@/components/TheRange";
 import FindYourTrek from "@/components/FindYourTrek";
 import JourneyStory from "@/components/JourneyStory";
@@ -36,7 +35,6 @@ export default function Home() {
     <SmoothScrollProvider>
       <main className="relative overflow-x-clip">
         <AscentHero />
-        <AltitudeRail />
         <div className="relative z-10">
           <WelcomeChooser />
           <FindYourTrek />
