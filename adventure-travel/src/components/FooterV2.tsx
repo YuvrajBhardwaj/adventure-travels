@@ -7,6 +7,7 @@ import { FadeUp, StaggerContainer, StaggerItem } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
 import CurrencySwitcher from "./CurrencySwitcher";
 import { POPULAR_TREK_SLUGS, treks } from "@/data/treks";
+import { TOURS } from "@/data/tours";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { transition } from "@/lib/motion";
@@ -35,7 +36,7 @@ const popularTreks = [
   // The two hub pages, so they're linked from every page too.
   { name: "Treks from Joshimath", href: "/treks-from-joshimath" },
   { name: "Winter treks in Uttarakhand", href: "/winter-treks-uttarakhand" },
-  { name: "Auli Winter Escape (3 days)", href: "/auli-winter-escape" },
+  ...TOURS.map((t) => ({ name: `${t.name} (${t.days} days)`, href: `/tours/${t.slug}` })),
 ];
 
 const destinations = [

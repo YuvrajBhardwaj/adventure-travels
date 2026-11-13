@@ -5,7 +5,7 @@ import Price from "@/components/Price";
 import { BrandIcon } from "@/components/BrandIcon";
 import { buttonVariants } from "@/components/ui/button";
 
-const PATH = `/${P.slug}`;
+const PATH = `/tours/${P.slug}`;
 const ROUTE = P.route.join(" – ");
 const WHATSAPP = `https://wa.me/917817912062?text=${encodeURIComponent(
   `Hi! I'd like to book the ${P.name} (${P.days} days / ${P.nights} nights).\nDate: \nGroup size: `
@@ -55,7 +55,8 @@ export default function AuliWinterEscapePage() {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-          { "@type": "ListItem", position: 2, name: P.name, item: absoluteUrl(PATH) },
+          { "@type": "ListItem", position: 2, name: "Tours", item: absoluteUrl("/tours") },
+          { "@type": "ListItem", position: 3, name: P.name, item: absoluteUrl(PATH) },
         ],
       },
     ],
@@ -72,6 +73,8 @@ export default function AuliWinterEscapePage() {
           <div className="lg:col-span-7">
             <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-2 text-sm text-white/60">
               <Link href="/" className="inline-flex min-h-11 items-center transition-colors duration-150 ease-out hover:text-white">Home</Link>
+              <span aria-hidden>/</span>
+              <Link href="/tours" className="inline-flex min-h-11 items-center transition-colors duration-150 ease-out hover:text-white">Tours</Link>
               <span aria-hidden>/</span>
               <span className="text-white/90">{P.name}</span>
             </nav>

@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { signOut } from "@/lib/auth";
 import { treks, DIFFICULTY_COLORS } from "@/data/treks";
+import { TOURS } from "@/data/tours";
 import DesktopSearch from "@/components/DesktopSearch";
 import Price from "@/components/Price";
 import NoPhoto from "@/components/NoPhoto";
@@ -22,8 +23,7 @@ type MenuId = "treks" | "activities" | "account";
 
 const NAV: { label: string; href: string; menu?: MenuId }[] = [
   { label: "Treks", href: "/treks", menu: "treks" },
-  // One trip so far, so the item opens it directly; give it a menu or a /trips page when there are more.
-  { label: "Trips", href: "/auli-winter-escape" },
+  { label: "Tours", href: "/tours" },
   { label: "Destinations", href: "/destinations" },
   { label: "Courses", href: "/courses" },
   { label: "Activities", href: "/activities", menu: "activities" },
@@ -90,7 +90,11 @@ const MOBILE_NAV: (MobileLink & { sub?: MobileLink[] })[] = [
       { label: "Winter treks", href: "/winter-treks-uttarakhand" },
     ],
   },
-  { label: "Trips", href: "/auli-winter-escape", sub: [{ label: "Auli Winter Escape (3 days)", href: "/auli-winter-escape" }] },
+  {
+    label: "Tours",
+    href: "/tours",
+    sub: [...TOURS.map((t) => ({ label: `${t.name} (${t.days} days)`, href: `/tours/${t.slug}` })), { label: "All tours", href: "/tours" }],
+  },
   { label: "Destinations", href: "/destinations" },
   { label: "Courses", href: "/courses" },
   {

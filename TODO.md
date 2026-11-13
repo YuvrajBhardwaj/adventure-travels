@@ -38,7 +38,11 @@ Last updated: 7 Nov 2026.
 - [ ] **Dev (phone, cosmetic):** the mobile menu doesn't cover the page (the booking bar and WhatsApp button show through); the season stat card wraps to 3+ lines; three floating calls to action on trek pages.
 - [ ] **Dev (minor):** unused `textColor` in `Logo.tsx:68` (the only lint warning).
 
-## Auli Winter Escape (/auli-winter-escape)
+## Tours (/tours)
+- [x] ~~**Dev:** Tours section with the Auli Winter Escape~~ (13 Nov, `main`).
+- [ ] **You: send the Chopta tour brief** (days, route, price and group offers, day-by-day plan, inclusions and exclusions), like the Auli one. Claude adds it to `src/data/tours.ts` with its own page.
+
+### Auli Winter Escape (/tours/auli-winter-escape)
 - [x] ~~**Dev:** page with price, group offers, itinerary, inclusions, transport and contact~~ (13 Nov, `main`).
 - [x] ~~**Dev:** listed under a new "Trips" menu item~~ (13 Nov, `main`).
 - [ ] **You: prices for 7, 8, 9 and 11+ people.** The brief only covers 1–6 and 10; the page says "message us" for other sizes.

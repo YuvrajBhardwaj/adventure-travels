@@ -17,6 +17,11 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: new Tours section (Auli now, Chopta next) — `main`
+- **For visitors:** a new [/tours](https://www.himalayanarcadventure.com/tours) page lists short road-and-stay tours as cards. **Tours** replaces the short-lived "Trips" item in the top menu; the phone menu lists each tour and "All tours".
+- **Auli page moved:** the Auli Winter Escape now lives at `/tours/auli-winter-escape`, with a Home / Tours breadcrumb. The old `/auli-winter-escape` link, live for a few minutes, redirects there permanently (`vercel.json`).
+- **Code:** tours are listed in `src/data/tours.ts`, which feeds the Tours page, both menus, the footer and the sitemap. Chopta is added there once the owner sends its details.
+
 ### 13 Nov 2026: "Trips" in the menu — `main`
 - **For visitors:** a new **Trips** item, right after Treks, in the top menu and the phone menu. It opens the Auli Winter Escape, the only trip so far. When a second trip is added, it can become a dropdown or a /trips page.
 - **Layout:** menu links have slightly less padding between 1024 and 1280 px wide, so the "Book a trek" button still fits next to six items.

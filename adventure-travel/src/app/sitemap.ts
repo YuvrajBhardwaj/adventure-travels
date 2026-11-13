@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { treks } from "@/data/treks";
 import { courses } from "@/data/courses";
+import { TOURS } from "@/data/tours";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 
 export const dynamic = "force-static";
@@ -18,7 +19,7 @@ const STATIC_ROUTES = [
   { url: `${BASE}/treks`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
   { url: `${BASE}/treks-from-joshimath`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
   { url: `${BASE}/winter-treks-uttarakhand`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
-  { url: `${BASE}/auli-winter-escape`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8, ...ownImages("/assets/skiing/IMG_5035.JPG.jpeg") },
+  { url: `${BASE}/tours`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
   { url: `${BASE}/courses`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
   { url: `${BASE}/destinations`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
   { url: `${BASE}/activities`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
@@ -43,6 +44,14 @@ const COURSE_ROUTES = courses.map((course) => ({
   ...ownImages(course.image, ...(course.gallery ?? [])),
 }));
 
+const TOUR_ROUTES = TOURS.map((tour) => ({
+  url: `${BASE}/tours/${tour.slug}`,
+  lastModified: new Date(),
+  changeFrequency: "monthly" as const,
+  priority: 0.8,
+  ...ownImages(tour.image),
+}));
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [...STATIC_ROUTES, ...TREK_ROUTES, ...COURSE_ROUTES];
+  return [...STATIC_ROUTES, ...TREK_ROUTES, ...COURSE_ROUTES, ...TOUR_ROUTES];
 }
