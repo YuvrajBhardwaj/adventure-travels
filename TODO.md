@@ -40,6 +40,7 @@ Last updated: 7 Nov 2026.
 
 ## Auli Winter Escape (/auli-winter-escape)
 - [x] ~~**Dev:** page with price, group offers, itinerary, inclusions, transport and contact~~ (13 Nov, `main`).
+- [x] ~~**Dev:** listed under a new "Trips" menu item~~ (13 Nov, `main`).
 - [ ] **You: prices for 7, 8, 9 and 11+ people.** The brief only covers 1–6 and 10; the page says "message us" for other sizes.
 - [ ] **You: the second number (+91 86505 61564) and the Gmail address** appear only on this page; the rest of the site uses +91 78179 12062 and support@himalayanarcadventure.com. Should they go site-wide?
 - [ ] **You: photos from your own Auli trips** (Gorson Bugyal, the lake, the stays) would beat the skiing course photo used now.

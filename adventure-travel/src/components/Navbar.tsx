@@ -22,6 +22,8 @@ type MenuId = "treks" | "activities" | "account";
 
 const NAV: { label: string; href: string; menu?: MenuId }[] = [
   { label: "Treks", href: "/treks", menu: "treks" },
+  // One trip so far, so the item opens it directly; give it a menu or a /trips page when there are more.
+  { label: "Trips", href: "/auli-winter-escape" },
   { label: "Destinations", href: "/destinations" },
   { label: "Courses", href: "/courses" },
   { label: "Activities", href: "/activities", menu: "activities" },
@@ -88,6 +90,7 @@ const MOBILE_NAV: (MobileLink & { sub?: MobileLink[] })[] = [
       { label: "Winter treks", href: "/winter-treks-uttarakhand" },
     ],
   },
+  { label: "Trips", href: "/auli-winter-escape", sub: [{ label: "Auli Winter Escape (3 days)", href: "/auli-winter-escape" }] },
   { label: "Destinations", href: "/destinations" },
   { label: "Courses", href: "/courses" },
   {
@@ -289,7 +292,7 @@ export default function Navbar() {
                     {item.menu && <ChevronDown open={open} />}
                   </>
                 );
-                const linkClass = `relative z-0 flex items-center gap-1.5 rounded-full px-3.5 py-2 font-nav text-[15px] font-medium tracking-[-0.01em] transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${
+                const linkClass = `relative z-0 flex items-center gap-1.5 rounded-full px-2.5 py-2 xl:px-3.5 font-nav text-[15px] font-medium tracking-[-0.01em] transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${
                   active || highlight ? "text-white" : "text-white/70"
                 }`;
                 return (

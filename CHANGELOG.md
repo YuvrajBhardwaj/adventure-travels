@@ -17,6 +17,10 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: "Trips" in the menu — `main`
+- **For visitors:** a new **Trips** item, right after Treks, in the top menu and the phone menu. It opens the Auli Winter Escape, the only trip so far. When a second trip is added, it can become a dropdown or a /trips page.
+- **Layout:** menu links have slightly less padding between 1024 and 1280 px wide, so the "Book a trek" button still fits next to six items.
+
 ### 13 Nov 2026: course tabs match the trek tabs — `main`
 - **For visitors:** the tab bar on course pages (Overview, Dates, Itinerary…) now uses the same underline style as the trek pages, instead of a blue pill. It keeps the course pages' sky-blue accent.
 
