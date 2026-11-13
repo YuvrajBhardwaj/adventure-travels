@@ -2,6 +2,7 @@ import { AULI_ESCAPE as P, AULI_GROUP_OFFERS, groupOffer } from "@/data/auliEsca
 import { fitDescription, fitTitle, pageMetadata } from "@/lib/seo";
 import Price from "@/components/Price";
 import { TOUR_TH as th, TourPage, TourSection } from "@/components/TourPage";
+import { tourPhotos } from "@/lib/tourPhotos";
 
 const inr = (n: number) => `Rs.${n.toLocaleString("en-IN")}`;
 
@@ -100,6 +101,8 @@ export default function AuliWinterEscapePage() {
       ]}
       pricing={<GroupOffers />}
       itinerary={P.itinerary}
+      // New photos in public/assets/tours/auli/ come first.
+      photos={[...new Set([...tourPhotos(P.slug), ...P.gallery])]}
       included={P.included}
       excluded={P.excluded}
       goodToKnow={[

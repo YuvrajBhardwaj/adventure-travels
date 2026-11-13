@@ -41,7 +41,8 @@ Last updated: 7 Nov 2026.
 ## Tours (/tours)
 - [x] ~~**Dev:** Tours section with the Auli Winter Escape~~ (13 Nov, `main`).
 - [x] ~~**Dev:** Chopta & Tungnath tour page, same layout as Auli, built from the Tungnath trek data~~ (13 Nov, `main`).
-- [ ] **You: Chopta photos.** Tungnath has none, so its tour card and page show the no-photo panel. Send a few of your own (Chopta meadow, Tungnath temple, Chandrashila) and Claude adds them through `scripts/prepare-photos.mjs`.
+- [ ] **You: Chopta/Tungnath photos → `adventure-travel/public/assets/tours/tungnath/`.** None exist yet, so the tour shows the no-photo panel and "coming soon". Then run `node scripts/prepare-photos.mjs` (or ask Claude) and push.
+- [ ] **You (optional): more Auli photos → `adventure-travel/public/assets/tours/auli/`.** Same steps; they appear before the current 8.
 - [ ] **You (optional): Chopta group offers** like Auli's? Today it has only the room-sharing prices.
 
 ### Auli Winter Escape (/tours/auli-winter-escape)

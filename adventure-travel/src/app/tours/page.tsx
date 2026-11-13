@@ -3,6 +3,7 @@ import { TOURS } from "@/data/tours";
 import { absoluteUrl, fitDescription, fitTitle, pageMetadata, SITE_URL } from "@/lib/seo";
 import Price from "@/components/Price";
 import NoPhoto from "@/components/NoPhoto";
+import { tourPhotos } from "@/lib/tourPhotos";
 
 export const metadata = pageMetadata({
   title: fitTitle("Tours", ["Short Himalayan Getaways"]),
@@ -55,7 +56,7 @@ export default function ToursPage() {
 
       <div className="py-section-sm mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {TOURS.map((t) => (
+          {TOURS.map((tour) => ({ ...tour, image: tour.image ?? tourPhotos(tour.slug)[0] })).map((t) => (
             <li key={t.slug}>
               <Link
                 href={t.href}

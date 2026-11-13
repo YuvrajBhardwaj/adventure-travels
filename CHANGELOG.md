@@ -17,6 +17,13 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: photo gallery on tour pages; tour photo folders — `main`
+- **For visitors:** every tour page has a **Photo gallery** section after the itinerary: a photo grid that opens a full-screen viewer (arrows, swipe, Esc).
+  - **Auli:** 8 of our own Auli photos (the slopes, the range, the ropeway, groups on the snow).
+  - **Chopta & Tungnath:** says "Photos from this tour are coming soon" until photos are added.
+- **For the business:** new photo folders `public/assets/tours/auli/` and `public/assets/tours/tungnath/`. Drop photos in, run `node scripts/prepare-photos.mjs` (web size, watermark, location data stripped), and push. The tour page, its gallery and its /tours card pick them up at build time, with no code change. New Auli photos go before the current 8; Tungnath photos also become the Chopta cover.
+- **Code:** new `src/components/TourGallery.tsx` and `src/lib/tourPhotos.ts`, which reads the folders at build time.
+
 ### 13 Nov 2026: Kedarkantha photo turned upright — `main`
 - **For visitors:** photo 7 of 10 in the Kedarkantha gallery (`IMG_4141`, trekkers on the ridge) showed sideways. It's now rebuilt upright from the original, with the watermark the right way round.
 - **Tooling:** `scripts/prepare-photos.mjs` turns this photo in its `ROTATE` list and now skips `public/assets/hero/`. The home hero layers are hand-cut transparent images, and the script would otherwise watermark and re-encode them.

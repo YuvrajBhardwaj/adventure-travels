@@ -1,8 +1,10 @@
 import { CHOPTA_SLUG, CHOPTA_TREK as T, TOURS } from "@/data/tours";
 import { getTrekPackage } from "@/data/trekPackage";
+import { trekPhotos } from "@/data/trekGalleries";
 import { fitDescription, fitTitle, pageMetadata } from "@/lib/seo";
 import Price from "@/components/Price";
 import { TOUR_TH as th, TourPage, TourSection } from "@/components/TourPage";
+import { tourPhotos } from "@/lib/tourPhotos";
 
 const tour = TOURS.find((t) => t.slug === CHOPTA_SLUG)!;
 const inr = (n: number) => `Rs.${n.toLocaleString("en-IN")}`;
@@ -60,6 +62,9 @@ function RoomSharing() {
 }
 
 export default function ChoptaTungnathPage() {
+  // Photos in public/assets/tours/tungnath/, else the Tungnath trek gallery.
+  const own = tourPhotos(CHOPTA_SLUG);
+  const photos = own.length ? own : trekPhotos(T, 12);
   const [cheapest, ...others] = rooms;
   const dearest = others.at(-1);
   return (
@@ -69,7 +74,7 @@ export default function ChoptaTungnathPage() {
       days={T.days}
       route={tour.route}
       intro={T.blurb}
-      image={T.image}
+      image={T.image ?? photos[0]}
       imageAlt={`${tour.name}, Uttarakhand`}
       profile={T.elevationProfile}
       heroPrices={[
@@ -77,6 +82,7 @@ export default function ChoptaTungnathPage() {
         ...(dearest ? [{ label: dearest.label, inr: dearest.price }] : []),
       ]}
       pricing={<RoomSharing />}
+      photos={photos}
       itinerary={T.itinerary.map((d) => ({ day: d.day, title: d.title, text: d.description, meals: d.meals, note: d.note }))}
       included={pkg.included}
       excluded={pkg.excluded}

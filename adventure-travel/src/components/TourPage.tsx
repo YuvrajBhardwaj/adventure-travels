@@ -4,6 +4,7 @@ import { TOUR_CONTACT } from "@/data/tours";
 import { absoluteUrl, ORGANIZATION_ID, SITE_URL } from "@/lib/seo";
 import Price from "@/components/Price";
 import NoPhoto from "@/components/NoPhoto";
+import TourGallery from "@/components/TourGallery";
 import { BrandIcon } from "@/components/BrandIcon";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -51,6 +52,7 @@ export function TourPage({
   heroPrices,
   pricing,
   itinerary,
+  photos,
   included,
   excluded,
   goodToKnow,
@@ -74,6 +76,8 @@ export function TourPage({
   /** The tour's own price table, e.g. group offers or room sharing. */
   pricing: ReactNode;
   itinerary: readonly TourDay[];
+  /** Our own photos for the gallery section; empty shows a "coming soon" note. */
+  photos: readonly string[];
   included: readonly string[];
   excluded: readonly string[];
   goodToKnow: { title: string; items: readonly string[] }[];
@@ -202,6 +206,10 @@ export function TourPage({
               </li>
             ))}
           </ol>
+        </TourSection>
+
+        <TourSection id="photos" title="Photo gallery">
+          <TourGallery name={name} photos={photos} />
         </TourSection>
 
         <TourSection id="included" title="What's included">

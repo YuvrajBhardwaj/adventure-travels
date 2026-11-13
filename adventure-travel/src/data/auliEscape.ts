@@ -17,6 +17,17 @@ export const AULI_ESCAPE = {
   image: "/assets/skiing/IMG_5017.JPG.jpeg",
   imageAlt: "A group on the Auli snow slopes below the Himalayan range",
   shareImage: "/assets/skiing/IMG_5017.JPG.jpeg",
+  /** Our own Auli photos: the slopes, the range, the ropeway and groups on the snow. */
+  gallery: [
+    "/assets/skiing/IMG_5017.JPG.jpeg",
+    "/assets/skiing/IMG_5022.JPG.jpeg",
+    "/assets/skiing/IMG_5028.JPG.jpeg",
+    "/assets/skiing/IMG_5036.JPG.jpeg",
+    "/assets/skiing/IMG_4976.JPG.jpeg",
+    "/assets/skiing/IMG_5009.JPG.jpeg",
+    "/assets/skiing/IMG_4992.JPG.jpeg",
+    "/assets/skiing/IMG_5038.JPG.jpeg",
+  ],
   intro:
     "Escape to the Himalayas with a short Auli getaway: scenic mountain drives, comfortable stays, guided sightseeing, big views and optional snow adventures with your friends and family.",
   itinerary: [
