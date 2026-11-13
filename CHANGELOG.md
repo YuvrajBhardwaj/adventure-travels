@@ -17,6 +17,15 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: new page, Auli Winter Escape (3 days from Rishikesh) — `main`
+- **For visitors:** new page [/auli-winter-escape](https://www.himalayanarcadventure.com/auli-winter-escape) with the owner's full brief:
+  - **Price:** Rs.10,000 per person, or Rs.8,000 each for groups of 4+.
+  - **Group offers table:** 4, 5, 6 and 10 people. Phones get one card per group size.
+  - **The rest of the brief:** the 3-day itinerary with meals and overnights, inclusions and exclusions, transport and important notes.
+  - **Booking:** a "Book on WhatsApp" button (message pre-filled) and both phone numbers plus the email.
+  - **Links:** in the footer and the sitemap. Fully server-rendered, with TouristTrip and breadcrumb structured data.
+- **Code:** the package lives in `src/data/auliEscape.ts`. The group totals and savings are calculated from who pays what, and a test checks them against the brief (Rs.30,000 / 36,000 / 40,000 / 64,000; 25 / 28 / 33.3 / 36%). It isn't in the order API: booking is by WhatsApp or phone for now.
+
 ### 13 Nov 2026: unverified claims removed; payment guard written, **Backend** — `main`, live
 - **For visitors (owner's decisions):**
   - **Removed:** the home-page and course testimonials, "No-cost EMI" (Trek Cost card and the perks list) and "India's highest motorable pass" (Mana Pass). The footer's dead Facebook and YouTube links are gone too; Instagram stays.

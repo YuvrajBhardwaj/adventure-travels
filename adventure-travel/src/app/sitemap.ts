@@ -18,6 +18,7 @@ const STATIC_ROUTES = [
   { url: `${BASE}/treks`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
   { url: `${BASE}/treks-from-joshimath`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
   { url: `${BASE}/winter-treks-uttarakhand`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+  { url: `${BASE}/auli-winter-escape`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8, ...ownImages("/assets/skiing/IMG_5035.JPG.jpeg") },
   { url: `${BASE}/courses`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
   { url: `${BASE}/destinations`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
   { url: `${BASE}/activities`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },

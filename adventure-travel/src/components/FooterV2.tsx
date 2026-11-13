@@ -35,6 +35,7 @@ const popularTreks = [
   // The two hub pages, so they're linked from every page too.
   { name: "Treks from Joshimath", href: "/treks-from-joshimath" },
   { name: "Winter treks in Uttarakhand", href: "/winter-treks-uttarakhand" },
+  { name: "Auli Winter Escape (3 days)", href: "/auli-winter-escape" },
 ];
 
 const destinations = [

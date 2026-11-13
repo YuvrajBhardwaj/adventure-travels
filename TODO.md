@@ -38,6 +38,13 @@ Last updated: 7 Nov 2026.
 - [ ] **Dev (phone, cosmetic):** the mobile menu doesn't cover the page (the booking bar and WhatsApp button show through); the season stat card wraps to 3+ lines; three floating calls to action on trek pages.
 - [ ] **Dev (minor):** unused `textColor` in `Logo.tsx:68` (the only lint warning).
 
+## Auli Winter Escape (/auli-winter-escape)
+- [x] ~~**Dev:** page with price, group offers, itinerary, inclusions, transport and contact~~ (13 Nov, `main`).
+- [ ] **You: prices for 7, 8, 9 and 11+ people.** The brief only covers 1–6 and 10; the page says "message us" for other sizes.
+- [ ] **You: the second number (+91 86505 61564) and the Gmail address** appear only on this page; the rest of the site uses +91 78179 12062 and support@himalayanarcadventure.com. Should they go site-wide?
+- [ ] **You: photos from your own Auli trips** (Gorson Bugyal, the lake, the stays) would beat the skiing course photo used now.
+- [ ] **Dev (later):** online booking and payment, once the group rules are added to the price catalog.
+
 ## Trek packages
 - [x] ~~**Dev:** Kuari Pass packages: Joshimath ₹7,500, Rishikesh/Haridwar/Dehradun ₹9,000~~ (13 Nov, `main`).
 - [x] ~~**Dev:** Pangarchula Peak packages: Joshimath ₹9,500, Rishikesh/Haridwar/Dehradun ₹11,000~~ (13 Nov, `main`).
