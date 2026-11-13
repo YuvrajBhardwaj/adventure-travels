@@ -17,18 +17,18 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
-### 13 Nov 2026: unverified claims removed; payment guard written, **Backend** — `main` (database part not applied yet)
+### 13 Nov 2026: unverified claims removed; payment guard written, **Backend** — `main`, live
 - **For visitors (owner's decisions):**
   - **Removed:** the home-page and course testimonials, "No-cost EMI" (Trek Cost card and the perks list) and "India's highest motorable pass" (Mana Pass). The footer's dead Facebook and YouTube links are gone too; Instagram stays.
   - **Kept:** "since 2010" (the owner confirmed it), and "Filling fast", which comes from real seat counts.
   - **Home page:** the section heading is now "Stories from the mountains".
 - **Data:** deleted the unused trek `rating`/`reviewCount` values and the `testimonials` lists (`treks.ts`, `courses.ts`). The price catalog is unchanged.
-- **Backend (not applied yet):** new `supabase-payment-guard.sql` replaces `apply_payment()`.
+- **Backend (applied to Supabase on 13 Nov, owner approved):** new `supabase-payment-guard.sql` replaces `apply_payment()`.
   - **The bug, reproduced locally:** a ₹10,000 booking could take ₹13,000 (advance plus full order), and a cancelled or refunded booking could be marked fully paid.
   - **The fix:** the booking is left alone, and the payment is recorded and marked "Needs refund: …" on /admin/payments. The browser tells the customer to contact us; the webhook still answers 200, so Razorpay doesn't retry. `api/_lib/payments.js` logs `needs_refund` results.
   - **Tested:** 11 checks on an in-memory Postgres (PGlite) loaded with all 8 SQL files. All pass with the fix; 7 fail without it.
   - **Setup:** the setup script now runs the new file last.
-  - **Still to do:** run it on the live Supabase project once the owner approves.
+  - **Applied on 13 Nov:** run on the live Supabase project. A check afterwards confirmed the new function is in place and only the server can run it.
 
 ### 13 Nov 2026: code graph refreshed — `main`
 - **Tooling only:** rebuilt `graphify-out/` from `adventure-travel/src` with `graphify update` (local, no LLM cost): 855 nodes, 3,204 edges, built from `4740226`. A graph query costs about 1,600 tokens against ~57,000 for reading the source (35× fewer).
@@ -642,7 +642,7 @@ Below, ☑ marks the files run on that project.
 | 5 | `adventure-travel/supabase-payments-v2.sql` | Advance/balance payments, audit trail, email outbox, `apply_payment()` | ☑ 19 Oct |
 | 6 | `adventure-travel/supabase-departures.sql` | Batch calendar, seats left; (29 Oct) checkout seat hold `hold_trek_seats()` | ☑ 23 Oct · 29 Oct version ☑ 5 Nov |
 | 7 | `adventure-travel/supabase-scale.sql` | Indexes, faster security rules, fixed search_path, explicit grants | ☑ 5 Nov |
-| 8 | `adventure-travel/supabase-payment-guard.sql` | `apply_payment()` no longer overcharges or pays cancelled/refunded bookings; flags them "Needs refund" | ☐ not applied (awaiting owner OK) |
+| 8 | `adventure-travel/supabase-payment-guard.sql` | `apply_payment()` no longer overcharges or pays cancelled/refunded bookings; flags them "Needs refund" | ☑ 13 Nov |
 
 After running them, give the business account admin rights (snippet at the top of file 2), then sign out and back in.
 

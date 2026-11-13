@@ -25,7 +25,7 @@ Last updated: 7 Nov 2026.
 - [ ] **Dev:** card slideshows load more photos per home visit. Shrink card photos to about 800 px (they are 1600 px today) in `scripts/prepare-photos.mjs` to save phone data and Vercel bandwidth.
 
 ## Site audit (13 Nov 2026: pages, backend, SEO, live site)
-- [ ] **You: approve the payment fix on the live database.** Written and tested locally (13 Nov): `supabase-payment-guard.sql` replaces `apply_payment()` so an advance+full double payment, or a payment on a cancelled/refunded booking, no longer changes the booking; the payment is kept and marked "Needs refund" on /admin/payments. Say yes and Claude runs it on Supabase (then marks it ☑ in the CHANGELOG backend tracker).
+- [x] ~~**You: approve the payment fix on the live database.** Written and tested locally (13 Nov): `supabase-payment-guard.sql` replaces `apply_payment()` so an advance+full double payment, or a payment on a cancelled/refunded booking, no longer changes the booking; the payment is kept and marked "Needs refund" on /admin/payments. Say yes and Claude runs it on Supabase (then marks it ☑ in the CHANGELOG backend tracker).~~ Approved and applied 13 Nov.
 - [ ] **Dev (medium):** a payment that lands after the 15-min seat hold can overbook a full batch. Set the Razorpay order to expire with the hold, or check seats in `apply_payment()`.
 - [ ] **Dev (medium):** signed-out course bookings (`api/bookings.js`) have no rate limit or captcha and email any address typed in. Add a limit or captcha.
 - [ ] **You + Dev:** Privacy Policy and Terms pages. Neither exists, and Razorpay usually checks for them before switching on live payments.
