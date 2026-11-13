@@ -20,7 +20,7 @@ export const metadata = pageMetadata({
   socialTitle: `${P.name} | Himalayan Arc Adventure`,
   path: PATH,
   image: P.shareImage,
-  imageAlt: "Skiing on the slopes of Auli",
+  imageAlt: P.imageAlt,
 });
 
 const H2 = "font-heading text-3xl font-medium tracking-[-0.02em] text-slate-900 sm:text-4xl";
@@ -101,7 +101,7 @@ export default function AuliWinterEscapePage() {
           </div>
           <div className="lg:col-span-5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={P.image} alt="Skiing on the slopes of Auli" className="aspect-[4/3] w-full rounded-2xl object-cover" />
+            <img src={P.image} alt={P.imageAlt} className="aspect-[4/3] w-full rounded-2xl object-cover" />
           </div>
         </div>
       </header>

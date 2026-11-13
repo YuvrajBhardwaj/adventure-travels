@@ -17,6 +17,9 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: Auli tour photo shows the mountains — `main`
+- **For visitors:** the Auli Winter Escape card on /tours, its page header and its link preview now show our own Auli photo (`assets/skiing/IMG_5017`): the snow slopes and chairlift with the Himalayan range behind. It replaces the close-up of a skier.
+
 ### 13 Nov 2026: new Tours section (Auli now, Chopta next) — `main`
 - **For visitors:** a new [/tours](https://www.himalayanarcadventure.com/tours) page lists short road-and-stay tours as cards. **Tours** replaces the short-lived "Trips" item in the top menu; the phone menu lists each tour and "All tours".
 - **Auli page moved:** the Auli Winter Escape now lives at `/tours/auli-winter-escape`, with a Home / Tours breadcrumb. The old `/auli-winter-escape` link, live for a few minutes, redirects there permanently (`vercel.json`).

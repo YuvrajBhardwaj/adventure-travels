@@ -47,7 +47,7 @@ Last updated: 7 Nov 2026.
 - [x] ~~**Dev:** listed under a new "Trips" menu item~~ (13 Nov, `main`).
 - [ ] **You: prices for 7, 8, 9 and 11+ people.** The brief only covers 1–6 and 10; the page says "message us" for other sizes.
 - [ ] **You: the second number (+91 86505 61564) and the Gmail address** appear only on this page; the rest of the site uses +91 78179 12062 and support@himalayanarcadventure.com. Should they go site-wide?
-- [ ] **You: photos from your own Auli trips** (Gorson Bugyal, the lake, the stays) would beat the skiing course photo used now.
+- [ ] **You (optional): more photos from your Auli trips** (13 Nov: now using our own Auli slopes-and-range shot) (Gorson Bugyal, the lake, the stays) would beat the skiing course photo used now.
 - [ ] **Dev (later):** online booking and payment, once the group rules are added to the price catalog.
 
 ## Trek packages

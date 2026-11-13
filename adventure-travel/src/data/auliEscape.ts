@@ -14,8 +14,9 @@ export const AULI_ESCAPE = {
   /** Per person for groups of 4 or more, INR. */
   groupPrice: 8000,
   groupFrom: 4,
-  image: "/assets/skiing/IMG_5035.JPG.jpeg",
-  shareImage: "/og/course-skiing-course.jpg",
+  image: "/assets/skiing/IMG_5017.JPG.jpeg",
+  imageAlt: "A group on the Auli snow slopes below the Himalayan range",
+  shareImage: "/assets/skiing/IMG_5017.JPG.jpeg",
   intro:
     "Escape to the Himalayas with a short Auli getaway: scenic mountain drives, comfortable stays, guided sightseeing, big views and optional snow adventures with your friends and family.",
   itinerary: [
