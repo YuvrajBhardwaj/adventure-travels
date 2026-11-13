@@ -46,6 +46,8 @@ Last updated: 7 Nov 2026.
 - [ ] **You (optional): Chopta group offers** like Auli's? Today it has only the room-sharing prices.
 
 ### Auli Winter Escape (/tours/auli-winter-escape)
+- [ ] **You: Auli Deluxe Package.** Which hotel or resort, anything else that differs (meals, vehicle, extras), and the price per person. It shows "Price on request" until then.
+- [ ] **You: do our trek cancellation and payment terms apply to the Auli tour?** The tour pages show the same refund ladder (90% / 70% / 50% / none) and link to /cancellation-policy. Tell Claude if Auli needs its own terms.
 - [x] ~~**Dev:** page with price, group offers, itinerary, inclusions, transport and contact~~ (13 Nov, `main`).
 - [x] ~~**Dev:** listed under a new "Trips" menu item~~ (13 Nov, `main`).
 - [ ] **You: prices for 7, 8, 9 and 11+ people.** The brief only covers 1–6 and 10; the page says "message us" for other sizes.

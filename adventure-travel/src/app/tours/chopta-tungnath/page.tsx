@@ -2,64 +2,42 @@ import { CHOPTA_SLUG, CHOPTA_TREK as T, TOURS } from "@/data/tours";
 import { getTrekPackage } from "@/data/trekPackage";
 import { trekPhotos } from "@/data/trekGalleries";
 import { fitDescription, fitTitle, pageMetadata } from "@/lib/seo";
-import Price from "@/components/Price";
-import { TOUR_TH as th, TourPage, TourSection } from "@/components/TourPage";
+import { TourPage, type TourPackage } from "@/components/TourPage";
 import { tourPhotos } from "@/lib/tourPhotos";
 
 const tour = TOURS.find((t) => t.slug === CHOPTA_SLUG)!;
 const inr = (n: number) => `Rs.${n.toLocaleString("en-IN")}`;
-const rooms = T.roomSharing ?? [{ label: "Per person", perRoom: 0, price: T.price }];
+const from = T.startsFrom ?? "Delhi";
+const rooms = T.roomSharing ?? [{ label: "Standard", perRoom: 0, price: T.price }];
 const pkg = getTrekPackage(T);
+const covers = (re: RegExp) => pkg.included.find((x) => re.test(x));
 
 export const metadata = pageMetadata({
-  title: fitTitle(`${tour.name} Tour`, [`${T.days} Days from ${T.startsFrom ?? "Delhi"}`]),
+  title: fitTitle(`${tour.name} Tour`, [`${T.days} Days from ${from}`]),
   description: fitDescription([
-    `${T.days}-day Chopta trip from ${T.startsFrom ?? "Delhi"}: Tungnath temple, Chandrashila summit and Deoria Tal.`,
+    `${T.days}-day Chopta trip from ${from}: Tungnath temple, Chandrashila summit and Deoria Tal.`,
     `From ${inr(T.price)} per person.`,
   ]),
   socialTitle: `${tour.name} Tour | Himalayan Arc Adventure`,
   path: tour.href,
 });
 
-function RoomSharing() {
-  return (
-    <TourSection first id="room-sharing" title="Room sharing" intro="Prices are per person and depend on how many share a room or tent at the camp or cottage.">
-      {/* Phones: one card per option, like the Auli group offers. */}
-      <ul className="divide-y divide-slate-200 border-y border-slate-200 sm:hidden">
-        {rooms.map((r) => (
-          <li key={r.label} className="flex items-baseline justify-between gap-3 py-4">
-            <div>
-              <p className="font-heading text-lg font-medium text-slate-900">{r.label}</p>
-              {r.perRoom > 0 && <p className="mt-1 text-sm text-slate-600">{r.perRoom} per room</p>}
-            </div>
-            <p className="font-heading text-lg font-medium tabular-nums text-slate-900"><Price inr={r.price} /></p>
-          </li>
-        ))}
-      </ul>
-      <table className="hidden w-full border-y border-slate-200 text-sm sm:table">
-        <thead className="border-b border-slate-300">
-          <tr>
-            <th scope="col" className={th}>Room sharing</th>
-            <th scope="col" className={th}>People per room</th>
-            <th scope="col" className={`${th} text-right`}>Price per person</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-200">
-          {rooms.map((r) => (
-            <tr key={r.label} className="align-top">
-              <th scope="row" className="px-3 py-4 text-left font-heading text-lg font-medium text-slate-900">{r.label}</th>
-              <td className="px-3 py-4 text-slate-600">{r.perRoom > 0 ? r.perRoom : "—"}</td>
-              <td className="whitespace-nowrap px-3 py-4 text-right font-heading text-lg font-medium tabular-nums text-slate-900"><Price inr={r.price} /></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <p className="mt-3 text-xs text-slate-500">
-        Pick your room sharing when you book. Prices cover {T.startsFrom ?? "Delhi"} and back, as in the itinerary below.
-      </p>
-    </TourSection>
-  );
-}
+/** One package per room-sharing option; everything but the stay is the same trip. */
+const packages: TourPackage[] = rooms.map((r) => ({
+  id: r.label.toLowerCase().replace(/\s+/g, "-"),
+  name: r.label.replace(/^\w/, (c) => c.toUpperCase()),
+  length: `${T.days} days, ${from} to ${from}`,
+  price: r.price,
+  includes: [
+    { label: "Stay", text: `${T.stay?.detail ?? "Accommodation as listed in the itinerary"}${r.perRoom ? ` (${r.perRoom} per room)` : ""}` },
+    ...[
+      { label: "Meals", text: covers(/meals/i) },
+      { label: "Transfers", text: covers(/transfers/i) },
+      { label: "Trek leader", text: covers(/trek leader/i) },
+      { label: "Permits", text: covers(/permits/i) },
+    ].filter((x): x is { label: string; text: string } => Boolean(x.text)),
+  ],
+}));
 
 export default function ChoptaTungnathPage() {
   // Photos in public/assets/tours/tungnath/, else the Tungnath trek gallery.
@@ -81,9 +59,15 @@ export default function ChoptaTungnathPage() {
         { label: `Per person, ${cheapest.label.toLowerCase()}`, inr: cheapest.price },
         ...(dearest ? [{ label: dearest.label, inr: dearest.price }] : []),
       ]}
-      pricing={<RoomSharing />}
-      photos={photos}
+      packages={packages}
       itinerary={T.itinerary.map((d) => ({ day: d.day, title: d.title, text: d.description, meals: d.meals, note: d.note }))}
+      photos={photos}
+      attractions={[
+        { name: "Tungnath Temple", text: "The highest of the five Panch Kedar temples of Shiva: an old stone shrine on the ridge above Chopta, reached by a paved trail through the meadows." },
+        { name: "Chandrashila summit", text: `A short, steep climb above Tungnath to ${T.maxAltitude.toLocaleString("en-IN")} m, with a wide view of Chaukhamba, Nanda Devi and Trishul.` },
+        { name: "Deoria Tal", text: "A forest lake near Sari village that mirrors the Chaukhamba massif on a still morning, on the last day's walk." },
+        { name: "Devprayag sangam", text: "Where the Bhagirathi and the Alaknanda meet and become the Ganga, visited at dawn on the drive up." },
+      ]}
       included={pkg.included}
       excluded={pkg.excluded}
       goodToKnow={[
@@ -96,12 +80,20 @@ export default function ChoptaTungnathPage() {
             `Group size: up to ${T.groupSize ?? 15} people`,
           ],
         },
+        {
+          title: "What to carry",
+          items: [
+            "Warm layers, a cap and gloves: the summit is cold, even in summer",
+            "Trekking shoes with a good grip",
+            "A rain jacket or poncho and a water bottle",
+            "A government photo ID for the camp or cottage check-in",
+          ],
+        },
       ]}
       bookTitle="Book your Chopta trip"
       bookText="Tell us your dates, group size and room sharing on WhatsApp, or book and pay online."
       bookOnline={`/treks/${T.slug}`}
-      offerDescription={`Per person, ${cheapest.label.toLowerCase()}.`}
-      price={T.price}
+      offerDescription={`Per person, covering ${from} and back.`}
     />
   );
 }

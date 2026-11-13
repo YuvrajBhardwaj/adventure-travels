@@ -21,10 +21,9 @@ export const metadata = pageMetadata({
 function GroupOffers() {
   return (
     <TourSection
-      first
       id="group-offers"
       title="Group offers"
-      intro={`Travel with friends and save more. Savings are worked out against the regular ${inr(P.price)} per person for the whole group.`}
+      intro={`Group offers on the Standard Package: travel with friends and save more. Savings are worked out against the regular ${inr(P.price)} per person for the whole group.`}
     >
       {/* Phones: one card per group size, so the totals don't sit off-screen in a scrolling table. */}
       <ul className="divide-y divide-slate-200 border-y border-slate-200 sm:hidden">
@@ -99,20 +98,28 @@ export default function AuliWinterEscapePage() {
         { label: "Per person", inr: P.price },
         { label: `Groups of ${P.groupFrom}+`, inr: P.groupPrice, note: "each, save 20%", accent: true },
       ]}
+      packages={P.packages.map((p) => ({
+        ...p,
+        includes: [...p.includes],
+        length: `${P.days} days / ${P.nights} nights`,
+        price: p.id === "standard" ? P.price : null,
+      }))}
       pricing={<GroupOffers />}
       itinerary={P.itinerary}
       // New photos in public/assets/tours/auli/ come first.
       photos={[...new Set([...tourPhotos(P.slug), ...P.gallery])]}
+      attractions={[...P.attractions]}
       included={P.included}
       excluded={P.excluded}
       goodToKnow={[
         { title: "Transport", items: P.transport },
         { title: "Important information", items: P.notes },
+        { title: "What to carry", items: P.whatToCarry },
       ]}
+      enquiryOffer={`Groups of ${P.groupFrom}+ pay ${inr(P.groupPrice)} each on the Standard Package`}
       bookTitle="Book your Auli getaway"
       bookText="Bring your friends, save more as a group, and make memories in the Himalayas. Tell us your dates and group size."
       offerDescription={`Per person. ${inr(P.groupPrice)} per person for groups of ${P.groupFrom} or more.`}
-      price={P.price}
     />
   );
 }

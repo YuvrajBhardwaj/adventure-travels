@@ -17,6 +17,18 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: tour pages get package options, an enquiry box, attractions, know before you go and policies — `main`
+- **For visitors:** both tour pages follow the layout of big tour sites (our own wording, no copied text or prices):
+  - **Package options:** selectable cards, each with "Show details" for what the price covers.
+    - **Auli:** Standard (Rs.10,000) and Deluxe ("Price on request", a better hotel; details from the owner pending). The group offers apply to Standard.
+    - **Chopta:** Quad, Triple and Double sharing.
+  - **Enquiry box:** beside the page on desktop, staying in view while scrolling, and after the content on phones. It asks for name, phone, travel date, travellers, package and message, and "Send enquiry on WhatsApp" opens WhatsApp with everything filled in. Nothing is stored. Picking a package card also selects it here.
+  - **Top attractions:** Auli lake, Gorson Bugyal, the ski slopes and chairlift, Nanda Devi views; Tungnath Temple, Chandrashila, Deoria Tal, Devprayag.
+  - **Know before you go:** now includes a "What to carry" list.
+  - **Policies:** the refund ladder and payment notes from our cancellation policy, with a link to the full page.
+  - **No crossed-out "was" prices**, because we have no real old prices.
+- **Code:** new `src/components/TourBooking.tsx` (package cards and the enquiry box, sharing the chosen package). `TourPage` lays out the new sections. The refund terms moved to `src/data/cancellationPolicy.ts`, shared with /cancellation-policy, so the two can't drift. Structured data lists one Offer per priced package.
+
 ### 13 Nov 2026: photo gallery on tour pages; tour photo folders — `main`
 - **For visitors:** every tour page has a **Photo gallery** section after the itinerary: a photo grid that opens a full-screen viewer (arrows, swipe, Esc).
   - **Auli:** 8 of our own Auli photos (the slopes, the range, the ropeway, groups on the snow).

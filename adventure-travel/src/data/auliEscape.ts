@@ -96,6 +96,44 @@ export const AULI_ESCAPE = {
     "Sightseeing and outdoor activities depend on weather, snowfall, trail access and local restrictions.",
     "Accommodation and transport are confirmed before booking.",
   ],
+  /**
+   * Package options. Standard is the brief above; Deluxe is a better stay on the same trip,
+   * priced on request until the owner sends its details (TODO.md).
+   */
+  packages: [
+    {
+      id: "standard",
+      name: "Standard Package",
+      includes: [
+        { label: "Stay", text: "2 nights in Auli; room type confirmed before booking" },
+        { label: "Meals", text: "Dinner on Day 1; breakfast and dinner on Day 2" },
+        { label: "Transfers", text: "Rishikesh to Joshimath and back, plus a local taxi between Joshimath and Auli both ways" },
+        { label: "Guide", text: "A local guide for Auli sightseeing on Day 2" },
+        { label: "Extras", text: "Bonfire for groups of 4 or more, weather permitting" },
+      ],
+    },
+    {
+      id: "deluxe",
+      name: "Deluxe Package",
+      includes: [
+        { label: "Stay", text: "2 nights in a higher-category hotel or resort in Auli; we share the property with you before you book" },
+        { label: "Meals, transfers and guide", text: "Same as the Standard Package" },
+        { label: "Price", text: "On request: tell us your dates and group size" },
+      ],
+    },
+  ],
+  attractions: [
+    { name: "Auli Artificial Lake", text: "A man-made lake above the ski slopes, built to feed the snow-making for the runs. A quiet spot with the high peaks standing over it." },
+    { name: "Gorson Bugyal", text: "A wide alpine meadow above Auli, reached on foot through oak and conifer forest: snow in winter, grass and flowers in summer, and a long line of peaks from the top." },
+    { name: "Ski slopes and chairlift", text: "Auli is India's ski capital. Try a beginner ski session or ride the chairlift over the slopes when it's running (both at extra cost)." },
+    { name: "Nanda Devi and the Garhwal peaks", text: "Auli looks straight across at Nanda Devi (7,816 m), India's second-highest peak, with Dronagiri, Hathi-Ghoda and Trishul around it." },
+  ],
+  whatToCarry: [
+    "Warm layers, gloves and a cap: Auli is cold, and below freezing in winter",
+    "Shoes or boots with a good grip for snow and ice",
+    "Sunglasses and sunscreen for the glare off the snow",
+    "A government photo ID for hotel check-in",
+  ],
   contact: {
     phones: ["+91 78179 12062", "+91 86505 61564"],
     email: "himalayanarcadventure@gmail.com",
