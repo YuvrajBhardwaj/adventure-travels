@@ -2,11 +2,12 @@
 // side, a small "© Himalayan Arc Adventure" mark in the corner, and no metadata (camera,
 // GPS). Originals live in ../media-originals/ (git-ignored) so the site never publishes
 // full-resolution files. Safe to re-run: it always rebuilds from the originals.
-// It also writes public/og/<trek-slug>.jpg and public/og/course-<slug>.jpg: the link-preview
-// image for every trek/course whose cover is our own photo (read from src/data).
+// It also writes public/og/<trek-slug>.jpg, public/og/course-<slug>.jpg and public/og/tour-<slug>.jpg:
+// the link-preview image for every trek/course/tour whose cover is our own photo (read from src/data).
 //
 //   node scripts/prepare-photos.mjs           process every photo in public/assets
 //   node scripts/prepare-photos.mjs --check   self-check only, changes nothing
+//   node scripts/prepare-photos.mjs --og      share images only, served photos untouched
 //
 // New photos: drop them into public/assets/<trek>/ as usual, then run this once.
 import sharp from "sharp";
@@ -91,6 +92,8 @@ async function shareImages() {
   const items = [
     ...(await loadData("treks.ts", "treks")).map((t) => ({ name: t.slug, image: t.image })),
     ...(await loadData("courses.ts", "courses")).map((c) => ({ name: `course-${c.slug}`, image: c.image })),
+    // Tours built from a trek (Chopta) reuse that trek's image; tours.ts imports treks.ts, so it can't be loaded here.
+    ...[await loadData("auliEscape.ts", "AULI_ESCAPE")].map((t) => ({ name: `tour-${t.slug}`, image: t.image })),
   ].filter((i) => typeof i.image === "string" && i.image.startsWith("/assets/"));
   await mkdir(OG, { recursive: true });
   for (const { name, image } of items) {
@@ -126,6 +129,7 @@ async function selfCheck() {
 async function main() {
   await selfCheck();
   if (process.argv.includes("--check")) return;
+  if (process.argv.includes("--og")) return console.log(`${await shareImages()} share images in public/og/`);
 
   let before = 0;
   let after = 0;

@@ -4,15 +4,18 @@ import { absoluteUrl, fitDescription, fitTitle, pageMetadata, SITE_URL } from "@
 import Price from "@/components/Price";
 import NoPhoto from "@/components/NoPhoto";
 import { tourPhotos } from "@/lib/tourPhotos";
+import { shareImage } from "@/lib/shareImage";
 
 export const metadata = pageMetadata({
-  title: fitTitle("Tours", ["Short Himalayan Getaways"]),
+  title: fitTitle("Uttarakhand Tours", [TOURS.map((t) => t.name.split(/\s/)[0]).join(" & ") + " Getaways"]),
   description: fitDescription([
-    "Short road-and-stay tours in the Garhwal Himalayas with Himalayan Arc Adventure.",
-    "Drives, stays, guided sightseeing and group offers, booked on WhatsApp.",
+    `Short Uttarakhand tours with Himalayan Arc Adventure: ${TOURS.map((t) => t.name).join(", ")}.`,
+    "Drives, stays and guided sightseeing; no trekking needed.",
   ]),
-  socialTitle: "Tours | Himalayan Arc Adventure",
+  socialTitle: "Uttarakhand Tours | Himalayan Arc Adventure",
   path: "/tours",
+  ...shareImage(`tour-${TOURS[0].slug}`),
+  imageAlt: TOURS[0].name,
 });
 
 export default function ToursPage() {

@@ -178,7 +178,7 @@ export function TourPage({
           <div className="lg:col-span-5">
             {image ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={image} alt={imageAlt} className="aspect-[4/3] w-full rounded-2xl object-cover" />
+              <img src={image} alt={imageAlt} fetchPriority="high" className="aspect-[4/3] w-full rounded-2xl object-cover" />
             ) : (
               <NoPhoto profile={profile} className="aspect-[4/3] w-full rounded-2xl ring-1 ring-white/10" />
             )}

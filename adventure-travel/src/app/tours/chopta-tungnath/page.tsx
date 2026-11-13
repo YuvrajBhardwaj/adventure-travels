@@ -1,9 +1,10 @@
-import { CHOPTA_SLUG, CHOPTA_TREK as T, TOURS } from "@/data/tours";
+import { CHOPTA_INTRO, CHOPTA_SLUG, CHOPTA_TREK as T, TOURS } from "@/data/tours";
 import { getTrekPackage } from "@/data/trekPackage";
 import { trekPhotos } from "@/data/trekGalleries";
 import { fitDescription, fitTitle, pageMetadata } from "@/lib/seo";
 import { TourPage, type TourPackage } from "@/components/TourPage";
 import { tourPhotos } from "@/lib/tourPhotos";
+import { shareImage } from "@/lib/shareImage";
 
 const tour = TOURS.find((t) => t.slug === CHOPTA_SLUG)!;
 const inr = (n: number) => `Rs.${n.toLocaleString("en-IN")}`;
@@ -16,10 +17,14 @@ export const metadata = pageMetadata({
   title: fitTitle(`${tour.name} Tour`, [`${T.days} Days from ${from}`]),
   description: fitDescription([
     `${T.days}-day Chopta trip from ${from}: Tungnath temple, Chandrashila summit and Deoria Tal.`,
+    `From ${inr(T.price)} per person, ${from} to ${from}, with stay and transfers.`,
     `From ${inr(T.price)} per person.`,
   ]),
   socialTitle: `${tour.name} Tour | Himalayan Arc Adventure`,
   path: tour.href,
+  // The Tungnath trek's share image, once it has a photo of our own; until then the site image.
+  ...shareImage(T.slug),
+  imageAlt: `${tour.name}, Uttarakhand`,
 });
 
 /** One package per room-sharing option; everything but the stay is the same trip. */
@@ -39,6 +44,48 @@ const packages: TourPackage[] = rooms.map((r) => ({
   ],
 }));
 
+/**
+ * The tour's own day-by-day wording (the trek page has the long version). Same facts as the
+ * trek itinerary: keep the times and distances in step when that changes.
+ */
+const DAYS: Record<number, { title: string; points: string[]; note?: string }> = {
+  0: {
+    title: "Leave Delhi at night",
+    // The trek's note points at its Dates tab, which this page doesn't have.
+    note: "You leave Delhi the night before Day 1 and are back early on the morning after Day 3, so keep four calendar days free.",
+    points: [
+      "Meet the group and your trek leader at Akshardham Metro Station, 10–11 PM",
+      "A short briefing, then the tempo traveller drives through the night",
+    ],
+  },
+  1: {
+    title: "Devprayag, Dhari Devi and on to Chopta",
+    points: [
+      "Dawn at the Devprayag sangam, where the Bhagirathi and the Alaknanda become the Ganga",
+      "A stop at the Dhari Devi temple on the Alaknanda",
+      "On through Rudraprayag and Ukhimath to Chopta (about 150 km, 5–6 hrs)",
+      "An easy evening at the camp or cottage",
+    ],
+  },
+  2: {
+    title: "Tungnath temple and Chandrashila summit",
+    points: [
+      "Early breakfast, then a paved trail through the meadows to Tungnath, the highest Panch Kedar temple",
+      `A steeper last stretch to Chandrashila (${T.maxAltitude.toLocaleString("en-IN")} m) for Nanda Devi, Trishul and Chaukhamba`,
+      "About 10 km there and back, 6–7 hrs; down at Chopta before sunset",
+    ],
+  },
+  3: {
+    title: "Deoria Tal and the drive home",
+    points: [
+      "Breakfast, check out and drive to Sari village",
+      "Forest walk to Deoria Tal, about 3 km each way",
+      "The Omkareshwar temple in Ukhimath, winter seat of Kedarnath",
+      "Overnight drive; back in Delhi early the next morning",
+    ],
+  },
+};
+
 export default function ChoptaTungnathPage() {
   // Photos in public/assets/tours/tungnath/, else the Tungnath trek gallery.
   const own = tourPhotos(CHOPTA_SLUG);
@@ -51,7 +98,7 @@ export default function ChoptaTungnathPage() {
       name={tour.name}
       days={T.days}
       route={tour.route}
-      intro={T.blurb}
+      intro={CHOPTA_INTRO}
       image={T.image ?? photos[0]}
       imageAlt={`${tour.name}, Uttarakhand`}
       profile={T.elevationProfile}
@@ -60,7 +107,12 @@ export default function ChoptaTungnathPage() {
         ...(dearest ? [{ label: dearest.label, inr: dearest.price }] : []),
       ]}
       packages={packages}
-      itinerary={T.itinerary.map((d) => ({ day: d.day, title: d.title, text: d.description, meals: d.meals, note: d.note }))}
+      itinerary={T.itinerary.map((d) => ({
+        day: d.day,
+        meals: d.meals,
+        note: d.note,
+        ...(DAYS[d.day] ?? { title: d.title, text: d.description }),
+      }))}
       photos={photos}
       attractions={[
         { name: "Tungnath Temple", text: "The highest of the five Panch Kedar temples of Shiva: an old stone shrine on the ridge above Chopta, reached by a paved trail through the meadows." },
@@ -69,7 +121,8 @@ export default function ChoptaTungnathPage() {
         { name: "Devprayag sangam", text: "Where the Bhagirathi and the Alaknanda meet and become the Ganga, visited at dawn on the drive up." },
       ]}
       included={pkg.included}
-      excluded={pkg.excluded}
+      // The trek page's wording points at its Packing List tab; here the list is "What to carry".
+      excluded={pkg.excluded.map((x) => x.replace("see the Packing List tab", "see What to carry below"))}
       goodToKnow={[
         { title: "Stay", items: [T.stay?.detail ?? "Accommodation as listed in the itinerary"] },
         {

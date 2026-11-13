@@ -16,7 +16,6 @@ export const AULI_ESCAPE = {
   groupFrom: 4,
   image: "/assets/skiing/IMG_5017.JPG.jpeg",
   imageAlt: "A group on the Auli snow slopes below the Himalayan range",
-  shareImage: "/assets/skiing/IMG_5017.JPG.jpeg",
   /** Our own Auli photos: the slopes, the range, the ropeway and groups on the snow. */
   gallery: [
     "/assets/skiing/IMG_5017.JPG.jpeg",

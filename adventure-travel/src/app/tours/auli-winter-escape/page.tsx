@@ -3,6 +3,7 @@ import { fitDescription, fitTitle, pageMetadata } from "@/lib/seo";
 import Price from "@/components/Price";
 import { TOUR_TH as th, TourPage, TourSection } from "@/components/TourPage";
 import { tourPhotos } from "@/lib/tourPhotos";
+import { shareImage } from "@/lib/shareImage";
 
 const inr = (n: number) => `Rs.${n.toLocaleString("en-IN")}`;
 
@@ -14,7 +15,7 @@ export const metadata = pageMetadata({
   ]),
   socialTitle: `${P.name} | Himalayan Arc Adventure`,
   path: `/tours/${P.slug}`,
-  image: P.shareImage,
+  ...shareImage(`tour-${P.slug}`),
   imageAlt: P.imageAlt,
 });
 

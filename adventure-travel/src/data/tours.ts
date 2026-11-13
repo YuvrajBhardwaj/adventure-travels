@@ -28,13 +28,16 @@ export interface TourSummary {
 export const TOUR_CONTACT = AULI_ESCAPE.contact;
 
 /**
- * Chopta–Tungnath is our Tungnath trek, presented as a tour. Everything comes from the trek's
- * data, so the two pages can't disagree; online booking and payment stay on the trek page.
+ * Chopta–Tungnath is our Tungnath trek, presented as a tour. Prices, meals and stays come from the
+ * trek's data, so the two pages can't disagree; online booking and payment stay on the trek page.
+ * The intro and day-by-day text are the tour's own, so the two pages don't repeat each other in search.
  */
 const tungnath = treks.find((t) => t.slug === "tungnath");
 if (!tungnath) throw new Error('tours.ts: trek "tungnath" not found');
 export const CHOPTA_TREK = tungnath;
 export const CHOPTA_SLUG = "chopta-tungnath";
+export const CHOPTA_INTRO =
+  "A long weekend in the Garhwal Himalayas from Delhi. We drive you up overnight by tempo traveller, you stay two nights near Chopta, walk up to the Tungnath temple and the Chandrashila summit, and see Deoria Tal on the way home.";
 
 const rs = (n: number) => `Rs.${n.toLocaleString("en-IN")}`;
 
@@ -63,7 +66,7 @@ export const TOURS: TourSummary[] = [
       ?.slice(1)
       .map((r) => `${r.label.replace(/ sharing$/i, "")} ${rs(r.price)}`)
       .join(" · "),
-    blurb: tungnath.blurb,
+    blurb: CHOPTA_INTRO,
     image: tungnath.image,
     profile: tungnath.elevationProfile,
   },

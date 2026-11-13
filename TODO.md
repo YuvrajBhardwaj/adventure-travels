@@ -36,7 +36,18 @@ Last updated: 7 Nov 2026.
 - [ ] **Dev (SEO):** home h1 that matches a search ("Himalayan treks from Joshimath…"); related treks on trek pages; breadcrumb "Adventures" → "Treks"; hero photo alt text; share images for the 11 treks without one (start with Panpatia: use one of our own photos as its cover).
 - [ ] **Dev (content):** the 3 story articles are still placeholders (`stories.ts`); write them or drop the stories section.
 - [ ] **Dev (phone, cosmetic):** the mobile menu doesn't cover the page (the booking bar and WhatsApp button show through); the season stat card wraps to 3+ lines; three floating calls to action on trek pages.
+- [ ] **You: photos for Chopta & Tungnath.** The tour page and its link preview have no photo of ours yet (it shows the mountain outline). Put photos in `adventure-travel/public/assets/tours/tungnath/`, set the Tungnath trek's cover, then run `node scripts/prepare-photos.mjs`; the share card follows automatically.
+- [x] ~~**Dev: make the Chopta tour and the Tungnath trek page differ.**~~ (14 Nov: the tour has its own intro and day-by-day text; prices and facts still come from the trek.)
+- [ ] **You: after the tour changes go live,** check how a tour link looks in WhatsApp (or use the Facebook Sharing Debugger) and request indexing for `/tours` in Search Console.
 - [ ] **Dev (minor):** unused `textColor` in `Logo.tsx:68` (the only lint warning).
+
+## Security scan (13 Nov 2026)
+Passed: no `.env`/`.git`/source/SQL files exposed; HTTPS + HSTS; every table has RLS and the anon key reads nothing; `apply_payment()` refuses anon; payment signatures checked in constant time; only the anon key is in the browser JS; emails are plain text; Vercel's bot checkpoint blocks scripted traffic.
+- [ ] **Dev (high): update dependencies.** `npm audit` lists 8 issues: 1 critical (`next` 16.2.10, fix in 16.4.6), 5 high (`sharp`, `postcss`, `follow-redirects`, `nanoid`, `source-map-js`) and 2 moderate (`nodemailer`, `baseline-browser-mapping`). Real exposure is lower: the site is a static export, so the Next.js middleware/server-action bugs don't run in production, and `sharp` only runs in our photo script. `nodemailer` and `follow-redirects` do run in the API functions. Upgrade `next`, `nodemailer` and `sharp`, then run tsc, lint, tests and a build copy.
+- [ ] **Dev (medium): security headers in `vercel.json`.** Missing: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, and clickjacking protection (`X-Frame-Options: DENY` / CSP `frame-ancestors 'none'`), which matters most for /checkout and /dashboard. Add a Content-Security-Policy in Report-Only mode first: Razorpay, Supabase and Google Fonts must be allowed. The comment in `next.config.ts` saying headers are set as meta tags in `layout.tsx` is wrong; there are none.
+- [ ] **Dev (medium):** already listed above: rate limit or captcha on signed-out course bookings. Anyone can make our Gmail send a "Booking received" email, with a name they choose, to any address.
+- [ ] **You:** in Supabase → Authentication, turn on leaked-password protection and check the minimum password length (not checked: the Supabase connection needs `/mcp` sign-in).
+- [ ] **Dev (optional):** a full automated scan (Nuclei / OWASP ZAP) of a Vercel preview with the bot checkpoint bypassed for the scanner. It was blocked this time (see CHANGELOG 13 Nov).
 
 ## Tours (/tours)
 - [x] ~~**Dev:** Tours section with the Auli Winter Escape~~ (13 Nov, `main`).

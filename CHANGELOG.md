@@ -17,6 +17,39 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: Tours SEO and link previews — uncommitted
+Checked `/tours`, `/tours/auli-winter-escape` and `/tours/chopta-tungnath` in a headless browser (titles, descriptions, canonical, Open Graph/Twitter tags, JSON-LD, headings, alt text).
+- **Link previews:**
+  - Auli shared a 1600 px photo with no size declared, so WhatsApp and Facebook cropped it unpredictably. It now has a proper 1200×630 card (`public/og/tour-auli-winter-escape.jpg`, 189 KB). `/tours` uses the same card instead of the generic site image.
+  - Chopta picks up the Tungnath trek's share image automatically once that trek has a photo of our own; until then it uses the site image.
+- **Google:**
+  - `/tours` title is now "Uttarakhand Tours: Auli & Chopta Getaways", and its description names the tours.
+  - The Chopta description adds the price basis (Delhi to Delhi, with stay and transfers).
+  - Tour hero photos load first (`fetchPriority="high"`), which helps page speed.
+- **Fix:** the Chopta "Not included" list pointed to a "Packing List tab" that only exists on trek pages; it now points to "What to carry".
+- **Chopta tour vs Tungnath trek:** the tour page repeated the trek page's description and itinerary word for word, so the two competed for the same searches. The tour now has its own intro (also on the `/tours` card) and a short bullet-point itinerary like the Auli tour. Prices, meals, stays and notes still come from the trek data. Only short inclusion and policy lines are still shared (5 of 24 long sentences, down from nearly all). The Day 0 note no longer mentions the trek page's "Dates tab".
+- **Tooling:** `node scripts/prepare-photos.mjs --og` rebuilds only the share images; tour share images are included (`tour-<slug>.jpg`).
+
+### 13 Nov 2026: security scan (no code changes) — uncommitted
+- **Live site:**
+  - checked headers and HTTPS;
+  - checked 18 sensitive paths (`.env`, `.git`, sources, SQL); none exposed;
+  - Vercel's Security Checkpoint started challenging the scanner after about 10 requests.
+- **Backend (read-only checks):**
+  - with the public anon key, all 9 tables return nothing;
+  - `rpc/apply_payment` is refused (`42501`).
+  - Code review of the 8 API functions:
+    - signature checks are sound;
+    - prices come from the server;
+    - the cron route needs `CRON_SECRET`.
+- **Found:**
+  - 8 vulnerable dependencies (1 critical, in `next`);
+  - missing security headers (no CSP, nosniff, Referrer-Policy or anti-framing);
+  - a stale comment in `next.config.ts`.
+
+  Fixes are listed in TODO.md under "Security scan".
+- **Not run:** Nuclei. Downloading its templates was blocked by the session's permission rules.
+
 ### 13 Nov 2026: tour pages get package options, an enquiry box, attractions, know before you go and policies — `main`
 - **For visitors:** both tour pages follow the layout of big tour sites (our own wording, no copied text or prices):
   - **Package options:** selectable cards, each with "Show details" for what the price covers.
