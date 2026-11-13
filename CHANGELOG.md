@@ -17,6 +17,10 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: Kedarkantha photo turned upright — `main`
+- **For visitors:** photo 7 of 10 in the Kedarkantha gallery (`IMG_4141`, trekkers on the ridge) showed sideways. It's now rebuilt upright from the original, with the watermark the right way round.
+- **Tooling:** `scripts/prepare-photos.mjs` turns this photo in its `ROTATE` list and now skips `public/assets/hero/`. The home hero layers are hand-cut transparent images, and the script would otherwise watermark and re-encode them.
+
 ### 13 Nov 2026: Chopta & Tungnath tour; every tour page shares one layout — `main`
 - **For visitors:** new tour page [/tours/chopta-tungnath](https://www.himalayanarcadventure.com/tours/chopta-tungnath), laid out exactly like the Auli one:
   - **Header:** prices from Rs.5,499 per person (quad sharing).

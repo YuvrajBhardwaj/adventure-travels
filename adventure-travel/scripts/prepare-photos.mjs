@@ -26,7 +26,11 @@ const MAX = 1600;
 const MARK = "© Himalayan Arc Adventure";
 const PHOTO = /\.(jpe?g|png|webp)$/i;
 // Saved sideways by the phone, with no orientation tag to fix it automatically.
-const ROTATE = { "panpatia-col-trek/IMG_6013.jpeg": 90, "panpatia-col-trek/IMG_6015.jpeg": 90 };
+const ROTATE = {
+  "panpatia-col-trek/IMG_6013.jpeg": 90,
+  "panpatia-col-trek/IMG_6015.jpeg": 90,
+  "kedarkantha-trek/IMG_4141.JPG.jpeg": 90,
+};
 
 const exists = (p) => access(p).then(() => true, () => false);
 
@@ -127,6 +131,8 @@ async function main() {
   let after = 0;
   let count = 0;
   for await (const rel of walk(ASSETS)) {
+    // The home hero layers are hand-cut (transparent ridge cut-outs), not photos: leave them alone.
+    if (rel.startsWith("hero/")) continue;
     const pub = path.join(ASSETS, rel);
     const orig = path.join(ORIGINALS, rel);
     // First run: the file in public/ IS the original, so keep it before overwriting.
