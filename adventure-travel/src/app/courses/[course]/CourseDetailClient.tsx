@@ -449,7 +449,7 @@ export default function CourseDetailClient({ course }: Props) {
           <div className="min-w-0 flex-1">
             {/* Tab Navigation */}
             <div className="sticky top-16 z-30 mb-8 border-b border-slate-200 bg-background/90 backdrop-blur-md">
-              <div role="tablist" aria-label="Course details" className="flex gap-1 overflow-x-auto py-1">
+              <div role="tablist" aria-label="Course details" className="flex overflow-x-auto">
                 {TAB_LIST.map((t, i) => (
                   <button
                     key={t.key}
@@ -462,21 +462,22 @@ export default function CourseDetailClient({ course }: Props) {
                     onClick={() => goToTab(t.key)}
                     onKeyDown={(e) => onTabKeyDown(e, i)}
                     className={cn(
-                      "relative min-h-11 whitespace-nowrap rounded-full px-4 text-xs font-medium transition-colors duration-150 ease-out sm:px-6 sm:text-sm",
+                      // Same underline tabs as the trek pages, in the course pages' sky accent.
+                      "relative min-h-11 whitespace-nowrap px-3.5 py-3.5 text-xs font-semibold transition-colors duration-150 ease-out sm:px-5 sm:text-sm",
                       tab === t.key ? "text-sky-700" : "text-slate-500 hover:text-slate-800"
                     )}
                   >
+                    {t.label}
                     {tab === t.key &&
                       (shouldReduceMotion ? (
-                        <span className="absolute inset-0 rounded-full bg-sky-50 ring-1 ring-sky-200" />
+                        <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-sky-600" />
                       ) : (
                         <motion.span
-                          layoutId="course-tab-pill"
+                          layoutId="course-tab-underline"
                           transition={transition("base")}
-                          className="absolute inset-0 rounded-full bg-sky-50 ring-1 ring-sky-200"
+                          className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-sky-600"
                         />
                       ))}
-                    <span className="relative">{t.label}</span>
                   </button>
                 ))}
               </div>

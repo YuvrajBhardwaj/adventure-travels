@@ -17,6 +17,9 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: course tabs match the trek tabs — `main`
+- **For visitors:** the tab bar on course pages (Overview, Dates, Itinerary…) now uses the same underline style as the trek pages, instead of a blue pill. It keeps the course pages' sky-blue accent.
+
 ### 13 Nov 2026: new page, Auli Winter Escape (3 days from Rishikesh) — `main`
 - **For visitors:** new page [/auli-winter-escape](https://www.himalayanarcadventure.com/auli-winter-escape) with the owner's full brief:
   - **Price:** Rs.10,000 per person, or Rs.8,000 each for groups of 4+.
