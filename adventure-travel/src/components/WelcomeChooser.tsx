@@ -37,7 +37,7 @@ interface Tile {
 function buildTiles(): Tile[] {
   // Most popular first (Kuari Pass, Pangarchula, …), then featured, then by rating.
   const trekItems = byPopularity(
-    [...treks].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || (b.rating ?? 0) - (a.rating ?? 0))
+    [...treks].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)))
   )
     .slice(0, 8)
     .map<PreviewItem>((t) => ({

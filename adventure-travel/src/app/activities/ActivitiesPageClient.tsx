@@ -64,7 +64,7 @@ const RESTRICTED = [
     name: "Mana Pass",
     altitude: "5,616m",
     region: "Chamoli, Uttarakhand",
-    description: "India's highest motorable pass, on an old Indo-Tibetan trade route. Bare, high and empty.",
+    description: "A 5,616 m pass on an old Indo-Tibetan trade route. Bare, high and empty.",
     image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80",
     status: "Restricted · ILP Required",
   },

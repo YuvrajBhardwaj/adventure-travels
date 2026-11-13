@@ -77,6 +77,8 @@ async function applyPayment(db, { orderId, paymentId, amount, method }) {
   if (error) throw error;
   const state = data || {};
   if (state.result === "applied") await notifyPaymentApplied(db, state, { paymentId, method });
+  // Captured but not applied (cancelled, refunded or overpaid booking): flagged on /admin/payments for a manual refund.
+  if (state.result === "needs_refund") console.error(`payment ${paymentId || orderId} needs a refund: ${state.reason}`);
   const ok = state.result === "applied" || state.result === "already";
   return { ok, already: state.result === "already", reason: ok ? undefined : state.result, state };
 }

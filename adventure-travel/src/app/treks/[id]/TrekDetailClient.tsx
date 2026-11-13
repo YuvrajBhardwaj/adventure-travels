@@ -639,7 +639,7 @@ function BookingCard({
 
         {/* Trust */}
         <div className="space-y-2">
-          <p className="text-xs text-muted">All-inclusive · No-cost EMI · Free Trek Date Change</p>
+          <p className="text-xs text-muted">All-inclusive · Free Trek Date Change</p>
         </div>
 
       {/* Included */}

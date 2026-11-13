@@ -57,9 +57,7 @@ const instagramImages = [
 const INSTAGRAM_URL = "https://instagram.com/himalayan_arc_adventure";
 
 const socials = [
-  { label: "Facebook", href: "https://facebook.com/himalayan_arc_adventure", brand: "facebook" as const },
   { label: "Instagram", href: INSTAGRAM_URL, brand: "instagram" as const },
-  { label: "YouTube", href: "https://youtube.com/@himalayan_arc_adventure", brand: "youtube" as const },
 ];
 
 const legalLinks = [

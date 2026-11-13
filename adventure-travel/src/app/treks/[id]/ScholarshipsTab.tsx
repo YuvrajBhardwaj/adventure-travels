@@ -20,7 +20,6 @@ const WHATSAPP = "https://wa.me/917817912062?text=";
 
 const OTHER_PERKS = [
   { title: "Free date change", detail: "Plans shift. Move to another departure of this trek without a change fee." },
-  { title: "No-cost EMI", detail: "Spread the fee over instalments with no added interest. Ask us which cards work." },
   { title: "Private departures", detail: "Two or more people can book a private departure with pacing adjusted to you." },
 ];
 

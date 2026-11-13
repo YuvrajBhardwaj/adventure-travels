@@ -24,6 +24,7 @@ const SQL_FILES = [
   "supabase-payments-v2.sql",
   "supabase-departures.sql",
   "supabase-scale.sql",
+  "supabase-payment-guard.sql",
 ];
 const DRY = process.argv.includes("--dry-run");
 const EMAIL = /^[^\s@'"\\]+@[^\s@'"\\]+\.[^\s@'"\\]+$/;

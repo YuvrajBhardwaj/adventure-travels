@@ -579,27 +579,6 @@ export default function CourseDetailClient({ course }: Props) {
                       <p className="mt-1 text-sm text-sky-700">{course.duration} intensive course</p>
                     </div>
                   </div>
-
-                  <div>
-                    <h3 className={cn(PANEL_H3, "mb-4")}>What Guests Say</h3>
-                    <div className="space-y-4">
-                      {course.testimonials.map((t, i) => (
-                        <figure key={i} className="relative rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100 sm:p-6">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-sky-400 font-heading text-sm font-bold text-white shadow-md shadow-sky-200">
-                            {t.name.charAt(0)}
-                          </div>
-                          <blockquote className="mb-3 mt-3 text-base italic leading-relaxed text-slate-600">&ldquo;{t.text}&rdquo;</blockquote>
-                          <figcaption className="text-sm font-medium text-slate-900">{t.name} — {t.location}
-                            <span className="ml-2 inline-flex items-center gap-0.5 align-middle text-amber-500" aria-label={`${t.rating} out of 5 stars`}>
-                              {Array.from({ length: t.rating }).map((_, s) => (
-                                <svg key={s} className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.367 2.445a1 1 0 00-.363 1.118l1.286 3.958c.3.921-.755 1.688-1.539 1.118l-3.367-2.445a1 1 0 00-1.176 0l-3.367 2.445c-.783.57-1.838-.197-1.539-1.118l1.286-3.958a1 1 0 00-.363-1.118L2.924 9.385c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.958z"/></svg>
-                              ))}
-                            </span>
-                          </figcaption>
-                        </figure>
-                      ))}
-                    </div>
-                  </div>
                 </div>
               )}
 

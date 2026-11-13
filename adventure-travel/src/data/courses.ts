@@ -44,13 +44,6 @@ export interface CourseInclusion {
   description: string;
 }
 
-export interface CourseTestimonial {
-  name: string;
-  location: string;
-  text: string;
-  rating: number;
-}
-
 /** Pricing/itinerary tier (e.g. Basic vs Premium) for courses sold in packages. */
 export interface CourseTier {
   id: string;
@@ -80,7 +73,6 @@ export interface Course {
   shortDescription: string;
   itinerary: CourseItineraryDay[];
   inclusions: CourseInclusion[];
-  testimonials: CourseTestimonial[];
   image: string;
   gallery?: string[];
   /** Cinematic backdrop video for the course page (real course footage). */
@@ -244,11 +236,6 @@ export const courses: Course[] = [
       { icon: "firstaid", label: "Safety Support", description: "Emergency first aid & mountain rescue protocol" },
       { icon: "photos", label: "HD Video Analysis", description: "Movement analysis + professional course photos" },
     ],
-    testimonials: [
-      { name: "Priya M.", location: "Mumbai", text: "Best week of my life! The instructors were patient and I went from zero to linking turns in 5 days. The video analysis sessions were a game-changer — you can see exactly what to fix. Nanda Devi views are unreal.", rating: 5 },
-      { name: "Arjun K.", location: "Delhi", text: "Professional setup, great gear, and the guides know every inch of these mountains. The small group size meant I got real attention. Highly recommend for beginners.", rating: 5 },
-      { name: "Sneha R.", location: "Bangalore", text: "The Auli cable car ride alone is worth the trip. But the structured progression and the après sessions with other riders made it special. Already booked for next season!", rating: 5 },
-    ],
     image: "/assets/skiing/IMG_5035.JPG.jpeg",
     gallery: [
       ...SKIING_LOCAL_GALLERY,
@@ -335,11 +322,6 @@ export const courses: Course[] = [
       { icon: "firstaid", label: "Safety Support", description: "Emergency first aid & mountain rescue protocol" },
       { icon: "photos", label: "HD Video Analysis", description: "Regular movement analysis + professional course photos" },
     ],
-    testimonials: [
-      { name: "Rohan M.", location: "Delhi", text: "Two weeks took me from never wearing skis to parallel turns on blue runs. The progression was perfectly paced and the video sessions made improvement obvious.", rating: 5 },
-      { name: "Ishita S.", location: "Mumbai", text: "Worth every rupee. Small groups meant constant feedback, and by week two we were riding lifts and doing proper longer descents. Already signed up for next season.", rating: 5 },
-      { name: "Karan V.", location: "Chandigarh", text: "This is a proper snow school, not a holiday camp. Structured days, theory seminars, real assessment at the end. My skiing transformed.", rating: 5 },
-    ],
     image: "/assets/skiing/IMG_5036.JPG.jpeg",
     gallery: [
       ...SKIING_LOCAL_GALLERY,
@@ -398,11 +380,6 @@ export const courses: Course[] = [
       { icon: "certificate", label: "Certification", description: "Course completion certificate + personalised evaluation" },
       { icon: "firstaid", label: "Safety Support", description: "Emergency first aid & mountain rescue protocol" },
       { icon: "photos", label: "HD Video Analysis", description: "Movement analysis + professional course photos" },
-    ],
-    testimonials: [
-      { name: "Vikram S.", location: "Pune", text: "The snowboarding course was incredible. Went from never touching a board to confidently linking turns in 7 days. The video analysis was a game-changer — I could see my stance improving daily. World-class instructors.", rating: 5 },
-      { name: "Meera J.", location: "Chennai", text: "Auli's powder is something else! The 20+ hours of coaching meant I improved every single day. The après sessions with other riders were a highlight. Best investment in a new skill.", rating: 5 },
-      { name: "Rahul P.", location: "Delhi", text: "The structured progression from nursery slopes to intermediate runs was exactly what I needed. The small group size meant real personal attention. Professional setup all the way.", rating: 5 },
     ],
     image: "/assets/snowboarding/IMG_5472.jpg",
     video: "/assets/snowboarding/IMG_5201.mp4",
@@ -474,11 +451,6 @@ export const courses: Course[] = [
       { icon: "firstaid", label: "Safety Support", description: "Emergency first aid & mountain rescue protocol" },
       { icon: "photos", label: "HD Video Analysis", description: "Daily movement analysis + professional course photos" },
     ],
-    testimonials: [
-      { name: "Kavya N.", location: "Hyderabad", text: "The 2-week intensive was transformative. Day 1 I couldn't stand on the board, day 13 I was carving down intermediate runs. The daily video feedback was incredible — you see yourself improving in real time.", rating: 5 },
-      { name: "Rohan D.", location: "Mumbai", text: "This is the real deal. 25+ hours a week of coaching, small groups, theory sessions — it's like a proper snow school, not a holiday course. The avalanche awareness seminar was eye-opening.", rating: 5 },
-      { name: "Ananya S.", location: "Delhi", text: "Best two weeks of my life. The instructors pushed me just enough, the après sessions were amazing, and I left with a proper skill. Already planning my return for the advanced course.", rating: 5 },
-    ],
     image: "/assets/snowboarding/IMG_4063.jpg",
     video: "/assets/snowboarding/IMG_4222.mp4",
     gallery: [
@@ -541,11 +513,6 @@ export const courses: Course[] = [
       { icon: "certificate", label: "Certification", description: "AST 1 avalanche safety certification" },
       { icon: "firstaid", label: "Safety Support", description: "Emergency satellite communicator on every trip" },
       { icon: "photos", label: "Course Photos", description: "Professional shots from the mountains" },
-    ],
-    testimonials: [
-      { name: "Aditya K.", location: "Bangalore", text: "The backcountry touring was life-changing. Skiing untracked powder with Nanda Devi towering above — nothing compares.", rating: 5 },
-      { name: "Zara M.", location: "Mumbai", text: "The avalanche safety training alone was worth the price. Professional, thorough, and empowering.", rating: 5 },
-      { name: "Karthik L.", location: "Delhi", text: "For anyone who can already ski and wants the next step — this is it. The guides are world-class.", rating: 5 },
     ],
     image: "/assets/backcountry%20touring/IMG_0711.jpeg",
     video: "/assets/backcountry%20touring/IMG_0670.mp4",
