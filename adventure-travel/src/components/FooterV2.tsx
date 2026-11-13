@@ -36,7 +36,7 @@ const popularTreks = [
   // The two hub pages, so they're linked from every page too.
   { name: "Treks from Joshimath", href: "/treks-from-joshimath" },
   { name: "Winter treks in Uttarakhand", href: "/winter-treks-uttarakhand" },
-  ...TOURS.map((t) => ({ name: `${t.name} (${t.days} days)`, href: `/tours/${t.slug}` })),
+  ...TOURS.map((t) => ({ name: `${t.name} (${t.days} days)`, href: t.href })),
 ];
 
 const destinations = [

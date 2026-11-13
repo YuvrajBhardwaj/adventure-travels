@@ -45,7 +45,7 @@ const COURSE_ROUTES = courses.map((course) => ({
 }));
 
 const TOUR_ROUTES = TOURS.map((tour) => ({
-  url: `${BASE}/tours/${tour.slug}`,
+  url: `${BASE}${tour.href}`,
   lastModified: new Date(),
   changeFrequency: "monthly" as const,
   priority: 0.8,

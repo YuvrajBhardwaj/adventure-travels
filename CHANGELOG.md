@@ -17,6 +17,15 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: Chopta & Tungnath tour; every tour page shares one layout — `main`
+- **For visitors:** new tour page [/tours/chopta-tungnath](https://www.himalayanarcadventure.com/tours/chopta-tungnath), laid out exactly like the Auli one:
+  - **Header:** prices from Rs.5,499 per person (quad sharing).
+  - **Room sharing table:** cards on phones.
+  - **Day-by-day itinerary:** with meals and notes.
+  - **Inclusions, good to know, booking:** WhatsApp or phone, plus **Book online**, which opens the Tungnath trek page where online payment works.
+  - **On /tours and in the menus:** listed next to the Auli Winter Escape. It has no photo yet, so it shows the no-photo panel with its altitude line.
+- **Code:** new `src/components/TourPage.tsx` holds the shared tour layout; each tour page only adds its own price table. Chopta is built from the Tungnath trek data (`src/data/tours.ts`), so the trek and tour pages can't disagree. The Auli page now uses the same component, with no visible change.
+
 ### 13 Nov 2026: Auli tour photo shows the mountains — `main`
 - **For visitors:** the Auli Winter Escape card on /tours, its page header and its link preview now show our own Auli photo (`assets/skiing/IMG_5017`): the snow slopes and chairlift with the Himalayan range behind. It replaces the close-up of a skier.
 

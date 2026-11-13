@@ -93,7 +93,7 @@ const MOBILE_NAV: (MobileLink & { sub?: MobileLink[] })[] = [
   {
     label: "Tours",
     href: "/tours",
-    sub: [...TOURS.map((t) => ({ label: `${t.name} (${t.days} days)`, href: `/tours/${t.slug}` })), { label: "All tours", href: "/tours" }],
+    sub: [...TOURS.map((t) => ({ label: `${t.name} (${t.days} days)`, href: t.href })), { label: "All tours", href: "/tours" }],
   },
   { label: "Destinations", href: "/destinations" },
   { label: "Courses", href: "/courses" },

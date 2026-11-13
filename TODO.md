@@ -40,7 +40,9 @@ Last updated: 7 Nov 2026.
 
 ## Tours (/tours)
 - [x] ~~**Dev:** Tours section with the Auli Winter Escape~~ (13 Nov, `main`).
-- [ ] **You: send the Chopta tour brief** (days, route, price and group offers, day-by-day plan, inclusions and exclusions), like the Auli one. Claude adds it to `src/data/tours.ts` with its own page.
+- [x] ~~**Dev:** Chopta & Tungnath tour page, same layout as Auli, built from the Tungnath trek data~~ (13 Nov, `main`).
+- [ ] **You: Chopta photos.** Tungnath has none, so its tour card and page show the no-photo panel. Send a few of your own (Chopta meadow, Tungnath temple, Chandrashila) and Claude adds them through `scripts/prepare-photos.mjs`.
+- [ ] **You (optional): Chopta group offers** like Auli's? Today it has only the room-sharing prices.
 
 ### Auli Winter Escape (/tours/auli-winter-escape)
 - [x] ~~**Dev:** page with price, group offers, itinerary, inclusions, transport and contact~~ (13 Nov, `main`).

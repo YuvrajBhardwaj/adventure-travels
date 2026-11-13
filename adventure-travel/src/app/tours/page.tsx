@@ -2,9 +2,10 @@ import Link from "next/link";
 import { TOURS } from "@/data/tours";
 import { absoluteUrl, fitDescription, fitTitle, pageMetadata, SITE_URL } from "@/lib/seo";
 import Price from "@/components/Price";
+import NoPhoto from "@/components/NoPhoto";
 
 export const metadata = pageMetadata({
-  title: fitTitle("Tours", ["Himalayan Getaways from Rishikesh"]),
+  title: fitTitle("Tours", ["Short Himalayan Getaways"]),
   description: fitDescription([
     "Short road-and-stay tours in the Garhwal Himalayas with Himalayan Arc Adventure.",
     "Drives, stays, guided sightseeing and group offers, booked on WhatsApp.",
@@ -21,7 +22,7 @@ export default function ToursPage() {
         "@type": "ItemList",
         name: "Tours",
         numberOfItems: TOURS.length,
-        itemListElement: TOURS.map((t, i) => ({ "@type": "ListItem", position: i + 1, name: t.name, url: absoluteUrl(`/tours/${t.slug}`) })),
+        itemListElement: TOURS.map((t, i) => ({ "@type": "ListItem", position: i + 1, name: t.name, url: absoluteUrl(t.href) })),
       },
       {
         "@type": "BreadcrumbList",
@@ -57,20 +58,25 @@ export default function ToursPage() {
           {TOURS.map((t) => (
             <li key={t.slug}>
               <Link
-                href={`/tours/${t.slug}`}
+                href={t.href}
                 className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow duration-150 ease-out hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={t.image} alt={t.name} className="aspect-[4/3] w-full object-cover" />
+                {t.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={t.image} alt={t.name} className="aspect-[4/3] w-full object-cover" />
+                ) : (
+                  <NoPhoto profile={t.profile} label={t.name} className="aspect-[4/3] w-full" />
+                )}
                 <div className="flex flex-1 flex-col p-5 sm:p-6">
                   <p className="font-nav text-xs uppercase tracking-[0.14em] text-slate-500">
-                    {t.days} days / {t.nights} nights
+                    {t.days} days{t.nights ? ` / ${t.nights} nights` : ""}
                   </p>
                   <h2 className="mt-2 font-heading text-2xl font-medium tracking-[-0.015em] text-slate-900 group-hover:text-emerald-700">{t.name}</h2>
                   <p className="mt-1 text-sm text-slate-500">{t.route.join(" – ")}</p>
                   <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-slate-600">{t.blurb}</p>
                   <div className="mt-auto pt-5">
                     <p className="font-heading text-2xl font-medium tabular-nums text-slate-900">
+                      {t.priceFrom && <span className="mr-1.5 font-sans text-sm font-normal text-slate-500">From</span>}
                       <Price inr={t.price} /> <span className="font-sans text-sm font-normal text-slate-500">/ person</span>
                     </p>
                     {t.priceNote && <p className="mt-1 text-sm text-emerald-700">{t.priceNote}</p>}
