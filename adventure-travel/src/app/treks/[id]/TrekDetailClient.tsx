@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence, useAnimate, useReducedMotion } from "framer-motion";
 import Link from "next/link";
-import { priceRoute, type Trek } from "@/data/treks";
+import { priceOptions, priceRoute, type Trek } from "@/data/treks";
 import { TREK_GALLERIES, trekPhotos } from "@/data/trekGalleries";
 import EnquireTab from "@/components/EnquireTab";
 import RouteProfile from "@/components/RouteProfile";
@@ -127,7 +127,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
   const [bookingIssue, setBookingIssue] = useState<string | null>(null);
   const [bookingForm, setBookingForm] = useState({
     name: "", email: "", phone: "", date: "", groupSize: "1", message: "",
-    sharing: trek.roomSharing?.[0].label ?? "",
+    sharing: priceOptions(trek)?.[0].label ?? "",
   });
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -186,7 +186,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
       return;
     }
     setPayBookingId(null);
-    const room = bookingForm.sharing ? `Room: ${bookingForm.sharing}\n` : "";
+    const room = bookingForm.sharing ? `${trek.packages ? "Package" : "Room"}: ${bookingForm.sharing}\n` : "";
     setBookingIssue(null);
     try {
       // The server prices and stores the booking (specs/001-persistent-backend, FR-016).
@@ -611,7 +611,7 @@ function BookingCard({
 
         <div className="mt-3">
           <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
-            {trek.roomSharing && <span className="text-sm text-muted">From</span>}
+            {priceOptions(trek) && <span className="text-sm text-muted">From</span>}
             <span className="text-5xl font-bold tracking-tight text-foreground tabular-nums"><Price inr={trek.price} /></span>
             <span className="text-sm text-muted">/ person</span>
           </div>
@@ -624,12 +624,12 @@ function BookingCard({
       </div>
 
       <div className="relative z-10 p-5 pt-4 sm:p-6 sm:pt-5">
-        {trek.roomSharing && (
+        {priceOptions(trek) && (
           <ul className="mb-4 divide-y divide-slate-200/80 overflow-hidden rounded-xl bg-slate-50 text-sm ring-1 ring-slate-200/80 dark:divide-white/10 dark:bg-white/5 dark:ring-white/10">
-            {trek.roomSharing.map((r) => (
+            {priceOptions(trek)!.map((r) => (
               <li key={r.label} className="flex items-center justify-between gap-3 px-3.5 py-2.5">
                 <span className="text-slate-700 dark:text-slate-200">
-                  {r.label} <span className="text-xs text-muted">· {r.perRoom} per room</span>
+                  {r.label} <span className="text-xs text-muted">· {trek.packages ? "pickup and drop" : r.detail}</span>
                 </span>
                 <span className="font-bold text-foreground tabular-nums"><Price inr={r.price} /></span>
               </li>
@@ -1265,18 +1265,29 @@ function ItineraryTab({ trek, onChoosePackage }: { trek: Trek; onChoosePackage: 
   const reduceMotion = useReducedMotion();
   const allExpanded = expandedDays.size === trek.itinerary.length;
   const packageInfo = getTrekPackage(trek);
-  const packageOptions = trek.roomSharing?.length
+  const packageOptions = trek.packages?.length
+    ? trek.packages.map((pkg) => ({
+        name: `${trek.name} from ${pkg.from}`,
+        detail: `Pickup and drop: ${pkg.from}`,
+        price: pkg.price,
+        sharing: pkg.label,
+        // Same inclusions, with transfers and "getting there" from this package's pickup town.
+        info: getTrekPackage({ ...trek, startsFrom: pkg.from }),
+      }))
+    : trek.roomSharing?.length
     ? trek.roomSharing.map((room) => ({
         name: room.label,
         detail: `${room.perRoom} per room · ${priceRoute(trek) ?? trek.location ?? trek.region}`,
         price: room.price,
         sharing: room.label,
+        info: packageInfo,
       }))
     : [{
         name: `${trek.name} package`,
         detail: priceRoute(trek) ?? trek.location ?? trek.region,
         price: trek.price,
         sharing: undefined,
+        info: packageInfo,
       }];
   const toggleAll = () => setExpandedDays(allExpanded ? new Set() : new Set(trek.itinerary.map((day) => day.day)));
   const toggleDay = (day: number) => setExpandedDays((current) => {
@@ -1405,13 +1416,13 @@ function ItineraryTab({ trek, onChoosePackage }: { trek: Trek; onChoosePackage: 
                   <div>
                     <h5 className="font-semibold text-foreground">Price includes</h5>
                     <ul className="mt-2 space-y-2 text-muted">
-                      {packageInfo.included.map((item) => <li key={item}>{item}</li>)}
+                      {option.info.included.map((item) => <li key={item}>{item}</li>)}
                     </ul>
                   </div>
                   <div>
                     <h5 className="font-semibold text-foreground">Not included</h5>
                     <ul className="mt-2 space-y-2 text-muted">
-                      {packageInfo.excluded.map((item) => <li key={item}>{item}</li>)}
+                      {option.info.excluded.map((item) => <li key={item}>{item}</li>)}
                     </ul>
                   </div>
                 </div>
@@ -1843,7 +1854,7 @@ function ReservationTab({
             `Hi! I'd like to book the ${trek.name}.`,
             form.date && `Date: ${form.date}`,
             `Group: ${form.groupSize}`,
-            form.sharing && `Room: ${form.sharing}`,
+            form.sharing && `${trek.packages ? "Package" : "Room"}: ${form.sharing}`,
             form.name && `Name: ${form.name}`,
             form.phone && `Phone: ${form.phone}`,
             form.message && `Message: ${form.message}`,
@@ -1872,7 +1883,7 @@ function ReservationTab({
         <h3 className="text-xl font-bold text-foreground mb-2">Reservation Request Sent!</h3>
         <p className="text-muted max-w-sm mx-auto">
           Thanks{form.name ? `, ${form.name.split(" ")[0]}` : ""}. Our team will confirm availability
-          {form.sharing ? ` and your ${form.sharing.toLowerCase()} room` : ""} for {trek.name} within 24 hours.
+          {form.sharing ? (trek.packages ? ` and your pickup (${form.sharing.replace(/^From /, "")})` : ` and your ${form.sharing.toLowerCase()} room`) : ""} for {trek.name} within 24 hours.
         </p>
         {payHref && (
           <Link href={payHref} className={buttonVariants({ size: "lg", className: "mt-5" })}>
@@ -1938,6 +1949,21 @@ function ReservationTab({
           </Select>
           {errors.groupSize && <FieldError id="res-group-err">{errors.groupSize}</FieldError>}
         </div>
+        {trek.packages && (
+          <div>
+            <Label htmlFor="res-sharing">Package</Label>
+            <Select id="res-sharing" value={form.sharing} onChange={(e) => update("sharing", e.target.value)}>
+              {trek.packages.map((p) => (
+                <option key={p.label} value={p.label}>{p.label}</option>
+              ))}
+            </Select>
+            <p className="mt-1.5 text-xs text-muted">
+              Per person: {trek.packages.map((p, i) => (
+                <span key={p.label}>{i > 0 && " · "}{p.from} <Price inr={p.price} /></span>
+              ))}
+            </p>
+          </div>
+        )}
         {trek.roomSharing && (
           <div>
             <Label htmlFor="res-sharing">Room Sharing</Label>

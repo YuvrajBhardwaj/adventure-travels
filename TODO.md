@@ -24,6 +24,26 @@ Last updated: 7 Nov 2026.
 - [ ] **Dev:** self-host the three fonts (`next/font/local`) so a Google Fonts hiccup can't fail a build again (it failed one production build on 6 Nov).
 - [ ] **Dev:** card slideshows load more photos per home visit. Shrink card photos to about 800 px (they are 1600 px today) in `scripts/prepare-photos.mjs` to save phone data and Vercel bandwidth.
 
+## Site audit (13 Nov 2026: pages, backend, SEO, live site)
+- [ ] **Dev (high, needs a live database change + your OK):** `apply_payment()` doesn't check the booking's status or what's already paid (`supabase-payments-v2.sql:315-341`). An advance order and a full order on one booking can both be paid (overcharge), and an order opened before a cancel/refund still applies.
+- [ ] **Dev (medium):** a payment that lands after the 15-min seat hold can overbook a full batch. Set the Razorpay order to expire with the hold, or check seats in `apply_payment()`.
+- [ ] **Dev (medium):** signed-out course bookings (`api/bookings.js`) have no rate limit or captcha and email any address typed in. Add a limit or captcha.
+- [ ] **You + Dev:** Privacy Policy and Terms pages. Neither exists, and Razorpay usually checks for them before switching on live payments.
+- [ ] **Dev:** footer Facebook and YouTube links are dead (`FooterV2.tsx:60,62`). Remove them, or tell Claude the real profile links.
+- [ ] **Dev:** a branded 404 page (`not-found.tsx`) with links to treks; make `/admin` open the bookings list instead of a 404.
+- [ ] **Dev:** fix trek facts: Pangarchula Day 3 says 15,419 ft (4,700 m) but the trek says 4,600 m; Kuari Day 2 says "+1,500 ft" (it's about 4,860 ft); the elevation charts of Kalindi Khal, Gupt Khal, Nanda Devi BC and Bhrigu Lake have a different number of points from their itinerary days; the FAQ start towns ("Dehradun, Manali or Delhi").
+- [ ] **You: confirm or remove claims:** "since 2010" / "Est. 2010", the 8 home testimonials and the course testimonials, "No-cost EMI", "Filling Fast", "India's highest motorable pass". Dev can then delete the unused `rating`/`reviewCount` data in `treks.ts`.
+- [ ] **Dev (SEO):** home h1 that matches a search ("Himalayan treks from Joshimath…"); related treks on trek pages; breadcrumb "Adventures" → "Treks"; hero photo alt text; share images for the 11 treks without one (start with Panpatia: use one of our own photos as its cover).
+- [ ] **Dev (content):** the 3 story articles are still placeholders (`stories.ts`); write them or drop the stories section.
+- [ ] **Dev (phone, cosmetic):** the mobile menu doesn't cover the page (the booking bar and WhatsApp button show through); the season stat card wraps to 3+ lines; three floating calls to action on trek pages.
+- [ ] **Dev (minor):** unused `textColor` in `Logo.tsx:68` (the only lint warning).
+
+## Trek packages
+- [x] ~~**Dev:** Kuari Pass packages: Joshimath ₹7,500, Rishikesh/Haridwar/Dehradun ₹9,000~~ (13 Nov, `main`).
+- [x] ~~**Dev:** Pangarchula Peak packages: Joshimath ₹9,500, Rishikesh/Haridwar/Dehradun ₹11,000~~ (13 Nov, `main`).
+- [ ] **You: check the Kuari Pass and Pangarchula itineraries.** Both start and end with the Rishikesh ↔ Joshimath drive (Kuari 5 days, Pangarchula 6), which only the Rishikesh/Haridwar/Dehradun package includes. Should the Joshimath packages show a shorter day plan (and how many days)?
+- [ ] **You: which other treks get a Rishikesh/Haridwar/Dehradun package, and at what price?** Claude adds them in `src/data/treks.ts` the same way.
+
 ## Courses
 - [ ] **Decide:** can a ski/snowboard course really start on any day of the season, or only on fixed intake days? The Dates calendar now offers every day (like the treks). Tell Claude the intake days if they're fixed.
 

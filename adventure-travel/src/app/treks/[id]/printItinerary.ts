@@ -29,7 +29,9 @@ export function printItinerary(trek: Trek): boolean {
   const covers = route ? `, ${esc(route)}` : "";
   const prices = trek.roomSharing
     ? trek.roomSharing.map((r) => `<li>${esc(r.label)} (${r.perRoom} per room): <b>${inr(r.price)}</b> per person${covers}</li>`).join("")
-    : `<li><b>${inr(trek.price)}</b> per person${covers}</li>`;
+    : trek.packages
+      ? trek.packages.map((p) => `<li>${esc(p.label)}: <b>${inr(p.price)}</b> per person, ${esc(p.from)} pickup and drop</li>`).join("")
+      : `<li><b>${inr(trek.price)}</b> per person${covers}</li>`;
   const days = trek.itinerary
     .map(
       (d) => `

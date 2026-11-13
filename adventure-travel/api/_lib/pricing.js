@@ -15,7 +15,7 @@ function trekAmount(trek, groupSize, roomSharing) {
   if (!trek || !isWholeNumber(groupSize, 1, MAX_TREK_GROUP)) return null;
   let unit = trek.price;
   if (roomSharing) {
-    // A room label only makes sense for treks priced by room, and must be one of its tiers.
+    // A room or package label must be one of the trek's options (catalog `roomSharing` holds both).
     if (!trek.roomSharing || !Object.prototype.hasOwnProperty.call(trek.roomSharing, roomSharing)) return null;
     unit = trek.roomSharing[roomSharing];
   }

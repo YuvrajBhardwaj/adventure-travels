@@ -23,11 +23,19 @@ module.exports = {
   },
   "pangarchula-peak": {
     "name": "Pangarchula Peak Trek",
-    "price": 9500
+    "price": 9500,
+    "roomSharing": {
+      "From Joshimath": 9500,
+      "From Rishikesh, Haridwar or Dehradun": 11000
+    }
   },
   "kuari-pass": {
     "name": "Kuari Pass Trek",
-    "price": 7500
+    "price": 7500,
+    "roomSharing": {
+      "From Joshimath": 7500,
+      "From Rishikesh, Haridwar or Dehradun": 9000
+    }
   },
   "hampta-pass": {
     "name": "Hampta Pass",

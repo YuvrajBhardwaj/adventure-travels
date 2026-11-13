@@ -84,15 +84,26 @@ export default async function TrekDetailPage({ params }: { params: Promise<{ id:
             description: day.description,
           })),
         },
-        offers: {
-          "@type": "Offer",
-          url,
-          price: trek.price,
-          priceCurrency: "INR",
-          description: route ? `Price covers ${route}` : undefined,
-          availability: "https://schema.org/InStock",
-          validFrom: new Date().toISOString(),
-        },
+        offers: trek.packages
+          ? trek.packages.map((p) => ({
+              "@type": "Offer",
+              url,
+              name: p.label,
+              price: p.price,
+              priceCurrency: "INR",
+              description: `Price covers ${p.from} pickup and drop`,
+              availability: "https://schema.org/InStock",
+              validFrom: new Date().toISOString(),
+            }))
+          : {
+              "@type": "Offer",
+              url,
+              price: trek.price,
+              priceCurrency: "INR",
+              description: route ? `Price covers ${route}` : undefined,
+              availability: "https://schema.org/InStock",
+              validFrom: new Date().toISOString(),
+            },
         provider: { "@id": ORGANIZATION_ID },
         // No aggregateRating until verified review collection exists.
       },

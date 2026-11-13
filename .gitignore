@@ -27,3 +27,7 @@
 # env files (secrets) — keep examples only
 .env*
 !.env.example
+
+# Local tool runtime state
+/.impeccable/
+/graphify-out/cache/last_query_stamp

@@ -17,6 +17,15 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 13 Nov 2026: code graph refreshed — `main`
+- **Tooling only:** rebuilt `graphify-out/` from `adventure-travel/src` with `graphify update` (local, no LLM cost): 855 nodes, 3,204 edges, built from `4740226`. A graph query costs about 1,600 tokens against ~57,000 for reading the source (35× fewer).
+
+### 13 Nov 2026: pickup packages on Kuari Pass and Pangarchula Peak, **Backend** — `main`
+- **Prices:** Pangarchula Peak costs ₹9,500 from Joshimath and ₹11,000 from Rishikesh, Haridwar or Dehradun. Its pages work the same way as Kuari Pass, described below.
+- **For visitors:** the Kuari Pass page offers two packages, like the listing on Thrillophilia: **From Joshimath** at ₹7,500 and **From Rishikesh, Haridwar or Dehradun** at ₹9,000 per person. They appear in the Trek Cost card ("From ₹7,500"), as two package cards under the itinerary (each with its own "Show package details": transfers and "getting there" name that package's pickup town), and as a **Package** dropdown in the reservation form. The printed itinerary and Google's structured data list both prices.
+- **For the business:** the chosen package shows on the booking in the dashboard, admin, checkout, payment emails and the WhatsApp message.
+- **Backend:** no database change. A trek now has an optional `packages` list in `src/data/treks.ts`; `npm run catalog` writes it into the same option→price map as room tiers, so `api/bookings.js` checks the label and charges that package's price, stored in the existing `room_sharing` column. The catalog script refuses a trek with both tiers and packages, a first price different from `price`, or a label over 40 characters. New pricing test (85 passing).
+
 ### 13 Nov 2026: course dates as a calendar, like the treks — `main`
 - **For visitors:** a course's Dates tab is now the same calendar as the trek pages: month chips, a month grid, the picked dates and **Register for this date**, which fills the booking form's date. A course can start any day of its season (e.g. Dec 2026 – Mar 2027), at least 3 days ahead, and must finish by the season's last day.
 - **Honesty fix:** the old list said "Live availability" and marked batches "Filling Fast" or "Sold Out" from a fixed repeating pattern, not from real bookings. Every open date now just says Available.

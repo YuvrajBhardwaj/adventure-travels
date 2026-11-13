@@ -474,7 +474,7 @@ export default function DashboardPage() {
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/50">
                         <span>Date: {day(b.trek_date)}</span>
                         <span>Group: {b.group_size}</span>
-                        {b.room_sharing && <span>Room: {b.room_sharing}</span>}
+                        {b.room_sharing && <span>{b.room_sharing}</span>}
                         <span>Booked: {day(b.created_at)}</span>
                       </div>
                       <Money amount={b.amount} paid={b.amount_paid ?? 0} state={a.state} dueDate={b.balance_due_date} />

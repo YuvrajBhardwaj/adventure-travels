@@ -21,11 +21,20 @@ for (const trek of mod.exports.treks ?? []) {
     throw new Error(`Trek "${trek.name}" has no valid integer price.`);
   }
   catalog[trek.slug] = { name: trek.name, price: trek.price };
-  if (trek.roomSharing) {
-    if (trek.roomSharing[0]?.price !== trek.price) {
-      throw new Error(`Trek "${trek.name}": price must equal its cheapest room tier.`);
+  // `roomSharing` is the API's option label → price map: room tiers or pickup packages
+  // (stored on the booking's room_sharing column either way).
+  if (trek.roomSharing && trek.packages) {
+    throw new Error(`Trek "${trek.name}": use room tiers or packages, not both.`);
+  }
+  const options = trek.roomSharing ?? trek.packages;
+  if (options) {
+    if (options[0]?.price !== trek.price) {
+      throw new Error(`Trek "${trek.name}": price must equal its cheapest room tier or package.`);
     }
-    catalog[trek.slug].roomSharing = Object.fromEntries(trek.roomSharing.map((r) => [r.label, r.price]));
+    if (options.some((o) => o.label.length > 40)) {
+      throw new Error(`Trek "${trek.name}": option labels must be 40 characters or fewer.`);
+    }
+    catalog[trek.slug].roomSharing = Object.fromEntries(options.map((o) => [o.label, o.price]));
   }
 }
 if (Object.keys(catalog).length === 0) throw new Error("No treks found in src/data/treks.ts");

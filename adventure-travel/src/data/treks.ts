@@ -45,6 +45,19 @@ export interface Trek {
    * The price covers this town and back, shown Indiahikes-style as "Joshimath to Joshimath".
    */
   startsFrom?: string;
+  /**
+   * Pickup packages, cheapest first; `price` must equal the first. Booked like a room tier:
+   * the label is stored on the booking and the order API charges that package's price.
+   */
+  packages?: { label: string; from: string; price: number }[];
+}
+
+/** A trek's bookable price options (room tiers or pickup packages), cheapest first; undefined when it has one price. */
+export function priceOptions(trek: Trek): { label: string; detail: string; price: number }[] | undefined {
+  return (
+    trek.roomSharing?.map((r) => ({ label: r.label, detail: `${r.perRoom} per room`, price: r.price })) ??
+    trek.packages?.map((p) => ({ label: p.label, detail: `Pickup and drop: ${p.from}`, price: p.price }))
+  );
 }
 
 /** What the price covers, e.g. "Joshimath to Joshimath"; undefined when the trek has no pickup town. */
@@ -52,10 +65,10 @@ export function priceRoute(trek: Trek): string | undefined {
   return trek.startsFrom && `${trek.startsFrom} to ${trek.startsFrom}`;
 }
 
-/** Per-person price for a booked room tier; the base price when no tier was chosen, undefined for an unknown tier. */
-export function pricePerPerson(trek: Trek, roomSharing?: string | null): number | undefined {
-  if (!roomSharing) return trek.price;
-  return trek.roomSharing?.find((r) => r.label === roomSharing)?.price;
+/** Per-person price for a booked option (room tier or package); the base price when none was chosen, undefined for an unknown one. */
+export function pricePerPerson(trek: Trek, option?: string | null): number | undefined {
+  if (!option) return trek.price;
+  return priceOptions(trek)?.find((o) => o.label === option)?.price;
 }
 
 export function slugify(str: string): string {
@@ -277,6 +290,10 @@ export const treks: Trek[] = [
     image: "/assets/pangarchula-peak-trek/IMG_3734.jpeg",
     groupSize: 10,
     startsFrom: "Joshimath",
+    packages: [
+      { label: "From Joshimath", from: "Joshimath", price: 9500 },
+      { label: "From Rishikesh, Haridwar or Dehradun", from: "Rishikesh, Haridwar or Dehradun", price: 11000 },
+    ],
   },
   {
     id: 15,
@@ -305,6 +322,10 @@ export const treks: Trek[] = [
     image: "/assets/kuari-pass-trek/017bfe93-d6e9-4c29-841d-e55ba276be2b.jpeg",
     groupSize: 15,
     startsFrom: "Joshimath",
+    packages: [
+      { label: "From Joshimath", from: "Joshimath", price: 7500 },
+      { label: "From Rishikesh, Haridwar or Dehradun", from: "Rishikesh, Haridwar or Dehradun", price: 9000 },
+    ],
   },
   {
     id: 16,

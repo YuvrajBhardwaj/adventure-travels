@@ -38,7 +38,7 @@ async function createTrek(db, user, body) {
   if (full) throw new HttpError(409, full);
   const roomSharing = text(body.roomSharing, 40) || null;
   if (roomSharing && (!trek.roomSharing || !Object.prototype.hasOwnProperty.call(trek.roomSharing, roomSharing))) {
-    throw new HttpError(400, "Choose one of the listed room options.");
+    throw new HttpError(400, "Choose one of the listed room or package options.");
   }
   // Price locked now, from the catalog — never from the browser (FR-016).
   const amount = group.persons ? pricing.trekAmount(trek, group.persons, roomSharing) : null;
