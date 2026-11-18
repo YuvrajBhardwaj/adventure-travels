@@ -68,7 +68,8 @@ Last updated: 7 Nov 2026.
 - [x] ~~Tour "Top attractions" as photo cards with Read more~~ (18 Nov), then restyled as "Choose Your Mountain" rows and moved to the end of the page (18 Nov).
 - [x] ~~Photos for Auli Artificial Lake, Gorson Bugyal, Nanda Devi National Park; Chopta gallery, Tungnath Temple, Chandrashila~~ (19 Nov). Attraction photos open full size.
 - [x] ~~Joshimath, Deoria Tal, Devprayag photos~~ (19 Nov): Wikimedia Commons, CC BY-SA 4.0, credited on the page. Swap in our own photos when we have them.
-- [ ] **You:** a photo of Chattrakund (none with a free licence online). Put it in `adventure-travel/assets/` and tell Claude. Also confirm whether to add Chenab Lake (owner to give the facts).
+- [x] ~~Chattrakund photo~~ (19 Nov, owner's own).
+- [ ] **You:** confirm whether to add Chenab Lake (owner to give the facts).
 - [ ] **You:** `assets/chopta/IMG_6412.HEIC` wasn't used. HEIC can't be processed, so export it as JPEG if you want it on the site.
 
 ## UX & QA list (16 Nov 2026): 106 items, tracker `adventure-travel/docs/ux-qa/2026-11-16-tracker.md`

@@ -20,7 +20,7 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 ### 19 Nov 2026: free-licence photos for Joshimath, Deoria Tal and Devprayag — uncommitted
 - **Visitors:** the Joshimath (Auli tour), Deoria Tal and Devprayag sangam (Chopta tour) rows now have photos, from Wikimedia Commons under CC BY-SA 4.0. Each shows "Photo: <author>, CC BY-SA 4.0, via Wikimedia Commons", linked to its source page, under the description and in the full-size view, as the licence requires. Owner request.
 - These photos are not ours, so they carry no © mark and live in `public/commons/`, outside `public/assets/`, where the photo script would watermark them. Resized to 1600 px, metadata removed.
-- No freely licensed photo of Chattrakund was found; it still shows the "no photo yet" mark.
+- Chattrakund now has the owner's own photo (frozen lake in winter), with the usual © mark.
 - Files: `src/components/TourAttractions.tsx` (new `credit` field), `src/data/auliEscape.ts`, `src/app/tours/chopta-tungnath/page.tsx`, `public/commons/`.
 
 ### 19 Nov 2026: owner's photos on the tour pages; attraction photos open full size — committed 88ef9db

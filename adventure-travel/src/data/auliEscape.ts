@@ -153,6 +153,8 @@ export const AULI_ESCAPE = {
     },
     {
       name: "Chattrakund",
+      photo: "/assets/tours/auli/chattrakund.jpeg",
+      photoAlt: "Chattrakund lake, frozen in winter, in the forest above Auli",
       points: "Clear mountain lake • Beyond Gorson Bugyal • Quiet spot",
       text: "A small, clear lake a little beyond Gorson Bugyal, on the same walk. Worth the extra stretch on a fine day for the quiet and the reflections.",
     },
