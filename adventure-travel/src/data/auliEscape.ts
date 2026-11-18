@@ -165,6 +165,9 @@ export const AULI_ESCAPE = {
     },
     {
       name: "Joshimath",
+      photo: "/commons/joshimath-narsingh-temple.jpg",
+      photoAlt: "Narsingh Temple in Joshimath, with the town and mountains behind",
+      credit: { author: "Rohanshah657", license: "CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:Historic_Narsingh_Temple_complex_in_Joshimath.jpg" },
       points: "Narsingh temple • Jyotirmath • Ropeway to Auli",
       text: "The town below Auli that the tour passes through on the way up and back, and where the ropeway to Auli starts. Home to the Narsingh temple and Jyotirmath, the monastery founded by Adi Shankaracharya, and the gateway to Badrinath.",
     },

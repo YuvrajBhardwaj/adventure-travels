@@ -17,7 +17,13 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
-### 19 Nov 2026: owner's photos on the tour pages; attraction photos open full size — uncommitted
+### 19 Nov 2026: free-licence photos for Joshimath, Deoria Tal and Devprayag — uncommitted
+- **Visitors:** the Joshimath (Auli tour), Deoria Tal and Devprayag sangam (Chopta tour) rows now have photos, from Wikimedia Commons under CC BY-SA 4.0. Each shows "Photo: <author>, CC BY-SA 4.0, via Wikimedia Commons", linked to its source page, under the description and in the full-size view, as the licence requires. Owner request.
+- These photos are not ours, so they carry no © mark and live in `public/commons/`, outside `public/assets/`, where the photo script would watermark them. Resized to 1600 px, metadata removed.
+- No freely licensed photo of Chattrakund was found; it still shows the "no photo yet" mark.
+- Files: `src/components/TourAttractions.tsx` (new `credit` field), `src/data/auliEscape.ts`, `src/app/tours/chopta-tungnath/page.tsx`, `public/commons/`.
+
+### 19 Nov 2026: owner's photos on the tour pages; attraction photos open full size — committed 88ef9db
 - **Visitors:** `/tours/chopta-tungnath` now has the owner's 8 Chopta photos (Tungnath Temple, the Chandrashila summit shrine and steps, Akash Kund, the Chopta sign) in its photo gallery, and the summit steps are the page's cover. "Tungnath Temple" and "Chandrashila summit" rows show their photos.
 - **Visitors:** on `/tours/auli-winter-escape`, the Auli Artificial Lake, Gorson Bugyal and Nanda Devi National Park rows show the owner's photos (also added to the gallery). Chattrakund and Joshimath still show the "no photo yet" mark.
 - **Visitors:** tapping an attraction's photo now opens it full size (Escape or ✕ closes it); tapping the name still opens the description.

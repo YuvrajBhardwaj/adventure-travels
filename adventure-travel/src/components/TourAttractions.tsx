@@ -13,6 +13,20 @@ export interface TourAttraction {
   /** One of our own photos (public/assets/...). Without one the row shows the NoPhoto mark. */
   photo?: string;
   photoAlt?: string;
+  /** For a freely licensed photo that isn't ours (no © mark): who took it, under what licence, and its source page. */
+  credit?: { author: string; license: string; url: string };
+}
+
+/** "Photo: Rohanshah657, CC BY-SA 4.0, via Wikimedia Commons", linked to the source page. */
+function Credit({ credit, className }: { credit: NonNullable<TourAttraction["credit"]>; className: string }) {
+  return (
+    <p className={className}>
+      Photo:{" "}
+      <a href={credit.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
+        {credit.author}, {credit.license}, via Wikimedia Commons
+      </a>
+    </p>
+  );
 }
 
 /**
@@ -59,6 +73,7 @@ export default function TourAttractions({ attractions }: { attractions: TourAttr
                   draggable={false}
                 />
                 <p className="font-heading text-lg text-white/90">{shown.name}</p>
+                {shown.credit && <Credit credit={shown.credit} className="-mt-2 text-xs text-white/70" />}
               </>
             )}
           </div>
@@ -114,6 +129,7 @@ function AttractionRow({ attraction: a, onEnlarge }: { attraction: TourAttractio
       </div>
       <div id={panelId} hidden={!open} className="pb-5 pr-4 sm:pr-40">
         <p className="text-base leading-relaxed text-slate-600">{a.text}</p>
+        {a.credit && <Credit credit={a.credit} className="mt-2 text-xs text-slate-500" />}
       </div>
     </li>
   );
