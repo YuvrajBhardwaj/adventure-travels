@@ -623,3 +623,73 @@ img, video {
 .hover-glow:hover {
   box-shadow: 0 20px 60px -15px rgba(16, 185, 129, 0.35);
 }
+
+/* ─── Dropdowns: one look for every <select> on the site ───
+   The open option list is normally drawn by the OS (blue highlight). Browsers with customizable
+   <select> (Chrome/Edge 135+) let us style it: rounded panel, green hover, solid green for the
+   chosen option. Elsewhere (Safari, Firefox) the native list stays; nothing breaks. The closed
+   field keeps its own classes and chevron, so the built-in picker icon is hidden. */
+@supports (appearance: base-select) {
+  select,
+  select::picker(select) {
+    appearance: base-select;
+  }
+  select::picker-icon {
+    display: none;
+  }
+  /* A base-select field lays its text out like a button: centre it vertically. In the base
+     layer so utilities such as `hidden` and `block` on a select still win. */
+  @layer base {
+    select {
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+  select::picker(select) {
+    margin-block: 0.25rem;
+    max-height: min(20rem, 60vh);
+    padding: 0.375rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    background: #fff;
+    color: #0f172a;
+    box-shadow: 0 16px 40px -12px rgb(15 23 42 / 0.3);
+  }
+  select option {
+    min-height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.9375rem;
+    cursor: pointer;
+  }
+  select option::checkmark {
+    order: 1;
+    margin-inline-start: auto;
+  }
+  select option:hover,
+  select option:focus-visible {
+    background: rgb(16 185 129 / 0.12);
+    color: #065f46;
+    outline: none;
+  }
+  select option:checked {
+    background: #047857;
+    color: #fff;
+    font-weight: 600;
+  }
+  select option:disabled {
+    color: #94a3b8;
+    cursor: default;
+  }
+  /* Dark scopes (checkout, admin, account pages, the navy navbar). */
+  .dark select::picker(select) {
+    border-color: rgb(255 255 255 / 0.15);
+    background: var(--color-navy-deep, #0b1222);
+    color: #fff;
+  }
+  .dark select option:hover,
+  .dark select option:focus-visible {
+    background: rgb(16 185 129 / 0.22);
+    color: #fff;
+  }
+}

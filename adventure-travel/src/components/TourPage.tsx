@@ -6,6 +6,7 @@ import { absoluteUrl, ORGANIZATION_ID, SITE_URL } from "@/lib/seo";
 import Price from "@/components/Price";
 import NoPhoto from "@/components/NoPhoto";
 import TourGallery from "@/components/TourGallery";
+import WallpaperCarousel from "@/components/WallpaperCarousel";
 import TourAttractions, { type TourAttraction } from "@/components/TourAttractions";
 import { TourBookingProvider, TourEnquiry, TourPackages, type TourPackage } from "@/components/TourBooking";
 import { BrandIcon } from "@/components/BrandIcon";
@@ -51,7 +52,6 @@ export function TourPage({
   route,
   intro,
   image,
-  imageAlt,
   profile,
   heroPrices,
   packages,
@@ -76,7 +76,8 @@ export function TourPage({
   route: readonly string[];
   intro: string;
   image?: string;
-  imageAlt: string;
+  /** Alt text for the cover; the hero slideshow now labels its photos as a group, so it's unused there. */
+  imageAlt?: string;
   /** Altitudes for the no-photo panel when there's no image. */
   profile?: number[];
   heroPrices: { label: string; inr: number; note?: string; accent?: boolean }[];
@@ -148,46 +149,49 @@ export function TourPage({
   );
   const outlineOnNavy = "border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white";
 
+  const heroSlides = [...new Set([image, ...photos].filter((src): src is string => Boolean(src)))].map((src) => ({ src }));
+
   return (
     <main id="main" className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
 
-      {/* Runs under the fixed navbar, so there's no light strip between the two. */}
+      {/* Full-bleed slideshow of the tour's photos under the fixed navbar. A dark scrim (heavier on the
+          left, where the copy sits) keeps the white text readable on bright snow and dark forest alike. */}
       <header className="bg-navy text-white">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 pb-12 pt-28 sm:px-6 lg:grid-cols-12 lg:items-end lg:gap-12 lg:px-8 lg:pb-16 lg:pt-36">
-          <div className="lg:col-span-7">
-            <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-2 text-sm text-white/60">
+        <WallpaperCarousel
+          slides={heroSlides}
+          label={`Photos from the ${name} tour`}
+          className="min-h-[88vh]"
+          scrimClassName="bg-[linear-gradient(to_right,rgba(2,6,23,0.85)_0%,rgba(2,6,23,0.6)_45%,rgba(2,6,23,0.25)_100%),linear-gradient(to_top,rgba(2,6,23,0.7),transparent_45%)]"
+          fallback={<NoPhoto profile={profile} className="absolute inset-0 h-full w-full opacity-40" />}
+        >
+          <div className="mx-auto flex min-h-[88vh] max-w-7xl items-end px-4 pb-24 pt-28 sm:px-6 lg:px-8 lg:pb-28 lg:pt-36">
+          <div className="max-w-3xl">
+            <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-2 text-sm text-white/75">
               <Link href="/" className="inline-flex min-h-11 items-center transition-colors duration-150 ease-out hover:text-white">Home</Link>
               <span aria-hidden>/</span>
               <Link href="/tours" className="inline-flex min-h-11 items-center transition-colors duration-150 ease-out hover:text-white">Tours</Link>
               <span aria-hidden>/</span>
               <span className="text-white/90">{name}</span>
             </nav>
-            <p className="font-nav text-sm uppercase tracking-[0.14em] text-white/60">
+            <p className="font-nav text-sm uppercase tracking-[0.14em] text-white/75">
               {length} · {route.join(" – ")}
             </p>
-            <h1 className="mt-3 font-heading text-5xl font-medium leading-[0.98] tracking-[-0.02em] sm:text-6xl xl:text-7xl">{name}</h1>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">{intro}</p>
+            <h1 className="mt-3 font-heading text-5xl [text-shadow:0_2px_30px_rgba(2,6,23,0.6)] font-medium leading-[0.98] tracking-[-0.02em] sm:text-6xl xl:text-7xl">{name}</h1>
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg [text-shadow:0_1px_12px_rgba(2,6,23,0.7)]">{intro}</p>
             <div className="mt-8 flex flex-wrap items-end gap-x-8 gap-y-4">
               {heroPrices.map((p) => (
                 <p key={p.label}>
-                  <span className="block text-sm text-white/60">{p.label}</span>
-                  <span className={`font-heading text-4xl font-medium tabular-nums ${p.accent ? "text-emerald-300" : ""}`}><Price inr={p.inr} /></span>
-                  {p.note && <span className="ml-2 text-sm text-white/60">{p.note}</span>}
+                  <span className="block text-sm text-white/75">{p.label}</span>
+                  <span className={`font-heading text-4xl font-medium tabular-nums ${p.accent ? "text-emerald-300 [text-shadow:0_1px_12px_rgba(2,6,23,0.7)]" : ""}`}><Price inr={p.inr} /></span>
+                  {p.note && <span className="ml-2 text-sm text-white/75">{p.note}</span>}
                 </p>
               ))}
             </div>
             {whatsappButton("mt-8")}
           </div>
-          <div className="lg:col-span-5">
-            {image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={image} alt={imageAlt} fetchPriority="high" className="aspect-[4/3] w-full rounded-2xl object-cover" />
-            ) : (
-              <NoPhoto profile={profile} className="aspect-[4/3] w-full rounded-2xl ring-1 ring-white/10" />
-            )}
           </div>
-        </div>
+        </WallpaperCarousel>
       </header>
 
       <TourBookingProvider initial={packages[0]?.id ?? ""}>
