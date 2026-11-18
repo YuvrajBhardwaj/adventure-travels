@@ -17,7 +17,20 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
-### 19 Nov 2026: Auli Winter Escape uses the owner's new Auli photos — uncommitted
+### 19 Nov 2026: home page "Walk the Kuari Pass" story: shorter scroll, richer on phones — `main`
+- **Shorter:** each chapter is three-quarters of a screen instead of a full one, and the closing "Your turn to walk it" block is shorter. The section is about 4.7 screens of scrolling instead of 6.1.
+- **Phones:**
+  - **Progress bar:** a story-style bar under the menu, one segment per chapter, filling as you walk the trail, with the current day and place under it.
+  - **Chapter card:** each chapter sits on a frosted trail-journal card with the day as a big outlined numeral ("02").
+  - **Altitude strip:** a slim strip (live altitude, today's climb, the route line with the walker dot) replaces the large card, and sits above the WhatsApp button.
+- **Desktop:** unchanged apart from the shorter scroll.
+
+### 19 Nov 2026: photo slideshow behind the tour heroes; one dropdown style site-wide — uncommitted
+- **Visitors:** the top of `/tours/auli-winter-escape` and `/tours/chopta-tungnath` is now a full-width slideshow of the tour's photos (cover first, then the gallery), the same `WallpaperCarousel` as the course pages. It pauses on hover, has a pause button, and doesn't animate for reduced-motion visitors. A dark shade (heavier on the left, behind the text) plus a text shadow keep the white heading, prices and copy readable on bright snow and dark forest alike. Owner request.
+- **Visitors:** every dropdown on the site (tour enquiry, trek filters, contact, destinations, booking forms, admin, currency) now opens the same styled list in Chrome and Edge: rounded white panel, green hover, solid green with a tick for the chosen option; navy in dark areas. Safari and Firefox keep their native list. Done once in `globals.css` (`appearance: base-select`), so new dropdowns get it automatically. Owner request.
+- Files: `src/components/TourPage.tsx`, `src/app/globals.css`.
+
+### 19 Nov 2026: Auli Winter Escape uses the owner's new Auli photos — committed c34860f
 - **Visitors:** `/tours/auli-winter-escape` no longer borrows the skiing-course photos. New cover: Auli under fresh snow with the Garhwal peaks (IMG_4294). The gallery is now the owner's Auli folder (10 photos). New photos on "Ski slopes and chairlift", "Nanda Devi and the Garhwal peaks" and "Auli Artificial Lake" (the frozen lake at sunset). The link-preview image (`public/og/tour-auli-winter-escape.jpg`) is rebuilt from the new cover. Owner request.
 - From `assets/auli winter escape photo/`: 5 HEIC photos were converted to JPEG with Windows imaging (sharp can't read them), then run through `prepare-photos.mjs`. Skipped: IMG_5917, IMG_7216 and IMG_5921 (already used for Gorson Bugyal, the National Park and Chattrakund), IMG_6361 (near-copy of IMG_6352), and the two videos (IMG_0680.MOV, IMG_4626.MP4, 82 MB).
 

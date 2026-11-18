@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { treks, priceRoute } from "@/data/treks";
 import Price from "@/components/Price";
 import { buttonVariants } from "@/components/ui/button";
@@ -91,6 +91,16 @@ const CHAPTERS: Chapter[] = [
 ];
 
 const LABEL = "font-nav text-[11px] font-medium uppercase tracking-[0.16em]";
+
+/** One segment of the phone's story-style progress bar: fills as you scroll through chapter `i`. */
+function StorySegment({ position, i }: { position: MotionValue<number>; i: number }) {
+  const fill = useTransform(position, (v) => Math.min(1, Math.max(0, v - i + 1)));
+  return (
+    <span className="relative h-[3px] flex-1 overflow-hidden rounded-full bg-white/25">
+      <motion.span style={{ scaleX: fill }} className="absolute inset-0 origin-left rounded-full bg-white" />
+    </span>
+  );
+}
 
 export default function JourneyStory() {
   const trek = treks.find((t) => t.slug === SLUG);
@@ -231,8 +241,48 @@ export default function JourneyStory() {
             </ol>
           </nav>
 
-          {/* Frosted altitude card: counter, change since yesterday, the route with the walker. */}
-          <div aria-hidden className="absolute inset-x-4 bottom-24 rounded-2xl border border-white/20 bg-white/10 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:inset-x-auto sm:bottom-8 sm:right-6 sm:w-80 sm:p-5 xl:right-[max(1.5rem,calc((100vw-80rem)/2+2rem))]">
+          {/* Phones and tablets: story-style progress under the navbar, one segment per chapter. */}
+          <div aria-hidden className="absolute inset-x-4 top-[4.75rem] sm:inset-x-6 lg:hidden">
+            <div className="flex gap-1.5">
+              {CHAPTERS.map((c, i) => <StorySegment key={i} position={position} i={i} />)}
+            </div>
+            <motion.p
+              key={active}
+              initial={reduceMotion ? false : { opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={glide}
+              className={cn(LABEL, "mt-2.5 flex items-center gap-2 text-[10px] text-white/85 [text-shadow:0_1px_8px_rgba(2,6,23,0.8)]")}
+            >
+              <span className="rounded bg-primary px-1.5 py-0.5 text-white">{ch.night ? "Night" : "Day"} {ch.day}</span>
+              {ch.place}
+            </motion.p>
+          </div>
+
+          {/* Phones: a slim altitude strip (counter, change since yesterday, the route with the walker),
+              above the site's floating WhatsApp button. */}
+          <div aria-hidden className="absolute inset-x-4 bottom-[5.5rem] flex items-center gap-3 rounded-2xl border border-white/20 bg-navy-deep/40 px-4 py-3 shadow-2xl shadow-black/30 backdrop-blur-xl sm:hidden">
+            <div className="shrink-0">
+              <p className="font-heading text-2xl font-medium leading-none tabular-nums tracking-[-0.02em]">
+                <motion.span>{altitude}</motion.span>
+                <span className="ml-0.5 text-sm text-white/60">m</span>
+              </p>
+              <p className={cn(LABEL, "mt-1 text-[9px] text-white/55")}>
+                {dayChange !== 0 ? `${dayChange > 0 ? "+" : "−"}${Math.abs(dayChange).toLocaleString("en-IN")} m today` : "Altitude"}
+              </p>
+            </div>
+            <div className="relative h-9 flex-1">
+              <svg viewBox="0 0 300 80" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
+                <polyline points={linePoints} fill="none" stroke="white" strokeOpacity="0.5" strokeWidth="1.5" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+              </svg>
+              <motion.span
+                style={{ left: markerLeft, top: markerTop }}
+                className="absolute h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary ring-4 ring-primary/30"
+              />
+            </div>
+          </div>
+
+          {/* Frosted altitude card (tablet and up): counter, change since yesterday, the route with the walker. */}
+          <div aria-hidden className="absolute inset-x-4 bottom-24 hidden rounded-2xl border border-white/20 bg-white/10 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:block sm:inset-x-auto sm:bottom-8 sm:right-6 sm:w-80 sm:p-5 xl:right-[max(1.5rem,calc((100vw-80rem)/2+2rem))]">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold">Altitude</p>
@@ -275,18 +325,26 @@ export default function JourneyStory() {
             const prev = c.day > 1 ? trek.itinerary[c.day - 2] : null;
             const gain = s && prev ? s.altitude - prev.altitude : 0;
             return (
-              <article id={`journey-ch-${i}`} key={i} className="flex min-h-[100svh] items-center">
-                <div className="mx-auto w-full max-w-7xl px-4 pb-80 sm:px-6 sm:pb-24 lg:px-8">
+              // Three-quarters of a screen per chapter: still one beat per photo, about a quarter less scrolling.
+              <article id={`journey-ch-${i}`} key={i} className="flex min-h-[75svh] items-center">
+                <div className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
                   <motion.div
                     initial={false}
                     animate={{ opacity: i === active ? 1 : 0.35 }}
                     transition={{ duration: 0.3 }}
-                    className="max-w-md"
+                    className="max-w-md rounded-2xl border border-white/15 bg-navy-deep/35 p-4 backdrop-blur-md sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none"
                   >
-                    <h3 className="font-heading text-3xl font-medium leading-tight tracking-[-0.02em] [text-shadow:0_2px_24px_rgba(2,6,23,0.6)] sm:text-5xl">
+                    {/* Phones: a trail-journal card with the day as a big outlined numeral. */}
+                    <span
+                      aria-hidden
+                      className="mb-1.5 block font-heading text-5xl font-medium leading-none tabular-nums text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.7)] sm:hidden"
+                    >
+                      {String(c.day).padStart(2, "0")}
+                    </span>
+                    <h3 className="font-heading text-[1.7rem] font-medium leading-tight tracking-[-0.02em] [text-shadow:0_2px_24px_rgba(2,6,23,0.6)] sm:text-5xl">
                       {c.heading}
                     </h3>
-                    <p className="mt-4 text-base leading-relaxed text-white/85 [text-shadow:0_1px_12px_rgba(2,6,23,0.7)] sm:text-lg">
+                    <p className="mt-3 text-[15px] leading-relaxed text-white/85 sm:mt-4 [text-shadow:0_1px_12px_rgba(2,6,23,0.7)] sm:text-lg">
                       {c.text}
                       {!c.night && s && s.hours > 0 && c.day > 1 && (
                         <> About {s.hours} hours on the trail{gain > 0 ? `, climbing ${gain.toLocaleString("en-IN")} m` : ""}.</>
@@ -306,7 +364,7 @@ export default function JourneyStory() {
           </div>
 
           {/* The end of the trail: book it. */}
-          <article className="relative flex min-h-[80svh] items-center bg-gradient-to-b from-navy-deep/60 via-navy-deep/95 to-navy-deep">
+          <article className="relative flex min-h-[60svh] items-center bg-gradient-to-b from-navy-deep/60 via-navy-deep/95 to-navy-deep">
             <div className="mx-auto w-full max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
               <h3 className="max-w-2xl font-heading text-4xl font-medium leading-[1.05] tracking-[-0.025em] sm:text-5xl">Your turn to walk it.</h3>
               <p className="mt-4 text-lg text-white/75">
