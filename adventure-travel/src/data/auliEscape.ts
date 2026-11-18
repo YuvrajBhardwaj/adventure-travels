@@ -139,11 +139,15 @@ export const AULI_ESCAPE = {
     },
     {
       name: "Auli Artificial Lake",
+      photo: "/assets/tours/auli/auli-artificial-lake.jpeg",
+      photoAlt: "Auli Artificial Lake above the ski slopes",
       points: "Snow-making lake • Peak views • Easy walk",
       text: "A man-made lake above the ski slopes, built to feed the snow-making for the runs. A quiet spot to sit for a while, with the high peaks standing over the water.",
     },
     {
       name: "Gorson Bugyal",
+      photo: "/assets/tours/auli/gorson-bugyal.jpeg",
+      photoAlt: "Gorson Bugyal meadow above Auli",
       points: "Alpine meadow • Forest walk • Snow in winter",
       text: "A wide alpine meadow above Auli, reached on foot through oak and conifer forest. Snow in winter, grass and flowers in summer, and a long line of peaks from the top.",
     },
@@ -154,6 +158,8 @@ export const AULI_ESCAPE = {
     },
     {
       name: "Nanda Devi National Park",
+      photo: "/assets/tours/auli/nanda-devi-national-park.jpeg",
+      photoAlt: "Peaks of the Nanda Devi National Park",
       points: "UNESCO World Heritage Site • Protected wilderness",
       text: "The protected wilderness around Nanda Devi, listed by UNESCO as a World Heritage Site together with the Valley of Flowers. Its core is closed to visitors; from Auli you see the peaks that ring it.",
     },

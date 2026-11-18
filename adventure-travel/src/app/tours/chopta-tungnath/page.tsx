@@ -7,6 +7,8 @@ import { tourPhotos } from "@/lib/tourPhotos";
 import { shareImage } from "@/lib/shareImage";
 
 const tour = TOURS.find((t) => t.slug === CHOPTA_SLUG)!;
+// Cover photo: the steps to the Chandrashila summit shrine (owner's photo).
+const CHOPTA_COVER = "/assets/tours/tungnath/IMG_6365.JPG.jpeg";
 const inr = (n: number) => `Rs.${n.toLocaleString("en-IN")}`;
 const from = T.startsFrom ?? "Delhi";
 const rooms = T.roomSharing ?? [{ label: "Standard", perRoom: 0, price: T.price }];
@@ -99,7 +101,7 @@ export default function ChoptaTungnathPage() {
       days={T.days}
       route={tour.route}
       intro={CHOPTA_INTRO}
-      image={T.image ?? photos[0]}
+      image={T.image ?? (own.includes(CHOPTA_COVER) ? CHOPTA_COVER : photos[0])}
       imageAlt={`${tour.name}, Uttarakhand`}
       profile={T.elevationProfile}
       heroPrices={[
@@ -115,8 +117,8 @@ export default function ChoptaTungnathPage() {
       }))}
       photos={photos}
       attractions={[
-        { name: "Tungnath Temple", points: "Panch Kedar • Highest Shiva temple • Paved trail", text: "The highest of the five Panch Kedar temples of Shiva: an old stone shrine on the ridge above Chopta, reached by a paved trail through the meadows." },
-        { name: "Chandrashila summit", points: "Summit view • Chaukhamba • Nanda Devi", text: `A short, steep climb above Tungnath to ${T.maxAltitude.toLocaleString("en-IN")} m, with a wide view of Chaukhamba, Nanda Devi and Trishul.` },
+        { name: "Tungnath Temple", photo: "/assets/tours/tungnath/IMG_6368.JPG.jpeg", photoAlt: "Tungnath Temple information board at the shrine", points: "Panch Kedar • Highest Shiva temple • Paved trail", text: "The highest of the five Panch Kedar temples of Shiva: an old stone shrine on the ridge above Chopta, reached by a paved trail through the meadows." },
+        { name: "Chandrashila summit", photo: "/assets/tours/tungnath/IMG_6365.JPG.jpeg", photoAlt: "Stone steps to the shrine on the Chandrashila summit", points: "Summit view • Chaukhamba • Nanda Devi", text: `A short, steep climb above Tungnath to ${T.maxAltitude.toLocaleString("en-IN")} m, with a wide view of Chaukhamba, Nanda Devi and Trishul.` },
         { name: "Deoria Tal", points: "Forest lake • Chaukhamba reflections • Sari village", text: "A forest lake near Sari village that mirrors the Chaukhamba massif on a still morning, on the last day's walk." },
         { name: "Devprayag sangam", points: "Confluence • Birth of the Ganga • Dawn stop", text: "Where the Bhagirathi and the Alaknanda meet and become the Ganga, visited at dawn on the drive up." },
       ]}

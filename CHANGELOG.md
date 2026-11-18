@@ -17,6 +17,13 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 19 Nov 2026: owner's photos on the tour pages; attraction photos open full size — uncommitted
+- **Visitors:** `/tours/chopta-tungnath` now has the owner's 8 Chopta photos (Tungnath Temple, the Chandrashila summit shrine and steps, Akash Kund, the Chopta sign) in its photo gallery, and the summit steps are the page's cover. "Tungnath Temple" and "Chandrashila summit" rows show their photos.
+- **Visitors:** on `/tours/auli-winter-escape`, the Auli Artificial Lake, Gorson Bugyal and Nanda Devi National Park rows show the owner's photos (also added to the gallery). Chattrakund and Joshimath still show the "no photo yet" mark.
+- **Visitors:** tapping an attraction's photo now opens it full size (Escape or ✕ closes it); tapping the name still opens the description.
+- Photos went through `scripts/prepare-photos.mjs` (1600 px max, watermark, no metadata); originals are in `/media-originals/assets/tours/`. `IMG_6412.HEIC` was skipped: HEIC can't be processed, so it needs exporting as JPEG.
+- Files: `src/components/TourAttractions.tsx`, `src/data/auliEscape.ts`, `src/app/tours/chopta-tungnath/page.tsx`, `public/assets/tours/{auli,tungnath}/`.
+
 ### 19 Nov 2026: 14-day skiing course price raised to ₹30,000 / ₹60,000 — uncommitted
 - **Visitors / business:** `/courses/skiing-intensive-2week` (Premium): ₹30,000 without stay (was ₹23,500), ₹60,000 with stay and meals (was ₹45,500). Owner request.
 - **Backend:** `npm run catalog` re-run, so `api/_lib/courseCatalog.js` charges the new prices (30% advance = ₹9,000 / ₹18,000).

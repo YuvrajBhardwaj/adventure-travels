@@ -66,7 +66,9 @@ Last updated: 7 Nov 2026.
 - [ ] **Test:** re-run `npm run test:e2e` on a quiet machine (3/6 failed only because ~60 agent browsers were open).
 - [x] ~~Remove the ₹10,000 / ₹20,000 Basic package from the 7-day skiing course~~ (18 Nov).
 - [x] ~~Tour "Top attractions" as photo cards with Read more~~ (18 Nov), then restyled as "Choose Your Mountain" rows and moved to the end of the page (18 Nov).
-- [ ] **You:** our own photos for the Auli attraction rows: Trishul, Auli Artificial Lake, Gorson Bugyal, Chattrakund, Kwani Bugyal, Nanda Devi National Park, Joshimath. Put them in `adventure-travel/public/assets/tours/auli/` and tell Claude which is which. Also confirm whether to add Chenab Lake (owner to give the facts).
+- [x] ~~Photos for Auli Artificial Lake, Gorson Bugyal, Nanda Devi National Park; Chopta gallery, Tungnath Temple, Chandrashila~~ (19 Nov). Attraction photos open full size.
+- [ ] **You:** photos still missing for Chattrakund and Joshimath (Auli), and Deoria Tal and Devprayag (Chopta). Put them in `adventure-travel/assets/` and tell Claude which is which. Also confirm whether to add Chenab Lake (owner to give the facts).
+- [ ] **You:** `assets/chopta/IMG_6412.HEIC` wasn't used. HEIC can't be processed, so export it as JPEG if you want it on the site.
 
 ## UX & QA list (16 Nov 2026): 106 items, tracker `adventure-travel/docs/ux-qa/2026-11-16-tracker.md`
 - [x] ~~Verified every item against the code; fixed hours, claims, policy contradictions, checkout refund summary, trip contacts, month filter and altitude sort on `/treks`, office map links; link crawl clean.~~ (16 Nov, uncommitted)
