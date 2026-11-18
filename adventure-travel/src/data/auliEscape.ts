@@ -14,19 +14,10 @@ export const AULI_ESCAPE = {
   /** Per person for groups of 4 or more, INR. */
   groupPrice: 8000,
   groupFrom: 4,
-  image: "/assets/skiing/IMG_5017.JPG.jpeg",
-  imageAlt: "A group on the Auli snow slopes below the Himalayan range",
-  /** Our own Auli photos: the slopes, the range, the ropeway and groups on the snow. */
-  gallery: [
-    "/assets/skiing/IMG_5017.JPG.jpeg",
-    "/assets/skiing/IMG_5022.JPG.jpeg",
-    "/assets/skiing/IMG_5028.JPG.jpeg",
-    "/assets/skiing/IMG_5036.JPG.jpeg",
-    "/assets/skiing/IMG_4976.JPG.jpeg",
-    "/assets/skiing/IMG_5009.JPG.jpeg",
-    "/assets/skiing/IMG_4992.JPG.jpeg",
-    "/assets/skiing/IMG_5038.JPG.jpeg",
-  ],
+  image: "/assets/tours/auli/IMG_4294.jpg",
+  imageAlt: "Auli under fresh snow, with the Garhwal peaks behind",
+  /** Extra gallery photos outside public/assets/tours/auli/ (that folder is always shown first). */
+  gallery: [] as string[],
   intro:
     "Escape to the Himalayas with a short Auli getaway: scenic mountain drives, comfortable stays, guided sightseeing, big views and optional snow adventures with your friends and family.",
   itinerary: [
@@ -127,20 +118,20 @@ export const AULI_ESCAPE = {
       name: "Ski slopes and chairlift",
       points: "Snow slopes • Chairlift • Beginner ski lessons",
       text: "Auli's open slopes are where India learns to ski. Try a beginner ski session with an instructor, or ride the chairlift over the runs for the view when it's running. Both cost extra and depend on snow and weather.",
-      photo: "/assets/skiing/IMG_5036.JPG.jpeg",
-      photoAlt: "Young skiers on the Auli slopes under the chairlift",
+      photo: "/assets/tours/auli/IMG_4059.jpeg",
+      photoAlt: "Visitors on the Auli snow slopes by the resort huts",
     },
     {
       name: "Nanda Devi and the Garhwal peaks",
       points: "Nanda Devi 7,816 m • Dronagiri • Hathi-Ghoda",
       text: "From the Auli slopes you look across at Nanda Devi (7,816 m), India's second-highest peak, with Dronagiri, Hathi-Ghoda and Trishul around it. The view is clearest on winter mornings after fresh snow.",
-      photo: "/assets/skiing/IMG_5022.JPG.jpeg",
-      photoAlt: "A skier on fresh snow at Auli with the snow-covered Garhwal range behind",
+      photo: "/assets/tours/auli/IMG_6352.jpeg",
+      photoAlt: "A visitor in fresh snow at Auli with the Garhwal range behind",
     },
     {
       name: "Auli Artificial Lake",
-      photo: "/assets/tours/auli/auli-artificial-lake.jpeg",
-      photoAlt: "Auli Artificial Lake above the ski slopes",
+      photo: "/assets/tours/auli/IMG_3961.jpg",
+      photoAlt: "A visitor beside the frozen Auli Artificial Lake at sunset",
       points: "Snow-making lake • Peak views • Easy walk",
       text: "A man-made lake above the ski slopes, built to feed the snow-making for the runs. A quiet spot to sit for a while, with the high peaks standing over the water.",
     },

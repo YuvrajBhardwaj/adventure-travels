@@ -17,7 +17,11 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
-### 19 Nov 2026: free-licence photos for Joshimath, Deoria Tal and Devprayag — uncommitted
+### 19 Nov 2026: Auli Winter Escape uses the owner's new Auli photos — uncommitted
+- **Visitors:** `/tours/auli-winter-escape` no longer borrows the skiing-course photos. New cover: Auli under fresh snow with the Garhwal peaks (IMG_4294). The gallery is now the owner's Auli folder (10 photos). New photos on "Ski slopes and chairlift", "Nanda Devi and the Garhwal peaks" and "Auli Artificial Lake" (the frozen lake at sunset). The link-preview image (`public/og/tour-auli-winter-escape.jpg`) is rebuilt from the new cover. Owner request.
+- From `assets/auli winter escape photo/`: 5 HEIC photos were converted to JPEG with Windows imaging (sharp can't read them), then run through `prepare-photos.mjs`. Skipped: IMG_5917, IMG_7216 and IMG_5921 (already used for Gorson Bugyal, the National Park and Chattrakund), IMG_6361 (near-copy of IMG_6352), and the two videos (IMG_0680.MOV, IMG_4626.MP4, 82 MB).
+
+### 19 Nov 2026: free-licence photos for Joshimath, Deoria Tal and Devprayag — committed e109ee4
 - **Visitors:** the Joshimath (Auli tour), Deoria Tal and Devprayag sangam (Chopta tour) rows now have photos, from Wikimedia Commons under CC BY-SA 4.0. Each shows "Photo: <author>, CC BY-SA 4.0, via Wikimedia Commons", linked to its source page, under the description and in the full-size view, as the licence requires. Owner request.
 - These photos are not ours, so they carry no © mark and live in `public/commons/`, outside `public/assets/`, where the photo script would watermark them. Resized to 1600 px, metadata removed.
 - Chattrakund now has the owner's own photo (frozen lake in winter), with the usual © mark.
