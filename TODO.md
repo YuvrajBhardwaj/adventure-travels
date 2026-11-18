@@ -39,7 +39,60 @@ Last updated: 7 Nov 2026.
 - [ ] **You: photos for Chopta & Tungnath.** The tour page and its link preview have no photo of ours yet (it shows the mountain outline). Put photos in `adventure-travel/public/assets/tours/tungnath/`, set the Tungnath trek's cover, then run `node scripts/prepare-photos.mjs`; the share card follows automatically.
 - [x] ~~**Dev: make the Chopta tour and the Tungnath trek page differ.**~~ (14 Nov: the tour has its own intro and day-by-day text; prices and facts still come from the trek.)
 - [ ] **You: after the tour changes go live,** check how a tour link looks in WhatsApp (or use the Facebook Sharing Debugger) and request indexing for `/tours` in Search Console.
-- [ ] **Dev (minor):** unused `textColor` in `Logo.tsx:68` (the only lint warning).
+- [x] ~~**Dev (minor):** unused `textColor` in `Logo.tsx:68` (the only lint warning).~~ (16 Nov: `Logo.tsx` was unused and is deleted; lint is clean.)
+
+## Test pass, 18 Nov 2026 (report: `adventure-travel/docs/ux-qa/2026-11-18-test-report.md`)
+- [ ] **You, 9 questions** (report § "Needs the owner"):
+  1. what the 90% refund is calculated on;
+  2. Joshimath vs Rishikesh pickups on 8 treks;
+  3. ₹5,000 placeholder prices (Mana, Niti, Rimkhim, Bhrigu);
+  4. altitudes that disagree;
+  5. ski, acclimatisation and "certified" claims;
+  6. does the support@ mailbox exist;
+  7. the 3% card fee;
+  8. Tungnath trek vs Chopta tour page;
+  9. photos for the attraction cards.
+- [ ] **Dev (high):**
+  - seat-hold overbooking (live DB change, needs your OK);
+  - 800 px photos for phones;
+  - upgrade `next` and `nodemailer`.
+- [ ] **Dev (medium):**
+  - cap seat holds per user;
+  - one open advance order per booking;
+  - rate limit signed-out course bookings;
+  - sticky booking card taller than the screen;
+  - focus return after the lightbox and popup;
+  - `<main>` on FAQ, contact, login and signup.
+- [ ] **Test:** re-run `npm run test:e2e` on a quiet machine (3/6 failed only because ~60 agent browsers were open).
+- [x] ~~Remove the ₹10,000 / ₹20,000 Basic package from the 7-day skiing course~~ (18 Nov).
+- [x] ~~Tour "Top attractions" as photo cards with Read more~~ (18 Nov), then restyled as "Choose Your Mountain" rows and moved to the end of the page (18 Nov).
+- [ ] **You:** our own photos for the Auli attraction rows: Trishul, Auli Artificial Lake, Gorson Bugyal, Chattrakund, Kwani Bugyal, Nanda Devi National Park, Joshimath. Put them in `adventure-travel/public/assets/tours/auli/` and tell Claude which is which. Also confirm whether to add Chenab Lake (owner to give the facts).
+
+## UX & QA list (16 Nov 2026): 106 items, tracker `adventure-travel/docs/ux-qa/2026-11-16-tracker.md`
+- [x] ~~Verified every item against the code; fixed hours, claims, policy contradictions, checkout refund summary, trip contacts, month filter and altitude sort on `/treks`, office map links; link crawl clean.~~ (16 Nov, uncommitted)
+- [ ] **You:**
+  - real Google reviews (UX-008/030), trek videos (UX-009);
+  - late-arrival rule (UX-040), gear rental prices (UX-042), reporting times per departure (UX-039);
+  - GA4 property ID (QA-009);
+  - does **support@himalayanarcadventure.com** exist? 3 pages use it (QA-004);
+  - read the softened safety FAQ once and confirm what we can add back (UX-037), and the backcountry ski course claims in `courses.ts`.
+- [ ] **Dev P1:** 3% surcharge on card payments (owner chose to charge it). Needs Razorpay customer-fee settings, showing it before payment, and `apply_payment()` accepting the fee-inclusive amount. Until then the terms mention 3% but checkout doesn't charge it.
+- [ ] **Dev (high, speed): phones get desktop-size photos.** Measured 16 Nov: the home page loads 2.9 MB of images at start (up to 437 KB, 1600 px wide, on a 375 px phone), and `/treks` loads 1.2 MB. Make 800 px copies in `scripts/prepare-photos.mjs`, with a small manifest so `SmartImage` and the card `<img>`s can add `srcset`/`sizes`. This replaces the older "shrink card photos" item. (QA-029/030)
+- [ ] **You (optional):** allow Lighthouse in this session's permissions if you want official speed scores; the 16 Nov numbers were measured directly in the browser.
+- [ ] **Dev P2:**
+  - trek finder wizard and home "Find my trek" CTA;
+  - next departure on trek cards;
+  - group total in the trek-page booking form;
+  - safety badges by the booking panel;
+  - Women Trekkers link on trek pages;
+  - Lighthouse and accessibility pass.
+- [ ] **Dev P3:**
+  - compare treks;
+  - readiness check;
+  - interactive packing list;
+  - self-service date change;
+  - vouchers and waitlist in the dashboard.
+- [ ] **Test (Razorpay Test Mode):** full booking → payment → receipt flow with UPI, card and net banking; failed and cancelled payments; back button from Razorpay; phones at 320–1440 px.
 
 ## Security scan (13 Nov 2026)
 Passed: no `.env`/`.git`/source/SQL files exposed; HTTPS + HSTS; every table has RLS and the anon key reads nothing; `apply_payment()` refuses anon; payment signatures checked in constant time; only the anon key is in the browser JS; emails are plain text; Vercel's bot checkpoint blocks scripted traffic.

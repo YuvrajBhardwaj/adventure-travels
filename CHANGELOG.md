@@ -17,6 +17,141 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 19 Nov 2026: 14-day skiing course price raised to ₹30,000 / ₹60,000 — uncommitted
+- **Visitors / business:** `/courses/skiing-intensive-2week` (Premium): ₹30,000 without stay (was ₹23,500), ₹60,000 with stay and meals (was ₹45,500). Owner request.
+- **Backend:** `npm run catalog` re-run, so `api/_lib/courseCatalog.js` charges the new prices (30% advance = ₹9,000 / ₹18,000).
+
+### 19 Nov 2026: 7-day skiing course price raised to ₹23,000 / ₹45,000 — uncommitted
+- **Visitors / business:** `/courses/skiing-course` (Premium): ₹23,000 without stay (was ₹15,000), ₹45,000 with stay and meals (was ₹30,000). The Activities page now says "From ₹23,000". Owner request.
+- **Backend:** `npm run catalog` re-run, so `api/_lib/courseCatalog.js` charges the new prices (30% advance = ₹6,900 / ₹13,500).
+
+### 19 Nov 2026: 14-day skiing course is Premium only; price panel follows the picked package — uncommitted
+- **Visitors / business:** the 14-day course (`/courses/skiing-intensive-2week`) no longer offers Basic (₹18,500 / ₹38,000). It is Premium only: ₹23,500 without stay, ₹45,500 with stay. Course copy no longer mentions a Basic programme; the Premium itinerary's days 1–4 describe the full day instead of "the Basic curriculum plus…". Owner request.
+- **Visitors:** on every course page, the price panel on the right (and the phone bottom bar) now shows the package you picked ("Your package: Premium, with stay — ₹45,500") instead of a fixed "From" price. The prices in its small table can be clicked to pick a package too.
+- **Fixes:** with-stay cards said "7 nights Auli stay" on the 14-day course; they now read the nights from the course's own Accommodation line (13 nights). "Two itineraries…" now matches the number of packages.
+- **Backend:** `npm run catalog` re-run; `api/_lib/courseCatalog.js` no longer has the 14-day Basic tier, so it can't be booked or charged.
+- Files: `src/data/courses.ts`, `src/app/courses/[course]/CourseDetailClient.tsx`, `api/_lib/courseCatalog.js`.
+
+### 18 Nov 2026: no meals line on a trek's last itinerary day — uncommitted
+- **Visitors:** on every trek page, the itinerary's last day (the drive back) no longer shows "Meals: Breakfast" (or "Breakfast & Lunch"). The printable itinerary matches. Owner request.
+- The meals stay in `treks.ts`, so the meal count in "What's included" is unchanged. Files: `src/app/treks/[id]/TrekDetailClient.tsx`, `printItinerary.ts`.
+
+### 18 Nov 2026: tour attractions in the "Choose Your Mountain" style, last on the page — uncommitted
+- **For visitors (owner request):**
+  - On `/tours/auli-winter-escape`, "Auli top attractions" is now the last section on the page.
+  - It uses the home page's "Choose Your Mountain" row style: a large serif name that turns green on hover, a "•" tag line and a rounded thumbnail on the right. Tapping a row opens its description.
+  - 7 places: the earlier 6, plus Nanda Devi National Park, from the owner's reference list. Trishul and Kwani Bugyal were added and then removed at the owner's request (18 Nov); Chenab Lake is left out until we can confirm its facts.
+  - Two rows use our own photos; the rest show the "no photo yet" mark.
+  - The Chopta–Tungnath tour uses the same rows.
+- **Code:** `TourAttractions.tsx` was rewritten. Each attraction now has a `points` tag line, and `TourPage` takes an optional `attractionsTitle`. Closed descriptions are `hidden`, not removed, so the text stays in the static HTML. tsc and lint clean; 92/92 tests.
+
+### 18 Nov 2026: full test pass by 6 agents; fixes; skiing Premium only; tour attraction cards — uncommitted
+Combined report: [`adventure-travel/docs/ux-qa/2026-11-18-test-report.md`](adventure-travel/docs/ux-qa/2026-11-18-test-report.md).
+
+**For visitors:**
+- **7-day skiing course (owner):** the Basic package (₹10,000 / ₹20,000) is gone. The course is Premium only: ₹15,000, or ₹30,000 with stay. The price catalog is regenerated, and Activities says "From ₹15,000".
+- **Tour pages:** "Top attractions" is now a photo, the name, a 3-line excerpt and "Read more" (`TourAttractions.tsx`).
+  - Auli has 6 places, two with our own photos.
+  - The others show the "no photo yet" panel; nothing is copied from other sites.
+- **Easier to read:**
+  - the main buttons, form borders and placeholders now pass the contrast standard;
+  - the difficulty badge uses darker shades;
+  - the login fields are brighter.
+- **Keyboard:** a "Skip to main content" link; the FAQ search box is labelled.
+- **Phones:**
+  - the course "Book Now" button is no longer cut off at 320 px;
+  - the fixed booking bar no longer covers the footer.
+- **Footer:** each phone number has its own link; "About Us" lands on "Why trek with us".
+- **Breadcrumb** "Adventures" → "Treks".
+- **FAQ trek facts match `treks.ts`:** Brahmatal, Hampta, Bhrigu, Valley of Flowers and Kedarkantha.
+- **Removed:**
+  - "Trek of the Year";
+  - "within 24 hours" promises (now Mon–Sat hours);
+  - the hard-coded "18 treks".
+
+**Backend:**
+- `orderAmount()` refuses payment once a trip has started (409).
+- `isValidIsoDate()` no longer throws on dates like 2026-13-01 (was a 502).
+- `bookings.js` rejects dates with trailing characters.
+- New `paymentRules` vs `pricing.js` parity tests.
+- tsc and lint clean; **92/92 tests**.
+
+**Found, still open:** see the report and TODO. The main ones:
+- the seat-hold overbooking;
+- photo sizes on phones;
+- the `next` / `nodemailer` upgrades;
+- 9 owner questions.
+
+### 16 Nov 2026: production build check; login library loads after the page — uncommitted
+- **Build:** `next build` of the current code (in a copy, so the dev server kept running) passes: 54 static pages, no warnings.
+- **Checked on the built site:**
+  - every exported page has a title, a description, a canonical link and one `<h1>`;
+  - no broken internal links;
+  - 19 pages load in a real browser at 1366 px and 375 px with no script errors and no sideways scroll;
+  - layout shift (CLS) is 0 everywhere;
+  - on a throttled phone, the largest element appears in 1.3 s (home) to 3.1 s (trek page).
+- **Fixed, for visitors:** pages load less JavaScript up front. The Supabase login library (about 64 KB compressed) was in every page's startup code because `AuthContext` and `Navbar` imported it directly. It now loads just after the page appears.
+  - Home: 452 KB → 385 KB compressed JS.
+  - Treks list and FAQ: about 315 KB.
+  - Trek pages still load it up front: they need it straight away for live seat availability.
+  - Log in and the account menu work as before; `loading` stays true until the library answers.
+- **Found, not fixed yet:**
+  - Phones download desktop-size photos: up to 437 KB, 1600 px wide, on a 375 px screen. That is 2.9 MB of images at the start of the home page and 1.2 MB on `/treks`.
+  - Lazy loading itself is fine (63 of 74 home images wait for scroll).
+  - Fix planned in TODO: 800 px copies plus `srcset`.
+- **Not run:** Lighthouse. Downloading it was blocked by the session's permission rules, so these numbers come from the browser directly.
+
+### 16 Nov 2026: code cleanup found with the code graph — uncommitted
+- **How:** rebuilt `graphify-out/` from the current `src/`: it was 13 commits stale, and now has 887 nodes, 3,398 edges and no import cycles. From it we listed code nothing calls and helpers written more than once, then checked each with a text search before changing anything.
+- **Removed (unused anywhere):**
+  - `components/Logo.tsx` (its unused `textColor` was the site's only lint warning, so lint is now clean);
+  - `components/ScrollProgressRing.tsx`;
+  - `hooks/useReveal.ts` and the `reveal-*` CSS it alone used (57 lines of `globals.css`);
+  - `slugify()` in both `treks.ts` and `courses.ts`.
+- **De-duplicated:**
+  - one `formatRupees()` in `lib/utils.ts` replaces three identical "₹" helpers in the trek, course and courses-list pages (output checked identical);
+  - `isVideo()` is now shared from `trekGalleries.ts` with the trek page.
+
+  Tour pages and the printable itinerary keep their "Rs." format on purpose: it matches the `Price` component.
+- **No change for visitors.** tsc clean, eslint 0 warnings, 86/86 tests pass. `CLAUDE.md` updated: no `slugify` or `useReveal`, and how to rebuild the graph.
+
+### 16 Nov 2026: UX & QA list, part 1 — uncommitted
+Checked all 106 items from the owner's two lists against the code; tracker in [`adventure-travel/docs/ux-qa/2026-11-16-tracker.md`](adventure-travel/docs/ux-qa/2026-11-16-tracker.md). About 45 were already built (sticky booking bar, FAQ search and categories, login in the navbar, seat locking, exactly-once payments, …).
+
+**For visitors:**
+- **One set of office hours, Mon–Sat 9 AM–7 PM.** The contact page, two FAQ answers and the activities page used to disagree.
+- **Removed unproven claims.**
+  - Numbers: "15+ years", "5000+ happy trekkers", "thousands of solo women", "24/7 support".
+  - Safety (owner chose "soften"): NIM/ABVIMAS and WFR-certified guides, oxygen cylinders and satellite links on every trek, a 24/7 command centre, certified women leaders.
+  - This covers the FAQ, the trek safety pop-up and the FAQ structured data. "Since 2010" stays.
+- **The FAQ now describes the real booking flow:**
+  - an account, then a booking email;
+  - a 30% advance or the full amount;
+  - a payment receipt.
+
+  It no longer promises an invoice, a 2-hour "welcome dossier", gear booking or a single-tent upgrade "during booking".
+- **The policy rules now match everywhere:**
+  - refunds take 7–14 working days, and the 3% charge, GST and advance aren't refunded;
+  - a date change is free if asked 7+ days before (owner);
+  - seats are confirmed on payment;
+  - the terms no longer ask for a UTR screenshot.
+- **Checkout** shows a 4-line refund and date-change summary next to the pay button.
+- **Dashboard:** paid bookings show a "During your trip" card with both emergency numbers.
+- **`/treks`:**
+  - "When are you travelling?" month filter (also `/treks?month=1`–`12`);
+  - "Altitude: High to Low" sort;
+  - removable chips for the active filters.
+- **Contact:** a "Get directions" map link under both offices.
+
+**Checked:**
+- tsc and lint clean, and 86/86 tests pass;
+- the local link crawl found 41 pages and 0 broken links;
+- screenshots of `/treks?month=1` (4 of 21 treks) and `/contact` on a phone.
+
+**Open:**
+- The owner chose a 3% card surcharge. It's not built yet (P1, needs a payment-backend change).
+- Several items wait on owner content: reviews, videos, GA4, gear prices, and whether the support@ mailbox exists.
+
 ### 13 Nov 2026: Tours SEO and link previews — uncommitted
 Checked `/tours`, `/tours/auli-winter-escape` and `/tours/chopta-tungnath` in a headless browser (titles, descriptions, canonical, Open Graph/Twitter tags, JSON-LD, headings, alt text).
 - **Link previews:**

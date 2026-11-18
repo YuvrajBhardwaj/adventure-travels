@@ -67,7 +67,8 @@ function addDays(iso, days) {
 }
 
 function isValidIsoDate(iso) {
-  return typeof iso === "string" && ISO_DATE.test(iso) && addDays(iso, 0) === iso;
+  // "2026-13-01" matches the pattern but isn't a date; check before addDays() throws on it.
+  return typeof iso === "string" && ISO_DATE.test(iso) && !Number.isNaN(toUtcMs(iso)) && addDays(iso, 0) === iso;
 }
 
 /** True when the start date is after today in India. */
@@ -101,6 +102,11 @@ function orderAmount(booking, kind, now = new Date()) {
     return { status: 422, error: "This booking needs a custom quote. Please contact us on WhatsApp." };
   }
   if (!PAYMENT_KINDS.includes(kind)) return { status: 400, error: "Choose how much to pay." };
+
+  // A trip that has already started can't be paid online any more; that would need a manual refund.
+  if (isValidIsoDate(booking.startDate) && daysBetween(istDate(now), booking.startDate) < 0) {
+    return { status: 409, error: "This trip has already started. Please contact us on WhatsApp." };
+  }
 
   const paid = booking.amountPaid || 0;
   if (kind === "advance") {

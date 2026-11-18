@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { signOut } from "@/lib/auth";
 import { treks, DIFFICULTY_COLORS } from "@/data/treks";
 import { TOURS } from "@/data/tours";
 import DesktopSearch from "@/components/DesktopSearch";
@@ -178,6 +177,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     setOpenMenu(null);
+    const { signOut } = await import("@/lib/auth");
     await signOut();
     router.push("/");
   };

@@ -1,60 +1,58 @@
-# Graph Report - src  (2026-11-13)
+# Graph Report - src  (2026-11-16)
 
 ## Corpus Check
-- 146 files · ~111,615 words
+- 154 files · ~116,016 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 1 file(s) not represented in the graph (top: .css 1)
 
 ## Summary
-- 855 nodes · 3204 edges · 30 communities (28 shown, 2 thin omitted)
+- 887 nodes · 3398 edges · 28 communities
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 12 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `47402266`
+- Built from commit: `6110bb4b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- cn
 - TrekDetailClient.tsx
+- cn
+- transition
 - TreksPageClient.tsx
 - dashboard/page.tsx
-- transition
 - CheckoutClient.tsx
-- admin.ts
-- CampingSection.tsx
-- ActivityFeed.tsx
-- app/page.tsx
-- courses.ts
-- app/layout.tsx
-- BookingsAdminClient.tsx
-- FadeUp
-- CustomersAdminClient.tsx
-- PaymentsAdminClient.tsx
-- [course]/page.tsx
-- motion.ts
-- fitTitle
-- AdminGate.tsx
-- FooterV2.tsx
-- ref_next
 - treks
-- AscentHero.tsx
+- ref_next
+- chopta-tungnath/page.tsx
+- DeparturesAdminClient.tsx
+- PaymentsAdminClient.tsx
+- admin.ts
+- ref_react
+- Price
+- BookingsAdminClient.tsx
+- MotionWrapper.tsx
+- courses.ts
+- app/page.tsx
+- TrekHub.tsx
+- ActivityFeed.tsx
+- CustomersAdminClient.tsx
+- FadeUp
+- CurrencyContext.tsx
+- FAQPageClient.tsx
+- CancellationPolicyPageClient.tsx
+- FooterV2.tsx
 - sitemap.ts
-- route.tsx
 - courseSeason.ts
-- Logo.tsx
-- Badge
-- cancellation-policy/page.tsx
 
 ## God Nodes (most connected - your core abstractions)
-1. `cn()` - 121 edges
-2. `Button` - 61 edges
-3. `buttonVariants()` - 54 edges
-4. `transition()` - 52 edges
-5. `Input` - 42 edges
-6. `FadeUp()` - 39 edges
-7. `Price()` - 35 edges
+1. `cn()` - 123 edges
+2. `Button` - 63 edges
+3. `buttonVariants()` - 56 edges
+4. `transition()` - 54 edges
+5. `Input` - 44 edges
+6. `Price()` - 43 edges
+7. `FadeUp()` - 39 edges
 8. `CourseDetailClient()` - 34 edges
 9. `Skeleton()` - 33 edges
 10. `DashboardPage()` - 30 edges
@@ -66,145 +64,142 @@
   adventure-travel/src/app/courses/page.tsx → adventure-travel/src/app/courses/CoursesPageClient.tsx
 - `ownImages()` --indirect_call--> `absoluteUrl()`  [INFERRED]
   adventure-travel/src/app/sitemap.ts → adventure-travel/src/lib/seo.ts
-- `WINTER_TREKS` --calls--> `seasonMonths()`  [EXTRACTED]
-  adventure-travel/src/app/winter-treks-uttarakhand/page.tsx → adventure-travel/src/lib/season.ts
-- `WinterTreksPage()` --calls--> `TrekHub()`  [EXTRACTED]
-  adventure-travel/src/app/winter-treks-uttarakhand/page.tsx → adventure-travel/src/components/TrekHub.tsx
+- `clampY()` --indirect_call--> `H()`  [INFERRED]
+  adventure-travel/src/components/ElevationLine.tsx → adventure-travel/src/components/QuickInfoModal.tsx
+- `CardFooter()` --calls--> `cn()`  [EXTRACTED]
+  adventure-travel/src/components/ui/card.tsx → adventure-travel/src/lib/utils.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (30 total, 2 thin omitted)
+## Communities (28 total, 0 thin omitted)
 
-### Community 0 - "cn"
-Cohesion: 0.06
-Nodes (76): Collapse(), ContactPage(), FAQS, courseDays(), CourseDetailClient(), CourseTabPanel(), INC_ICONS, isValidPhone() (+68 more)
-
-### Community 1 - "TrekDetailClient.tsx"
+### Community 0 - "TrekDetailClient.tsx"
 Cohesion: 0.05
-Nodes (88): BatchesSkeleton(), BatchRow(), DeparturesAdminClient(), SEAT_TONE, TREKS, WEEKDAYS, AdminDeparturesPage(), metadata (+80 more)
+Nodes (83): esc(), inr(), list(), printItinerary(), BookingCard(), DATES_BADGE, DatesTab(), FULL_MONTHS (+75 more)
 
-### Community 2 - "TreksPageClient.tsx"
-Cohesion: 0.05
-Nodes (73): fromPrice, JOSHIMATH_TREKS, metadata, PERMIT_TOURS, TreksFromJoshimathPage(), esc(), inr(), list() (+65 more)
-
-### Community 3 - "dashboard/page.tsx"
+### Community 1 - "cn"
 Cohesion: 0.07
-Nodes (54): cap(), DashboardPage(), day(), KIND_LABEL, LABELS, Money(), Pill(), Row (+46 more)
+Nodes (67): Collapse(), ContactPage(), FAQS, courseDays(), CourseDetailClient(), CourseTabPanel(), INC_ICONS, isValidPhone() (+59 more)
 
-### Community 4 - "transition"
+### Community 2 - "transition"
 Cohesion: 0.06
-Nodes (55): noSubscribe(), Template(), GalleryTab(), isVideo(), DesktopSearch(), activities, ArrowRight(), ChevronDown() (+47 more)
+Nodes (73): GalleryTab(), ALL_MOMENTS, Camp, CampingSection(), CAMPS, CUSTOM_CAMP, FILM_CROPS, GENERAL_ENQUIRY (+65 more)
+
+### Community 3 - "TreksPageClient.tsx"
+Cohesion: 0.06
+Nodes (59): ALTITUDE_HIGH, ALTITUDE_LOW, DIFFICULTIES, DIFFICULTY_ORDER, DURATION_OPTIONS, HERO_PHOTOS, HERO_SLIDES, MONTH_NAMES (+51 more)
+
+### Community 4 - "dashboard/page.tsx"
+Cohesion: 0.07
+Nodes (57): actionsFor(), cap(), DashboardPage(), day(), KIND_LABEL, LABELS, Money(), Pill() (+49 more)
 
 ### Community 5 - "CheckoutClient.tsx"
-Cohesion: 0.06
-Nodes (45): CheckoutClient(), describePaid(), loadRazorpay(), longDate(), Phase, RazorpayFailure, RazorpayInstance, RazorpaySuccess (+37 more)
+Cohesion: 0.10
+Nodes (29): CheckoutClient(), describePaid(), loadRazorpay(), longDate(), Phase, RazorpayFailure, RazorpayInstance, RazorpaySuccess (+21 more)
 
-### Community 6 - "admin.ts"
-Cohesion: 0.08
-Nodes (37): Payable, actionsFor(), addDepartures(), AdminBooking, AdminCustomer, AdminDeparture, AdminPayment, BookingEvent (+29 more)
-
-### Community 7 - "CampingSection.tsx"
-Cohesion: 0.14
-Nodes (21): activities, ActivitiesPage(), LEVEL_DOTS, RESTRICTED, waLink(), ALL_MOMENTS, Camp, CampingSection() (+13 more)
-
-### Community 8 - "ActivityFeed.tsx"
-Cohesion: 0.17
-Nodes (21): CustomerDetail(), AddBatches(), defaultCapacity(), DeparturesAdmin(), ACTIONS, ActivityFeed(), browserLabel(), FALLBACK (+13 more)
-
-### Community 9 - "app/page.tsx"
-Cohesion: 0.17
-Nodes (17): FAQV2, Home(), FindYourTrek(), FloatingWhatsApp(), HowItWorks(), SmoothScrollProvider(), SnowSchool(), initials() (+9 more)
-
-### Community 10 - "courses.ts"
-Cohesion: 0.09
-Nodes (18): Props, CoursesPage(), durations, metadata, tiers, trainingFrom, Course, CourseInclusion (+10 more)
-
-### Community 11 - "app/layout.tsx"
+### Community 6 - "treks"
 Cohesion: 0.12
-Nodes (14): fraunces, inter, metadata, spaceGrotesk, viewport, metadata, metadata, metadata (+6 more)
+Nodes (16): metadata, metadata, generateMetadata(), priceSentence(), metadata, FAQ_DATA, metadata, generateMetadata() (+8 more)
 
-### Community 12 - "BookingsAdminClient.tsx"
-Cohesion: 0.18
-Nodes (19): BookingsAdmin(), BookingsAdminClient(), describeEvent(), FilterSelect(), HistoryDrawer(), PAYMENT_STATES, ServerFilters, STATUSES (+11 more)
+### Community 7 - "ref_next"
+Cohesion: 0.10
+Nodes (16): metadata, fraunces, inter, metadata, spaceGrotesk, viewport, metadata, metadata (+8 more)
 
-### Community 13 - "FadeUp"
-Cohesion: 0.21
-Nodes (17): CancellationPolicyPage(), MailIcon(), REFUND_NOTE, REFUND_TIERS, VOUCHER_POINTS, FAQItem(), FAQV2(), AnimationProps (+9 more)
+### Community 8 - "chopta-tungnath/page.tsx"
+Cohesion: 0.09
+Nodes (20): dynamic, runtime, ChoptaTungnathPage(), covers(), DAYS, metadata, packages, pkg (+12 more)
 
-### Community 14 - "CustomersAdminClient.tsx"
-Cohesion: 0.19
-Nodes (15): CustomersAdmin(), CustomersAdminClient(), Detail, AdminCustomersPage(), metadata, KIND_LABEL, PAYMENT_STATE_LABEL, PAYMENT_STATE_TONE (+7 more)
+### Community 9 - "DeparturesAdminClient.tsx"
+Cohesion: 0.16
+Nodes (26): AddBatches(), BatchesSkeleton(), BatchRow(), defaultCapacity(), DeparturesAdmin(), DeparturesAdminClient(), SEAT_TONE, TREKS (+18 more)
 
-### Community 15 - "PaymentsAdminClient.tsx"
-Cohesion: 0.26
-Nodes (13): AdminPaymentsPage(), metadata, FailedEmails(), PaymentsAdmin(), PaymentsAdminClient(), PaymentsSkeleton(), cap(), dateTime() (+5 more)
+### Community 10 - "PaymentsAdminClient.tsx"
+Cohesion: 0.15
+Nodes (19): AdminActivityClient(), AdminActivityPage(), metadata, TableSkeleton(), AdminPaymentsPage(), metadata, PaymentsAdmin(), PaymentsAdminClient() (+11 more)
 
-### Community 16 - "[course]/page.tsx"
-Cohesion: 0.27
-Nodes (12): CourseDetailPage(), generateMetadata(), inr(), priceSentence(), generateMetadata(), inr(), TrekDetailPage(), trekTitle() (+4 more)
-
-### Community 17 - "motion.ts"
-Cohesion: 0.22
-Nodes (8): CoursesPageClient(), GALLERY_WALLPAPERS, HERO_MEDIA, EnquireTab(), WallpaperSlide, Bezier, DURATION, EASE
-
-### Community 18 - "fitTitle"
+### Community 11 - "admin.ts"
 Cohesion: 0.14
-Nodes (6): metadata, metadata, metadata, FAQ_DATA, metadata, fitTitle()
+Nodes (24): CustomersAdmin(), AdminCustomer, AdminDeparture, bookingRef(), db(), DepartureChange, fetchBookings(), getBookingEvents() (+16 more)
 
-### Community 19 - "AdminGate.tsx"
+### Community 12 - "ref_react"
+Cohesion: 0.15
+Nodes (15): noSubscribe(), Template(), AscentHero(), FROM_PRICE, MAX_DAYS, MIN_DAYS, SLIDES, Stage() (+7 more)
+
+### Community 13 - "Price"
+Cohesion: 0.17
+Nodes (18): AuliWinterEscapePage(), GroupOffers(), inr(), metadata, CHILD_ELIGIBLE, OTHER_PERKS, ScholarshipsTab(), Price() (+10 more)
+
+### Community 14 - "BookingsAdminClient.tsx"
+Cohesion: 0.14
+Nodes (22): BookingsAdmin(), BookingsAdminClient(), describeEvent(), FilterSelect(), HistoryDrawer(), PAYMENT_STATES, ServerFilters, STATUSES (+14 more)
+
+### Community 15 - "MotionWrapper.tsx"
+Cohesion: 0.19
+Nodes (16): activities, ActivitiesPage(), LEVEL_DOTS, RESTRICTED, waLink(), CoursesPageClient(), GALLERY_WALLPAPERS, HERO_MEDIA (+8 more)
+
+### Community 16 - "courses.ts"
+Cohesion: 0.11
+Nodes (17): Props, CoursesPage(), durations, metadata, tiers, trainingFrom, Course, CourseInclusion (+9 more)
+
+### Community 17 - "app/page.tsx"
+Cohesion: 0.18
+Nodes (12): FAQV2, Home(), Brand, BrandIcon(), BRANDS, FloatingWhatsApp(), HowItWorks(), Chapter (+4 more)
+
+### Community 18 - "TrekHub.tsx"
+Cohesion: 0.17
+Nodes (15): CourseDetailPage(), fromPrice, JOSHIMATH_TREKS, metadata, PERMIT_TOURS, TreksFromJoshimathPage(), TrekDetailPage(), TrekCard() (+7 more)
+
+### Community 19 - "ActivityFeed.tsx"
+Cohesion: 0.18
+Nodes (13): ACTIONS, ActivityFeed(), browserLabel(), FALLBACK, FeedSkeleton(), normalize(), Tone, Avatar() (+5 more)
+
+### Community 20 - "CustomersAdminClient.tsx"
+Cohesion: 0.21
+Nodes (14): CustomerDetail(), CustomersAdminClient(), Detail, AdminCustomersPage(), metadata, cap(), KIND_LABEL, PAYMENT_STATE_LABEL (+6 more)
+
+### Community 21 - "FadeUp"
+Cohesion: 0.27
+Nodes (12): FindYourTrek(), FadeUp(), SnowSchool(), StoriesTestimonials(), item, RailItem(), SwipeRail(), PERKS (+4 more)
+
+### Community 22 - "CurrencyContext.tsx"
+Cohesion: 0.19
+Nodes (14): Ctx, CurrencyCtx, CurrencyProvider(), Rates, readSaved(), Saved, writeSaved(), BASE_CURRENCY (+6 more)
+
+### Community 23 - "FAQPageClient.tsx"
 Cohesion: 0.29
-Nodes (8): AdminActivityClient(), AdminActivityPage(), metadata, AdminGate(), AdminNav(), TABS, ThemeScope(), useAuth()
+Nodes (10): ChevronDownIcon(), Collapse(), FAQ_CATEGORIES, FAQCategory, FAQItemData, FAQPage(), MailIcon(), MessageCircleIcon() (+2 more)
 
-### Community 20 - "FooterV2.tsx"
-Cohesion: 0.20
-Nodes (11): RootLayout(), CurrencySwitcher(), destinations, FooterV2(), instagramImages, legalLinks, MobileAccordion(), popularTreks (+3 more)
+### Community 24 - "CancellationPolicyPageClient.tsx"
+Cohesion: 0.29
+Nodes (6): CancellationPolicyPage(), MailIcon(), VOUCHER_POINTS, metadata, REFUND_NOTE, REFUND_TIERS
 
-### Community 21 - "ref_next"
+### Community 25 - "FooterV2.tsx"
 Cohesion: 0.22
-Nodes (4): metadata, dynamic, MobileSearchButton(), SheetTrigger
+Nodes (9): destinations, FooterV2(), instagramImages, legalLinks, MobileAccordion(), popularTreks, quickLinks, socials (+1 more)
 
-### Community 22 - "treks"
-Cohesion: 0.20
-Nodes (7): metadata, fromPrice, metadata, SNOW_TREKS, WINTER_TREKS, WinterTreksPage(), treks
+### Community 26 - "sitemap.ts"
+Cohesion: 0.36
+Nodes (6): COURSE_ROUTES, dynamic, ownImages(), STATIC_ROUTES, TOUR_ROUTES, TREK_ROUTES
 
-### Community 23 - "AscentHero.tsx"
-Cohesion: 0.29
-Nodes (7): AscentHero(), FROM_PRICE, MAX_DAYS, MIN_DAYS, SLIDES, Stage(), TOP
-
-### Community 24 - "sitemap.ts"
-Cohesion: 0.38
-Nodes (5): COURSE_ROUTES, dynamic, ownImages(), STATIC_ROUTES, TREK_ROUTES
-
-### Community 26 - "courseSeason.ts"
+### Community 27 - "courseSeason.ts"
 Cohesion: 0.60
 Nodes (4): courseSeason(), courseStartDates(), iso(), MONTHS
-
-### Community 27 - "Logo.tsx"
-Cohesion: 0.60
-Nodes (4): Logo(), LogoMark(), Mark(), Variant
-
-### Community 28 - "Badge"
-Cohesion: 0.50
-Nodes (3): Badge(), BadgeProps, badgeVariants
-
-## Knowledge Gaps
-- **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `cn` to `TrekDetailClient.tsx`, `TreksPageClient.tsx`, `dashboard/page.tsx`, `transition`, `CheckoutClient.tsx`, `CampingSection.tsx`, `ActivityFeed.tsx`, `app/page.tsx`, `BookingsAdminClient.tsx`, `FadeUp`, `CustomersAdminClient.tsx`, `PaymentsAdminClient.tsx`, `motion.ts`, `AdminGate.tsx`, `FooterV2.tsx`, `AscentHero.tsx`, `Badge`?**
-  _High betweenness centrality (0.105) - this node is a cross-community bridge._
-- **Should `cn` be split into smaller, more focused modules?**
-  _Cohesion score 0.05786163522012579 - nodes in this community are weakly interconnected._
-- **Why does `Button` connect `cn` to `TrekDetailClient.tsx`, `TreksPageClient.tsx`, `dashboard/page.tsx`, `CheckoutClient.tsx`, `CampingSection.tsx`, `ActivityFeed.tsx`, `BookingsAdminClient.tsx`, `CustomersAdminClient.tsx`, `PaymentsAdminClient.tsx`, `FooterV2.tsx`?**
-  _High betweenness centrality (0.033) - this node is a cross-community bridge._
+- **Why does `cn()` connect `cn` to `TrekDetailClient.tsx`, `transition`, `TreksPageClient.tsx`, `dashboard/page.tsx`, `CheckoutClient.tsx`, `DeparturesAdminClient.tsx`, `PaymentsAdminClient.tsx`, `admin.ts`, `ref_react`, `Price`, `BookingsAdminClient.tsx`, `MotionWrapper.tsx`, `app/page.tsx`, `TrekHub.tsx`, `ActivityFeed.tsx`, `CustomersAdminClient.tsx`, `FadeUp`, `FAQPageClient.tsx`?**
+  _High betweenness centrality (0.099) - this node is a cross-community bridge._
 - **Should `TrekDetailClient.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.050475635798874006 - nodes in this community are weakly interconnected._
-- **Why does `transition()` connect `transition` to `cn`, `TrekDetailClient.tsx`, `TreksPageClient.tsx`, `CheckoutClient.tsx`, `ActivityFeed.tsx`, `FadeUp`, `motion.ts`, `FooterV2.tsx`?**
+  _Cohesion score 0.05106382978723404 - nodes in this community are weakly interconnected._
+- **Why does `Button` connect `cn` to `TrekDetailClient.tsx`, `transition`, `TreksPageClient.tsx`, `dashboard/page.tsx`, `CheckoutClient.tsx`, `DeparturesAdminClient.tsx`, `PaymentsAdminClient.tsx`, `admin.ts`, `BookingsAdminClient.tsx`, `ActivityFeed.tsx`, `CustomersAdminClient.tsx`, `FAQPageClient.tsx`, `FooterV2.tsx`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+- **Should `cn` be split into smaller, more focused modules?**
+  _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
+- **Why does `buttonVariants()` connect `cn` to `TrekDetailClient.tsx`, `transition`, `TreksPageClient.tsx`, `dashboard/page.tsx`, `CheckoutClient.tsx`, `PaymentsAdminClient.tsx`, `ref_react`, `Price`, `MotionWrapper.tsx`, `app/page.tsx`, `FadeUp`, `FAQPageClient.tsx`, `CancellationPolicyPageClient.tsx`?**
   _High betweenness centrality (0.029) - this node is a cross-community bridge._
+- **Should `transition` be split into smaller, more focused modules?**
+  _Cohesion score 0.058002735978112174 - nodes in this community are weakly interconnected._
 - **Should `TreksPageClient.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.05143570536828964 - nodes in this community are weakly interconnected._
-- **Should `dashboard/page.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.07259615384615385 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05754527162977867 - nodes in this community are weakly interconnected._

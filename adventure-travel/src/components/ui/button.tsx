@@ -11,9 +11,9 @@ const baseButtonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-emerald-600 text-white shadow-sm shadow-emerald-900/20 hover:bg-emerald-700 hover:shadow-md hover:shadow-emerald-900/20",
+          "bg-emerald-700 text-white shadow-sm shadow-emerald-900/20 hover:bg-emerald-800 hover:shadow-md hover:shadow-emerald-900/20",
         outline:
-          "border border-slate-300 bg-transparent text-slate-800 hover:bg-slate-100 dark:border-white/15 dark:text-slate-100 dark:hover:bg-white/10",
+          "border border-slate-500 bg-transparent text-slate-800 hover:bg-slate-100 dark:border-white/15 dark:text-slate-100 dark:hover:bg-white/10",
         ghost: "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/10",
         destructive: "bg-red-600 text-white shadow-sm shadow-red-900/20 hover:bg-red-700",
         link: "text-emerald-700 underline-offset-4 hover:underline active:scale-100 dark:text-emerald-400",

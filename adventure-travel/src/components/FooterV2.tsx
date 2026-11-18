@@ -375,7 +375,10 @@ export default function FooterV2() {
           <MobileAccordion title="Contact & Newsletter" id="contact" openId={openSection} setOpenId={setOpenSection}>
             <div className="space-y-1 text-sm text-white/65">
               <p>M3M Marina, Sec 68, Gurugram · Chamoli, Joshimath</p>
-              <a href="tel:+917817912062" className="flex min-h-11 items-center text-white/85">+91 78179 12062 · +91 86505 61564</a>
+              <div className="flex flex-wrap gap-x-3">
+                <a href="tel:+917817912062" className="flex min-h-11 items-center text-white/85">+91 78179 12062</a>
+                <a href="tel:+918650561564" className="flex min-h-11 items-center text-white/85">+91 86505 61564</a>
+              </div>
               <a href="mailto:himalayanarcadventure@gmail.com" className="flex min-h-11 items-center text-white/65 text-xs break-all">himalayanarcadventure@gmail.com</a>
               <form onSubmit={handleNewsletter} noValidate className="dark flex gap-2 pt-2">
                 <Input value={email} onChange={(e) => { setEmail(e.target.value); if (status !== "idle") setStatus("idle"); }} placeholder="Your email" aria-label="Email" invalid={status === "error"} className="min-w-0 flex-1 dark:aria-[invalid=true]:border-red-400/60" />

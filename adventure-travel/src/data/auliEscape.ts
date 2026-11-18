@@ -121,11 +121,47 @@ export const AULI_ESCAPE = {
       ],
     },
   ],
+  /** Top attractions, shown last on the page. `photo` only from our own photos; without one the row shows the NoPhoto mark. */
   attractions: [
-    { name: "Auli Artificial Lake", text: "A man-made lake above the ski slopes, built to feed the snow-making for the runs. A quiet spot with the high peaks standing over it." },
-    { name: "Gorson Bugyal", text: "A wide alpine meadow above Auli, reached on foot through oak and conifer forest: snow in winter, grass and flowers in summer, and a long line of peaks from the top." },
-    { name: "Ski slopes and chairlift", text: "Auli is India's ski capital. Try a beginner ski session or ride the chairlift over the slopes when it's running (both at extra cost)." },
-    { name: "Nanda Devi and the Garhwal peaks", text: "Auli looks straight across at Nanda Devi (7,816 m), India's second-highest peak, with Dronagiri, Hathi-Ghoda and Trishul around it." },
+    {
+      name: "Ski slopes and chairlift",
+      points: "Snow slopes • Chairlift • Beginner ski lessons",
+      text: "Auli's open slopes are where India learns to ski. Try a beginner ski session with an instructor, or ride the chairlift over the runs for the view when it's running. Both cost extra and depend on snow and weather.",
+      photo: "/assets/skiing/IMG_5036.JPG.jpeg",
+      photoAlt: "Young skiers on the Auli slopes under the chairlift",
+    },
+    {
+      name: "Nanda Devi and the Garhwal peaks",
+      points: "Nanda Devi 7,816 m • Dronagiri • Hathi-Ghoda",
+      text: "From the Auli slopes you look across at Nanda Devi (7,816 m), India's second-highest peak, with Dronagiri, Hathi-Ghoda and Trishul around it. The view is clearest on winter mornings after fresh snow.",
+      photo: "/assets/skiing/IMG_5022.JPG.jpeg",
+      photoAlt: "A skier on fresh snow at Auli with the snow-covered Garhwal range behind",
+    },
+    {
+      name: "Auli Artificial Lake",
+      points: "Snow-making lake • Peak views • Easy walk",
+      text: "A man-made lake above the ski slopes, built to feed the snow-making for the runs. A quiet spot to sit for a while, with the high peaks standing over the water.",
+    },
+    {
+      name: "Gorson Bugyal",
+      points: "Alpine meadow • Forest walk • Snow in winter",
+      text: "A wide alpine meadow above Auli, reached on foot through oak and conifer forest. Snow in winter, grass and flowers in summer, and a long line of peaks from the top.",
+    },
+    {
+      name: "Chattrakund",
+      points: "Clear mountain lake • Beyond Gorson Bugyal • Quiet spot",
+      text: "A small, clear lake a little beyond Gorson Bugyal, on the same walk. Worth the extra stretch on a fine day for the quiet and the reflections.",
+    },
+    {
+      name: "Nanda Devi National Park",
+      points: "UNESCO World Heritage Site • Protected wilderness",
+      text: "The protected wilderness around Nanda Devi, listed by UNESCO as a World Heritage Site together with the Valley of Flowers. Its core is closed to visitors; from Auli you see the peaks that ring it.",
+    },
+    {
+      name: "Joshimath",
+      points: "Narsingh temple • Jyotirmath • Ropeway to Auli",
+      text: "The town below Auli that the tour passes through on the way up and back, and where the ropeway to Auli starts. Home to the Narsingh temple and Jyotirmath, the monastery founded by Adi Shankaracharya, and the gateway to Badrinath.",
+    },
   ],
   whatToCarry: [
     "Warm layers, gloves and a cap: Auli is cold, and below freezing in winter",

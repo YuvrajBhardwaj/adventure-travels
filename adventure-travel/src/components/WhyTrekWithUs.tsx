@@ -49,7 +49,7 @@ const tile: Variants = {
 export default function WhyTrekWithUs() {
   const { ref, state } = useDeferredReveal<HTMLOListElement>("-60px");
   return (
-    <section className="relative bg-card py-20 md:py-28">
+    <section id="about" className="relative scroll-mt-20 bg-card py-20 md:py-28">
       <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8">
         <FadeUp className="lg:col-span-5">
           <div className="lg:sticky lg:top-28">

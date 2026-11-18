@@ -4,38 +4,26 @@ module.exports = {
   "skiing-course": {
     "name": "7-Day Skiing Course",
     "type": "Skiing",
-    "price": 10000,
+    "price": 23000,
     "tiers": [
-      {
-        "id": "basic",
-        "name": "Basic",
-        "priceBase": 10000,
-        "priceFull": 20000
-      },
       {
         "id": "premium",
         "name": "Premium",
-        "priceBase": 15000,
-        "priceFull": 30000
+        "priceBase": 23000,
+        "priceFull": 45000
       }
     ]
   },
   "skiing-intensive-2week": {
     "name": "14-Day International-Style Skiing Course",
     "type": "Skiing",
-    "price": 18500,
+    "price": 30000,
     "tiers": [
-      {
-        "id": "basic",
-        "name": "Basic",
-        "priceBase": 18500,
-        "priceFull": 38000
-      },
       {
         "id": "premium",
         "name": "Premium",
-        "priceBase": 23500,
-        "priceFull": 45500
+        "priceBase": 30000,
+        "priceFull": 60000
       }
     ]
   },

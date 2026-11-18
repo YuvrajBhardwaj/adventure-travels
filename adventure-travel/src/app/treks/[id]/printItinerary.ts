@@ -37,7 +37,7 @@ export function printItinerary(trek: Trek): boolean {
       (d) => `
       <section class="day">
         <h3><span>Day ${d.day}</span>${esc(d.title)}</h3>
-        <p class="meta">${d.altitude.toLocaleString("en-IN")} m${d.hours ? ` · ${d.hours} hrs` : ""}${d.meals ? ` · Meals: ${esc(d.meals)}` : ""}</p>
+        <p class="meta">${d.altitude.toLocaleString("en-IN")} m${d.hours ? ` · ${d.hours} hrs` : ""}${d.meals && d !== trek.itinerary.at(-1) ? ` · Meals: ${esc(d.meals)}` : ""}</p>
         <p>${esc(d.description)}</p>
         ${d.note ? `<p class="note">Note: ${esc(d.note)}</p>` : ""}
       </section>`,

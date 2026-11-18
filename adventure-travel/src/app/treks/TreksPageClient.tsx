@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { EmptyState } from "@/components/ui/empty-state";
+import { seasonMonths } from "@/lib/season";
 
 // Hero wallpaper: our own photos from these treks. Landscape shots only — portrait ones crop badly this wide.
 const HERO_PHOTOS = [
@@ -54,7 +55,10 @@ const PRICE_OPTIONS = [
   { label: "20,000 - 30,000", min: 20000, max: 30000 },
   { label: "Above 30,000", min: 30000, max: 999999 },
 ];
-const SORT_OPTIONS = ["Sort by Popularity", "Price: Low to High", "Price: High to Low", "Duration: Short to Long", "Difficulty: Easy to Hard"];
+const SORT_OPTIONS = ["Sort by Popularity", "Price: Low to High", "Price: High to Low", "Duration: Short to Long", "Difficulty: Easy to Hard", "Altitude: High to Low"];
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+// Month numbers each trek's best season covers, worked out once.
+const TREK_MONTHS = new Map(treks.map((t) => [t.slug, seasonMonths(t.bestSeason)]));
 const DIFFICULTY_ORDER: Record<string, number> = { Easy: 0, Moderate: 1, Challenging: 2, Strenuous: 3 };
 
 export default function TreksPage() {
@@ -65,6 +69,7 @@ export default function TreksPage() {
   const [search, setSearch] = useState("");
   const [region, setRegion] = useState("All Regions");
   const [difficulty, setDifficulty] = useState("All Levels");
+  const [month, setMonth] = useState(-1); // -1 = any month
 
   // Deep links from the hero search, navbar, destination cards and footer
   // (?search=, ?destination=, ?region=, ?difficulty=) are applied after mount.
@@ -77,6 +82,8 @@ export default function TreksPage() {
     if (params.get("search")) setSearch(params.get("search")!);
     if (regionParam && REGIONS.includes(regionParam)) setRegion(regionParam);
     if (difficultyParam && (DIFFICULTIES as readonly string[]).includes(difficultyParam)) setDifficulty(difficultyParam);
+    const monthParam = Number(params.get("month"));
+    if (Number.isInteger(monthParam) && monthParam >= 1 && monthParam <= 12) setMonth(monthParam - 1);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
@@ -108,6 +115,9 @@ export default function TreksPage() {
     if (difficulty !== "All Levels") {
       result = result.filter((t) => t.difficulty === difficulty);
     }
+    if (month >= 0) {
+      result = result.filter((t) => TREK_MONTHS.get(t.slug)?.includes(month));
+    }
     const dur = DURATION_OPTIONS[durationIdx];
     if (dur.min > 0 || dur.max < 999) {
       result = result.filter((t) => t.days >= dur.min && t.days <= dur.max);
@@ -130,18 +140,33 @@ export default function TreksPage() {
       case "Difficulty: Easy to Hard":
         result.sort((a, b) => (DIFFICULTY_ORDER[a.difficulty] ?? 0) - (DIFFICULTY_ORDER[b.difficulty] ?? 0));
         break;
+      case "Altitude: High to Low":
+        result.sort((a, b) => b.maxAltitude - a.maxAltitude);
+        break;
       default:
         result = byPopularity(result);
     }
 
     return result;
-  }, [destination, search, region, difficulty, durationIdx, priceIdx, sort]);
+  }, [destination, search, region, difficulty, month, durationIdx, priceIdx, sort]);
+
+  // One chip per filter in use, so it's clear why the list is shorter (UX-015).
+  const activeFilters = [
+    search.trim() && { label: `"${search.trim()}"`, clear: () => setSearch("") },
+    month >= 0 && { label: MONTH_NAMES[month], clear: () => setMonth(-1) },
+    destination && { label: destinations.find((d) => d.slug === destination)?.name ?? destination, clear: () => setDestination("") },
+    region !== "All Regions" && { label: region, clear: () => setRegion("All Regions") },
+    difficulty !== "All Levels" && { label: difficulty, clear: () => setDifficulty("All Levels") },
+    durationIdx > 0 && { label: DURATION_OPTIONS[durationIdx].label, clear: () => setDurationIdx(0) },
+    priceIdx > 0 && { label: PRICE_OPTIONS[priceIdx].label, clear: () => setPriceIdx(0) },
+  ].filter((f): f is { label: string; clear: () => void } => Boolean(f));
 
   const clearFilters = () => {
     setDestination("");
     setSearch("");
     setRegion("All Regions");
     setDifficulty("All Levels");
+    setMonth(-1);
     setDurationIdx(0);
     setPriceIdx(0);
     setSort("Sort by Popularity");
@@ -214,6 +239,13 @@ export default function TreksPage() {
                   />
                 </div>
                 <div>
+                  <Label htmlFor="trek-month">When are you travelling?</Label>
+                  <Select id="trek-month" value={month} onChange={(e) => setMonth(Number(e.target.value))}>
+                    <option value={-1}>Any month</option>
+                    {MONTH_NAMES.map((m, i) => <option key={m} value={i}>{m}</option>)}
+                  </Select>
+                </div>
+                <div>
                   <Label htmlFor="trek-destination">Destination</Label>
                   <Select id="trek-destination" value={destination} onChange={(e) => setDestination(e.target.value)}>
                     <option value="">All Destinations</option>
@@ -259,6 +291,23 @@ export default function TreksPage() {
                 {SORT_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
               </Select>
             </div>
+
+            {activeFilters.length > 0 && (
+              <div className="-mt-2 mb-6 flex flex-wrap items-center gap-2" aria-label="Active filters">
+                {activeFilters.map((f) => (
+                  <button
+                    key={f.label}
+                    type="button"
+                    onClick={f.clear}
+                    className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 text-sm text-emerald-800 transition-colors duration-150 ease-out hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                  >
+                    {f.label}
+                    <span aria-hidden>×</span>
+                    <span className="sr-only">(remove filter)</span>
+                  </button>
+                ))}
+              </div>
+            )}
 
             {filtered.length === 0 ? (
               <EmptyState

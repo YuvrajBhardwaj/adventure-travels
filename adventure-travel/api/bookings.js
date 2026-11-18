@@ -29,7 +29,7 @@ async function createTrek(db, user, body) {
   const slug = text(body.slug, 80);
   const trek = trekCatalog[slug];
   if (!trek) throw new HttpError(400, "Unknown trek.");
-  const date = text(body.date, 10);
+  const date = text(body.date, 20);
   if (!pricing.isFutureStart(date)) throw new HttpError(400, "Pick a start date in the future.");
 
   const group = parseTrekGroup(body.groupSize);
@@ -77,7 +77,7 @@ async function createCourse(db, user, body) {
   const slug = text(body.slug, 80);
   const course = courseCatalog[slug];
   if (!course) throw new HttpError(400, "Unknown course.");
-  const date = text(body.date, 10);
+  const date = text(body.date, 20);
   if (!pricing.isFutureStart(date)) throw new HttpError(400, "Pick a start date in the future.");
 
   const groupSize = Number(body.groupSize);

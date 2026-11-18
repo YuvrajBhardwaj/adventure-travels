@@ -532,6 +532,13 @@ export default function CheckoutClient() {
 
               <TrustSection />
 
+              <ul className="space-y-1 rounded-xl border border-slate-200 p-3 text-xs text-slate-600 dark:border-white/10 dark:text-slate-300">
+                <li>The 30% advance is non-refundable.</li>
+                <li>Cancel 25+ days before the start: 90% back, or 100% as a Trek Voucher. Less closer to the date.</li>
+                <li>Refunds take 7–14 working days. The 5% GST and a 3% processing charge aren&apos;t refunded.</li>
+                <li>Free change to another date of the same trip if you ask 7+ days before and that date has seats.</li>
+              </ul>
+
               <p className="text-center text-xs text-slate-500 dark:text-slate-400">
                 By paying you agree to our{" "}
                 <Link href="/cancellation-policy" className="underline underline-offset-2 transition-colors duration-150 ease-out hover:text-slate-900 motion-reduce:transition-none dark:hover:text-white">

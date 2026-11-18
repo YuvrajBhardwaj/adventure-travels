@@ -203,7 +203,7 @@ export default function ActivitiesPage() {
                 sub: "Auli · 7-day certified course",
                 levels: ["Snowplough", "Parallel Turns", "Off-Piste"],
                 text: "Learn stance, balance and stopping on nursery slopes. Progress through linked turns to chairlift runs with an instructor at your side.",
-                price: <>From ₹10,000 <span className="text-xs font-normal text-muted">/ 7 days</span></>,
+                price: <>From ₹23,000 <span className="text-xs font-normal text-muted">/ 7 days</span></>,
                 actions: (
                   <>
                     <Link href="/courses" className={buttonVariants()}>View Course</Link>
@@ -435,7 +435,7 @@ export default function ActivitiesPage() {
               { value: "All-inclusive", label: "Permits, guide & meals" },
               { value: "Since 2010", label: "Guiding from Joshimath" },
               { value: "Free", label: "Date change" },
-              { value: "24/7", label: "Support on WhatsApp" },
+              { value: "Mon–Sat", label: "WhatsApp support, 9AM–7PM" },
             ].map((stat, i) => (
               <div key={stat.label} className={cn("py-6 pr-4", i % 2 === 1 && "pl-4", i > 0 && "md:border-l md:pl-6", i >= 2 && "border-t md:border-t-0", HAIRLINE)}>
                 <dd className="font-heading text-2xl font-semibold text-foreground">{stat.value}</dd>

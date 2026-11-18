@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import CheckoutClient from "./CheckoutClient";
 
 export const metadata: Metadata = {
-  title: "Secure Checkout | Himalayan Arc Adventure",
+  title: "Secure Checkout", // the root layout adds " | Himalayan Arc Adventure"
   robots: { index: false, follow: false },
 };
 

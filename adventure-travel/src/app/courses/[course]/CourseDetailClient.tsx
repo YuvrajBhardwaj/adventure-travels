@@ -74,10 +74,10 @@ const STAY_LABELS: Record<"base" | "full", string> = {
 };
 
 /* Per-combo bullet points for the package cards ("what changes" between the 4 options). */
-function pkgBullets(tier: { id: string }, stay: "base" | "full"): string[] {
+function pkgBullets(tier: { id: string }, stay: "base" | "full", nights: string): string[] {
   if (stay === "full") {
     return [
-      "7 nights Auli stay included",
+      `${nights} Auli stay included`,
       "All meals included (breakfast, lunch & dinner)",
       tier.id === "premium" ? "Video analysis, seminars & final assessment" : "3–4 hrs practical coaching daily",
       "Certificate + graduation ceremony",
@@ -222,10 +222,11 @@ export default function CourseDetailClient({ course }: Props) {
   const selectedTier = tiers.find((t) => t.id === tierId) ?? tiers[0];
   const total = selectedTier ? (stay === "full" ? selectedTier.priceFull : selectedTier.priceBase) : course.price;
   const packages = tiers.flatMap((t) => (["base", "full"] as const).map((s) => ({ tier: t, stay: s })));
+  // "13 nights", read from the course's own Accommodation line so the cards can't disagree with it.
+  const nights = course.inclusions?.find((i) => i.icon === "bed")?.description.match(/\d+ nights/)?.[0] ?? "Auli stay";
 
   const typeTone = TYPE_TONES[course.type] ?? "sky";
   const days = courseDays(course.duration);
-  const fromPrice = tiers.length > 0 ? Math.min(...tiers.map((t) => t.priceBase)) : course.price;
   const images = course.gallery || [course.image];
   // Hero slideshow: the cover first, then the gallery photos (videos are left to the gallery tab).
   const heroSlides = [...new Set([course.image, ...images].filter((src) => !/\.(mp4|mov|webm)$/i.test(src)))].map((src) => ({ src }));
@@ -501,7 +502,10 @@ export default function CourseDetailClient({ course }: Props) {
                   {packages.length > 0 && (
                     <div className="mb-10">
                       <h3 className={cn(PANEL_H3, "mb-1")}>Choose Your Package</h3>
-                      <p className="mb-4 text-sm text-slate-500">Two itineraries, each with or without stay &amp; meals. The one you pick carries through to booking.</p>
+                      <p className="mb-4 text-sm text-slate-500">
+                        {tiers.length > 1 ? `${tiers.length} itineraries, each with or without stay & meals.` : "Pick with or without stay & meals."}{" "}
+                        The one you pick carries through to booking.
+                      </p>
                       <div className="grid gap-4 sm:grid-cols-2">
                         {packages.map(({ tier, stay: s }) => {
                           const active = tier.id === tierId && s === stay;
@@ -526,7 +530,7 @@ export default function CourseDetailClient({ course }: Props) {
                                 About <Price inr={Math.round(price / days)} /> a day for {days} days
                               </span>
                               <ul className="mt-3 w-full space-y-1.5 border-t border-slate-100 pt-3">
-                                {pkgBullets(tier, s).map((b) => (
+                                {pkgBullets(tier, s, nights).map((b) => (
                                   <li key={b} className="flex items-start gap-2 text-xs leading-snug text-slate-600">
                                     <svg className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
                                     {b}
@@ -628,7 +632,7 @@ export default function CourseDetailClient({ course }: Props) {
                     <>
                       <p className="mb-2 text-slate-600">{selectedTier.blurb}</p>
                       <p className="mb-6 text-sm text-slate-500">
-                        <Price inr={selectedTier.priceBase} /> without stay &amp; meals · <Price inr={selectedTier.priceFull} /> with lodging &amp; all meals. Certificate and graduation ceremony included in both.
+                        <Price inr={selectedTier.priceBase} /> without stay &amp; meals · <Price inr={selectedTier.priceFull} /> with lodging &amp; all meals. Certificate and graduation ceremony included either way.
                       </p>
                       <div className="space-y-2">
                         {selectedTier.itinerary.map((day, i) => (
@@ -995,11 +999,14 @@ export default function CourseDetailClient({ course }: Props) {
               <div className="mb-4">
                 {tiers.length > 0 ? (
                   <>
-                    <span className="block text-xs font-semibold uppercase tracking-wider text-slate-500">From</span>
-                    <span className="font-heading text-3xl font-bold text-slate-900"><Price inr={fromPrice} /></span>
+                    {/* Follows the package picked in "Choose Your Package". */}
+                    <span className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      Your package{selectedTier ? `: ${selectedTier.name}, ${stay === "full" ? "with stay" : "no stay"}` : ""}
+                    </span>
+                    <span className="font-heading text-3xl font-bold text-slate-900"><Price inr={total} /></span>
                     <span className="ml-1 text-slate-500">/ person</span>
                     <span className="mt-1 block text-xs font-medium text-sky-700">
-                      About <Price inr={Math.round(fromPrice / days)} /> a day of certified coaching
+                      About <Price inr={Math.round(total / days)} /> a day for {days} days
                     </span>
                     <table className="mt-3 w-full text-left text-xs">
                       <thead>
@@ -1011,10 +1018,19 @@ export default function CourseDetailClient({ course }: Props) {
                       </thead>
                       <tbody>
                         {tiers.map((t) => (
-                          <tr key={t.id} className={cn("border-t border-slate-100", selectedTier?.id === t.id && "font-semibold text-sky-700")}>
-                            <td className="py-1.5">{t.name}</td>
-                            <td className="py-1.5 text-right"><Price inr={t.priceBase} /></td>
-                            <td className="py-1.5 text-right"><Price inr={t.priceFull} /></td>
+                          <tr key={t.id} className="border-t border-slate-100">
+                            <td className={cn("py-1.5", selectedTier?.id === t.id && "font-semibold text-slate-900")}>{t.name}</td>
+                            {(["base", "full"] as const).map((s) => {
+                              const on = selectedTier?.id === t.id && stay === s;
+                              return (
+                                <td key={s} className="py-1 text-right">
+                                  <button type="button" onClick={() => { setTierId(t.id); setStay(s); }} aria-pressed={on}
+                                    className={cn("rounded-lg px-2 py-0.5", on ? "bg-sky-50 font-semibold text-sky-700 ring-1 ring-sky-300" : "text-slate-700 hover:bg-slate-50")}>
+                                    <Price inr={s === "full" ? t.priceFull : t.priceBase} />
+                                  </button>
+                                </td>
+                              );
+                            })}
                           </tr>
                         ))}
                       </tbody>
@@ -1070,14 +1086,15 @@ export default function CourseDetailClient({ course }: Props) {
 
       {/* Fixed mobile booking band — price + CTA always reachable on phones */}
       <div
+        data-fixed-bottom-bar
         className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur lg:hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="flex items-center gap-3 px-4 py-3">
           <div className="flex-shrink-0">
-            <div className="text-[11px] leading-none text-slate-500">From</div>
+            <div className="text-[11px] leading-none text-slate-500">{selectedTier ? (stay === "full" ? "With stay" : "No stay") : "From"}</div>
             <div className="text-lg font-bold leading-tight text-slate-900">
-              <Price inr={Math.min(...tiers.map((t) => t.priceBase), course.price)} />
+              <Price inr={total} />
             </div>
           </div>
           <a
@@ -1088,7 +1105,7 @@ export default function CourseDetailClient({ course }: Props) {
           >
             WhatsApp
           </a>
-          <Button onClick={() => goToTab("book")} className="flex-1 px-4 font-bold">
+          <Button onClick={() => goToTab("book")} className="min-w-0 flex-1 px-4 font-bold">
             Book Now →
           </Button>
         </div>

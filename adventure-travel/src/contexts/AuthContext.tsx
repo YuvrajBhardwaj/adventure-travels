@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { getSession, onAuthStateChange, type SafeUser } from "@/lib/auth";
+import type { SafeUser } from "@/lib/auth";
 
 interface AuthCtx {
   user: SafeUser | null;
@@ -15,10 +15,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<SafeUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // The Supabase SDK (~64 KB gzipped) is loaded after the page paints, not in every page's
+  // startup bundle: most visitors never sign in. `loading` stays true until it has answered.
   useEffect(() => {
-    getSession().then((u) => { setUser(u); setLoading(false); });
-    const { data: { subscription } } = onAuthStateChange((u) => { setUser(u); setLoading(false); });
-    return () => subscription.unsubscribe();
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+    void import("@/lib/auth").then(({ getSession, onAuthStateChange }) => {
+      if (cancelled) return;
+      getSession().then((u) => { if (!cancelled) { setUser(u); setLoading(false); } });
+      const { data: { subscription } } = onAuthStateChange((u) => { setUser(u); setLoading(false); });
+      unsubscribe = () => subscription.unsubscribe();
+    });
+    return () => { cancelled = true; unsubscribe?.(); };
   }, []);
 
   return <Ctx.Provider value={{ user, loading, setUser }}>{children}</Ctx.Provider>;

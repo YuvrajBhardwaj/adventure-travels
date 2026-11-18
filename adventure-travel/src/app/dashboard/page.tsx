@@ -150,6 +150,8 @@ function actionsFor(b: Row, priceable: boolean) {
     cancel: b.status === "pending" && state === "unpaid",
     policyNote: b.status !== "cancelled" && (b.status === "confirmed" || state !== "unpaid"),
     overdue: isOverdue(state, b.balance_due_date),
+    // Paid bookings get the during-the-trip contacts (UX-052).
+    tripContacts: b.status !== "cancelled" && (state === "advance_paid" || state === "fully_paid"),
   };
 }
 
@@ -308,7 +310,22 @@ export default function DashboardPage() {
       Need to cancel? See our{" "}
       <Link href="/cancellation-policy" className="text-emerald-400 underline-offset-4 hover:underline">cancellation policy</Link> or{" "}
       <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline-offset-4 hover:underline">message us on WhatsApp</a>.
+      {" "}Changing to another date is free if you ask 7+ days before.
     </p>
+  );
+
+  // Owner, 16 Nov: both numbers, main first. The trek leader's own number comes before departure.
+  const tripContacts = (
+    <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs text-white/60">
+      <p className="font-semibold text-white/85">During your trip</p>
+      <p className="mt-1">
+        Emergency or urgent help, for you or your family:{" "}
+        <a href="tel:+917817912062" className="text-emerald-400 underline-offset-4 hover:underline">+91 78179 12062</a>
+        {" "}or{" "}
+        <a href="tel:+918650561564" className="text-emerald-400 underline-offset-4 hover:underline">+91 86505 61564</a>.
+        {" "}Your trek leader&apos;s number and the reporting time are sent to you before departure.
+      </p>
+    </div>
   );
 
   return (
@@ -481,6 +498,7 @@ export default function DashboardPage() {
                       {b.quote_required && <p className="mt-2 text-sm text-amber-200/80">Quote requested — we&apos;ll send you a price for your group.</p>}
                       {b.message && <p className="mt-2 truncate text-sm text-white/40">{b.message}</p>}
                       {a.policyNote && policyNote}
+                      {a.tripContacts && tripContacts}
                     </div>
                     <div className={actions}>
                       {a.payNow && <Link href={`/checkout?booking=${b.id}`} className={payButton}>Pay now</Link>}
@@ -531,6 +549,7 @@ export default function DashboardPage() {
                       <Money amount={b.amount} paid={b.amount_paid ?? 0} state={a.state} dueDate={b.balance_due_date} />
                       {b.quote_required && <p className="mt-2 text-sm text-amber-200/80">Quote requested — we&apos;ll send you a price.</p>}
                       {a.policyNote && policyNote}
+                      {a.tripContacts && tripContacts}
                     </div>
                     <div className={actions}>
                       {a.payNow && <Link href={`/checkout?course=${b.id}`} className={payButton}>Pay now</Link>}

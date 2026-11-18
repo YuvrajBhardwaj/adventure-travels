@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { formatRupees } from "@/lib/utils";
 import Link from "next/link";
 import { treks, priceRoute } from "@/data/treks";
 import { absoluteUrl, fitDescription, fitTitle, ORGANIZATION_ID, pageMetadata, SITE_URL } from "@/lib/seo";
@@ -8,7 +9,6 @@ import TrekDetailClient from "./TrekDetailClient";
 // "Kalindi Khal Expedition" and "Ghiya Vinayak Pass (Nandi Kund Trek)" already say what they are.
 const trekTitle = (name: string) => (/\b(trek|expedition)\)?$/i.test(name) ? name : `${name} Trek`);
 
-const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 export function generateStaticParams() {
   return treks.map((trek) => ({ id: trek.slug }));
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   ]);
   const description = fitDescription([
     `${name}: ${trek.days} days, ${trek.difficulty.toLowerCase()}, up to ${trek.maxAltitude.toLocaleString("en-IN")} m in ${trek.region}.`,
-    `From ${inr(trek.price)} per person${route ? `, ${route}` : ""}.`,
+    `From ${formatRupees(trek.price)} per person${route ? `, ${route}` : ""}.`,
     `Best season: ${trek.bestSeason}.`,
     trek.blurb,
     trek.groupSize ? `Groups of up to ${trek.groupSize}.` : undefined,

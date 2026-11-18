@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
+import { formatRupees } from "@/lib/utils";
 import Link from "next/link";
 import { courses, type Course } from "@/data/courses";
 import { absoluteUrl, fitDescription, fitTitle, ORGANIZATION_ID, pageMetadata, SITE_URL } from "@/lib/seo";
 import { shareImage } from "@/lib/shareImage";
 import CourseDetailClient from "./CourseDetailClient";
 
-const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 /** "From …" sentence that matches the tiers: their base price excludes stay and meals. */
 function priceSentence(course: Course): string {
-  if (!course.tiers?.length) return `From ${inr(course.price)} per person.`;
+  if (!course.tiers?.length) return `From ${formatRupees(course.price)} per person.`;
   const base = Math.min(...course.tiers.map((t) => t.priceBase));
   const full = Math.min(...course.tiers.map((t) => t.priceFull));
-  return `From ${inr(base)} for training only, or ${inr(full)} with stay and meals.`;
+  return `From ${formatRupees(base)} for training only, or ${formatRupees(full)} with stay and meals.`;
 }
 
 export function generateStaticParams() {

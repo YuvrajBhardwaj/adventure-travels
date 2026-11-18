@@ -73,22 +73,22 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "How does the booking process work for guided treks in Uttarakhand and Himachal?",
-        a: "Booking a Himalayan trek takes a few minutes. Pick your trek and departure batch on our website, fill in your personal and emergency contact details, and pay securely online. You will get an instant booking confirmation email with your invoice and pre-trek checklist.",
+        a: "Booking a Himalayan trek takes a few minutes. Pick your trek, a start date and your group size on the trek page, sign in, and send the booking. You get a booking email straight away, and you can pay online from your dashboard: a 30% advance when the trek is more than 15 days away, or the full amount. Groups of more than 10 get a custom quote.",
         related: ["What payment methods do you accept?", "How do I change my trek dates?"],
       },
       {
         q: "What payment methods do you accept for trek reservations?",
-        a: "We accept all major credit and debit cards, net banking, UPI (Google Pay, PhonePe, Paytm), and major wallet providers through our secure payment gateway. For international participants, bank wire transfers can also be arranged by contacting our support team directly.",
+        a: "Online payments go through Razorpay, a secure Indian payment gateway: UPI (Google Pay, PhonePe, Paytm), debit and credit cards, net banking and the other methods Razorpay shows at checkout. For international participants, message us to arrange a bank transfer.",
         related: ["Is my payment secure?", "Can I pay in installments?"],
       },
       {
         q: "When will I receive my official booking confirmation?",
-        a: "Booking confirmations are generated instantly upon successful payment. Within 2 hours, our operations team sends a welcome dossier containing reporting times, pickup locations, detailed packing guides, and your dedicated trek leader's contact details.",
-        related: ["What is included in the welcome dossier?", "Who do I contact after booking?"],
+        a: "You get an email as soon as we receive your booking, and a payment receipt by email as soon as your payment goes through. Before the trek, our team sends you the reporting time, pickup point and your trek leader's contact details on WhatsApp or email.",
+        related: ["What details do I get before the trek?", "Who do I contact after booking?"],
       },
       {
         q: "Can I change my trek departure date after booking?",
-        a: "Yes, you can request a batch change up to 7 days before your original departure date, subject to batch availability and operational feasibility. A small administrative fee may apply. Our cancellation policy has the specific rules.",
+        a: "Yes. Moving to another date of the same trek is free if you ask at least 7 days before your original departure and the new date has seats. Message us on WhatsApp with your booking reference and the date you'd like.",
         related: ["What is the cancellation policy?", "Can I transfer my booking to a friend?"],
       },
       {
@@ -103,7 +103,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "How are refunds handled if I cancel my trek?",
-        a: "Refunds follow our cancellation timeline. Eligible amounts are credited directly to your original payment method within 7 to 10 business days. Non-recoverable expenses like permits already procured are deducted as outlined in our policy.",
+        a: "Refunds follow the timeline in our cancellation policy: the earlier you cancel, the more you get back, as cash or a larger Trek Voucher. Refunds are processed within 7–14 working days to your original payment method. The 30% advance, the 5% GST and a 3% processing charge are not refunded.",
         related: ["What is the cancellation timeline?", "Are booking fees refundable?"],
       },
     ],
@@ -155,7 +155,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "When is the best time to experience Valley of Flowers National Park?",
-        a: "Valley of Flowers is in full bloom during the monsoon, from July to August. This UNESCO World Heritage-listed alpine valley in Uttarakhand has over 500 species of wild Himalayan flowers below snow-capped peaks.",
+        a: "Valley of Flowers is in full bloom during the monsoon, from July to September. This UNESCO World Heritage-listed alpine valley in Uttarakhand has over 500 species of wild Himalayan flowers below snow-capped peaks.",
         related: ["How difficult is the Valley of Flowers trek?", "What weather can I expect during monsoon?"],
       },
       {
@@ -290,7 +290,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "Can I rent trekking shoes, jackets, and poles from base camp?",
-        a: "Yes. We rent out gear at our base camps for trekking poles, waterproof jackets, snow gaiters, and microspikes. Please reserve gear items in advance during booking to guarantee availability.",
+        a: "Yes. We can arrange trekking poles, waterproof jackets, snow gaiters and microspikes on rent at the start point. Tell us what you need in the message box when you book, or on WhatsApp, so we can keep it ready for you.",
         related: ["What gear is mandatory for winter treks?", "How heavy should my backpack be?"],
       },
       {
@@ -337,22 +337,22 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "What medical certifications and training do your trek leaders possess?",
-        a: "All our lead guides are certified Mountaineering graduates from premier institutes (like NIM Uttarkashi or ABVIMAS Manali) and hold advanced Wilderness First Responder (WFR) and CPR certifications. They have years of experience on high-altitude Himalayan terrain.",
+        a: "Our trek leaders are experienced Himalayan guides from the Joshimath area, trained in mountain first aid. If you'd like to know who is leading your batch and what training they hold, message us on WhatsApp.",
         related: ["What emergency medical equipment is carried?", "How do you handle acute mountain sickness?"],
       },
       {
         q: "What emergency equipment and medical kits do you carry on every trek?",
-        a: "Every trek carries full first aid trauma kits, pulse oximeters to monitor blood-oxygen levels twice daily, portable oxygen cylinders, stretchers, and emergency communication radios or satellite links where cellular networks fail.",
+        a: "Our teams carry a first-aid kit and a pulse oximeter to check everyone's blood-oxygen level on the trek. Equipment differs by route and altitude, so ask us what's carried on your trek before you book.",
         related: ["What are the symptoms of altitude sickness?", "When is an emergency evacuation triggered?"],
       },
       {
         q: "How do trek leaders manage Acute Mountain Sickness (AMS)?",
-        a: "Our leaders conduct daily health screenings including oxygen saturation and pulse checks. If early symptoms of AMS appear (headache, nausea, dizziness), we start descent immediately, with supplemental oxygen and our mountain staff alongside.",
+        a: "Our leaders check on everyone each day, including oxygen level and pulse. If symptoms of AMS appear (headache, nausea, dizziness), the trekker stops going higher, and if they don't improve, goes down with a member of our staff.",
         related: ["How to prevent altitude sickness naturally?", "What medicines should I carry for AMS?"],
       },
       {
         q: "What is the protocol for emergency medical evacuation?",
-        a: "In severe medical emergencies, our trek leader coordinates immediate evacuation to the nearest motorable road head or medical outpost using local rescue teams, stretcher bearers, and emergency vehicles, backed by our 24/7 base operations command center.",
+        a: "In a medical emergency, the trek leader arranges to bring the trekker down to the nearest road head with our local staff, and on to the nearest medical facility; our Joshimath team helps coordinate. Evacuation and hospital costs are not included in the trek fee, so we recommend travel insurance that covers high-altitude trekking.",
         related: ["Do I need travel insurance for trekking?", "Who bears evacuation expenses?"],
       },
     ],
@@ -363,17 +363,17 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "Are Himalayan treks safe for solo female travelers?",
-        a: "Yes. Thousands of solo women trekkers join our expeditions across Uttarakhand and Himachal every year. Our groups, verified support staff and professional female/male trek leaders keep the trek safe and welcoming.",
+        a: "Yes. Many women trek with us, solo and with friends. Women share tents only with other women, and our trek leader and support staff look after every member of the group.",
         related: ["Do you have female trek leaders?", "How are tent allocations managed for solo women?"],
       },
       {
         q: "Do you have certified female trek leaders and support staff?",
-        a: "Yes, we have certified female trek leaders, nature guides and camp coordinators on many of our popular Himalayan routes.",
+        a: "Some of our departures have women trek leaders or staff. Message us with your dates and we'll tell you who is leading your batch.",
         related: ["What privacy facilities are available at campsites?", "How do you manage menstrual hygiene on treks?"],
       },
       {
         q: "How are tent accommodations assigned for solo women trekkers?",
-        a: "Solo female trekkers are paired with other female participants in shared dome tents. If you prefer full privacy, single tent upgrades can be requested during booking subject to availability.",
+        a: "Solo female trekkers are paired with other female participants in shared dome tents. If you'd like a tent to yourself, ask in the message box when you book or on WhatsApp; it depends on availability and may cost extra.",
         related: ["Are there separate toilet tents for women?", "What hygiene products should I pack?"],
       },
       {
@@ -415,12 +415,12 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "What is your Leave No Trace (LNT) policy on mountain trails?",
-        a: "We follow Leave No Trace principles strictly. Every wrapper, plastic bottle, and scrap of waste generated by our trekking groups is packed back down to the base camp for recycling.",
+        a: "We follow Leave No Trace principles: our groups carry their waste back down from the trail instead of leaving it in the mountains.",
         related: ["How do you maintain plastic-free treks?", "How do you support local mountain communities?"],
       },
       {
         q: "How do you ensure plastic-free operations across all expeditions?",
-        a: "Single-use plastic bottles, plastic cutlery, and non-biodegradable packaging are strictly banned on our treks. We provide large filtered water drums for refilling your personal bottles and use cloth and metal storage containers.",
+        a: "We keep single-use plastic off our treks as far as we can. Bring a reusable water bottle: we refill it at camp with boiled or filtered water.",
         related: ["What waste management practices do you follow?", "How can trekkers contribute to eco-tourism?"],
       },
       {
@@ -457,27 +457,27 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "Kedarkantha Trek: Best season, highest altitude, and beginner suitability",
-        a: "Kedarkantha peaks at 12,500 feet. December to April is the snow season and the best time to go; spring and autumn work too, and the monsoon months (July and August) are best avoided. It is rated easy-to-moderate, which makes it the best first winter snow trek in Uttarakhand, with pine forests and summit sunrise views.",
+        a: "Kedarkantha peaks at 12,500 feet. December to April is the snow season and the best time to go; spring and autumn work too, and the monsoon months (July and August) are best avoided. It is rated easy, which makes it the best first winter snow trek in Uttarakhand, with pine forests and summit sunrise views.",
         related: ["View Kedarkantha Trek itinerary", "What gear do I need for Kedarkantha?"],
       },
       {
         q: "Valley of Flowers: Best time, duration, and flora highlights",
-        a: "The Valley of Flowers trek in Uttarakhand spans 6 days, reaching 14,100 feet at Hemkund Sahib. The best time to visit is July and August during peak monsoon bloom. It is moderately challenging and suitable for nature enthusiasts and botany lovers.",
+        a: "The Valley of Flowers trek in Uttarakhand spans 6 days, reaching 14,100 feet at Hemkund Sahib. The best time to visit is July to September, when the monsoon flowers bloom. It is moderately challenging and suitable for nature enthusiasts and botany lovers.",
         related: ["Explore Uttarakhand Treks", "What waterproof gear is needed for monsoon?"],
       },
       {
         q: "Hampta Pass: Crossing from Kullu Valley to Lahaul & Spiti",
-        a: "Hampta Pass reaches 14,100 feet over a 5-day itinerary from June to October. The route goes from the green Kullu valleys to barren Spiti landscapes, with a high-altitude river crossing and a stretch on glacier.",
+        a: "Hampta Pass reaches 14,000 feet over a 6-day itinerary from June to September. The route goes from the green Kullu valleys to the barren landscapes of Lahaul, with a high-altitude river crossing and a stretch on glacier.",
         related: ["Explore Himachal Treks", "Is Hampta Pass suitable for beginners?"],
       },
       {
         q: "Bhrigu Lake: High-altitude glacial tarn near Manali",
-        a: "Bhrigu Lake sits at about 13,700 feet near Manali, Himachal Pradesh. Spanning 4 days from May to October, this trek is known for its wide green meadows and frozen glacial lake views. It is moderately challenging and rewarding for fit beginners.",
+        a: "Bhrigu Lake sits at about 13,700 feet near Manali, Himachal Pradesh. Spanning 3 days from mid-May to October, this trek is known for its wide green meadows and frozen glacial lake views. It is moderately challenging and rewarding for fit beginners.",
         related: ["View Himachal Treks", "What is the best training plan for Bhrigu Lake?"],
       },
       {
         q: "Brahmatal Trek: Frozen lake and massive summit views",
-        a: "Brahmatal Trek in Uttarakhand reaches 12,250 feet across 6 days from December to March. Known for camping by a frozen lake and close views of Mt. Trishul and Nanda Ghunti, it is a very good winter snow trek for novice trekkers.",
+        a: "Brahmatal Trek in Uttarakhand reaches about 10,660 feet (3,250 m) across 7 days from December to March. Known for camping by a frozen lake and close views of Mt. Trishul and Nanda Ghunti, it is a very good winter snow trek for novice trekkers.",
         related: ["View Brahmatal Itinerary", "What temperature to expect at Brahmatal?"],
       },
     ],
@@ -488,12 +488,12 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "How can I talk directly to a Trek Expert to plan my Himalayan trek?",
-        a: "Our trek experts are available 7 days a week to help you choose the right route based on your fitness, season, and preferences. You can reach us instantly via WhatsApp, phone call, or email.",
+        a: "Our trek experts are available Monday to Saturday, 9:00 AM to 7:00 PM IST, to help you choose the right route for your fitness, season and preferences. Reach us on WhatsApp, by phone or by email.",
         related: ["What are your office operating hours?", "Where are your offices located?"],
       },
       {
         q: "What are your customer support operating hours and emergency contact channels?",
-        a: "Our main office operates Monday through Saturday from 9:00 AM to 7:00 PM IST. For active treks on the mountain, our emergency operations centre supports our trek leaders and families 24/7.",
+        a: "Our office is open Monday to Saturday, 9:00 AM to 7:00 PM IST. During a trek, your trek leader is your first contact on the mountain, and our Joshimath team stays in touch with the trek team and with families.",
         related: ["How do I reach WhatsApp support?", "What is your official email address?"],
       },
     ],
@@ -571,6 +571,7 @@ export default function FAQPage() {
             <Input
               type="text"
               placeholder="Search your question..."
+              aria-label="Search the FAQs"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"

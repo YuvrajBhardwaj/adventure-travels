@@ -80,7 +80,7 @@ export default function TermsConditions() {
               A Trek Voucher is credit added to your account, redeemable on any future fixed departure for one year.
               Vouchers are non-transferable — only the person they were issued to can redeem them. To redeem, reply
               to your voucher email or WhatsApp your trek coordinator on{" "}
-              <a href="https://wa.me/917817912062" target="_blank" rel="noopener noreferrer" className="text-emerald-600 font-semibold hover:underline">
+              <a href={`https://wa.me/917817912062?text=${encodeURIComponent("Hi! I'd like to redeem my Trek Voucher. Code: ")}`} target="_blank" rel="noopener noreferrer" className="text-emerald-600 font-semibold hover:underline">
                 +91 78179 12062
               </a>{" "}
               with your voucher code and preferred batch date.
@@ -88,10 +88,10 @@ export default function TermsConditions() {
         </div>
         <ul hidden={activeTab !== "payments"} className="list-disc pl-6 space-y-2">
             <li>Pay a <strong>30% advance</strong> (non-refundable) or the <strong>full amount</strong> online. The balance is due 15 days before departure.</li>
-            <li>Booking confirmations are subject to availability of accommodation.</li>
+            <li>Your seats are held while you pay and confirmed once the payment goes through. If weather or permits force a change, we offer another date or a refund under our cancellation policy.</li>
             <li>Cheques not accepted.</li>
             <li>Payments accepted via UPI, credit card, and net banking (3% extra charged on credit cards).</li>
-            <li>After payment, share a screenshot of the confirmation with our team — date, time, and UTR number clearly visible.</li>
+            <li>Online payments are confirmed automatically and you get a receipt by email. If we have agreed a bank transfer with you, send us the UTR number on WhatsApp so we can match it.</li>
             <li>Solo female travellers who prefer not to share accommodation will be charged an additional cost.</li>
           </ul>
         <ul hidden={activeTab !== "others"} className="list-disc pl-6 space-y-2">

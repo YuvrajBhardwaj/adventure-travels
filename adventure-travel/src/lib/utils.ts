@@ -7,6 +7,11 @@ export function cn(...inputs: ClassValue[]) {
 
 const inr = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 
+/** Formats whole rupees as ₹ with Indian digit grouping, e.g. "₹12,500" (page descriptions). */
+export function formatRupees(rupees: number) {
+  return inr.format(rupees);
+}
+
 /** Formats paise as ₹ with Indian digit grouping. */
 export function formatPaise(paise: number) {
   return inr.format(paise / 100);

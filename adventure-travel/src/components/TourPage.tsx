@@ -6,6 +6,7 @@ import { absoluteUrl, ORGANIZATION_ID, SITE_URL } from "@/lib/seo";
 import Price from "@/components/Price";
 import NoPhoto from "@/components/NoPhoto";
 import TourGallery from "@/components/TourGallery";
+import TourAttractions, { type TourAttraction } from "@/components/TourAttractions";
 import { TourBookingProvider, TourEnquiry, TourPackages, type TourPackage } from "@/components/TourBooking";
 import { BrandIcon } from "@/components/BrandIcon";
 import { buttonVariants } from "@/components/ui/button";
@@ -58,6 +59,7 @@ export function TourPage({
   itinerary,
   photos,
   attractions,
+  attractionsTitle = "Top attractions",
   included,
   excluded,
   goodToKnow,
@@ -85,7 +87,9 @@ export function TourPage({
   itinerary: readonly TourDay[];
   /** Our own photos for the gallery section; empty shows a "coming soon" note. */
   photos: readonly string[];
-  attractions: { name: string; text: string }[];
+  attractions: TourAttraction[];
+  /** Heading of the attractions list, e.g. "Auli top attractions". */
+  attractionsTitle?: string;
   included: readonly string[];
   excluded: readonly string[];
   goodToKnow: { title: string; items: readonly string[] }[];
@@ -229,17 +233,6 @@ export function TourPage({
               <TourGallery name={name} photos={photos} />
             </TourSection>
 
-            <TourSection id="attractions" title="Top attractions">
-              <ul className="grid gap-4 sm:grid-cols-2">
-                {attractions.map((a) => (
-                  <li key={a.name} className="rounded-2xl border border-slate-200 p-5">
-                    <h3 className="font-heading text-xl font-medium text-slate-900">{a.name}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-600">{a.text}</p>
-                  </li>
-                ))}
-              </ul>
-            </TourSection>
-
             <TourSection id="included" title="What's included">
               <div className="grid gap-8 sm:grid-cols-2">
                 <div>
@@ -318,6 +311,11 @@ export function TourPage({
                 Email: <a href={`mailto:${TOUR_CONTACT.email}`} className="text-white/90 underline decoration-white/30 underline-offset-4 hover:text-white">{TOUR_CONTACT.email}</a>
               </p>
             </section>
+
+            {/* Last on the page, as the owner asked (18 Nov): what's around, in the "Choose Your Mountain" row style. */}
+            <TourSection id="attractions" title={attractionsTitle}>
+              <TourAttractions attractions={attractions} />
+            </TourSection>
           </div>
 
           {/* Beside the page on desktop (stays in view while scrolling), after it on phones. */}

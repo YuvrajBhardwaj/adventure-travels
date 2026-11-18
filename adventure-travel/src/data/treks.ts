@@ -69,10 +69,6 @@ export function pricePerPerson(trek: Trek, option?: string | null): number | und
   return priceOptions(trek)?.find((o) => o.label === option)?.price;
 }
 
-export function slugify(str: string): string {
-  return str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-}
-
 /**
  * Our most popular routes, in order: Kuari Pass first, then Pangarchula. The home page,
  * the footer and the treks list's "Sort by Popularity" all lead with these.
@@ -107,6 +103,14 @@ export const DIFFICULTY_COLORS: Record<string, string> = {
   Moderate: "#0EA5E9",
   Challenging: "#F97316",
   Strenuous: "#EF4444",
+};
+
+/** Darker shades of DIFFICULTY_COLORS for white text on the colour, or the colour as text on white (≥ 4.5:1). */
+export const DIFFICULTY_INK: Record<string, string> = {
+  Easy: "#15803D",
+  Moderate: "#0369A1",
+  Challenging: "#C2410C",
+  Strenuous: "#B91C1C",
 };
 
 export const treks: Trek[] = [
@@ -505,7 +509,7 @@ export const treks: Trek[] = [
     difficulty: "Challenging",
     price: 29999,
     currency: "Rs.",
-    blurb: "Trek from Joshimath to the base of Dronagiri (7,066m), the Sanjeevani Parvat that Lord Hanuman lifted to save Lord Laxman in the Ramayana. Visit the sacred Nandi Kund and Bagini Glacier in the remote Niti Valley. Uttarakhand's Trek of the Year.",
+    blurb: "Trek from Joshimath to the base of Dronagiri (7,066m), the Sanjeevani Parvat that Lord Hanuman lifted to save Lord Lakshmana in the Ramayana. Visit the sacred Nandi Kund and Bagini Glacier in the remote Niti Valley.",
     bestSeason: "May–Jun & Sept–Oct",
     days: 9,
     maxAltitude: 4900,

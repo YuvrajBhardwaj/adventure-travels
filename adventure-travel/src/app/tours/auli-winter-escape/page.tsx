@@ -110,6 +110,7 @@ export default function AuliWinterEscapePage() {
       // New photos in public/assets/tours/auli/ come first.
       photos={[...new Set([...tourPhotos(P.slug), ...P.gallery])]}
       attractions={[...P.attractions]}
+      attractionsTitle="Auli top attractions"
       included={P.included}
       excluded={P.excluded}
       goodToKnow={[

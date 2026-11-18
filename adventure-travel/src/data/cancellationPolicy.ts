@@ -37,6 +37,7 @@ export const REFUND_NOTE = [
   { text: "The advance amount is non-refundable." },
   { text: "Trek Vouchers are issued only when the full amount has been paid." },
   { text: "No refund applies if only the advance amount was paid." },
+  { text: "Date change: free to another date of the same trek when you ask at least 7 days before departure and that date has seats." },
   { text: "Refunds are processed within 7–14 working days of cancellation." },
   { text: "A 3% payment processing charge applies to all refunds." },
   { text: "5% GST is non-refundable." },

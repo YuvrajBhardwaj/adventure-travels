@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence, useAnimate, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { priceOptions, priceRoute, type Trek } from "@/data/treks";
-import { TREK_GALLERIES, trekPhotos } from "@/data/trekGalleries";
+import { TREK_GALLERIES, isVideo, trekPhotos } from "@/data/trekGalleries";
 import EnquireTab from "@/components/EnquireTab";
 import RouteProfile from "@/components/RouteProfile";
 import ContactPopup from "@/components/ContactPopup";
@@ -73,7 +73,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { DURATION, EASE, transition } from "@/lib/motion";
 // The site's one difficulty palette (also used by QuickInfoModal and the trek cards).
-import { DIFFICULTY_COLORS } from "@/data/treks";
+import { DIFFICULTY_COLORS, DIFFICULTY_INK } from "@/data/treks";
 
 const SEAT_STYLE: Record<SeatStatus, { dot: string; text: string; legend: string }> = {
   available: { dot: "bg-emerald-600", text: "text-emerald-700", legend: "Available" },
@@ -254,7 +254,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
           <nav className="flex items-center gap-2 text-sm text-muted" aria-label="Breadcrumb">
             <Link href="/" className="hover:text-emerald-600 transition-colors">Home</Link>
             <span aria-hidden>/</span>
-            <Link href="/treks" className="hover:text-emerald-600 transition-colors">Adventures</Link>
+            <Link href="/treks" className="hover:text-emerald-600 transition-colors">Treks</Link>
             <span aria-hidden>/</span>
             <span className="text-foreground font-medium">{trek.name}</span>
           </nav>
@@ -310,7 +310,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
             <div className="flex items-center gap-3 mb-3">
               <span
                 className="px-3 py-1 text-white text-xs font-bold rounded-full"
-                style={{ backgroundColor: DIFFICULTY_COLORS[trek.difficulty] }}
+                style={{ backgroundColor: DIFFICULTY_INK[trek.difficulty] }}
               >
                 {trek.difficulty}
               </span>
@@ -461,6 +461,7 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
 
       {/* Fixed mobile details band */}
       <div
+        data-fixed-bottom-bar
         className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-background/95 backdrop-blur border-t border-slate-200 dark:border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
@@ -1378,12 +1379,15 @@ function ItineraryTab({ trek, onChoosePackage }: { trek: Trek; onChoosePackage: 
                     Note: {day.note}
                   </p>
                 )}
+                {/* Owner, 18 Nov: no meals line on the last (travel) day. */}
+                {day !== trek.itinerary.at(-1) && (
                 <div className="flex flex-wrap gap-4 mt-3 text-xs text-muted">
                   <span className="flex items-center gap-1">
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden><path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 11-6 0 3.354 3.354 0 016 0zm2.25-3.75a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM12 18.75a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>
                     Meals: {day.meals || "B/L/D"}
                   </span>
                 </div>
+                )}
                       </div>
                     </motion.div>
                   )}
@@ -1439,7 +1443,6 @@ function ItineraryTab({ trek, onChoosePackage }: { trek: Trek; onChoosePackage: 
 }
 
 /* ─── Photo Gallery Tab (with lightbox) ─── */
-const isVideo = (src: string) => /\.(mp4|mov)$/i.test(src);
 
 function GalleryTab({ trek }: { trek: Trek }) {
   // No photos of its own → no stand-in stock gallery either.
@@ -1883,7 +1886,7 @@ function ReservationTab({
         <h3 className="text-xl font-bold text-foreground mb-2">Reservation Request Sent!</h3>
         <p className="text-muted max-w-sm mx-auto">
           Thanks{form.name ? `, ${form.name.split(" ")[0]}` : ""}. Our team will confirm availability
-          {form.sharing ? (trek.packages ? ` and your pickup (${form.sharing.replace(/^From /, "")})` : ` and your ${form.sharing.toLowerCase()} room`) : ""} for {trek.name} within 24 hours.
+          {form.sharing ? (trek.packages ? ` and your pickup (${form.sharing.replace(/^From /, "")})` : ` and your ${form.sharing.toLowerCase()} room`) : ""} for {trek.name}. We reply Mon–Sat, 9 AM–7 PM IST, and your seats are confirmed when you pay.
         </p>
         {payHref && (
           <Link href={payHref} className={buttonVariants({ size: "lg", className: "mt-5" })}>
@@ -1900,7 +1903,7 @@ function ReservationTab({
   return (
     <div>
       <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground mb-2">Make a Reservation</h2>
-      <p className="text-muted mb-6">Fill out the form below and we&apos;ll get back to you within 24 hours.</p>
+      <p className="text-muted mb-6">Fill out the form below. We reply Mon–Sat, 9 AM–7 PM IST.</p>
       <form onSubmit={handleSubmit} noValidate className="space-y-5">
         <div className="grid md:grid-cols-2 gap-5">
           <Field id="res-name" label="Full Name" value={form.name} onChange={(v) => update("name", v)} required error={errors.name} autoComplete="name" />

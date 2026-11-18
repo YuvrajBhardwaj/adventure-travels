@@ -130,7 +130,7 @@ export const TREK_GALLERIES: Record<string, string[]> = {
   ],
 };
 
-const isVideo = (src: string) => /\.(mp4|mov)$/i.test(src);
+export const isVideo = (src: string) => /\.(mp4|mov)$/i.test(src);
 
 /** A trek's photos for a card slideshow: the cover first, then its own photos (no videos, no stock). */
 export function trekPhotos(trek: Pick<Trek, "slug" | "image">, max = 6): string[] {

@@ -247,14 +247,14 @@ export default function ContactPage() {
                 <h3 className="mb-1 text-sm font-semibold text-muted">Phone</h3>
                 <a href="tel:+917817912062" className={`${infoLink} py-1 text-lg`}>+91 78179 12062</a>
                 <a href="tel:+918650561564" className={`${infoLink} py-1 text-lg`}>+91 86505 61564</a>
-                <p className="mt-1 text-sm text-muted">Mon–Fri · 9AM–6PM IST</p>
+                <p className="mt-1 text-sm text-muted">Mon–Sat · 9AM–7PM IST</p>
               </div>
 
               {/* Email */}
               <div className="min-w-0 py-5">
                 <h3 className="mb-1 text-sm font-semibold text-muted">Email</h3>
                 <a href="mailto:himalayanarcadventure@gmail.com" className={`${infoLink} py-1 text-lg [overflow-wrap:anywhere]`}>himalayanarcadventure@gmail.com</a>
-                <p className="mt-1 text-sm text-muted">We&apos;ll respond within 24 hours</p>
+                <p className="mt-1 text-sm text-muted">We reply Mon–Sat, 9AM–7PM IST</p>
               </div>
 
               {/* Office */}
@@ -264,10 +264,12 @@ export default function ContactPage() {
                   <div>
                     <p className="text-base font-medium text-foreground">Gurugram Office</p>
                     <p className="text-sm text-muted">M3M Marina, Sector 68</p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=M3M%20Marina%2C%20Sector%2068%2C%20Gurugram" target="_blank" rel="noopener noreferrer" className={`${infoLink} py-1 text-sm underline underline-offset-4`}>Get directions</a>
                   </div>
                   <div>
                     <p className="text-base font-medium text-foreground">Uttarakhand Office</p>
                     <p className="text-sm text-muted">Chamoli, Joshimath, Near Military Hospital</p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Military%20Hospital%2C%20Joshimath%2C%20Chamoli%2C%20Uttarakhand" target="_blank" rel="noopener noreferrer" className={`${infoLink} py-1 text-sm underline underline-offset-4`}>Get directions</a>
                   </div>
                 </div>
               </div>
@@ -278,9 +280,9 @@ export default function ContactPage() {
               <h3 className="mb-3 font-heading text-lg font-semibold text-foreground">Why Choose Himalayan Arc Adventure?</h3>
               <ul className="divide-y divide-slate-200 border-y border-slate-200 text-sm text-foreground dark:divide-white/10 dark:border-white/10">
                 {[
-                  "15+ years of Himalayan trekking expertise",
-                  "5000+ happy trekkers across India",
-                  "24/7 support during treks",
+                  "Guiding Himalayan treks since 2010",
+                  "Local team based in Joshimath, Uttarakhand",
+                  "Your trek leader and our Joshimath team are with you during the trek",
                 ].map((item) => (
                   <li key={item} className="py-3">{item}</li>
                 ))}

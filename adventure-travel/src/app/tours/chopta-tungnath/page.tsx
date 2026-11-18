@@ -115,10 +115,10 @@ export default function ChoptaTungnathPage() {
       }))}
       photos={photos}
       attractions={[
-        { name: "Tungnath Temple", text: "The highest of the five Panch Kedar temples of Shiva: an old stone shrine on the ridge above Chopta, reached by a paved trail through the meadows." },
-        { name: "Chandrashila summit", text: `A short, steep climb above Tungnath to ${T.maxAltitude.toLocaleString("en-IN")} m, with a wide view of Chaukhamba, Nanda Devi and Trishul.` },
-        { name: "Deoria Tal", text: "A forest lake near Sari village that mirrors the Chaukhamba massif on a still morning, on the last day's walk." },
-        { name: "Devprayag sangam", text: "Where the Bhagirathi and the Alaknanda meet and become the Ganga, visited at dawn on the drive up." },
+        { name: "Tungnath Temple", points: "Panch Kedar • Highest Shiva temple • Paved trail", text: "The highest of the five Panch Kedar temples of Shiva: an old stone shrine on the ridge above Chopta, reached by a paved trail through the meadows." },
+        { name: "Chandrashila summit", points: "Summit view • Chaukhamba • Nanda Devi", text: `A short, steep climb above Tungnath to ${T.maxAltitude.toLocaleString("en-IN")} m, with a wide view of Chaukhamba, Nanda Devi and Trishul.` },
+        { name: "Deoria Tal", points: "Forest lake • Chaukhamba reflections • Sari village", text: "A forest lake near Sari village that mirrors the Chaukhamba massif on a still morning, on the last day's walk." },
+        { name: "Devprayag sangam", points: "Confluence • Birth of the Ganga • Dawn stop", text: "Where the Bhagirathi and the Alaknanda meet and become the Ganga, visited at dawn on the drive up." },
       ]}
       included={pkg.included}
       // The trek page's wording points at its Packing List tab; here the list is "What to carry".

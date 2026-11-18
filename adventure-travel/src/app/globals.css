@@ -312,63 +312,6 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
 }
 
-/* ========== REVEAL ANIMATIONS ========== */
-
-.reveal-up {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.7s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-.reveal-up.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.reveal-left {
-  opacity: 0;
-  transform: translateX(-50px);
-  transition: opacity 0.7s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-.reveal-left.revealed {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.reveal-right {
-  opacity: 0;
-  transform: translateX(50px);
-  transition: opacity 0.7s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-.reveal-right.revealed {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.reveal-scale {
-  opacity: 0;
-  transform: scale(0.9);
-  transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-.reveal-scale.revealed {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.reveal-stagger > * {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-.reveal-stagger.revealed > * {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 /* ========== CARD HOVER EFFECTS ========== */
 
 .trek-card-hover {
@@ -424,6 +367,13 @@ h1, h2, h3, h4, h5, h6 {
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Room under the fixed phone booking bar (trek and course pages), so the footer's last links stay tappable. */
+@media (max-width: 1023.98px) {
+  body:has([data-fixed-bottom-bar]) {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
 }
 
 /* ========== SECTION SPACING ========== */

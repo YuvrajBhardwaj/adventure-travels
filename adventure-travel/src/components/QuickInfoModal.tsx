@@ -3,7 +3,7 @@
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import type { Trek } from "@/data/treks";
-import { DIFFICULTY_COLORS } from "@/data/treks";
+import { DIFFICULTY_INK } from "@/data/treks";
 import Price from "@/components/Price";
 import { seasonMonths } from "@/lib/season";
 
@@ -66,7 +66,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
         body: (
           <>
             <P>
-              The <strong>{trek.name}</strong> is graded <strong style={{ color: DIFFICULTY_COLORS[trek.difficulty] }}>{trek.difficulty}</strong> on our
+              The <strong>{trek.name}</strong> is graded <strong style={{ color: DIFFICULTY_INK[trek.difficulty] }}>{trek.difficulty}</strong> on our
               four-level scale. Here is exactly what that means on the trail.
             </P>
             <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -76,7 +76,7 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
                   className={`rounded-xl border p-2.5 text-center text-xs font-semibold ${
                     d === trek.difficulty ? "border-transparent text-white" : "border-slate-200 text-muted dark:border-white/10"
                   }`}
-                  style={d === trek.difficulty ? { backgroundColor: DIFFICULTY_COLORS[d] } : undefined}
+                  style={d === trek.difficulty ? { backgroundColor: DIFFICULTY_INK[d] } : undefined}
                 >
                   {d}
                 </div>
@@ -408,15 +408,14 @@ export function quickInfoModalBody(id: QuickInfoId, trek: Trek): { title: string
         body: (
           <>
             <P>
-              Every batch carries a certified trek leader and a full first-aid kit, and every trekker gets a
-              health check at the start of each trekking day.
+              Every batch is led by an experienced trek leader with a first-aid kit, and every trekker gets a
+              health check each trekking day.
             </P>
             <UL items={[
               "Baseline health check (pulse, blood pressure, SpO₂) at the start of the trek.",
-              "Daily pulse and oxygen (SpO₂) monitoring at every campsite by your trek leader.",
-              "A complete first-aid kit and emergency oxygen cylinder travel with every batch.",
-              "Satellite phone / Garmin device for emergency communication in remote zones.",
-              "Emergency evacuation protocol in place, with the nearest medical facility identified on each route.",
+              "Daily pulse and oxygen (SpO₂) checks at camp by your trek leader.",
+              "A first-aid kit travels with every batch. Ask us what else is carried on your route.",
+              "If someone needs to come down, the leader arranges it with our staff, to the nearest road head and medical facility.",
             ]} />
           </>
         ),

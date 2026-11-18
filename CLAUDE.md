@@ -11,7 +11,7 @@ Also at the root:
 - **`specs/001-persistent-backend/`:** the Spec Kit design docs for the backend: spec, plan, data model, API contracts, quickstart with validation scenarios V1–V22. Code comments cite their requirement ids (`FR-016`, research `R5`, …).
 - **`.mcp.json`:** a Supabase MCP server for project `sdhtgmlkzcknmeakxgdz` (it needs `/mcp` sign-in).
 - **OpenCode scaffold:** `opencode.json`, `.opencode/`, `.agents/skills/`, `skills-lock.json`. Not part of the app.
-- **Reference material:** `REFERENCE_SITE.md`, `reference-*.png`, `screenshot.js` (the original visual reference) and `graphify-out/`.
+- **Reference material:** `REFERENCE_SITE.md`, `reference-*.png`, `screenshot.js` (the original visual reference) and `graphify-out/`: a code graph of `src/` (`GRAPH_REPORT.md`, `graph.json`), rebuilt with `graphify update adventure-travel/src`, which writes into `adventure-travel/src/graphify-out/`; move that into the root `graphify-out/`.
 - **Git-ignored, never edit or commit:**
   - root-level `*.html`, `_next/` and route folders: stale static-export output
   - `.claude/` and `.specify/`: tooling
@@ -67,7 +67,7 @@ Next.js 16 App Router with **`output: "export"`** (fully static: no runtime serv
   - no `opacity:0` first paint, and no `loading.tsx` (in the static export it moves page content into a hidden streamed block).
 
 ### Content: `src/data/` is the single source of truth
-- **Files:** `treks.ts` (the `Trek` interface, `treks[]`, helpers such as `priceRoute()`, `pricePerPerson()`, `slugify()`), `courses.ts`, `destinations.ts`, `stories.ts`, and `trekPackage.ts` (inclusions and exclusions derived from each trek's data).
+- **Files:** `treks.ts` (the `Trek` interface, `treks[]`, helpers such as `priceRoute()`, `pricePerPerson()`), `courses.ts`, `destinations.ts`, `stories.ts`, and `trekPackage.ts` (inclusions and exclusions derived from each trek's data).
 - **Pickup town:** `startsFrom` drives the "Joshimath to Joshimath" price label, the inclusions text and the hub membership.
 - **Room tiers:** with `roomSharing` tiers, the first tier's price must equal `price` (`npm run catalog` enforces it).
 - **Prices:** the API charges from the generated catalog, so re-run `npm run catalog` after any price change.
@@ -116,7 +116,6 @@ Next.js 16 App Router with **`output: "export"`** (fully static: no runtime serv
 ### Animation
 - Default to inline framer-motion inside the component, **always gated on `useReducedMotion()`**, with values from `src/lib/motion.ts`.
 - `src/components/MotionWrapper.tsx` has the scroll-in reveals (`FadeUp`, `ScaleIn`, `StaggerContainer`/`StaggerItem`). They render visible in the static HTML and only hide content that starts below the fold. Reuse them.
-- `src/hooks/useReveal.ts` and the `reveal-*` CSS classes are legacy, barely used.
 
 ### Conventions
 - **Enquiries** go through WhatsApp deep links (`wa.me/917817912062`).

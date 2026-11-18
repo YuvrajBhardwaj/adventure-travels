@@ -104,6 +104,10 @@ describe("dates in India time", () => {
     expect(isValidIsoDate("2027-01-08")).toBe(true);
     expect(isValidIsoDate("2027-02-30")).toBe(false);
     expect(isValidIsoDate("08-01-2027")).toBe(false);
+    // Matches the pattern but isn't a date: must answer false, not throw (it used to become a 502).
+    expect(isValidIsoDate("2026-13-01")).toBe(false);
+    expect(isValidIsoDate("2026-00-10")).toBe(false);
+    expect(isValidIsoDate("2026-12-01xyz")).toBe(false);
   });
   it("requires a start date after today", () => {
     const now = new Date("2026-10-16T06:00:00Z"); // 16 Oct in IST
@@ -167,6 +171,13 @@ describe("orderAmount (create-order rules)", () => {
   it("answers 422 for quotes and unpriced bookings", () => {
     expect(orderAmount(booking({ quoteRequired: true, amount: null }), "full", now).status).toBe(422);
     expect(orderAmount(booking({ amount: null }), "full", now).status).toBe(422);
+  });
+
+  it("refuses any payment once the trip has started, but allows it on the start day", () => {
+    const started = booking({ startDate: "2026-10-01", paymentState: "advance_paid", amountPaid: 330000 });
+    expect(orderAmount(started, "balance", now).status).toBe(409);
+    expect(orderAmount(booking({ startDate: "2026-10-15" }), "full", now).status).toBe(409);
+    expect(orderAmount(booking({ startDate: "2026-10-16" }), "full", now)).toEqual({ amount: 1099800 });
   });
 
   it("rejects an unknown kind", () => {
