@@ -17,6 +17,15 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 20 Nov 2026: our own photos on Destinations, Activities and the footer — `main`
+- **For visitors:** no more stock photos of other mountain ranges (one was a Matterhorn-like peak, another a Rockies-style lake).
+  - **Destinations:** the header and 7 of the 8 region cards use our own trek photos (Panpatia Col, Pangarchula, Dronagiri, Nandi Kund, Kedarkantha, Hampta).
+  - **Kumaon:** we have no Kumaon photos, so it uses a credited Wikimedia Commons photo of Panchachuli from Munsiyari (Abhijit Kar Gupta, CC BY 2.0).
+  - **Activities:** the header (Satopanth peak), Trekking (Dronagiri) and Backcountry use our photos. Paragliding uses a credited Commons photo of Bir Billing (Tanvi.sharmaaa, CC BY 4.0).
+  - **Mana, Niti and Rimkhim:** these restricted-area cards show our no-photo panel with each route's altitude line until we have our own shots.
+  - **Footer:** the "Instagram" grid now shows six of our own photos as 300 px thumbnails (96 KB in all, in `public/thumbs/`).
+- **Code:** destinations and activities take an optional `credit`, shown with the shared `Credit` line from `TourAttractions.tsx`.
+
 ### 20 Nov 2026: Skills Academy back on the home page; refund line on trek pages — `main`
 - **Home page:** the Skills Academy (Beginner / Intermediate / Advanced tracks for Alpine Skiing, Snowboarding and Rock Climbing) now shows right after the Auli snow school section, by request. It is one shared component (`src/components/SkillsAcademy.tsx`), also used on /activities. Ski and snowboard prices now come from `src/data/courses.ts` instead of being typed in, and "View Course" opens the course page itself.
 - **Trek pages (traffic plan D6):** the booking card's "Free Trek Date Change" line now says what the policy says: free date change up to 7 days before departure, and "cancel 25+ days before a fully paid trek: 90% cash refund", with a link to the cancellation policy. ("Fully paid" because the advance alone is non-refundable.)

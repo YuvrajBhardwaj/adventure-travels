@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { treks } from "@/data/treks";
 import SmartImage from "@/components/SmartImage";
+import NoPhoto from "@/components/NoPhoto";
+import { Credit } from "@/components/TourAttractions";
 import CampingSection from "@/components/CampingSection";
 import SkillsAcademy from "@/components/SkillsAcademy";
 import ActivityRequestForm from "@/components/ActivityRequestForm";
@@ -15,7 +17,7 @@ const activities = [
     id: "trekking",
     name: "Trekking",
     tagline: "Walk the Himalayas",
-    image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
+    image: "/assets/dronagiri/3a7fecb4-cee0-4007-939b-817762df7e3f.jpeg",
     description: `Gentle valley walks and hard high-altitude expeditions: ${treks.length} treks we have planned ourselves across Uttarakhand and Himachal Pradesh.`,
     features: [
       "Valley of Flowers: 6 days through alpine meadows",
@@ -30,7 +32,7 @@ const activities = [
     id: "camping",
     name: "Camping",
     tagline: "Under the Himalayan stars",
-    image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800&q=80",
+    image: "/assets/camping/camp-03.jpg",
     description: "Riverside camps in Rishikesh, mountain camps in Uttarakhand, and basecamp setups for treks. Clear skies for stargazing.",
     features: [
       "Rishikesh riverside camps with bonfires",
@@ -45,7 +47,8 @@ const activities = [
     id: "paragliding",
     name: "Paragliding",
     tagline: "Soar over the valleys",
-    image: "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?w=800&q=80",
+    image: "/commons/bir-billing-paragliding.jpg",
+    credit: { author: "Tanvi.sharmaaa", license: "CC BY 4.0", url: "https://commons.wikimedia.org/wiki/File:Bir_Billing-_Paragliding_Capital_of_India.jpg" },
     description: "Tandem paragliding flights in Bir Billing and Mussoorie. See the Himalayas from above with certified pilots.",
     features: [
       "Tandem flights for beginners",
@@ -66,7 +69,6 @@ const RESTRICTED = [
     altitude: "5,616m",
     region: "Chamoli, Uttarakhand",
     description: "A 5,616 m pass on an old Indo-Tibetan trade route. Bare, high and empty.",
-    image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80",
     status: "Restricted · ILP Required",
   },
   {
@@ -75,7 +77,6 @@ const RESTRICTED = [
     altitude: "5,360m",
     region: "Chamoli, Uttarakhand",
     description: "Old Himalayan trade route at the Indo-Tibetan border. Glacial country that sees very few tourists.",
-    image: "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=600&q=80",
     status: "Restricted · ILP Required",
   },
   {
@@ -84,7 +85,6 @@ const RESTRICTED = [
     altitude: "4,500m+",
     region: "Chamoli, Uttarakhand",
     description: "Remote border village near the Tibet frontier. Wild country and almost no other visitors.",
-    image: "https://images.unsplash.com/photo-1491555103944-7c647fd857e6?w=600&q=80",
     status: "Restricted · ILP Required",
   },
 ];
@@ -122,8 +122,8 @@ export default function ActivitiesPage() {
           </div>
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-navy lg:col-span-6 lg:aspect-[5/4]">
             <SmartImage
-              src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1920&q=80"
-              alt="Activities Banner"
+              src="/assets/satopanth-lake/IMG_4748.JPG.jpeg"
+              alt="A snow peak above the Satopanth trail in the Badrinath valley"
               loading="eager"
               className="h-full w-full object-cover"
             />
@@ -146,7 +146,7 @@ export default function ActivitiesPage() {
             <figure className="mt-3 flex items-center gap-3">
               <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-navy">
                 <SmartImage
-                  src="https://plus.unsplash.com/premium_photo-1754337730608-59a489f3c9fd?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  src="/assets/backcountry touring/IMG_3991.jpeg"
                   alt="Backcountry Ski & Snowboard Touring in the Himalayas"
                   className="h-full w-full object-cover"
                 />
@@ -241,6 +241,7 @@ export default function ActivitiesPage() {
                     <h3 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">{act.name}</h3>
                     <p className="mt-1 text-sm text-muted">{act.tagline}</p>
                     <p className="mt-3 max-w-2xl text-base leading-relaxed text-foreground/80">{act.description}</p>
+                    {act.credit && <Credit credit={act.credit} className="mt-2 text-xs text-muted" />}
                     <ul className="mt-4 grid gap-x-8 gap-y-1.5 text-sm text-foreground/80 sm:grid-cols-2">
                       {act.features.map((f) => (
                         <li key={f}>{f}</li>
@@ -296,11 +297,8 @@ export default function ActivitiesPage() {
                       big ? "h-96 lg:h-full lg:min-h-[28rem]" : "h-64"
                     )}
                   >
-                    <SmartImage
-                      src={place.image}
-                      alt={place.name}
-                      className={cn("absolute inset-0 h-full w-full object-cover", ZOOM)}
-                    />
+                    {/* No photo of our own from these restricted areas yet, so the route's altitude line stands in (no stock photos). */}
+                    <NoPhoto profile={treks.find((t) => t.slug === place.slug)?.elevationProfile} className="absolute inset-0 h-full w-full" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/10" />
 
                     <svg className="absolute right-5 top-5 z-10 h-5 w-5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>

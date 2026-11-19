@@ -18,7 +18,7 @@ export interface TourAttraction {
 }
 
 /** "Photo: Rohanshah657, CC BY-SA 4.0, via Wikimedia Commons", linked to the source page. */
-function Credit({ credit, className }: { credit: NonNullable<TourAttraction["credit"]>; className: string }) {
+export function Credit({ credit, className }: { credit: NonNullable<TourAttraction["credit"]>; className: string }) {
   return (
     <p className={className}>
       Photo:{" "}

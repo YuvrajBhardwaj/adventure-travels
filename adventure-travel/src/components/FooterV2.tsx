@@ -47,14 +47,9 @@ const destinations = [
   "High Altitude Lakes",
 ];
 
-const instagramImages = [
-  "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=200&q=80",
-  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&q=80",
-  "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=200&q=80",
-  "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=200&q=80",
-  "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?w=200&q=80",
-  "https://images.unsplash.com/photo-1448375240586-882707db888b?w=200&q=80",
-];
+// Our own trek photos as small thumbnails (public/thumbs, cut from the web-sized originals),
+// so the footer adds about 100 KB to every page instead of six full-size photos.
+const instagramImages = [1, 2, 3, 4, 5, 6].map((n) => `/thumbs/footer-${n}.jpg`);
 
 const INSTAGRAM_URL = "https://instagram.com/himalayan_arc_adventure";
 

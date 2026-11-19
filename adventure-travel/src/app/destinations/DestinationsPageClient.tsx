@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { destinations, sortOptions } from "@/data/destinations";
 import SmartImage from "@/components/SmartImage";
+import { Credit } from "@/components/TourAttractions";
 import { FadeUp } from "@/components/MotionWrapper";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -86,7 +87,7 @@ export default function DestinationsPage() {
       <section className="relative flex min-h-[460px] items-end overflow-hidden bg-navy-hero sm:min-h-[56vh]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1920&q=80"
+          src="/assets/panpatia-col-trek/9ecb69c4-00c7-4116-a312-ad393182f10e.jpeg"
           alt="Destinations Banner"
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -234,6 +235,7 @@ export default function DestinationsPage() {
                           </Link>
                         </h3>
                         <p className="mt-2 line-clamp-2 max-w-3xl text-base text-muted">{dest.description}</p>
+                        {dest.credit && <Credit credit={dest.credit} className="mt-2 text-xs text-muted" />}
                         <PopularTreks dest={dest} />
                         <Link
                           href={`/treks?destination=${encodeURIComponent(dest.slug)}`}
