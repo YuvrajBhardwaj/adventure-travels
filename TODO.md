@@ -127,6 +127,14 @@ Passed: no `.env`/`.git`/source/SQL files exposed; HTTPS + HSTS; every table has
 - [ ] **You (optional): more photos from your Auli trips** (13 Nov: now using our own Auli slopes-and-range shot) (Gorson Bugyal, the lake, the stays) would beat the skiing course photo used now.
 - [ ] **Dev (later):** online booking and payment, once the group rules are added to the price catalog.
 
+## Look and polish (20 Nov 2026 comparison with freesouladventures.in)
+- [ ] **Dev:** Destinations and Activities use stock photos that aren't the Himalayas (a Matterhorn-like peak on the Garhwal card, a Rockies-style lake on Activities). Swap them for our own photos.
+- [ ] **Dev:** the footer "Instagram" grid is stock photos; use our own, or link to the real Instagram.
+- [ ] **Dev:** /tours is two cards in a lot of white space; add a short intro strip (why a tour, who it suits) or a third tour.
+- [ ] **Dev (phones):** the ENQUIRE edge tab sits over trek and course page heroes; with WhatsApp and the sticky booking bar that's three floating buttons.
+- [ ] **You:** Kuari Pass trek page opens on a group selfie; a landscape cover (the pass, the peaks) looks more professional as the first photo.
+- [ ] **Dev + You:** trek guides like theirs (how to reach, best time, winter), to replace the 3 placeholder story articles; good for Google too.
+
 ## Trek packages
 - [x] ~~**Dev:** Kuari Pass packages: Joshimath ₹7,500, Rishikesh/Haridwar/Dehradun ₹9,000~~ (13 Nov, `main`).
 - [x] ~~**Dev:** Pangarchula Peak packages: Joshimath ₹9,500, Rishikesh/Haridwar/Dehradun ₹11,000~~ (13 Nov, `main`).
