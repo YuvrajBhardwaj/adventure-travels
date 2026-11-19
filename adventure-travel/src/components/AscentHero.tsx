@@ -188,6 +188,10 @@ export default function AscentHero() {
               id="hero-heading"
               className="font-heading text-[clamp(2.4rem,6vw,4.75rem)] font-semibold leading-[0.95] tracking-[-0.035em] text-navy-deep"
             >
+              {/* The words people search for, in the h1; the big line stays the headline. */}
+              <span className="mb-3 block font-nav text-xs font-bold uppercase tracking-[0.18em] text-navy-deep [text-shadow:0_0_12px_rgba(255,255,255,0.9)] sm:text-sm">
+                Himalayan treks from Joshimath · Auli ski school
+              </span>
               One range.
               <br />
               Two seasons.

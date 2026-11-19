@@ -5,6 +5,7 @@ import { treks, priceRoute } from "@/data/treks";
 import { absoluteUrl, fitDescription, fitTitle, ORGANIZATION_ID, pageMetadata, SITE_URL } from "@/lib/seo";
 import { shareImage } from "@/lib/shareImage";
 import TrekDetailClient from "./TrekDetailClient";
+import RelatedTreks from "@/components/RelatedTreks";
 
 // "Kalindi Khal Expedition" and "Ghiya Vinayak Pass (Nandi Kund Trek)" already say what they are.
 const trekTitle = (name: string) => (/\b(trek|expedition)\)?$/i.test(name) ? name : `${name} Trek`);
@@ -121,7 +122,7 @@ export default async function TrekDetailPage({ params }: { params: Promise<{ id:
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <TrekDetailClient trek={trek} />
+      <TrekDetailClient trek={trek} related={<RelatedTreks trek={trek} />} />
     </>
   );
 }

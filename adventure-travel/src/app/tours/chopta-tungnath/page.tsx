@@ -24,9 +24,9 @@ export const metadata = pageMetadata({
   ]),
   socialTitle: `${tour.name} Tour | Himalayan Arc Adventure`,
   path: tour.href,
-  // The Tungnath trek's share image, once it has a photo of our own; until then the site image.
-  ...shareImage(T.slug),
-  imageAlt: `${tour.name}, Uttarakhand`,
+  // Built from CHOPTA_COVER by scripts/prepare-photos.mjs.
+  ...shareImage(`tour-${CHOPTA_SLUG}`),
+  imageAlt: "A stone shrine and steps on the ridge above Chopta",
 });
 
 /** One package per room-sharing option; everything but the stay is the same trip. */

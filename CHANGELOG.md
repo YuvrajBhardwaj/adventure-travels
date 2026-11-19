@@ -17,6 +17,12 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 20 Nov 2026: getting found: home h1, related treks, more share cards — `main`
+- **Google, home page:** the h1 now starts with the words people search for, "Himalayan treks from Joshimath · Auli ski school", as a small line above "One range. Two seasons." (visible, not hidden text).
+- **Google and visitors, trek pages:** a "More treks like this" row (3 treks: same pickup town, then region, grade and length) under every trek page. It is server-rendered, so every trek page now links to others in the static HTML, which helps Google find and rank them and keeps visitors on the site (`src/components/RelatedTreks.tsx`).
+- **Link previews:** Panpatia Col now has its own 1200×630 card (from its gallery), and the Chopta tour uses the Tungnath shrine photo instead of the generic site image. `prepare-photos.mjs` now falls back to a trek's first gallery photo when its cover is a stock photo.
+- **Already done:** the trek breadcrumb already said "Treks".
+
 ### 20 Nov 2026: Kuari Pass Day 3 weather note — `main`
 - **Itinerary:** Day 3 (Khulara → Tali via Kuari Pass) now shows a callout: if weather or a landslide makes the pass unsafe, the group turns back and spends the night at Khulara instead of going on to Tali; the trek leader decides on the day.
 - **Itinerary:** Pangarchula Day 4 (Khulara → Tali Lake) gets a similar callout: if snow or a landslide closes the trail to Tali, the group heads down to Karchi instead.

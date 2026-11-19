@@ -115,7 +115,8 @@ function getHeroSlides(trek: Trek): WallpaperSlide[] {
   return [...new Set(sources)].map((src) => ({ src }));
 }
 
-export default function TrekDetailClient({ trek }: { trek: Trek }) {
+/** `related`: server-rendered links to other treks, shown below the page content. */
+export default function TrekDetailClient({ trek, related }: { trek: Trek; related?: ReactNode }) {
   const { user } = useAuth();
   const shouldReduceMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState<Tab>("Overview");
@@ -458,6 +459,8 @@ export default function TrekDetailClient({ trek }: { trek: Trek }) {
           </div>
         </div>
       </div>
+
+      {related}
 
       {/* Fixed mobile details band */}
       <div

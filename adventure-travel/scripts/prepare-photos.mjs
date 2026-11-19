@@ -89,11 +89,18 @@ async function loadData(file, name) {
 
 /** One share image per trek/course whose cover is our own photo; stock or missing covers keep the site image. */
 async function shareImages() {
+  const galleries = await loadData("trekGalleries.ts", "TREK_GALLERIES");
   const items = [
-    ...(await loadData("treks.ts", "treks")).map((t) => ({ name: t.slug, image: t.image })),
+    // A trek whose cover is a stock photo still gets a card from its own gallery.
+    ...(await loadData("treks.ts", "treks")).map((t) => ({
+      name: t.slug,
+      image: t.image?.startsWith("/assets/") ? t.image : galleries[t.slug]?.find((src) => /.(jpe?g|png|webp)$/i.test(src)),
+    })),
     ...(await loadData("courses.ts", "courses")).map((c) => ({ name: `course-${c.slug}`, image: c.image })),
     // Tours built from a trek (Chopta) reuse that trek's image; tours.ts imports treks.ts, so it can't be loaded here.
     ...[await loadData("auliEscape.ts", "AULI_ESCAPE")].map((t) => ({ name: `tour-${t.slug}`, image: t.image })),
+    // Keep in step with CHOPTA_COVER in src/app/tours/chopta-tungnath/page.tsx.
+    { name: "tour-chopta-tungnath", image: "/assets/tours/tungnath/IMG_6365.JPG.jpeg" },
   ].filter((i) => typeof i.image === "string" && i.image.startsWith("/assets/"));
   await mkdir(OG, { recursive: true });
   for (const { name, image } of items) {
