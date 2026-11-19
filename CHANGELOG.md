@@ -17,6 +17,10 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 20 Nov 2026: Kuari Pass Day 3 weather note — `main`
+- **Itinerary:** Day 3 (Khulara → Tali via Kuari Pass) now shows a callout: if weather or a landslide makes the pass unsafe, the group turns back and spends the night at Khulara instead of going on to Tali; the trek leader decides on the day.
+- **Itinerary:** Pangarchula Day 4 (Khulara → Tali Lake) gets a similar callout: if snow or a landslide closes the trail to Tali, the group heads down to Karchi instead.
+
 ### 19 Nov 2026: home page "Walk the Kuari Pass" story: shorter scroll, richer on phones — `main`
 - **Shorter:** each chapter is three-quarters of a screen instead of a full one, and the closing "Your turn to walk it" block is shorter. The section is about 4.7 screens of scrolling instead of 6.1.
 - **Phones:**

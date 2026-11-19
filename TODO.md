@@ -21,6 +21,8 @@ Last updated: 7 Nov 2026.
 - [ ] **You: check the season windows** in `adventure-travel/src/data/trekSeasons.ts` (`DEPARTURE_CALENDAR`, also listed in CHANGELOG 6 Nov), e.g. whether Roopkund or Satopanth should run daily instead of weekly, and the 3-day / 21-day booking notice.
 - [ ] **You: decide about the old seeded Saturday dates** in the database. They still show as overrides, and some fall outside the new windows (e.g. Kuari Pass in early September). Claude can delete the ones outside the season (a live database change, needs your OK).
 - [ ] **Dev (optional, needs a SQL change):** count bookings on generated daily dates, so a busy day turns "Filling fast"/"Full" by itself. Today only dates with an admin row can fill up.
+- [x] ~~**Dev:** Kuari Pass Day 3 note: turn back to Khulara if weather or a landslide blocks the pass; Pangarchula Day 4 note: head down to Karchi if Tali is closed~~ (20 Nov, `main`).
+- [ ] **You (optional):** if the group turns back to Khulara on Kuari Pass Day 3, what happens on Day 4 (walk out Khulara → Joshimath, or retry the pass)? Tell Claude and it can add that to the Day 4 note.
 - [ ] **Dev:** self-host the three fonts (`next/font/local`) so a Google Fonts hiccup can't fail a build again (it failed one production build on 6 Nov).
 - [ ] **Dev:** card slideshows load more photos per home visit. Shrink card photos to about 800 px (they are 1600 px today) in `scripts/prepare-photos.mjs` to save phone data and Vercel bandwidth.
 
