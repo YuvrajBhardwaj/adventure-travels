@@ -15,6 +15,7 @@ import LazyVideo from "@/components/LazyVideo";
 import { useAuth } from "@/contexts/AuthContext";
 import { BackendUnavailableError, createTrekBooking } from "@/lib/auth";
 import WhatsAppFallback from "@/components/WhatsAppFallback";
+import { REFUND_TIERS } from "@/data/cancellationPolicy";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import {
   Backpack,
@@ -642,8 +643,15 @@ function BookingCard({
         )}
 
         {/* Trust */}
-        <div className="space-y-2">
-          <p className="text-xs text-muted">All-inclusive · Free Trek Date Change</p>
+        {/* Short form of src/data/cancellationPolicy.ts; the advance alone is non-refundable, hence "fully paid". */}
+        <div className="space-y-1 text-xs text-muted">
+          <p>All-inclusive · Free date change up to 7 days before departure</p>
+          <p>
+            Cancel 25+ days before a fully paid trek: {REFUND_TIERS[0].cash.toLowerCase()}.{" "}
+            <Link href="/cancellation-policy" className="font-semibold text-emerald-700 underline decoration-emerald-700/30 underline-offset-2 hover:text-emerald-800 dark:text-emerald-400">
+              Cancellation policy
+            </Link>
+          </p>
         </div>
 
       {/* Included */}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { treks } from "@/data/treks";
 import SmartImage from "@/components/SmartImage";
 import CampingSection from "@/components/CampingSection";
+import SkillsAcademy from "@/components/SkillsAcademy";
 import ActivityRequestForm from "@/components/ActivityRequestForm";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/MotionWrapper";
 import { buttonVariants } from "@/components/ui/button";
@@ -88,15 +89,11 @@ const RESTRICTED = [
   },
 ];
 
-// Skills Academy tracks: three levels per track, shown as coloured dots (beginner / intermediate / advanced).
-const LEVEL_DOTS = ["bg-emerald-500", "bg-sky-500", "bg-red-500"];
-
 const H2 = "font-heading text-3xl font-semibold tracking-[-0.02em] sm:text-4xl";
 const CONTAINER = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
 const ZOOM = "transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100";
 const HAIRLINE = "border-slate-200 dark:border-white/10";
 
-const waLink = (text: string) => `https://wa.me/917817912062?text=${encodeURIComponent(text)}`;
 
 export default function ActivitiesPage() {
   const hero = RESTRICTED[0];
@@ -181,88 +178,7 @@ export default function ActivitiesPage() {
           </FadeUp>
         </div>
 
-        {/* Skills Academy — a ruled list, one track per row */}
-        <div id="skills-academy" className={cn(CONTAINER, "pb-16 md:pb-24")}>
-          <FadeUp className="mb-8 max-w-2xl sm:mb-10">
-            <h2 className={cn(H2, "text-foreground")}>Skills Academy</h2>
-            <p className="mt-4 text-lg text-muted">
-              For first-timers and experienced people alike: step-by-step tracks taught by certified mountain guides. Learn at your pace, earn your level.
-            </p>
-            <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-foreground">
-              <span className="flex items-center gap-2"><span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Beginner</span>
-              <span className="flex items-center gap-2"><span className="inline-block h-2.5 w-2.5 rounded-full bg-sky-500"></span> Intermediate</span>
-              <span className="flex items-center gap-2"><span className="inline-block h-2.5 w-2.5 rounded-full bg-red-500"></span> Advanced</span>
-            </div>
-          </FadeUp>
-
-          <StaggerContainer className={cn("divide-y border-y", HAIRLINE, "divide-slate-200 dark:divide-white/10")}>
-            {[
-              {
-                key: "ski",
-                title: <Link href="/courses/skiing-course" className="underline-offset-4 hover:underline">Alpine Skiing</Link>,
-                sub: "Auli · 7-day certified course",
-                levels: ["Snowplough", "Parallel Turns", "Off-Piste"],
-                text: "Learn stance, balance and stopping on nursery slopes. Progress through linked turns to chairlift runs with an instructor at your side.",
-                price: <>From ₹23,000 <span className="text-xs font-normal text-muted">/ 7 days</span></>,
-                actions: (
-                  <>
-                    <Link href="/courses" className={buttonVariants()}>View Course</Link>
-                    <a href={waLink("Hi! I'm interested in the Skiing course in Auli.")} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-emerald-700 underline-offset-4 hover:underline dark:text-emerald-400">Book</a>
-                  </>
-                ),
-              },
-              {
-                key: "board",
-                title: <Link href="/courses/snowboarding-course" className="underline-offset-4 hover:underline">Snowboarding</Link>,
-                sub: "Auli · 7-day certified course",
-                levels: ["Balance & Sliding", "Heel/Toe Turns", "Freestyle Basics"],
-                text: "From first slides to linking turns on blue runs. Coaching builds up day by day, and all equipment is included.",
-                price: <>₹35,000 <span className="text-xs font-normal text-muted">/ 7 days</span></>,
-                actions: (
-                  <>
-                    <Link href="/courses" className={buttonVariants()}>View Course</Link>
-                    <a href={waLink("Hi! I'm interested in the Snowboarding course in Auli.")} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-emerald-700 underline-offset-4 hover:underline dark:text-emerald-400">Book</a>
-                  </>
-                ),
-              },
-              {
-                key: "climb",
-                title: "Rock Climbing",
-                sub: "Rishikesh & Himalayas · Day courses",
-                levels: ["Top-Rope Basics", "Lead Climbing", "Multi-Pitch"],
-                text: "Learn belaying, footwork, and route reading on natural rock. Progress from gym-style top-rope to outdoor multi-pitch routes.",
-                price: <>₹5,000+ <span className="text-xs font-normal text-muted">/ session</span></>,
-                actions: (
-                  <a href={waLink("Hi! I'm interested in rock climbing courses.")} target="_blank" rel="noopener noreferrer" className={buttonVariants()}>Enquire</a>
-                ),
-              },
-            ].map((t) => (
-              <StaggerItem key={t.key}>
-                <div className="grid gap-5 py-8 lg:grid-cols-12 lg:gap-10">
-                  <div className="lg:col-span-4">
-                    <h3 className="font-heading text-2xl font-semibold text-foreground">{t.title}</h3>
-                    <p className="mt-1 text-sm text-muted">{t.sub}</p>
-                  </div>
-                  <div className="lg:col-span-5">
-                    <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm font-medium text-foreground">
-                      {t.levels.map((l, i) => (
-                        <li key={l} className="flex items-center gap-2">
-                          <span className={cn("inline-block h-2.5 w-2.5 rounded-full", LEVEL_DOTS[i])} />
-                          {l}
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="mt-3 text-sm text-muted">{t.text}</p>
-                  </div>
-                  <div className="flex flex-col gap-3 lg:col-span-3 lg:items-end">
-                    <p className="font-heading text-xl font-semibold text-foreground">{t.price}</p>
-                    <div className="flex flex-wrap items-center gap-2">{t.actions}</div>
-                  </div>
-                </div>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </div>
+        <SkillsAcademy className="pb-16 md:pb-24" />
       </section>
 
       {/* Camping — detailed section (anchor target for #camping) */}

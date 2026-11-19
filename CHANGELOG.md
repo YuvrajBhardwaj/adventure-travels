@@ -17,6 +17,10 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 20 Nov 2026: Skills Academy back on the home page; refund line on trek pages — `main`
+- **Home page:** the Skills Academy (Beginner / Intermediate / Advanced tracks for Alpine Skiing, Snowboarding and Rock Climbing) now shows right after the Auli snow school section, by request. It is one shared component (`src/components/SkillsAcademy.tsx`), also used on /activities. Ski and snowboard prices now come from `src/data/courses.ts` instead of being typed in, and "View Course" opens the course page itself.
+- **Trek pages (traffic plan D6):** the booking card's "Free Trek Date Change" line now says what the policy says: free date change up to 7 days before departure, and "cancel 25+ days before a fully paid trek: 90% cash refund", with a link to the cancellation policy. ("Fully paid" because the advance alone is non-refundable.)
+
 ### 20 Nov 2026: getting found: home h1, related treks, more share cards — `main`
 - **Google, home page:** the h1 now starts with the words people search for, "Himalayan treks from Joshimath · Auli ski school", as a small line above "One range. Two seasons." (visible, not hidden text).
 - **Google and visitors, trek pages:** a "More treks like this" row (3 treks: same pickup town, then region, grade and length) under every trek page. It is server-rendered, so every trek page now links to others in the static HTML, which helps Google find and rank them and keeps visitors on the site (`src/components/RelatedTreks.tsx`).

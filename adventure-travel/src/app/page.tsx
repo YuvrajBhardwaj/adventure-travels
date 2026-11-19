@@ -8,6 +8,7 @@ import JourneyStory from "@/components/JourneyStory";
 import WhyTrekWithUs from "@/components/WhyTrekWithUs";
 import HowItWorks from "@/components/HowItWorks";
 import SnowSchool from "@/components/SnowSchool";
+import SkillsAcademy from "@/components/SkillsAcademy";
 import CampingSection from "@/components/CampingSection";
 import VideoShowcase from "@/components/VideoShowcase";
 import StoriesTestimonials from "@/components/StoriesTestimonials";
@@ -40,6 +41,9 @@ export default function Home() {
           <FindYourTrek />
           <JourneyStory />
           <SnowSchool />
+          <section aria-label="Skills Academy" className="bg-background py-section-sm">
+            <SkillsAcademy />
+          </section>
           <TheRange />
           <WhyTrekWithUs />
           <CampingSection />
