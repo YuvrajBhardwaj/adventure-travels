@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import NationalityField from "@/components/NationalityField";
 import { motion, AnimatePresence, useAnimate, useReducedMotion } from "framer-motion";
@@ -119,6 +120,7 @@ function getHeroSlides(trek: Trek): WallpaperSlide[] {
 
 /** `related`: server-rendered links to other treks, shown below the page content. */
 export default function TrekDetailClient({ trek, related }: { trek: Trek; related?: ReactNode }) {
+  const router = useRouter();
   const { nationality } = useCurrency();
   const { user } = useAuth();
   const shouldReduceMotion = useReducedMotion();
@@ -186,7 +188,7 @@ export default function TrekDetailClient({ trek, related }: { trek: Trek; relate
         /* ignore storage failures */
       }
       const next = encodeURIComponent(`/treks/${trek.slug}`);
-      window.location.href = `/signup?next=${next}`;
+      router.push(`/signup?next=${next}`);
       return;
     }
     setPayBookingId(null);

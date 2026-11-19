@@ -59,6 +59,8 @@ const socials = [
 
 const legalLinks = [
   { label: "Booking & Cancellation", href: "/cancellation-policy" },
+  { label: "Terms", href: "/terms" },
+  { label: "Privacy", href: "/privacy" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ];

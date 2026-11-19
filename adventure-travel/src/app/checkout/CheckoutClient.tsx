@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeScope } from "@/components/ui/theme-scope";
 import { PaymentStatus, type PaymentPhase } from "@/components/checkout/PaymentStatus";
 import { TrustSection } from "@/components/checkout/TrustSection";
+import UpiDirectPay from "@/components/UpiDirectPay";
 import { PaymentChoice, type PaymentChoiceValue } from "@/components/PaymentChoice";
 
 /* ─── Razorpay Checkout (loaded from their CDN, see loadRazorpay) ─── */
@@ -529,6 +530,9 @@ export default function CheckoutClient() {
                   )
                 )}
               </AnimatePresence>
+
+              {/* Direct UPI to the owner, alongside Razorpay; confirmed by hand from the WhatsApp screenshot. */}
+              {plan && payable && <UpiDirectPay amountInr={plan.now / 100} reference={payable.id.slice(0, 8).toUpperCase()} />}
 
               <TrustSection />
 

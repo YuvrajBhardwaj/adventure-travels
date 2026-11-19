@@ -1,5 +1,16 @@
 {
   "regions": ["bom1"],
   "crons": [{ "path": "/api/cron", "schedule": "30 3 * * *" }],
-  "redirects": [{ "source": "/auli-winter-escape", "destination": "/tours/auli-winter-escape", "permanent": true }]
+  "redirects": [{ "source": "/auli-winter-escape", "destination": "/tours/auli-winter-escape", "permanent": true }],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
+      ]
+    }
+  ]
 }

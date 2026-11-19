@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { searchAll } from "@/lib/searchIndex";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function MobileSearchButton() {
+  const router = useRouter();
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -58,7 +60,7 @@ export default function MobileSearchButton() {
             action="/treks"
             onSubmit={(e) => {
               e.preventDefault();
-              window.location.href = `/treks${query.trim() ? `?search=${encodeURIComponent(query.trim())}` : ""}`;
+              router.push(`/treks${query.trim() ? `?search=${encodeURIComponent(query.trim())}` : ""}`);
             }}
             className="relative"
           >

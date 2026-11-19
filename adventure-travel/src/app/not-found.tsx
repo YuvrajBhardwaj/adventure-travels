@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
+// Overrides the layout's "index, follow" (Next also adds its own noindex tag to 404s).
 export const metadata: Metadata = { title: "Page not found", robots: { index: false, follow: true } };
 
 const LINKS = [

@@ -1,6 +1,6 @@
 "use client";
 
-import { UPI_GPAY_ID, UPI_PHONEPE_ID, UPI_QR_ID, upiLink } from "@/data/upi";
+import { UPI_ID, upiLink } from "@/data/upi";
 import { buttonVariants } from "@/components/ui/button";
 import { BrandIcon } from "@/components/BrandIcon";
 
@@ -27,16 +27,16 @@ export default function UpiDirectPay({ amountInr, reference }: { amountInr?: num
       <div className="mt-4 grid gap-5 sm:grid-cols-[1fr_auto] sm:items-center">
         <div className="space-y-3">
           {/* Phones: the app opens with the amount filled in. upi:// lets Android pick any UPI app. */}
-          <a href={upiLink(UPI_GPAY_ID, amountInr, note, "tez://upi/pay")} className={btn}>Pay with Google Pay</a>
-          <a href={upiLink(UPI_PHONEPE_ID, amountInr, note, "phonepe://pay")} className={btn}>Pay with PhonePe</a>
-          <a href={upiLink(UPI_PHONEPE_ID, amountInr, note)} className={btn}>Other UPI app</a>
+          <a href={upiLink(amountInr, note, "tez://upi/pay")} className={btn}>Pay with Google Pay</a>
+          <a href={upiLink(amountInr, note, "phonepe://pay")} className={btn}>Pay with PhonePe</a>
+          <a href={upiLink(amountInr, note)} className={btn}>Other UPI app</a>
           <p className="text-xs text-muted">
-            UPI IDs: <span className="font-mono">{UPI_PHONEPE_ID}</span> (PhonePe) · <span className="font-mono">{UPI_GPAY_ID}</span> (Google Pay)
+            UPI ID: <span className="break-all font-mono">{UPI_ID}</span>
           </p>
         </div>
         <figure className="mx-auto text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/upi-qr.png" alt={`UPI QR code for ${UPI_QR_ID}`} width={176} height={176} className="rounded-xl ring-1 ring-slate-200" />
+          <img src="/brand/upi-qr.png" alt={`UPI QR code for ${UPI_ID}`} width={176} height={176} className="rounded-xl ring-1 ring-slate-200" />
           <figcaption className="mt-2 text-xs text-muted">Scan with any UPI app{amount ? `, enter ${amount}` : ""}</figcaption>
         </figure>
       </div>

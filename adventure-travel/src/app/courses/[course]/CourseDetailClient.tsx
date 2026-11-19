@@ -254,7 +254,10 @@ export default function CourseDetailClient({ course }: Props) {
   // A copied or refreshed #tnc (or any tab) link opens the right tab on load.
   useEffect(() => {
     const key = window.location.hash.replace("#", "") as Tab;
-    if (TAB_LIST.some((t) => t.key === key)) setTab(key);
+    if (!TAB_LIST.some((t) => t.key === key)) return;
+    // In a timeout callback, not the effect body: sync setState in effects causes cascading renders.
+    const id = setTimeout(() => setTab(key), 0);
+    return () => clearTimeout(id);
   }, []);
 
   // Jump just below the sticky bars once the new panel has actually rendered.
@@ -325,6 +328,8 @@ export default function CourseDetailClient({ course }: Props) {
 
   const handleBook = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Read before any await: React clears e.currentTarget once the handler yields.
+    const website = ((e.currentTarget as HTMLFormElement).elements.namedItem("website") as HTMLInputElement | null)?.value ?? "";
     setBookError("");
     setBookUnavailable(false);
     const invalid: Record<string, string> = {};
@@ -361,6 +366,7 @@ export default function CourseDetailClient({ course }: Props) {
             phone: bookingForm.phone.trim(),
           },
           message: bookingForm.message.trim(),
+          website,
         }),
       });
       const result = await response.json().catch(() => null);
@@ -968,6 +974,8 @@ export default function CourseDetailClient({ course }: Props) {
                         </div>
                       )}
                       <form onSubmit={handleBook} noValidate className="space-y-4">
+                        {/* Spam trap: hidden from people, filled in by bots; the server then saves and sends nothing. */}
+                        <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="cb-name">Full Name</Label>
