@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef, type ReactNode } from "react";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import NationalityField from "@/components/NationalityField";
 import { motion, AnimatePresence, useAnimate, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { priceOptions, priceRoute, type Trek } from "@/data/treks";
@@ -118,6 +120,7 @@ function getHeroSlides(trek: Trek): WallpaperSlide[] {
 
 /** `related`: server-rendered links to other treks, shown below the page content. */
 export default function TrekDetailClient({ trek, related }: { trek: Trek; related?: ReactNode }) {
+  const { nationality } = useCurrency();
   const { user } = useAuth();
   const shouldReduceMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState<Tab>("Overview");
@@ -197,6 +200,7 @@ export default function TrekDetailClient({ trek, related }: { trek: Trek; relate
         date: bookingForm.date,
         groupSize: bookingForm.groupSize,
         roomSharing: bookingForm.sharing || undefined,
+        nationality,
         message: bookingForm.message,
       });
       if (!created.quoteRequired) setPayBookingId(created.bookingId);
@@ -1993,6 +1997,7 @@ function ReservationTab({
             </p>
           </div>
         )}
+        <NationalityField id="res-nationality" />
         <div>
           <Label htmlFor="res-message">Additional Message</Label>
           <Textarea

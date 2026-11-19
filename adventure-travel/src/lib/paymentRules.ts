@@ -36,3 +36,14 @@ export function balanceDueDate(startIso: string) {
 export function isOverdue(paymentState: PaymentState | null | undefined, dueDate: string | null | undefined, today = istToday()) {
   return paymentState === "advance_paid" && Boolean(dueDate) && (dueDate as string) < today;
 }
+
+/**
+ * Foreign nationals pay this many times the listed price (owner, 20 Nov 2026: permits and local
+ * arrangements cost more). The server applies it when the booking says "foreign" (api/_lib/pricing.js).
+ */
+export const FOREIGN_MULTIPLIER = 3;
+
+/** A listed INR price as charged to an Indian or a foreign national. */
+export function priceForNationality(inr: number, nationality: "indian" | "foreign") {
+  return nationality === "foreign" ? inr * FOREIGN_MULTIPLIER : inr;
+}

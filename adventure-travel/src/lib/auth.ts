@@ -137,6 +137,8 @@ export async function createTrekBooking(input: {
   date: string;
   groupSize: string;
   roomSharing?: string;
+  /** Foreign nationals are charged 3× by the server. */
+  nationality?: "indian" | "foreign";
   message?: string;
 }): Promise<CreatedBooking> {
   const supabase = requireClient();
@@ -154,6 +156,7 @@ export async function createTrekBooking(input: {
         date: input.date,
         groupSize: input.groupSize === "10+" ? "10+" : Number(input.groupSize),
         roomSharing: input.roomSharing || undefined,
+        nationality: input.nationality === "foreign" ? "foreign" : "indian",
         message: input.message || "",
       }),
     });

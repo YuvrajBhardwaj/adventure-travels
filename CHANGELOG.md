@@ -17,6 +17,16 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 20 Nov 2026: foreign nationals pay 3×, **Backend** — `main` (not pushed: needs the database change first)
+- **For visitors:** visitors from outside India see the foreign-national price list: every listed price ×3, with a note ("Price for foreign nationals, which covers their permits and local arrangements") and a link to the Indian prices. Each trek, course and tour booking or enquiry form has a **Nationality** field (Indian / Foreign national), pre-set from the visitor's location. The footer has a price-list switch next to the currency picker. Example: Kuari Pass Rs.7,500 (Indian), Rs.22,500 (foreign).
+- **For the business (owner's decision, 20 Nov):** applies to treks, tours and courses. The booking is charged by the nationality chosen on the form, not by location, so an Indian living abroad can still book at the Indian price. Admin booking lists and emails show "Foreign national" next to the option.
+- **Backend:**
+  - `api/_lib/pricing.js` has `FOREIGN_MULTIPLIER = 3`; `trekAmount()` and `courseAmount()` take a nationality.
+  - `api/bookings.js` stores the nationality and locks the ×3 amount. The browser still never sends a price.
+  - New `supabase-nationality.sql` adds a `nationality` column (indian/foreign, default indian) to trek and course bookings. It was tested on PGlite with all 9 files, run twice. **It must be applied to Supabase before this is pushed, or new bookings fail.**
+  - New pricing tests (94 pass).
+- **Testing locally:** add `?country=US` to any URL to see the site as a visitor from the US, since `/api/geo` doesn't run under `npm run dev`.
+
 ### 20 Nov 2026: our own photos on Destinations, Activities and the footer — `main`
 - **For visitors:** no more stock photos of other mountain ranges (one was a Matterhorn-like peak, another a Rockies-style lake).
   - **Destinations:** the header and 7 of the 8 region cards use our own trek photos (Panpatia Col, Pangarchula, Dronagiri, Nandi Kund, Kedarkantha, Hampta).
@@ -920,6 +930,7 @@ Below, ☑ marks the files run on that project.
 | 6 | `adventure-travel/supabase-departures.sql` | Batch calendar, seats left; (29 Oct) checkout seat hold `hold_trek_seats()` | ☑ 23 Oct · 29 Oct version ☑ 5 Nov |
 | 7 | `adventure-travel/supabase-scale.sql` | Indexes, faster security rules, fixed search_path, explicit grants | ☑ 5 Nov |
 | 8 | `adventure-travel/supabase-payment-guard.sql` | `apply_payment()` no longer overcharges or pays cancelled/refunded bookings; flags them "Needs refund" | ☑ 13 Nov |
+| 9 | `adventure-travel/supabase-nationality.sql` | `nationality` (indian/foreign) on trek and course bookings; foreign nationals pay 3× | ☐ not applied (awaiting owner OK) |
 
 After running them, give the business account admin rights (snippet at the top of file 2), then sign out and back in.
 

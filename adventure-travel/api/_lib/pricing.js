@@ -7,11 +7,19 @@ const ADVANCE_CUTOFF_DAYS = 15; // advance only when the start is MORE than this
 const BALANCE_DUE_DAYS_BEFORE = 15;
 const MAX_TREK_GROUP = 10; // larger groups get a custom quote
 const MAX_COURSE_GROUP = 20;
+// Foreign nationals pay this many times the listed price (owner, 20 Nov 2026: permits and
+// local arrangements cost more for them). Mirrored for display in src/lib/paymentRules.ts.
+const FOREIGN_MULTIPLIER = 3;
+
+/** "foreign" for a foreign national, anything else counts as Indian. */
+function nationalityFactor(nationality) {
+  return nationality === "foreign" ? FOREIGN_MULTIPLIER : 1;
+}
 
 const isWholeNumber = (n, min, max) => Number.isInteger(n) && n >= min && n <= max;
 
 /** Price for a trek booking, or null when the catalog can't price it (→ quote). */
-function trekAmount(trek, groupSize, roomSharing) {
+function trekAmount(trek, groupSize, roomSharing, nationality) {
   if (!trek || !isWholeNumber(groupSize, 1, MAX_TREK_GROUP)) return null;
   let unit = trek.price;
   if (roomSharing) {
@@ -20,18 +28,18 @@ function trekAmount(trek, groupSize, roomSharing) {
     unit = trek.roomSharing[roomSharing];
   }
   // No room chosen on a tiered trek → the base tier, which the catalog guarantees equals `price`.
-  return Number.isInteger(unit) && unit > 0 ? unit * groupSize * 100 : null;
+  return Number.isInteger(unit) && unit > 0 ? unit * nationalityFactor(nationality) * groupSize * 100 : null;
 }
 
 /** Price for a course booking, or null when it can't be priced. */
-function courseAmount(course, tierId, stay, groupSize) {
+function courseAmount(course, tierId, stay, groupSize, nationality) {
   if (!course || !isWholeNumber(groupSize, 1, MAX_COURSE_GROUP)) return null;
   let unit = course.price;
   if (course.tiers && course.tiers.length > 0) {
     const tier = course.tiers.find((t) => t.id === tierId) || course.tiers[0];
     unit = stay === "full" ? tier.priceFull : tier.priceBase;
   }
-  return Number.isInteger(unit) && unit > 0 ? unit * groupSize * 100 : null;
+  return Number.isInteger(unit) && unit > 0 ? unit * nationalityFactor(nationality) * groupSize * 100 : null;
 }
 
 /** 30% of the booking amount, rounded UP to a whole rupee. */
@@ -128,6 +136,7 @@ module.exports = {
   ADVANCE_CUTOFF_DAYS,
   MAX_TREK_GROUP,
   MAX_COURSE_GROUP,
+  FOREIGN_MULTIPLIER,
   trekAmount,
   courseAmount,
   advanceAmount,

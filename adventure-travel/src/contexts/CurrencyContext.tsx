@@ -4,6 +4,10 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { BASE_CURRENCY, currencyForCountry, formatMoney } from "@/lib/currency";
 
 const STORAGE_KEY = "hac_currency_v1";
+/** A visitor's own pick of the Indian or foreign price list (absent = follow their location). */
+const NATIONALITY_KEY = "hac_nationality_v1";
+
+export type Nationality = "indian" | "foreign";
 const FRESH_MS = 6 * 60 * 60 * 1000;
 
 type Rates = Record<string, number>;
@@ -32,6 +36,11 @@ interface CurrencyCtx {
   updatedAt: string | null;
   format: (inr: number) => string;
   setCurrency: (code: string | "auto") => void;
+  /** Which price list to show: foreign nationals pay FOREIGN_MULTIPLIER × (src/lib/paymentRules.ts). */
+  nationality: Nationality;
+  /** "auto" = from the visitor's location (outside India → foreign), "user" = picked. */
+  nationalitySource: "auto" | "user";
+  setNationality: (n: Nationality | "auto") => void;
 }
 
 const Ctx = createContext<CurrencyCtx>({
@@ -44,6 +53,9 @@ const Ctx = createContext<CurrencyCtx>({
   updatedAt: null,
   format: (inr) => formatMoney(inr, BASE_CURRENCY, 1),
   setCurrency: () => {},
+  nationality: "indian",
+  nationalitySource: "auto",
+  setNationality: () => {},
 });
 
 function readSaved(): Saved | null {
@@ -70,6 +82,18 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   const [country, setCountry] = useState<string | null>(null);
   const [rates, setRates] = useState<Rates | null>(null);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+  // Indian until we know better, so the static HTML and first render match.
+  const [pickedNationality, setPickedNationality] = useState<Nationality | null>(null);
+
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem(NATIONALITY_KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (v === "indian" || v === "foreign") setPickedNationality(v);
+    } catch {
+      /* storage blocked: follow the location */
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -95,8 +119,13 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       if (ratesRes.status === "fulfilled") setUpdatedAt(ratesRes.value.updatedAt ?? null);
       setRates(table);
 
-      const detectedCountry: string | null =
-        geoRes.status === "fulfilled" && geoRes.value ? (geoRes.value.country ?? null) : (saved?.country ?? null);
+      // ?country=US (any 2-letter code) previews the site as a visitor from there, e.g. under
+      // `npm run dev`, where /api/geo doesn't run. It only changes what is shown; bookings are
+      // still priced by the nationality chosen on the form.
+      const forced = new URLSearchParams(window.location.search).get("country");
+      const detectedCountry: string | null = forced && /^[a-z]{2}$/i.test(forced)
+        ? forced.toUpperCase()
+        : geoRes.status === "fulfilled" && geoRes.value ? (geoRes.value.country ?? null) : (saved?.country ?? null);
       setCountry(detectedCountry);
 
       const wanted = saved?.source === "user" ? saved.currency : currencyForCountry(detectedCountry);
@@ -142,6 +171,18 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     [detected, country, rates]
   );
 
+  const setNationality = useCallback((n: Nationality | "auto") => {
+    setPickedNationality(n === "auto" ? null : n);
+    try {
+      if (n === "auto") localStorage.removeItem(NATIONALITY_KEY);
+      else localStorage.setItem(NATIONALITY_KEY, n);
+    } catch {
+      /* storage blocked: the pick lasts for this visit */
+    }
+  }, []);
+  const autoNationality: Nationality = country && country.toUpperCase() !== "IN" ? "foreign" : "indian";
+  const nationality = pickedNationality ?? autoNationality;
+
   const rate = currency === BASE_CURRENCY ? 1 : (rates?.[currency] ?? 1);
   const value = useMemo<CurrencyCtx>(
     () => ({
@@ -154,8 +195,11 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       updatedAt,
       format: (inr: number) => formatMoney(inr, currency, rate),
       setCurrency,
+      nationality,
+      nationalitySource: pickedNationality ? "user" : "auto",
+      setNationality,
     }),
-    [currency, country, mode, detected, rates, updatedAt, rate, setCurrency]
+    [currency, country, mode, detected, rates, updatedAt, rate, setCurrency, nationality, pickedNationality, setNationality]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

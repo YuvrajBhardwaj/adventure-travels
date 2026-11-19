@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import NationalityField from "@/components/NationalityField";
 
 export interface TourPackage {
   id: string;
@@ -102,6 +104,7 @@ export function TourPackages({ packages }: { packages: TourPackage[] }) {
  */
 export function TourEnquiry({ tourName, packages, offer }: { tourName: string; packages: TourPackage[]; offer?: string }) {
   const { selected, select } = useContext(PackageContext);
+  const { nationality } = useCurrency();
   const [form, setForm] = useState({ name: "", phone: "", date: "", travellers: "2", message: "" });
   const [error, setError] = useState("");
   const set = (k: keyof typeof form) => (e: { target: { value: string } }) => setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -119,6 +122,7 @@ export function TourEnquiry({ tourName, packages, offer }: { tourName: string; p
       pkg && `Package: ${pkg.name}`,
       form.date && `Date: ${form.date}`,
       `Travellers: ${form.travellers}`,
+      `Nationality: ${nationality === "foreign" ? "Foreign national" : "Indian national"}`,
       `Name: ${form.name.trim()}`,
       `Phone: ${form.phone.trim()}`,
       form.message.trim() && `Message: ${form.message.trim()}`,
@@ -159,6 +163,7 @@ export function TourEnquiry({ tourName, packages, offer }: { tourName: string; p
             </Select>
           </div>
         )}
+        <NationalityField id="enq-nationality" />
         <div>
           <Label htmlFor="enq-message">Message (optional)</Label>
           <Textarea id="enq-message" rows={3} value={form.message} onChange={set("message")} />

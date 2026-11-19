@@ -38,3 +38,28 @@ export default function CurrencySwitcher({ className = "" }: { className?: strin
     </label>
   );
 }
+
+/**
+ * Indian or foreign-national price list. "Auto" follows the visitor's location (outside
+ * India → foreign); the booking form still asks, and the server charges by that answer.
+ */
+export function NationalitySwitcher({ className = "" }: { className?: string }) {
+  const { country, nationality, nationalitySource, setNationality } = useCurrency();
+  const autoForeign = Boolean(country && country.toUpperCase() !== "IN");
+  return (
+    <label className={cn("dark inline-flex items-center", className)}>
+      <span className="sr-only">Show prices for</span>
+      <Select
+        value={nationalitySource === "auto" ? "auto" : nationality}
+        onChange={(e) => setNationality(e.target.value as "indian" | "foreign" | "auto")}
+        title="Foreign nationals pay a higher price that covers their permits and local arrangements."
+        wrapperClassName="w-auto"
+        className="h-11 w-auto pl-3 pr-9 font-nav font-semibold lg:h-10 lg:pl-2.5 lg:pr-8 lg:text-xs dark:hover:bg-white/10"
+      >
+        <option value="auto">Auto ({autoForeign ? "foreign national" : "Indian"} prices)</option>
+        <option value="indian">Indian national prices</option>
+        <option value="foreign">Foreign national prices</option>
+      </Select>
+    </label>
+  );
+}

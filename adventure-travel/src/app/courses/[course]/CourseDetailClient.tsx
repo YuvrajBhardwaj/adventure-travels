@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import NationalityField from "@/components/NationalityField";
 import Link from "next/link";
 import { motion, useAnimate, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { coursePhotos, type Course } from "@/data/courses";
@@ -183,6 +185,7 @@ function CourseTabPanel({ index, active, reduceMotion, children }: { index: numb
 }
 
 export default function CourseDetailClient({ course }: Props) {
+  const { nationality } = useCurrency();
   const shouldReduceMotion = useReducedMotion();
   const [tab, setTab] = useState<Tab>("overview");
   const [bookingForm, setBookingForm] = useState({
@@ -337,6 +340,7 @@ export default function CourseDetailClient({ course }: Props) {
           stay: selectedTier ? stay : undefined,
           date: bookingForm.date,
           groupSize: Number(bookingForm.groupSize),
+          nationality,
           contact: {
             name: bookingForm.name.trim(),
             email: bookingForm.email.trim(),
@@ -957,6 +961,7 @@ export default function CourseDetailClient({ course }: Props) {
                           </Select>
                         </div>
                       </div>
+                      <NationalityField id="cb-nationality" />
                       <div>
                         <Label htmlFor="cb-msg">Message (optional)</Label>
                         <Textarea

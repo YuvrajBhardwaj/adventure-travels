@@ -66,6 +66,19 @@ describe("trekAmount", () => {
   });
 });
 
+describe("foreign nationals", () => {
+  it("pay three times the trek price, per person, in every option", () => {
+    expect(trekAmount(plainTrek, 1, undefined, "foreign")).toBe(1800000);
+    expect(trekAmount(tieredTrek, 2, "Double sharing", "foreign")).toBe(3899400);
+    expect(trekAmount(plainTrek, 1, undefined, "indian")).toBe(600000);
+    expect(trekAmount(plainTrek, 1, undefined, "anything else")).toBe(600000);
+  });
+  it("pay three times the course price", () => {
+    expect(courseAmount(tieredCourse, "basic", "base", 1, "foreign")).toBe(3000000);
+    expect(courseAmount(flatCourse, undefined, "", 2, "foreign")).toBe(21000000);
+  });
+});
+
 describe("courseAmount", () => {
   it("uses the tier's base or full-stay price", () => {
     expect(courseAmount(tieredCourse, "premium", "base", 1)).toBe(1500000);

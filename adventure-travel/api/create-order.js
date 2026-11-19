@@ -59,7 +59,7 @@ async function loadBooking(db, user, bookingType, bookingId) {
   // catalog and store it, so from here on the price is locked like any other booking.
   if (amount === null && !b.quote_required && b.status !== "cancelled" && b.payment_state === "unpaid") {
     const group = Number(String(b.group_size).trim());
-    amount = pricing.trekAmount(trekCatalog[b.trek_slug], group, b.room_sharing || null);
+    amount = pricing.trekAmount(trekCatalog[b.trek_slug], group, b.room_sharing || null, b.nationality);
     if (amount !== null) {
       const { error: lockError } = await db.from("trek_bookings").update({ amount }).eq("id", b.id).is("amount", null);
       if (lockError) throw lockError;

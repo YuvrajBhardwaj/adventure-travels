@@ -40,8 +40,9 @@ async function createTrek(db, user, body) {
   if (roomSharing && (!trek.roomSharing || !Object.prototype.hasOwnProperty.call(trek.roomSharing, roomSharing))) {
     throw new HttpError(400, "Choose one of the listed room or package options.");
   }
+  const nationality = body.nationality === "foreign" ? "foreign" : "indian";
   // Price locked now, from the catalog — never from the browser (FR-016).
-  const amount = group.persons ? pricing.trekAmount(trek, group.persons, roomSharing) : null;
+  const amount = group.persons ? pricing.trekAmount(trek, group.persons, roomSharing, nationality) : null;
 
   const { data, error } = await db
     .from("trek_bookings")
@@ -52,6 +53,7 @@ async function createTrek(db, user, body) {
       trek_date: date,
       group_size: group.label,
       room_sharing: roomSharing,
+      nationality,
       message: text(body.message, 2000),
       amount,
       quote_required: amount === null,
@@ -67,7 +69,7 @@ async function createTrek(db, user, body) {
     date,
     groupSize: group.label,
     item: trek.name,
-    option: roomSharing,
+    option: [roomSharing, nationality === "foreign" && "Foreign national"].filter(Boolean).join(" · ") || null,
     contact: { name: user.user_metadata?.full_name || "", email: user.email || "", phone: user.user_metadata?.phone || "" },
     message: text(body.message, 2000),
   };
@@ -99,7 +101,8 @@ async function createCourse(db, user, body) {
   const hasTiers = course.tiers && course.tiers.length > 0;
   const tier = hasTiers ? course.tiers.find((t) => t.id === body.tierId) || course.tiers[0] : null;
   const stay = hasTiers ? (body.stay === "full" ? "full" : "base") : "";
-  const amount = pricing.courseAmount(course, tier ? tier.id : undefined, stay, groupSize);
+  const nationality = body.nationality === "foreign" ? "foreign" : "indian";
+  const amount = pricing.courseAmount(course, tier ? tier.id : undefined, stay, groupSize, nationality);
 
   const { data, error } = await db
     .from("course_bookings")
@@ -112,6 +115,7 @@ async function createCourse(db, user, body) {
       stay,
       preferred_date: date,
       group_size: groupSize,
+      nationality,
       amount,
       quote_required: amount === null,
       contact_name: contact.name,
@@ -130,7 +134,7 @@ async function createCourse(db, user, body) {
     date,
     groupSize: String(groupSize),
     item: course.name,
-    option: tier ? `${tier.name} · ${stay === "full" ? "with stay & meals" : "without stay"}` : "",
+    option: [tier && `${tier.name} · ${stay === "full" ? "with stay & meals" : "without stay"}`, nationality === "foreign" && "Foreign national"].filter(Boolean).join(" · "),
     contact,
     message: text(body.message, 2000),
   };
