@@ -44,8 +44,8 @@ export function PaymentChoice({
       >
         {advanceAllowed ? (
           <>
-            {formatPaise(total - advance)} due by {balanceDueDate ? shortDate(balanceDueDate) : "15 days before you start"}. The
-            advance is non-refundable —{" "}
+            {formatPaise(total - advance)} due by {balanceDueDate ? shortDate(balanceDueDate) : "15 days before you start"}. Full refund if you
+            cancel 20+ days before —{" "}
             <Link href="/cancellation-policy" className="font-medium underline underline-offset-2">
               cancellation policy
             </Link>

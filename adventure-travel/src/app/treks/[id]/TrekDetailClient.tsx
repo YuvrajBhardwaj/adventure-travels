@@ -18,6 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { BackendUnavailableError, createTrekBooking } from "@/lib/auth";
 import WhatsAppFallback from "@/components/WhatsAppFallback";
 import { REFUND_TIERS } from "@/data/cancellationPolicy";
+import ItineraryTerms from "@/components/ItineraryTerms";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import {
   Backpack,
@@ -647,11 +648,11 @@ function BookingCard({
         )}
 
         {/* Trust */}
-        {/* Short form of src/data/cancellationPolicy.ts; the advance alone is non-refundable, hence "fully paid". */}
+        {/* Short form of src/data/cancellationPolicy.ts. */}
         <div className="space-y-1 text-xs text-muted">
-          <p>All-inclusive · Free date change up to 7 days before departure</p>
+          <p>All-inclusive · 30% advance confirms your seat</p>
           <p>
-            Cancel 25+ days before a fully paid trek: {REFUND_TIERS[0].cash.toLowerCase()}.{" "}
+            Cancel {REFUND_TIERS[0].window}: {REFUND_TIERS[0].cash.toLowerCase()}.{" "}
             <Link href="/cancellation-policy" className="font-semibold text-emerald-700 underline decoration-emerald-700/30 underline-offset-2 hover:text-emerald-800 dark:text-emerald-400">
               Cancellation policy
             </Link>
@@ -1413,6 +1414,7 @@ function ItineraryTab({ trek, onChoosePackage }: { trek: Trek; onChoosePackage: 
           );
         })}
       </div>
+      <ItineraryTerms kind="trek" />
       <section aria-labelledby="package-options-title" className="mt-10">
         <div className="mb-4">
           <h3 id="package-options-title" className="text-2xl font-bold tracking-[-0.02em] text-foreground">Package options</h3>

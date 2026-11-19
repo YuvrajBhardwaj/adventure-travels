@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Fraunces, Space_Grotesk } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import FooterV2 from "@/components/FooterV2";
@@ -10,27 +10,34 @@ import { courses } from "@/data/courses";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import LegacyDataNotice from "@/components/LegacyDataNotice";
 
-const inter = Inter({
+// Self-hosted so a Google Fonts outage can't fail a build. The files in ./fonts are the
+// google/fonts variable TTFs subset to Google's "latin" range plus ₹ (U+20B9), as woff2;
+// Inter is pinned to opsz=14 and Fraunces to WONK=0 (the axes we don't use). The family
+// names stay the real ones because globals.css names "Inter" and "Fraunces" directly.
+const inter = localFont({
+  src: "./fonts/inter-latin.woff2",
   variable: "--font-body",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  declarations: [{ prop: "font-family", value: "Inter" }],
+  weight: "100 900",
   display: "swap",
 });
 
 // Variable font: one file covers every weight, plus optical size (finer detail at large sizes)
 // and SOFT (rounder terminals). It is the voice of headings; Space Grotesk stays for nav and data.
-const fraunces = Fraunces({
+const fraunces = localFont({
+  src: "./fonts/fraunces-latin.woff2",
   variable: "--font-display",
-  subsets: ["latin"],
-  weight: "variable",
-  axes: ["opsz", "SOFT"],
+  declarations: [{ prop: "font-family", value: "Fraunces" }],
+  weight: "100 900",
   display: "swap",
+  adjustFontFallback: "Times New Roman",
 });
 
-const spaceGrotesk = Space_Grotesk({
+const spaceGrotesk = localFont({
+  src: "./fonts/space-grotesk-latin.woff2",
   variable: "--font-nav",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  declarations: [{ prop: "font-family", value: "Space Grotesk" }],
+  weight: "300 700",
   display: "swap",
 });
 

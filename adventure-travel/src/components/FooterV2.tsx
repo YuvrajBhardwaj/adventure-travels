@@ -388,6 +388,8 @@ export default function FooterV2() {
           <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-xs text-white/50">
               &copy; {new Date().getFullYear()} Himalayan Arc Adventure. All rights reserved.
+              <br />
+              Registered with the Uttarakhand Tourism Development Board as an adventure company.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-white/50">
               <CurrencySwitcher />

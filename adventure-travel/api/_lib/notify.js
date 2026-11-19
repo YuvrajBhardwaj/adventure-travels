@@ -40,7 +40,7 @@ const templates = {
       "",
       ctx.amount
         ? ctx.advanceAllowed
-          ? `You can pay online from your dashboard: a 30% advance of ${inr(ctx.advanceAmount)} now (non-refundable), with the balance due 15 days before the start, or the full amount.`
+          ? `You can pay online from your dashboard: a 30% advance of ${inr(ctx.advanceAmount)} now, with the balance due 15 days before the start, or the full amount. Cancel 20+ days before the start for a full refund.`
           : "You can pay the full amount online from your dashboard."
         : "",
       `Your bookings: ${SITE}/dashboard`,
@@ -79,7 +79,7 @@ const templates = {
         balance > 0
           ? `Balance: ${inr(balance)}, due by ${day(ctx.balanceDueDate)}. Pay it here: ${payLink(ctx)}`
           : "You're fully paid. See you in the mountains!",
-        ctx.kind === "advance" ? "Please note: the advance is non-refundable, as per our cancellation policy." : "",
+        ctx.kind === "advance" ? "Cancellation: full refund 20+ days before the start, 50% at 10–19 days, and less than 10 days before one free date change in the same season instead of a refund." : "",
         "",
         `Your bookings: ${SITE}/dashboard`,
         "",

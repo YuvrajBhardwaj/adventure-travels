@@ -26,6 +26,11 @@ Last updated: 7 Nov 2026.
 - [ ] **Dev:** self-host the three fonts (`next/font/local`) so a Google Fonts hiccup can't fail a build again (it failed one production build on 6 Nov).
 - [ ] **Dev:** card slideshows load more photos per home visit. Shrink card photos to about 800 px (they are 1600 px today) in `scripts/prepare-photos.mjs` to save phone data and Vercel bandwidth.
 
+- [x] ~~**Dev:** new payment, cancellation and ski-course terms on the policy page, trek/course itineraries, checkout, FAQ and emails~~ (20 Nov, `main`, uncommitted).
+- [ ] **You: confirm what was dropped with the new terms.** The old 3% refund processing charge, "5% GST non-refundable" and Trek Voucher refund options were removed because "full refund" contradicts them. Say if any should come back.
+- [ ] **You: December ski batches.** The terms say customers pay only after you confirm the batch, but checkout still lets them pay a December course straight away. Either take December bookings as enquiries only, or ask Claude to block online payment for December course batches until 7 days before the start.
+- [ ] **You: no-snow refunds** are done by hand: refund in the Razorpay dashboard, then mark the booking refunded on /admin/bookings.
+
 ## Site audit (13 Nov 2026: pages, backend, SEO, live site)
 - [x] ~~**You: approve the payment fix on the live database.** Written and tested locally (13 Nov): `supabase-payment-guard.sql` replaces `apply_payment()` so an advance+full double payment, or a payment on a cancelled/refunded booking, no longer changes the booking; the payment is kept and marked "Needs refund" on /admin/payments. Say yes and Claude runs it on Supabase (then marks it ☑ in the CHANGELOG backend tracker).~~ Approved and applied 13 Nov.
 - [ ] **Dev (medium):** a payment that lands after the 15-min seat hold can overbook a full batch. Set the Razorpay order to expire with the hold, or check seats in `apply_payment()`.

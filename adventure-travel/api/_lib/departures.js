@@ -30,6 +30,9 @@ function seatsFor(groupSize) {
   return Number.isInteger(n) && n > 0 ? n : 1;
 }
 
+// Checkout closes Razorpay at the hold's end (CheckoutClient: timeout from seatsHeldUntil).
+// shortcut: a UPI collect payment approved after that can still land late and overbook;
+// apply_payment() flags such oddities for refund (supabase-payment-guard.sql) as the backstop.
 const HOLD_MINUTES = 15;
 
 /**

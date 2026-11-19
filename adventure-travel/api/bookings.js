@@ -1,8 +1,10 @@
+const { randomUUID } = require("crypto");
 const trekCatalog = require("./_lib/catalog");
 const courseCatalog = require("./_lib/courseCatalog");
 const pricing = require("./_lib/pricing");
 const departures = require("./_lib/departures");
 const notify = require("./_lib/notify");
+const spamGuard = require("./_lib/spamGuard");
 const { getAdmin, getUserFromRequest } = require("./_lib/supabaseAdmin");
 const { logActivity } = require("./_lib/payments");
 
@@ -97,6 +99,10 @@ async function createCourse(db, user, body) {
   if (!contact.name || !emailPattern.test(contact.email) || contact.phone.replace(/\D/g, "").length < 7) {
     throw new HttpError(400, "Check your name, email and phone number.");
   }
+  // No login needed here, and each booking emails the address typed in: cap it per email.
+  if (await spamGuard.tooManyCourseBookings(db, contact.email)) {
+    throw new HttpError(429, "Too many requests, please message us on WhatsApp.");
+  }
 
   const hasTiers = course.tiers && course.tiers.length > 0;
   const tier = hasTiers ? course.tiers.find((t) => t.id === body.tierId) || course.tiers[0] : null;
@@ -153,6 +159,19 @@ module.exports = async function handler(req, res) {
   if (!db) return res.status(503).json({ error: "Online booking is temporarily unavailable. Please contact us on WhatsApp." });
 
   const body = req.body && typeof req.body === "object" ? req.body : {};
+
+  // Honeypot filled in: a bot. Answer like a saved quote request, but save and send nothing.
+  if (body.type === "course" && spamGuard.isHoneypotHit(body)) {
+    return res.status(201).json({
+      bookingId: randomUUID(),
+      type: "course",
+      amount: null,
+      quoteRequired: true,
+      advanceAllowed: false,
+      advanceAmount: null,
+      emailQueued: false,
+    });
+  }
 
   try {
     const user = await getUserFromRequest(db, req);

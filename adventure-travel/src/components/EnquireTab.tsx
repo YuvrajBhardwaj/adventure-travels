@@ -7,9 +7,10 @@ import ContactPopup from "./ContactPopup";
 import { EASE } from "@/lib/motion";
 
 /**
- * "Enquire": a slim frosted-ice tab on the right edge of trek and course pages, on phones and
- * desktop. Pale enough to sit over any content without shouting; a cold glint runs down it every
- * few seconds so a phone visitor notices it once, then it stays quiet. It opens the enquiry popup
+ * "Enquire": a slim frosted-ice tab on the right edge of trek and course pages, tablet and up
+ * (hidden on phones, which already have the WhatsApp button and the booking bar). Pale enough to
+ * sit over any content without shouting; a cold glint runs down it every few seconds so a visitor
+ * notices it once, then it stays quiet. It opens the enquiry popup
  * with the trek or course already named, and the enquiry goes to WhatsApp like the site's others.
  */
 export default function EnquireTab({
@@ -39,7 +40,7 @@ export default function EnquireTab({
         initial={false}
         animate={reduce ? undefined : { x: [40, 0], opacity: [0, 1] }}
         transition={{ delay: 1.2, duration: 0.6, ease: EASE.out }}
-        className="group fixed right-0 top-[60%] z-40 flex -translate-y-1/2 flex-col items-center gap-2 overflow-hidden rounded-l-2xl bg-gradient-to-b from-white/85 to-sky-50/80 py-3.5 pl-2.5 pr-2 text-sky-900 shadow-[-6px_10px_28px_-12px_rgba(12,74,110,0.45)] backdrop-blur-xl transition-[padding,background-color,transform] duration-200 ease-out active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 motion-reduce:transition-none sm:top-1/2 sm:py-5 sm:pl-3 sm:pr-2.5 sm:hover:pr-4"
+        className="group fixed right-0 top-[60%] z-40 hidden -translate-y-1/2 flex-col items-center gap-2 overflow-hidden rounded-l-2xl bg-gradient-to-b from-white/85 to-sky-50/80 py-3.5 pl-2.5 pr-2 text-sky-900 shadow-[-6px_10px_28px_-12px_rgba(12,74,110,0.45)] backdrop-blur-xl transition-[padding,background-color,transform] duration-200 ease-out active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 motion-reduce:transition-none md:flex sm:top-1/2 sm:py-5 sm:pl-3 sm:pr-2.5 sm:hover:pr-4"
       >
         {/* The glint: a band of cold light sweeping down the tab, then a long rest. */}
         {!reduce && (

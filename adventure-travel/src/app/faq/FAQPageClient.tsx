@@ -88,7 +88,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "Can I change my trek departure date after booking?",
-        a: "Yes. Moving to another date of the same trek is free if you ask at least 7 days before your original departure and the new date has seats. Message us on WhatsApp with your booking reference and the date you'd like.",
+        a: "Yes. If you can't make it and it's less than 10 days before the start, there's no refund, but you get one free date change to another date in the same season (subject to seats). Earlier than that, you can cancel for a full or 50% refund. Message us on WhatsApp with your booking reference and the date you'd like.",
         related: ["What is the cancellation policy?", "Can I transfer my booking to a friend?"],
       },
       {
@@ -103,7 +103,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "How are refunds handled if I cancel my trek?",
-        a: "Refunds follow the timeline in our cancellation policy: the earlier you cancel, the more you get back, as cash or a larger Trek Voucher. Refunds are processed within 7–14 working days to your original payment method. The 30% advance, the 5% GST and a 3% processing charge are not refunded.",
+        a: "Cancel 20 or more days before the start for a full refund, or 10–19 days before for a 50% refund. Less than 10 days before, there's no refund, but you get one free date change in the same season. Refunds are processed within 7–14 working days to your original payment method.",
         related: ["What is the cancellation timeline?", "Are booking fees refundable?"],
       },
     ],

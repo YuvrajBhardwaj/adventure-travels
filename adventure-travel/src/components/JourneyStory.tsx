@@ -7,6 +7,7 @@ import { treks, priceRoute } from "@/data/treks";
 import Price from "@/components/Price";
 import { buttonVariants } from "@/components/ui/button";
 import { BrandIcon } from "@/components/BrandIcon";
+import { photoSrcSet } from "@/components/SmartImage";
 import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion";
 
@@ -176,6 +177,8 @@ export default function JourneyStory() {
               <motion.img
                 key={c.photo}
                 src={c.photo}
+                srcSet={photoSrcSet(c.photo)}
+                sizes="100vw"
                 alt=""
                 loading={i === 0 ? "eager" : "lazy"}
                 decoding="async"

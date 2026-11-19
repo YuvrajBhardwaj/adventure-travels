@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { TOURS } from "@/data/tours";
+import { CHOPTA_TREK, TOURS } from "@/data/tours";
+import { AULI_ESCAPE } from "@/data/auliEscape";
 import { absoluteUrl, fitDescription, fitTitle, pageMetadata, SITE_URL } from "@/lib/seo";
 import Price from "@/components/Price";
 import NoPhoto from "@/components/NoPhoto";
@@ -17,6 +18,22 @@ export const metadata = pageMetadata({
   ...shareImage(`tour-${TOURS[0].slug}`),
   imageAlt: TOURS[0].name,
 });
+
+// Who the tours suit, from the tours' own data (src/data/auliEscape.ts, tours.ts).
+const WHO_FOR = [
+  {
+    title: "No trekking needed",
+    text: "The Auli Winter Escape is drives, stays and guided sightseeing. Skiing and the chairlift are optional extras.",
+  },
+  {
+    title: "Friends and families",
+    text: `Groups of ${AULI_ESCAPE.groupFrom} or more pay Rs.${AULI_ESCAPE.groupPrice.toLocaleString("en-IN")} each on the Auli trip, with a bonfire included.`,
+  },
+  {
+    title: "Short getaways",
+    text: `${AULI_ESCAPE.days} days from Rishikesh to Auli, or ${CHOPTA_TREK.days} days from Delhi to Chopta and Tungnath.`,
+  },
+];
 
 export default function ToursPage() {
   const schema = {
@@ -90,6 +107,18 @@ export default function ToursPage() {
             </li>
           ))}
         </ul>
+
+        <section aria-labelledby="who-for-h" className="mt-14 border-t border-slate-200 pt-10 lg:mt-20">
+          <h2 id="who-for-h" className="font-heading text-3xl font-medium tracking-[-0.015em] text-slate-900">Who the tours suit</h2>
+          <ul className="mt-6 grid gap-6 sm:grid-cols-3">
+            {WHO_FOR.map((w) => (
+              <li key={w.title}>
+                <p className="font-nav text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">{w.title}</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{w.text}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
     </main>
   );

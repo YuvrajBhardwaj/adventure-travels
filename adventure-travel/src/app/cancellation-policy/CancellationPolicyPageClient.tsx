@@ -2,7 +2,7 @@
 
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/MotionWrapper";
 import { buttonVariants } from "@/components/ui/button";
-import { REFUND_NOTE, REFUND_TIERS } from "@/data/cancellationPolicy";
+import { PAYMENT_TERMS, REFUND_NOTE, REFUND_TIERS, REGISTRATION_NOTE, SKI_TERMS } from "@/data/cancellationPolicy";
 
 function MailIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
@@ -33,6 +33,7 @@ export default function CancellationPolicyPage() {
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
             Note: No refund on unused services of the package, if any.
           </p>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted">{REGISTRATION_NOTE}</p>
         </div>
       </section>
 
@@ -63,7 +64,7 @@ export default function CancellationPolicyPage() {
                     <div>
                       <h3 className="font-heading text-lg font-semibold text-foreground sm:text-xl">{tier.window}</h3>
                       <p className="mt-1 text-sm font-semibold text-foreground">{tier.cash}</p>
-                      <p className="text-sm leading-relaxed text-muted">or {tier.voucher}</p>
+                      {tier.detail && <p className="text-sm leading-relaxed text-muted">{tier.detail}</p>}
                     </div>
                   </div>
                 </StaggerItem>
@@ -76,7 +77,7 @@ export default function CancellationPolicyPage() {
             <div className="lg:col-span-4">
               <h3 className="font-heading text-xl font-semibold text-foreground">On the start day / no-show</h3>
               <p className="mt-3 leading-relaxed text-muted">
-                <strong className="text-foreground">No refund, no voucher.</strong>
+                <strong className="text-foreground">No refund.</strong>
               </p>
             </div>
             <ul className={`divide-y text-sm leading-relaxed text-muted divide-slate-200 dark:divide-white/10 lg:col-span-8`}>
@@ -86,6 +87,29 @@ export default function CancellationPolicyPage() {
                 </li>
               ))}
             </ul>
+          </FadeUp>
+
+          {/* ─── Payment ─── */}
+          <FadeUp className={`mt-14 grid gap-4 border-t pt-10 lg:grid-cols-12 lg:gap-16 ${HAIRLINE}`}>
+            <h3 className="font-heading text-xl font-semibold text-foreground lg:col-span-4">Payment</h3>
+            <ul className="space-y-3 lg:col-span-8">
+              {PAYMENT_TERMS.map((t) => (
+                <li key={t} className="text-base leading-relaxed text-muted">{t}</li>
+              ))}
+            </ul>
+          </FadeUp>
+
+          {/* ─── Ski & snowboard courses ─── */}
+          <FadeUp className={`mt-10 grid gap-4 border-t pt-10 lg:grid-cols-12 lg:gap-16 ${HAIRLINE}`}>
+            <h3 className="font-heading text-xl font-semibold text-foreground lg:col-span-4">Ski &amp; snowboard courses</h3>
+            <dl className="space-y-4 lg:col-span-8">
+              {SKI_TERMS.map((t) => (
+                <div key={t.title}>
+                  <dt className="font-semibold text-foreground">{t.title}</dt>
+                  <dd className="mt-1 text-base leading-relaxed text-muted">{t.text}</dd>
+                </div>
+              ))}
+            </dl>
           </FadeUp>
 
           {/* ─── We cancel / abandoned mid-way / vouchers ─── */}

@@ -240,7 +240,7 @@ export default function CoursesPageClient() {
               { title: "Certified Instructors", desc: "Professional coaches with international certifications" },
               { title: "Prime Location", desc: "Auli's 3,050m slopes with Nanda Devi views" },
               { title: "All Equipment", desc: "Complete gear provided, so you don't need to bring anything" },
-              { title: "Recognized Certification", desc: "Course completion certificate for your portfolio" },
+              { title: "Course Certificate", desc: "Our private ski school certificate, plus a personal ski report. Registered with Uttarakhand Tourism (UTDB)" },
             ].map((item) => (
               <StaggerItem key={item.title} className="border-t border-slate-300 pt-4">
                 <h3 className="mb-2 font-heading text-lg font-semibold text-slate-900">{item.title}</h3>

@@ -533,10 +533,10 @@ export default function CheckoutClient() {
               <TrustSection />
 
               <ul className="space-y-1 rounded-xl border border-slate-200 p-3 text-xs text-slate-600 dark:border-white/10 dark:text-slate-300">
-                <li>The 30% advance is non-refundable.</li>
-                <li>Cancel 25+ days before the start: 90% back, or 100% as a Trek Voucher. Less closer to the date.</li>
-                <li>Refunds take 7–14 working days. The 5% GST and a 3% processing charge aren&apos;t refunded.</li>
-                <li>Free change to another date of the same trip if you ask 7+ days before and that date has seats.</li>
+                <li>Cancel 20+ days before the start: full refund. 10–19 days before: 50% refund.</li>
+                <li>Less than 10 days before: no refund, but one free date change in the same season.</li>
+                <li>Refunds take 7–14 working days.</li>
+                <li>Ski courses: if there&apos;s no snow, choose a free date change or a full refund.</li>
               </ul>
 
               <p className="text-center text-xs text-slate-500 dark:text-slate-400">

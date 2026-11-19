@@ -24,6 +24,7 @@ import { transition } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { BrandIcon } from "@/components/BrandIcon";
 import StartDatePicker from "@/components/StartDatePicker";
+import ItineraryTerms from "@/components/ItineraryTerms";
 import { courseStartDates } from "@/lib/courseSeason";
 
 type Tab = "overview" | "dates" | "itinerary" | "gallery" | "included" | "book";
@@ -676,6 +677,7 @@ export default function CourseDetailClient({ course }: Props) {
                       </div>
                     </>
                   )}
+                  <ItineraryTerms kind="course" />
                 </div>
               )}
 

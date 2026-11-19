@@ -19,7 +19,7 @@ const SUPPORT_EMAIL = "support@himalayanarcadventure.com";
 const WHATSAPP = "https://wa.me/917817912062?text=";
 
 const OTHER_PERKS = [
-  { title: "Free date change", detail: "Plans shift. Move to another departure of this trek without a change fee, if you ask at least 7 days before departure." },
+  { title: "Free date change", detail: "Plans shift. Cancelling less than 10 days before? Instead of a refund, move once, free, to another date in the same season (subject to seats)." },
   { title: "Private departures", detail: "Two or more people can book a private departure with pacing adjusted to you." },
 ];
 

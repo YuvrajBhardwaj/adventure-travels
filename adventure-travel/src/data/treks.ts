@@ -272,7 +272,7 @@ export const treks: Trek[] = [
     itinerary: [
       { day: 1, title: "Rishikesh → Joshimath (255 km drive, 9–10 hrs)", altitude: 1875, hours: 10, description: "Early start from Rishikesh along the Alaknanda highway through Devprayag, Rudraprayag and Karnaprayag, the sacred river confluences of the Ganga. Climb past Chamoli and Helang to reach Joshimath (6,150 ft) by evening. Gear check, summit briefing and overnight at a Joshimath guesthouse.", meals: "Dinner" },
       { day: 2, title: "Joshimath → Dhak → Khulara (trek to summit basecamp)", altitude: 3390, hours: 8, description: "Drive ~30 km to the Dhak / Tugasi trailhead, then a long, steady ascent through terraced fields, oak–rhododendron forest and finally open alpine meadow to the vast Khulara bowl (~11,100 ft). This is your summit basecamp, ringed by Dronagiri, Changabang and Hathi-Ghoda. Overnight in camp.", meals: "B/L/D" },
-      { day: 3, title: "Khulara → Pangarchula Summit → Khulara (summit day, 12–14 km)", altitude: 4600, hours: 12, description: "Pre-dawn start (~2–3 AM) with headlamps. Steep ascent over moraine and snowy ridge (microspikes and gaiters as needed) to the sharp Pangarchula summit (15,419 ft). A 360° panorama of Nanda Devi, Dronagiri, Changabang, Trishul, Chaukhamba and Kamet. Descend to Khulara camp before the snow softens and rest for the evening.", meals: "B/L/D" },
+      { day: 3, title: "Khulara → Pangarchula Summit → Khulara (summit day, 12–14 km)", altitude: 4600, hours: 12, description: "Pre-dawn start (~2–3 AM) with headlamps. Steep ascent over moraine and snowy ridge (microspikes and gaiters as needed) to the sharp Pangarchula summit (~15,090 ft / 4,600 m). A 360° panorama of Nanda Devi, Dronagiri, Changabang, Trishul, Chaukhamba and Kamet. Descend to Khulara camp before the snow softens and rest for the evening.", meals: "B/L/D" },
       { day: 4, title: "Khulara → Tali Lake (7–8 km, 4–5 hrs)", altitude: 3350, hours: 5, description: "Walk out across the high meadows and Kuari ridge to the forested Tali camp near Tali Lake, with Nanda Devi and Hathi-Ghoda on the horizon. Free afternoon by the lake; overnight in camp.", meals: "B/L/D", note: "If snow or a landslide closes the trail to Tali, the group won't go on to the lake. You'll head down to Karchi instead. Your trek leader decides this on the day, for your safety." },
       { day: 5, title: "Tali → Auli → Joshimath (descent via Gorson Bugyal)", altitude: 1875, hours: 6, description: "Descend the rolling Gorson Bugyal meadows toward Auli, India's ski capital, passing through pine slopes and ski runs. Short drive back to Joshimath for a hot shower, a celebration dinner and rest. Summit certificates distributed by your trek leader.", meals: "B/L/D", note: "The Tali → Auli section can be closed by snow or landslides. If conditions aren't safe, the route is re-routed via Karchi to Joshimath instead. Your trek leader makes that call, for your safety." },
       { day: 6, title: "Joshimath → Rishikesh → departure (255 km drive, 9–10 hrs)", altitude: 340, hours: 10, description: "Morning drive back down the Alaknanda valley to Rishikesh, arriving by late afternoon or evening for your onward journey.", meals: "Breakfast" },
@@ -302,7 +302,7 @@ export const treks: Trek[] = [
     elevationProfile: [1875, 3357, 3815, 1875, 340],
     itinerary: [
       { day: 1, title: "Rishikesh → Joshimath (255 km drive, 9–10 hrs)", altitude: 1875, hours: 10, description: "Early 5:30 AM departure from Rishikesh. Drive via Dehradun, Devprayag, Rudraprayag and Karnaprayag, the sacred river confluences of the Ganga, before climbing into the Garhwal highlands and reaching Joshimath (6,150 ft) in the evening. Overnight at a Joshimath guesthouse.", meals: "Dinner" },
-      { day: 2, title: "Joshimath → Khulara (trek, 5–6 hrs)", altitude: 3357, hours: 6, description: "Drive to the trailhead, then trek through traditional Garhwali villages and dense oak–rhododendron forest, gaining around 1,500 ft to reach the Khulara meadows (~11,000 ft). Dronagiri and the snow-clad massif are in view along the ridge.", meals: "B/L/D" },
+      { day: 2, title: "Joshimath → Khulara (trek, 5–6 hrs)", altitude: 3357, hours: 6, description: "Drive to the trailhead, then trek through traditional Garhwali villages and dense oak–rhododendron forest to the Khulara meadows (~11,000 ft), around 1,480 m (4,860 ft) above Joshimath. Dronagiri and the snow-clad massif are in view along the ridge.", meals: "B/L/D" },
       { day: 3, title: "Khulara → Tali via Kuari Pass (summit day)", altitude: 3815, hours: 9, description: "Summit day. An early start through meadow and alpine terrain to Kuari Pass (12,516 ft) on the historic Curzon Trail. Take in the 360° panorama of Nanda Devi, Dronagiri, Changabang, Trishul, Kamet and Neelkanth, then descend to the forested Tali campsite for the night.", meals: "B/L/D", note: "If bad weather or a landslide makes the way over the pass unsafe, the group won't push on to Tali. You'll head back down and spend the night at Khulara instead. Your trek leader decides this on the day, for your safety." },
       { day: 4, title: "Tali → Auli → Joshimath (descent via Gorson Bugyal)", altitude: 1875, hours: 8, description: "Descend the gentle, rolling grasslands of Gorson Bugyal and Tali Lake, then continue down through pine and ski runs to Auli, India's ski capital. Drive back to Joshimath for a hot shower, a celebration dinner and rest.", meals: "B/L/D", note: "The Tali → Auli section can be closed by snow or landslides. If conditions aren't safe, the route is re-routed Tali → Karchi → Joshimath instead. Your trek leader makes that call, for your safety." },
       { day: 5, title: "Joshimath → Rishikesh → departure (255 km drive, 9–10 hrs)", altitude: 340, hours: 10, description: "Morning drive back down the Alaknanda valley, retracing the route through the confluences to Rishikesh. Arrive by late afternoon or evening for your onward journey.", meals: "Breakfast" },
@@ -410,7 +410,7 @@ export const treks: Trek[] = [
     bestSeason: "Jun–Jul & Sept–Oct",
     days: 15,
     maxAltitude: 5942,
-    elevationProfile: [3100, 3800, 4300, 4800, 5200, 5560, 5942, 4900, 4770, 3980, 3100],
+    elevationProfile: [3100, 3800, 4300, 4340, 4340, 4880, 5200, 5450, 5660, 5942, 4500, 3980, 3100, 3100, 3100],
     itinerary: [
       { day: 1, title: "Drive Dehradun to Gangotri", altitude: 3100, hours: 10, description: "Drive along the Bhagirathi River to the sacred Gangotri temple." },
       { day: 2, title: "Gangotri to Bhojwasa", altitude: 3800, hours: 6, description: "A gentle climb through pine forests to the high-altitude camp at Bhojwasa." },
@@ -445,7 +445,7 @@ export const treks: Trek[] = [
     bestSeason: "May–Jun & Sept–Oct",
     days: 14,
     maxAltitude: 5800,
-    elevationProfile: [3330, 3889, 4200, 4480, 4780, 5260, 5700, 5800, 5075, 4130, 3330],
+    elevationProfile: [1875, 3330, 3889, 4200, 4480, 4780, 5260, 5260, 5700, 5800, 4130, 3100, 1875, 1875],
     itinerary: [
       { day: 1, title: "Drive Rishikesh to Joshimath", altitude: 1875, hours: 10, description: "A long drive through the Garhwal Himalayas to Joshimath." },
       { day: 2, title: "Drive to Niti Village, trek to Ghamsali", altitude: 3330, hours: 6, description: "Drive to Niti Village and trek to the remote Ghamsali village." },
@@ -543,7 +543,7 @@ export const treks: Trek[] = [
     bestSeason: "May–Jun & Sept–Oct",
     days: 12,
     maxAltitude: 4200,
-    elevationProfile: [2290, 1850, 2500, 3430, 3650, 4200, 3650, 3430, 2500, 1850, 2290],
+    elevationProfile: [2290, 1850, 2500, 3430, 3650, 4200, 4200, 3430, 2500, 1850, 2290, 2290],
     itinerary: [
       { day: 1, title: "Arrive Munsiyari", altitude: 2290, hours: 0, description: "Arrive in Munsiyari, the base town for Kumaon Himalayan treks, and acclimatize." },
       { day: 2, title: "Munsiyari to Lilam", altitude: 1850, hours: 5, description: "Descend through dense oak and rhododendron forest to Lilam village." },
@@ -668,7 +668,7 @@ export const treks: Trek[] = [
     bestSeason: "Mid-May to October",
     days: 3,
     maxAltitude: 4200,
-    elevationProfile: [2050, 3300, 4200, 3300, 2050],
+    elevationProfile: [3300, 4200, 2050],
     itinerary: [
       { day: 1, title: "Manali – Kulang Village – Moridugh Campsite", altitude: 3300, hours: 5, description: "Report at the designated meeting point in Manali and drive 8 km to Kulang Village (20-30 min). After a short trek briefing and equipment check, start the climb on old village trails, through dense forest and up into mountain meadows. Reach Moridugh campsite by afternoon, with hot tea and the sunset before dinner.", meals: "Lunch, Evening Tea & Snacks, Dinner" },
       { day: 2, title: "Moridugh – Bhrigu Lake – Moridugh", altitude: 4200, hours: 8, description: "Wake up early for breakfast and begin the climb above the tree line (10-12 km, 7-8 hrs). Walk across rolling alpine meadows to Bhrigu Lake at 4,200 m. Take your time at the lake, take photos and look out over the Himalayan peaks before descending to Moridugh Camp.", meals: "Breakfast, Packed Lunch, Evening Tea & Snacks, Dinner" },

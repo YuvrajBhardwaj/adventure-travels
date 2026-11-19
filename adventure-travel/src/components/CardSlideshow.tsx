@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { photoSrcSet } from "@/components/SmartImage";
 
 const FADE_MS = 700;
 
@@ -81,6 +82,8 @@ export default function CardSlideshow({
           <img
             key={src}
             src={src}
+            srcSet={photoSrcSet(src)}
+            sizes="(min-width: 1024px) 33vw, 100vw"
             alt={i === 0 ? alt : ""}
             aria-hidden={i === 0 ? undefined : true}
             loading={i === 0 ? "lazy" : "eager"}

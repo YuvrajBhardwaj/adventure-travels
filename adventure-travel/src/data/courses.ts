@@ -103,8 +103,8 @@ const SKI14_PREMIUM_ITINERARY: CourseItineraryDay[] = [
   { day: 10, title: "Lift & Mountain Skills + Instructor-Led Runs", description: "Lift training, longer runs and mountain orientation with terrain selection and speed management on instructor-led runs, including individual corrections throughout." },
   { day: 11, title: "Slalom & Agility + Performance Review", description: "Short-turn development, pole use, slalom, rhythm, edge control, directional accuracy and speed management, followed by a performance review where your instructor points out what to work on." },
   { day: 12, title: "Performance Consolidation + Mountain Skills Session", description: "Complete technique revision (parallel, short and long turns, and slalom) with lift practice, longer runs and independent skiing under personal coaching. Mountain skills session: reading terrain, understanding snow conditions, cold-weather management, responsible skiing and basic emergency awareness." },
-  { day: 13, title: "Premium Final Assessment + Personal Ski Report", description: "Individual assessment covering equipment handling, balance, stance, gliding, braking, snow-plough, turning, traversing, parallel skiing, short turns, slalom, speed control, lift operation, terrain awareness, safety and overall confidence, with final video analysis (strengths, improvements, body positioning, turn mechanics, next steps) and a personal written skiing report." },
-  { day: 14, title: "Free Skiing & Premium Graduation", description: "Final warm-up, guided and free skiing with parallel turns, short/long turns and slalom practice, final instructor corrections and group photographs. Graduation: individual performance feedback, the Himalayan Arc Adventure Ski Course Certificate and personal next-level recommendations. The course closes with après-ski tea and snacks and an optional bonfire, weather permitting. Departure: Auli → Joshimath / Dehradun / Rishikesh." },
+  { day: 13, title: "Premium Final Assessment + Personal Ski Report", description: "Individual assessment covering equipment handling, balance, stance, gliding, braking, snow-plough, turning, traversing, parallel skiing, short turns, slalom, speed control, lift operation, terrain awareness, safety and overall confidence, with final video analysis (strengths, improvements, body positioning, turn mechanics, next steps). You receive your Personal Ski Report: skill ratings, video analysis and your instructor's remarks. There are no A/B grades." },
+  { day: 14, title: "Free Skiing & Premium Graduation", description: "Final warm-up, guided and free skiing with parallel turns, short/long turns and slalom practice, final instructor corrections and group photographs. Graduation: individual performance feedback, the Himalayan Arc Adventure Ski Course Certificate (a private ski school certificate, not a government one) and personal next-level recommendations. The course closes with après-ski tea and snacks and an optional bonfire, weather permitting. Departure: Auli → Joshimath / Dehradun / Rishikesh." },
 ];
 
 export const courses: Course[] = [
@@ -148,7 +148,7 @@ export const courses: Course[] = [
       { day: 4, title: "Linking Your Turns", description: "Start linking turns down beginner blue runs. Your instructor films your technique for the afternoon video analysis session, so you can see exactly what to improve." },
       { day: 5, title: "Chairlift & Longer Descents", description: "Take the chairlift for longer runs across Auli's varied terrain. Refine your parallel turns and carry more speed across wider pistes. Afternoon: snow science seminar." },
       { day: 6, title: "Intermediate Slopes & Off-Piste Taster", description: "Progress to steeper runs and a guided taste of soft off-piste powder beneath Nanda Devi. End with a group challenge run and an après session." },
-      { day: 7, title: "Assessment & Certification", description: "A final assessed run demonstrating your progression, personalised written evaluation from your Level 4 Pro, course certificate, and a send-off with the group." },
+      { day: 7, title: "Assessment & Certification", description: "A final assessed run demonstrating your progression, personalised written evaluation from your Level 4 Pro, the Himalayan Arc Adventure course certificate (a private ski school certificate), and a send-off with the group." },
     ],
     tiers: [
       {
@@ -173,7 +173,7 @@ export const courses: Course[] = [
           { day: 4, title: "Linked Turns & Slope Confidence", description: "Connect skills into continuous skiing: controlled traversing, linked turns without stopping, intro to parallel position, weight transfer and edging, on terrain matched to ability, plus instructor-led practice runs and personal technique evaluation. Evening seminar on mountain safety & snow science: reading slopes, cold-weather precautions and emergency response. Training: 4–5 hrs." },
           { day: 5, title: "Ski Lift, Longer Runs & Après-Ski", description: "Chairlift orientation (approaching, loading and unloading safely), then guided skiing on longer suitable runs: continuous linked turns, braking at designated points, terrain awareness and multiple corrected practice runs. Evening après-ski social: tea and snacks, group interaction, photos and videos, optional bonfire weather permitting. Training: 4–5 hrs." },
           { day: 6, title: "Independent Skiing & Final Assessment", description: "Independent practice runs within your ability to refine snow-plough and linked turns, parallel fundamentals, controlled stops and slope awareness, followed by the final assessed run covering equipment handling, stance, gliding, braking, directional control, speed management, lift usage and overall confidence. Evening: individual feedback and next-level guidance. Training: 4–5 hrs." },
-          { day: 7, title: "Final Ski Session & Graduation Ceremony", description: "A fun final morning of guided practice runs where you demonstrate everything learned, with group photos and videos. Then the Graduation Ceremony: individual performance feedback and the Himalayan Arc Adventure Ski Course Certificate. Departure after breakfast towards Joshimath / Dehradun / Rishikesh." },
+          { day: 7, title: "Final Ski Session & Graduation Ceremony", description: "A fun final morning of guided practice runs where you demonstrate everything learned, with group photos and videos. Then the Graduation Ceremony: individual performance feedback and the Himalayan Arc Adventure Ski Course Certificate (a private ski school certificate, not a government one). Departure after breakfast towards Joshimath / Dehradun / Rishikesh." },
         ],
       },
     ],
@@ -253,7 +253,7 @@ export const courses: Course[] = [
       { icon: "lift", label: "Lift Passes", description: "Full 14-day Auli cable car & chairlift access" },
       { icon: "bed", label: "Accommodation", description: "13 nights in Auli accommodation (with-stay packages)" },
       { icon: "food", label: "All Meals", description: "Breakfast, lunch & dinner included daily (with-stay packages)" },
-      { icon: "certificate", label: "Certification", description: "Course completion certificate + personal feedback" },
+      { icon: "certificate", label: "Certification", description: "Private ski school certificate + Personal Ski Report (no grades)" },
       { icon: "firstaid", label: "Safety Support", description: "Emergency first aid & mountain rescue protocol" },
       { icon: "photos", label: "HD Video Analysis", description: "Regular movement analysis + professional course photos" },
     ],
@@ -358,7 +358,7 @@ export const courses: Course[] = [
       "Progressive terrain: nursery → blue → intermediate red runs",
       "Off-snow fitness sessions designed for boarders",
       "Weekly social après with the group",
-      "Final assessment + certificate of competency",
+      "Final assessment + course certificate (private ski school)",
     ],
     itinerary: [
       { day: 1, title: "Arrive & Orientation", description: "Transfer to Auli. Equipment fitting, resort orientation, meet your instructors. Evening: welcome dinner and course overview." },
@@ -382,7 +382,7 @@ export const courses: Course[] = [
       { icon: "lift", label: "Lift Passes", description: "Full 14-day Auli cable car & chairlift access" },
       { icon: "bed", label: "Accommodation", description: "14 nights in Auli mountain-view stay" },
       { icon: "food", label: "All Meals", description: "Breakfast, lunch & dinner included daily" },
-      { icon: "certificate", label: "Certification", description: "Certificate of competency + personalised evaluation" },
+      { icon: "certificate", label: "Certification", description: "Private ski school certificate + personalised evaluation" },
       { icon: "firstaid", label: "Safety Support", description: "Emergency first aid & mountain rescue protocol" },
       { icon: "photos", label: "HD Video Analysis", description: "Daily movement analysis + professional course photos" },
     ],
