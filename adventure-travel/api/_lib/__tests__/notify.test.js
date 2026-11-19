@@ -52,7 +52,9 @@ describe("notification templates", () => {
     const { bodyText } = templates.payment_receipt(contexts.payment_receipt);
     expect(bodyText).toContain("Rs.9,098");
     expect(bodyText).toContain("24 Dec 2026");
-    expect(bodyText).toMatch(/full refund 20\+ days before/);
+    // Treks keep the original terms; ski courses get the new ladder.
+    expect(bodyText).toMatch(/advance is non-refundable/);
+    expect(templates.payment_receipt({ ...contexts.payment_receipt, bookingType: "course" }).bodyText).toMatch(/full refund 20\+ days before/);
     expect(bodyText).toContain("kind=balance");
   });
 

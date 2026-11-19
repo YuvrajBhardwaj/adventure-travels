@@ -2,7 +2,7 @@
 
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/MotionWrapper";
 import { buttonVariants } from "@/components/ui/button";
-import { PAYMENT_TERMS, REFUND_NOTE, REFUND_TIERS, REGISTRATION_NOTE, SKI_TERMS } from "@/data/cancellationPolicy";
+import { PAYMENT_TERMS, REFUND_NOTE, REFUND_TIERS, REGISTRATION_NOTE } from "@/data/cancellationPolicy";
 
 function MailIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
@@ -42,7 +42,7 @@ export default function CancellationPolicyPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-12 lg:gap-16">
             <FadeUp className="lg:col-span-4">
-              <p className="text-sm text-muted">Refund Schedule</p>
+              <p className="text-sm text-muted">Refund schedule · treks and tours</p>
               <h2 className="mt-2 font-heading text-3xl font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-4xl">
                 When You Cancel, Here&apos;s What Happens
               </h2>
@@ -57,8 +57,8 @@ export default function CancellationPolicyPage() {
             <StaggerContainer className={`divide-y border-y ${HAIRLINE} divide-slate-200 dark:divide-white/10 lg:col-span-8`} staggerDelay={0.08}>
               {REFUND_TIERS.map((tier) => (
                 <StaggerItem key={tier.window}>
-                  <div className="grid grid-cols-[5.5rem_1fr] items-center gap-4 py-5 sm:grid-cols-[8rem_1fr] sm:gap-6 sm:py-6">
-                    <span className={`font-heading text-5xl font-semibold leading-none tracking-[-0.03em] tabular-nums sm:text-6xl ${tier.tone}`}>
+                  <div className="grid grid-cols-[4rem_1fr] items-center gap-3 py-4 sm:grid-cols-[8rem_1fr] sm:gap-6 sm:py-6">
+                    <span className={`font-heading text-3xl font-semibold leading-none tracking-[-0.03em] tabular-nums sm:text-6xl ${tier.tone}`}>
                       {tier.pct}
                     </span>
                     <div>
@@ -77,7 +77,7 @@ export default function CancellationPolicyPage() {
             <div className="lg:col-span-4">
               <h3 className="font-heading text-xl font-semibold text-foreground">On the start day / no-show</h3>
               <p className="mt-3 leading-relaxed text-muted">
-                <strong className="text-foreground">No refund.</strong>
+                <strong className="text-foreground">No refund, no voucher.</strong>
               </p>
             </div>
             <ul className={`divide-y text-sm leading-relaxed text-muted divide-slate-200 dark:divide-white/10 lg:col-span-8`}>
@@ -93,23 +93,11 @@ export default function CancellationPolicyPage() {
           <FadeUp className={`mt-14 grid gap-4 border-t pt-10 lg:grid-cols-12 lg:gap-16 ${HAIRLINE}`}>
             <h3 className="font-heading text-xl font-semibold text-foreground lg:col-span-4">Payment</h3>
             <ul className="space-y-3 lg:col-span-8">
-              {PAYMENT_TERMS.map((t) => (
+              {/* The December ski line is course-only (owner, 20 Nov 2026): ski terms live on the course pages. */}
+              {PAYMENT_TERMS.slice(0, 2).map((t) => (
                 <li key={t} className="text-base leading-relaxed text-muted">{t}</li>
               ))}
             </ul>
-          </FadeUp>
-
-          {/* ─── Ski & snowboard courses ─── */}
-          <FadeUp className={`mt-10 grid gap-4 border-t pt-10 lg:grid-cols-12 lg:gap-16 ${HAIRLINE}`}>
-            <h3 className="font-heading text-xl font-semibold text-foreground lg:col-span-4">Ski &amp; snowboard courses</h3>
-            <dl className="space-y-4 lg:col-span-8">
-              {SKI_TERMS.map((t) => (
-                <div key={t.title}>
-                  <dt className="font-semibold text-foreground">{t.title}</dt>
-                  <dd className="mt-1 text-base leading-relaxed text-muted">{t.text}</dd>
-                </div>
-              ))}
-            </dl>
           </FadeUp>
 
           {/* ─── We cancel / abandoned mid-way / vouchers ─── */}

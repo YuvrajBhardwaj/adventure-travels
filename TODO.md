@@ -23,22 +23,22 @@ Last updated: 7 Nov 2026.
 - [ ] **Dev (optional, needs a SQL change):** count bookings on generated daily dates, so a busy day turns "Filling fast"/"Full" by itself. Today only dates with an admin row can fill up.
 - [x] ~~**Dev:** Kuari Pass Day 3 note: turn back to Khulara if weather or a landslide blocks the pass; Pangarchula Day 4 note: head down to Karchi if Tali is closed~~ (20 Nov, `main`).
 - [ ] **You (optional):** if the group turns back to Khulara on Kuari Pass Day 3, what happens on Day 4 (walk out Khulara → Joshimath, or retry the pass)? Tell Claude and it can add that to the Day 4 note.
-- [ ] **Dev:** self-host the three fonts (`next/font/local`) so a Google Fonts hiccup can't fail a build again (it failed one production build on 6 Nov).
+- [x] ~~**Dev:** self-host the three fonts (`next/font/local`) so a Google Fonts hiccup can't fail a build again (it failed one production build on 6 Nov).~~ (20 Nov)
 - [ ] **Dev:** card slideshows load more photos per home visit. Shrink card photos to about 800 px (they are 1600 px today) in `scripts/prepare-photos.mjs` to save phone data and Vercel bandwidth.
 
-- [x] ~~**Dev:** new payment, cancellation and ski-course terms on the policy page, trek/course itineraries, checkout, FAQ and emails~~ (20 Nov, `main`, uncommitted).
-- [ ] **You: confirm what was dropped with the new terms.** The old 3% refund processing charge, "5% GST non-refundable" and Trek Voucher refund options were removed because "full refund" contradicts them. Say if any should come back.
+- [x] ~~**Dev:** new payment, cancellation and ski-course terms on the policy page, trek/course itineraries, checkout, FAQ and emails~~ (20 Nov, `main`).
+- [x] ~~**You: confirm what was dropped with the new terms.**~~ (20 Nov: treks and tours keep the original policy; the new terms are for ski and snowboard courses only.)
 - [ ] **You: December ski batches.** The terms say customers pay only after you confirm the batch, but checkout still lets them pay a December course straight away. Either take December bookings as enquiries only, or ask Claude to block online payment for December course batches until 7 days before the start.
 - [ ] **You: no-snow refunds** are done by hand: refund in the Razorpay dashboard, then mark the booking refunded on /admin/bookings.
 
 ## Site audit (13 Nov 2026: pages, backend, SEO, live site)
 - [x] ~~**You: approve the payment fix on the live database.** Written and tested locally (13 Nov): `supabase-payment-guard.sql` replaces `apply_payment()` so an advance+full double payment, or a payment on a cancelled/refunded booking, no longer changes the booking; the payment is kept and marked "Needs refund" on /admin/payments. Say yes and Claude runs it on Supabase (then marks it ☑ in the CHANGELOG backend tracker).~~ Approved and applied 13 Nov.
-- [ ] **Dev (medium):** a payment that lands after the 15-min seat hold can overbook a full batch. Set the Razorpay order to expire with the hold, or check seats in `apply_payment()`.
-- [ ] **Dev (medium):** signed-out course bookings (`api/bookings.js`) have no rate limit or captcha and email any address typed in. Add a limit or captcha.
+- [x] ~~**Dev (medium):** a payment that lands after the 15-min seat hold can overbook a full batch. Set the Razorpay order to expire with the hold, or check seats in `apply_payment()`.~~ (20 Nov: Razorpay checkout times out with the hold)
+- [x] ~~**Dev (medium):** signed-out course bookings (`api/bookings.js`) have no rate limit or captcha and email any address typed in. Add a limit or captcha.~~ (20 Nov: 3 per email per hour + honeypot)
 - [ ] **You + Dev:** Privacy Policy and Terms pages. Neither exists, and Razorpay usually checks for them before switching on live payments.
 - [x] ~~**Dev:** footer Facebook and YouTube links are dead (`FooterV2.tsx:60,62`). Remove them, or tell Claude the real profile links.~~ (13 Nov: removed; only Instagram remains.)
-- [ ] **Dev:** a branded 404 page (`not-found.tsx`) with links to treks; make `/admin` open the bookings list instead of a 404.
-- [ ] **Dev:** fix trek facts: Pangarchula Day 3 says 15,419 ft (4,700 m) but the trek says 4,600 m; Kuari Day 2 says "+1,500 ft" (it's about 4,860 ft); the elevation charts of Kalindi Khal, Gupt Khal, Nanda Devi BC and Bhrigu Lake have a different number of points from their itinerary days; the FAQ start towns ("Dehradun, Manali or Delhi").
+- [x] ~~**Dev:** a branded 404 page (`not-found.tsx`) with links to treks; make `/admin` open the bookings list instead of a 404.~~ (20 Nov)
+- [x] ~~**Dev:** fix trek facts: Pangarchula Day 3 says 15,419 ft (4,700 m) but the trek says 4,600 m; Kuari Day 2 says "+1,500 ft" (it's about 4,860 ft); the elevation charts of Kalindi Khal, Gupt Khal, Nanda Devi BC and Bhrigu Lake have a different number of points from their itinerary days; the FAQ start towns ("Dehradun, Manali or Delhi").~~ (20 Nov)
 - [x] ~~**You: confirm or remove claims:** "since 2010" / "Est. 2010", the 8 home testimonials and the course testimonials, "No-cost EMI", "Filling Fast", "India's highest motorable pass". Dev can then delete the unused `rating`/`reviewCount` data in `treks.ts`.~~ (13 Nov, owner: "since 2010" is true and stays. Removed the home and course testimonials, "No-cost EMI", "India's highest motorable pass" and the unused ratings. "Filling fast" stays: it comes from real seat counts.)
 - [x] ~~**Dev (SEO):** home h1 that matches a search; related treks on trek pages; breadcrumb "Adventures" → "Treks"; Panpatia share image~~ (20 Nov, `main`).
 - [ ] **You: photos for the 9 treks that still share the generic card or a stock photo:** Brahmatal, Roopkund, Kalindi Khal, Gupt Khal, Nanda Devi Base Camp, Mana Pass, Niti Pass, Rimkhim, Madhyamaheshwar. Rimkhim's cover is a stock photo of the Matterhorn (Switzerland), which now also shows under "More treks like this"; replace it first. Drop photos in `adventure-travel/public/assets/<trek>/` and ask Claude to wire them in.
@@ -112,8 +112,8 @@ Last updated: 7 Nov 2026.
 
 ## Security scan (13 Nov 2026)
 Passed: no `.env`/`.git`/source/SQL files exposed; HTTPS + HSTS; every table has RLS and the anon key reads nothing; `apply_payment()` refuses anon; payment signatures checked in constant time; only the anon key is in the browser JS; emails are plain text; Vercel's bot checkpoint blocks scripted traffic.
-- [ ] **Dev (high): update dependencies.** `npm audit` lists 8 issues: 1 critical (`next` 16.2.10, fix in 16.4.6), 5 high (`sharp`, `postcss`, `follow-redirects`, `nanoid`, `source-map-js`) and 2 moderate (`nodemailer`, `baseline-browser-mapping`). Real exposure is lower: the site is a static export, so the Next.js middleware/server-action bugs don't run in production, and `sharp` only runs in our photo script. `nodemailer` and `follow-redirects` do run in the API functions. Upgrade `next`, `nodemailer` and `sharp`, then run tsc, lint, tests and a build copy.
-- [ ] **Dev (medium): security headers in `vercel.json`.** Missing: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, and clickjacking protection (`X-Frame-Options: DENY` / CSP `frame-ancestors 'none'`), which matters most for /checkout and /dashboard. Add a Content-Security-Policy in Report-Only mode first: Razorpay, Supabase and Google Fonts must be allowed. The comment in `next.config.ts` saying headers are set as meta tags in `layout.tsx` is wrong; there are none.
+- [x] ~~**Dev (high): update dependencies.** `npm audit` lists 8 issues: 1 critical (`next` 16.2.10, fix in 16.4.6), 5 high (`sharp`, `postcss`, `follow-redirects`, `nanoid`, `source-map-js`) and 2 moderate (`nodemailer`, `baseline-browser-mapping`). Real exposure is lower: the site is a static export, so the Next.js middleware/server-action bugs don't run in production, and `sharp` only runs in our photo script. `nodemailer` and `follow-redirects` do run in the API functions. Upgrade `next`, `nodemailer` and `sharp`, then run tsc, lint, tests and a build copy.~~ (20 Nov: next 16.4.6, 0 vulnerabilities)
+- [x] ~~**Dev (medium): security headers in `vercel.json`.** Missing: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, and clickjacking protection (`X-Frame-Options: DENY` / CSP `frame-ancestors 'none'`), which matters most for /checkout and /dashboard. Add a Content-Security-Policy in Report-Only mode first: Razorpay, Supabase and Google Fonts must be allowed. The comment in `next.config.ts` saying headers are set as meta tags in `layout.tsx` is wrong; there are none.~~ (20 Nov, no CSP yet)
 - [ ] **Dev (medium):** already listed above: rate limit or captcha on signed-out course bookings. Anyone can make our Gmail send a "Booking received" email, with a name they choose, to any address.
 - [ ] **You:** in Supabase → Authentication, turn on leaked-password protection and check the minimum password length (not checked: the Supabase connection needs `/mcp` sign-in).
 - [ ] **Dev (optional):** a full automated scan (Nuclei / OWASP ZAP) of a Vercel preview with the bot checkpoint bypassed for the scanner. It was blocked this time (see CHANGELOG 13 Nov).
@@ -135,6 +135,12 @@ Passed: no `.env`/`.git`/source/SQL files exposed; HTTPS + HSTS; every table has
 - [ ] **You (optional): more photos from your Auli trips** (13 Nov: now using our own Auli slopes-and-range shot) (Gorson Bugyal, the lake, the stays) would beat the skiing course photo used now.
 - [ ] **Dev (later):** online booking and payment, once the group rules are added to the price catalog.
 
+## Direct UPI and policy questions (20 Nov 2026)
+- [ ] **You:** UPI payments don't reach the website: after a customer's WhatsApp screenshot, mark the booking paid by hand (needs the admin account, see above).
+- [ ] **You (from the privacy/terms pages):** which email takes cancellations (support@ or the Gmail address)? How long are booking records kept? Who is the grievance contact (DPDP Act)? Are guest names shared with hotels, permit offices or trek leaders?
+- [ ] **Dev:** a Content-Security-Policy header, tested against Razorpay checkout and Supabase first.
+- [ ] **Dev:** 800 px copies of the hand-cut home hero layers (now the biggest phone download, about 1.5 MB).
+
 ## Foreign-national pricing (3×)
 - [x] ~~**You: OK to apply `supabase-nationality.sql` on the live database?**~~ Applied 20 Nov; pricing pushed.
 - [ ] **You:** check the wording "Price for foreign nationals, which covers their permits and local arrangements", and whether Razorpay live mode needs international cards turned on for foreign customers.
@@ -142,8 +148,8 @@ Passed: no `.env`/`.git`/source/SQL files exposed; HTTPS + HSTS; every table has
 ## Look and polish (20 Nov 2026 comparison with freesouladventures.in)
 - [x] ~~**Dev:** Destinations and Activities use stock photos that aren't the Himalayas (a Matterhorn-like peak on the Garhwal card, a Rockies-style lake on Activities). Swap them for our own photos.~~ (20 Nov, `main`: own photos; Commons for Kumaon and paragliding; no-photo panel for Mana/Niti/Rimkhim)
 - [x] ~~**Dev:** the footer "Instagram" grid is stock photos; use our own, or link to the real Instagram.~~ (20 Nov, `main`)
-- [ ] **Dev:** /tours is two cards in a lot of white space; add a short intro strip (why a tour, who it suits) or a third tour.
-- [ ] **Dev (phones):** the ENQUIRE edge tab sits over trek and course page heroes; with WhatsApp and the sticky booking bar that's three floating buttons.
+- [x] ~~**Dev:** /tours is two cards in a lot of white space; add a short intro strip (why a tour, who it suits) or a third tour.~~ (20 Nov: intro strip)
+- [x] ~~**Dev (phones):** the ENQUIRE edge tab sits over trek and course page heroes; with WhatsApp and the sticky booking bar that's three floating buttons.~~ (20 Nov: hidden on phones)
 - [ ] **You:** Kuari Pass trek page opens on a group selfie; a landscape cover (the pass, the peaks) looks more professional as the first photo.
 - [ ] **Dev + You:** trek guides like theirs (how to reach, best time, winter), to replace the 3 placeholder story articles; good for Google too.
 

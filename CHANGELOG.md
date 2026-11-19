@@ -17,7 +17,27 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
-### 20 Nov 2026: new payment, cancellation and ski-course terms, **Backend** (emails only) — `main`, uncommitted
+### 20 Nov 2026: new logo, direct UPI, phone photo fix, security update, spam guard, 404/admin/privacy/terms, trek facts — `main` (logo and 800 px photos shipped 20 Nov; UPI, fonts, security, spam guard and the new pages still uncommitted)
+- **Logo:** the owner's new logo, snow white on black, is the header badge and every favicon. Tab-size icons (16–48 px) use the logo's central peak, because the wordmark can't be read that small. Rebuild with `node scripts/make-favicons.mjs` (source: `scripts/assets/logo-source.png`).
+- **Direct UPI:** checkout has a "Pay directly by UPI" box next to Razorpay: Google Pay, PhonePe and other-app buttons with the amount filled in, a QR code, and "Send payment screenshot on WhatsApp". It pays the owner's Google Pay ID `kuldeeprawat18081984-1@oksbi` (`src/data/upi.ts`). These payments don't reach the website, so the owner marks the booking paid by hand.
+- **Phone photos:** `prepare-photos.mjs` also writes 800 px copies (143 files), which `SmartImage`, `CardSlideshow` and `JourneyStory` use through `srcset`. The phone home page loads about 1.9 MB of images instead of 2.8 MB. **Hotfix:** `772650d` had shipped the `srcset` without the files, so phones got broken photos until this push.
+- **Security:**
+  - **Packages:** `next` 16.4.6; `npm audit` reports 0 vulnerabilities (was 21). sharp 0.35 and vitest 4 are major bumps, and all tests pass.
+  - **Fonts:** the three fonts are self-hosted (`src/app/fonts/`).
+  - **Headers:** security headers in `vercel.json` (nosniff, Referrer-Policy, Permissions-Policy, X-Frame-Options); no CSP yet.
+- **Spam:** signed-out course bookings allow at most 3 per email per hour (`api/_lib/spamGuard.js`), plus a hidden honeypot field. The overbooking window was already closed by Razorpay's checkout timeout; there's a `shortcut:` note on late UPI-collect payments.
+- **New pages:** a branded 404, `/admin` going to the bookings list, and `/privacy` and `/terms` (in the sitemap, linked from the footer).
+- **Trek facts:**
+  - **Pangarchula** summit ~15,090 ft (4,600 m).
+  - **Kuari Pass Day 2** gain stated from Joshimath.
+  - **Altitude charts:** Kalindi Khal, Gupt Khal, Nanda Devi BC and Bhrigu Lake charts rebuilt to one point per day.
+- **Phones:** the ENQUIRE edge tab is hidden on phones, and /tours has a "Who the tours suit" strip.
+- **Policy page on phones:** the big refund percentages are smaller, and ski courses show their own ladder (`COURSE_REFUND_TIERS`). Emails, checkout and the payment choice pick trek or course wording by booking type.
+
+### 20 Nov 2026: treks and tours keep the original cancellation policy — `main`
+- **For visitors:** owner's correction: the new terms (20+ days full refund, 10–19 days 50%, under 10 days a free date change, no-snow rule, certificate) apply **only to ski and snowboard courses**. Trek pages, tour pages, the trek T&C and Scholarships tabs, the FAQ, trek checkout and trek emails are back to the original ladder (90% / 70% / 50% / 0% with Trek Vouchers, non-refundable advance, free date change 7+ days before). Trek pages no longer show a cancellation policy link — only course pages do. /cancellation-policy is trek-only now; the course terms live on the course pages: a **T&C tab** with the full course terms (payment, refund ladder, no-snow rule, certificate), a cancellation summary in the booking card and the "Before you book" box under the itinerary. The backcountry photo on /activities is a proper photo strip instead of a tiny thumbnail.
+
+### 20 Nov 2026: new payment, cancellation and ski-course terms, **Backend** (emails only) — `main`, `772650d` (superseded for treks by the entry above)
 - **For visitors:** the cancellation ladder is now **20+ days before: full refund · 10–19 days: 50% · less than 10 days: no refund, but one free date change in the same season**. It shows on /cancellation-policy, the trek T&C tab, tour pages, checkout, the payment choice, the FAQ and the trek sidebar. /cancellation-policy has new **Payment** and **Ski & snowboard courses** sections (December batches confirmed 1 week before once there's snow, pay only after that; no-snow rule: free date change or full refund paid immediately; private ski school certificate, no A/B grades, Personal Ski Report on Day 13). Every trek and course itinerary ends with a **"Before you book"** box with these terms. The ski itineraries say the certificate is a private ski school certificate, and Day 13 of the 14-day course names the Personal Ski Report (skill ratings, video analysis, instructor's remarks). "Recognized Certification" on /courses became "Course Certificate". The footer and policy page say the company is registered with the Uttarakhand Tourism Development Board.
 - **For the business:** removed because they contradict the new ladder: "the advance is non-refundable", the Trek Voucher refund tiers, "no refund if only the advance was paid", the 3% refund processing charge, the "5% GST is non-refundable" line and the old "free date change 7+ days before". Vouchers remain only for when *we* cancel a trek. Wording lives in `src/data/cancellationPolicy.ts`.
 - **Backend:** `api/_lib/notify.js` booking and advance-receipt emails no longer call the advance non-refundable; they state the new ladder. Payment logic is unchanged (it already charged 30% and set the balance 15 days before). Tests: 94 pass.

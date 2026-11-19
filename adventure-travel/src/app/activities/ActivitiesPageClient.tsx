@@ -143,15 +143,18 @@ export default function ActivitiesPage() {
               />
             </div>
             {/* Backcountry secondary image */}
-            <figure className="mt-3 flex items-center gap-3">
-              <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-navy">
+            <figure className="group relative mt-3 overflow-hidden rounded-2xl bg-navy">
+              <div className="aspect-[16/7]">
                 <SmartImage
                   src="/assets/backcountry touring/IMG_3991.jpeg"
                   alt="Backcountry Ski & Snowboard Touring in the Himalayas"
-                  className="h-full w-full object-cover"
+                  className={cn("h-full w-full object-cover", ZOOM)}
                 />
               </div>
-              <figcaption className="text-sm text-muted">Backcountry</figcaption>
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <figcaption className="absolute bottom-4 left-5 text-sm font-medium text-white">
+                Backcountry Ski &amp; Snowboard Touring
+              </figcaption>
             </figure>
           </FadeUp>
 

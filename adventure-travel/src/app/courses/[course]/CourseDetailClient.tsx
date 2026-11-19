@@ -25,9 +25,10 @@ import { cn } from "@/lib/utils";
 import { BrandIcon } from "@/components/BrandIcon";
 import StartDatePicker from "@/components/StartDatePicker";
 import ItineraryTerms from "@/components/ItineraryTerms";
+import { COURSE_REFUND_NOTE, COURSE_REFUND_TIERS, PAYMENT_TERMS, REGISTRATION_NOTE, SKI_TERMS } from "@/data/cancellationPolicy";
 import { courseStartDates } from "@/lib/courseSeason";
 
-type Tab = "overview" | "dates" | "itinerary" | "gallery" | "included" | "book";
+type Tab = "overview" | "dates" | "itinerary" | "gallery" | "included" | "tnc" | "book";
 
 const TAB_LIST: { key: Tab; label: string }[] = [
   { key: "overview", label: "Overview" },
@@ -35,6 +36,7 @@ const TAB_LIST: { key: Tab; label: string }[] = [
   { key: "itinerary", label: "Itinerary" },
   { key: "gallery", label: "Photo Gallery" },
   { key: "included", label: "What's Included" },
+  { key: "tnc", label: "T&C" },
   { key: "book", label: "Book Now" },
 ];
 
@@ -243,6 +245,17 @@ export default function CourseDetailClient({ course }: Props) {
     const idx = TAB_LIST.findIndex((t) => t.key === key);
     tabRefs.current[idx]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   };
+
+  // The "Cancellation policy & T&C" links: open the T&C tab and land on it, even when it's already open.
+  const openTerms = () => {
+    goToTab("tnc");
+    document.getElementById("course-tabpanels")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  // A copied or refreshed #tnc (or any tab) link opens the right tab on load.
+  useEffect(() => {
+    const key = window.location.hash.replace("#", "") as Tab;
+    if (TAB_LIST.some((t) => t.key === key)) setTab(key);
+  }, []);
 
   // Jump just below the sticky bars once the new panel has actually rendered.
   // Skipped on first mount so the page doesn't auto-scroll on load. Uses an
@@ -677,7 +690,7 @@ export default function CourseDetailClient({ course }: Props) {
                       </div>
                     </>
                   )}
-                  <ItineraryTerms kind="course" />
+                  <ItineraryTerms kind="course" onFullTerms={openTerms} />
                 </div>
               )}
 
@@ -837,6 +850,69 @@ export default function CourseDetailClient({ course }: Props) {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {panel.key === "tnc" && (
+                <div>
+                  <div>
+                    <h2 className={cn(PANEL_H2, "mb-2")}>Terms &amp; Conditions</h2>
+                    <p className="mb-8 text-slate-600">
+                      Booking terms for this course. Ski and snowboard courses have their own cancellation terms,
+                      different from treks.
+                    </p>
+                  </div>
+
+                  {/* Same UI as /cancellation-policy (owner, 20 Nov 2026). */}
+                  <div className="divide-y divide-slate-200 border-y border-slate-200 dark:divide-white/10 dark:border-white/10">
+                    {COURSE_REFUND_TIERS.map((t) => (
+                      <div key={t.window} className="grid grid-cols-[4rem_1fr] items-center gap-3 py-4 sm:grid-cols-[8rem_1fr] sm:gap-6 sm:py-6">
+                        <span className={`font-heading text-3xl font-semibold leading-none tracking-[-0.03em] tabular-nums sm:text-6xl ${t.tone}`}>{t.pct}</span>
+                        <div>
+                          <h3 className="font-heading text-lg font-semibold text-foreground sm:text-xl">{t.window}</h3>
+                          <p className="mt-1 text-sm font-semibold text-foreground">{t.cash}</p>
+                          {t.detail && <p className="text-sm leading-relaxed text-muted">{t.detail}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-10 grid gap-4 border-t border-slate-200 pt-8 dark:border-white/10 lg:grid-cols-12 lg:gap-16">
+                    <h3 className="font-heading text-xl font-semibold text-foreground lg:col-span-4">On the start day / no-show</h3>
+                    <p className="leading-relaxed text-muted lg:col-span-8">
+                      <strong className="text-foreground">No refund.</strong>
+                    </p>
+                  </div>
+
+                  <div className="mt-10 grid gap-4 border-t border-slate-200 pt-8 dark:border-white/10 lg:grid-cols-12 lg:gap-16">
+                    <h3 className="font-heading text-xl font-semibold text-foreground lg:col-span-4">Payment</h3>
+                    <ul className="space-y-3 lg:col-span-8">
+                      {PAYMENT_TERMS.map((t) => (
+                        <li key={t} className="text-base leading-relaxed text-muted">{t}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="mt-10 grid gap-4 border-t border-slate-200 pt-8 dark:border-white/10 lg:grid-cols-12 lg:gap-16">
+                    <h3 className="font-heading text-xl font-semibold text-foreground lg:col-span-4">Refunds &amp; date changes</h3>
+                    <ul className="space-y-2 text-sm leading-relaxed text-muted lg:col-span-8">
+                      {COURSE_REFUND_NOTE.map((n) => <li key={n.text}>{n.text}</li>)}
+                    </ul>
+                  </div>
+
+                  <div className="mt-10 grid gap-4 border-t border-slate-200 pt-8 dark:border-white/10 lg:grid-cols-12 lg:gap-16">
+                    <h3 className="font-heading text-xl font-semibold text-foreground lg:col-span-4">Ski &amp; snowboard courses</h3>
+                    <dl className="space-y-4 lg:col-span-8">
+                      {SKI_TERMS.map((t) => (
+                        <div key={t.title}>
+                          <dt className="font-semibold text-foreground">{t.title}</dt>
+                          <dd className="mt-1 text-base leading-relaxed text-muted">{t.text}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+
+                  <p className="mt-10 border-t border-slate-200 pt-8 text-sm leading-relaxed text-muted dark:border-white/10">{REGISTRATION_NOTE}</p>
                 </div>
               )}
 
@@ -1085,6 +1161,23 @@ export default function CourseDetailClient({ course }: Props) {
                     {b.label}
                   </div>
                 ))}
+              </div>
+
+              {/* Course cancellation terms (owner, 20 Nov 2026: courses have their own policy). Full text: the T&C tab. */}
+              <div className="mt-4 rounded-xl bg-slate-50 p-3 text-xs leading-relaxed text-slate-600 ring-1 ring-slate-100">
+                <p className="font-semibold text-slate-900">Cancellation policy</p>
+                <p className="mt-1">
+                  Cancel 20+ days before the start: full refund. 10–19 days before: 50% refund. Less than 10 days
+                  before: no refund, but one free date change in the same season. If there&apos;s no snow: free date
+                  change or a full refund.
+                </p>
+                <a
+                  href="#tnc"
+                  onClick={openTerms}
+                  className="mt-1.5 inline-block font-semibold text-emerald-700 underline underline-offset-2 hover:text-emerald-800"
+                >
+                  Cancellation policy &amp; T&amp;C
+                </a>
               </div>
             </div>
           </div>

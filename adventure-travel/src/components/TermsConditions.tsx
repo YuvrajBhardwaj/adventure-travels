@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { PAYMENT_TERMS, REFUND_NOTE, REFUND_TIERS, REGISTRATION_NOTE } from "@/data/cancellationPolicy";
 
 const TERMS_TABS = [
   { id: "cancellation", label: "Cancellation Policy" },
@@ -43,15 +42,24 @@ export default function TermsConditions() {
               To cancel your booking, email <strong>support@himalayanarcadventure.com</strong> with your booking
               reference number. Cancellation requests cannot be taken over phone calls or messages.
             </p>
+            <p><strong>The advance amount is non-refundable.</strong></p>
             <ul className="list-disc pl-6 space-y-2">
-              {REFUND_TIERS.map((t) => (
-                <li key={t.window}>
-                  <strong>Cancel {t.window.toLowerCase()} the start</strong> — {t.cash.toLowerCase()}.{t.detail && ` ${t.detail}`}
-                </li>
-              ))}
-              <li><strong>On the start day / no-show</strong> — no refund.</li>
-              {REFUND_NOTE.slice(2).map((n) => <li key={n.text}>{n.text}</li>)}
+              <li><strong>Cancellation 25+ days before the trek</strong> — 90% cash refund, or 100% of the fee as a Trek Voucher.</li>
+              <li><strong>24–15 days before</strong> — 70% cash refund, or 80% as a Trek Voucher.</li>
+              <li><strong>14–10 days before</strong> — 50% cash refund, or 70% as a Trek Voucher.</li>
+              <li><strong>9–1 days before</strong> — no refund; 10% Trek Voucher.</li>
+              <li><strong>On the start day / no-show</strong> — no refund, no voucher.</li>
+              <li>Trek Vouchers are issued only when the full amount has been paid.</li>
+              <li>No refund applies if only the advance amount was paid.</li>
+              <li>Refunds are processed within 7–14 working days of cancellation.</li>
+              <li>A <strong>3% payment processing charge</strong> applies to all refunds.</li>
+              <li><strong>5% GST is non-refundable.</strong></li>
+              <li>Bookings marked <strong>NON REFUNDABLE</strong> receive no refund or voucher.</li>
             </ul>
+            <p>
+              <strong>Important:</strong> offloading, rental, and travel fees are non-refundable. Trek Vouchers are
+              issued only for the trek fee.
+            </p>
             <p className="font-semibold pt-4">In the rare event that we cancel a trek</p>
             <p>
               We almost never cancel. But for lockdowns, natural calamities (snowstorms, thunderstorms, floods,
@@ -79,7 +87,7 @@ export default function TermsConditions() {
             </p>
         </div>
         <ul hidden={activeTab !== "payments"} className="list-disc pl-6 space-y-2">
-            {PAYMENT_TERMS.slice(0, 2).map((t) => <li key={t}>{t}</li>)}
+            <li>Pay a <strong>30% advance</strong> (non-refundable) or the <strong>full amount</strong> online. The balance is due 15 days before departure.</li>
             <li>Your seats are held while you pay and confirmed once the payment goes through. If weather or permits force a change, we offer another date or a refund under our cancellation policy.</li>
             <li>Cheques not accepted.</li>
             <li>Payments accepted via UPI, credit card, and net banking (3% extra charged on credit cards).</li>
@@ -92,7 +100,6 @@ export default function TermsConditions() {
             <li>We are not responsible for itinerary changes due to natural calamities or unforeseen circumstances; any additional cost is borne by the client.</li>
             <li>Anything not mentioned in the inclusions is not part of the package.</li>
             <li>Images of sites, hotels, etc. are for illustration purposes only.</li>
-            <li>{REGISTRATION_NOTE}</li>
             <li>Additional charges apply for passengers who wish to stay back at the destination or in transit.</li>
           </ul>
       </div>

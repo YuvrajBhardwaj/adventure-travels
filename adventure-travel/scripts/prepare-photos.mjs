@@ -2,6 +2,7 @@
 // side, a small "© Himalayan Arc Adventure" mark in the corner, and no metadata (camera,
 // GPS). Originals live in ../media-originals/ (git-ignored) so the site never publishes
 // full-resolution files. Safe to re-run: it always rebuilds from the originals.
+// Next to each photo it writes a phone-sized copy, name.800.jpeg (SmartImage's srcset uses it).
 // It also writes public/og/<trek-slug>.jpg, public/og/course-<slug>.jpg and public/og/tour-<slug>.jpg:
 // the link-preview image for every trek/course/tour whose cover is our own photo (read from src/data).
 //
@@ -24,6 +25,10 @@ const OG = path.join(APP, "public", "og");
 const SHARE = { width: 1200, height: 630, maxBytes: 300_000 };
 const ORIGINALS = path.join(APP, "..", "media-originals", "assets");
 const MAX = 1600;
+// Phone copy: name.jpeg → name.800.jpeg. Keep in step with photoSrcSet() in src/components/SmartImage.tsx.
+const SMALL = 800;
+const phoneCopy = (rel) => rel.replace(/(\.[a-z]+)$/i, `.${SMALL}$1`);
+const IS_SMALL = /\.800\.[a-z]+$/i;
 const MARK = "© Himalayan Arc Adventure";
 const PHOTO = /\.(jpe?g|png|webp)$/i;
 // Saved sideways by the phone, with no orientation tag to fix it automatically.
@@ -50,11 +55,11 @@ function watermark(width, height) {
 }
 
 /** Original (path or buffer) → web-sized, watermarked, metadata-free image buffer. */
-async function transform(input, rel, ext) {
+async function transform(input, rel, ext, max = MAX) {
   const turn = ROTATE[rel];
   const resized = await sharp(input)
     .rotate(turn) // no angle = upright from the EXIF tag
-    .resize({ width: MAX, height: MAX, fit: "inside", withoutEnlargement: true })
+    .resize({ width: max, height: max, fit: "inside", withoutEnlargement: true })
     .toBuffer({ resolveWithObject: true });
   const { width, height } = resized.info;
   const out = sharp(resized.data).composite([{ input: watermark(width, height), top: 0, left: 0 }]);
@@ -114,7 +119,7 @@ async function* walk(dir, base = dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) yield* walk(full, base);
-    else if (PHOTO.test(entry.name)) yield path.relative(base, full).split(path.sep).join("/");
+    else if (PHOTO.test(entry.name) && !IS_SMALL.test(entry.name)) yield path.relative(base, full).split(path.sep).join("/");
   }
 }
 
@@ -127,6 +132,8 @@ async function selfCheck() {
   assert.equal((await transform(small, "small.jpeg", ".jpeg")).info.width, 800, "never enlarges");
   const turned = await transform(big, "panpatia-col-trek/IMG_6013.jpeg", ".jpeg");
   assert.equal(turned.info.width, 1067, "sideways photos are turned upright");
+  assert.equal((await transform(big, "check.jpeg", ".jpeg", SMALL)).info.width, 800, "phone copy");
+  assert.equal(phoneCopy("a/IMG_1.JPG.jpeg"), "a/IMG_1.JPG.800.jpeg");
   assert.ok(watermark(1600, 1000).toString().includes(MARK));
   const share = await sharp(await shareImage(big, "check.jpeg")).metadata();
   assert.deepEqual([share.width, share.height, share.format], [1200, 630, "jpeg"]);
@@ -153,6 +160,7 @@ async function main() {
     }
     const { data } = await transform(orig, rel, path.extname(rel));
     await sharp(data).toFile(pub);
+    await writeFile(path.join(ASSETS, phoneCopy(rel)), (await transform(orig, rel, path.extname(rel), SMALL)).data);
     before += (await stat(orig)).size;
     after += data.length;
     count++;

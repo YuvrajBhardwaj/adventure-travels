@@ -1,44 +1,48 @@
-// Builds the site icons from one simple mark (navy square, amber sun, white mountain, green ground).
-// The detailed compass logo turns to mush at 16-48 px, which is the size Google and browser tabs use,
-// so these icons keep to three or four bold shapes inside a safe zone (Google crops results to a circle).
+// Builds the header badge and the site icons from the owner's logo (scripts/assets/logo-source.png,
+// black artwork on a transparent background), recoloured snow white on black (owner, 20 Nov 2026).
 //
 //   node scripts/make-favicons.mjs
 //
-// Writes public/favicon.svg, favicon.png (192), favicon-512.png, apple-touch-icon.png (180) and favicon.ico (16/32/48).
-// Keep these URLs stable: Google caches the favicon by URL.
+// Writes public/brand/badge.png (header), favicon.svg, favicon.png (192), favicon-512.png,
+// apple-touch-icon.png (180) and favicon.ico (16/32/48). Keep these URLs stable: Google caches
+// the favicon by URL. The wordmark can't be read below ~48 px, so the tab icons (16–48 px) use
+// the logo's central peak only; 180 px and up use the whole logo.
 import sharp from "sharp";
 import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const pub = join(dirname(fileURLToPath(import.meta.url)), "..", "public");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const pub = join(root, "public");
+const SNOW = [248, 250, 252]; // #F8FAFC
+const BLACK = "#000000";
 
-const SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <defs>
-    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1B2A47"/>
-      <stop offset="1" stop-color="#0B1222"/>
-    </linearGradient>
-    <linearGradient id="sun" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#FBBF24"/>
-      <stop offset="1" stop-color="#F97316"/>
-    </linearGradient>
-    <linearGradient id="land" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#10B981"/>
-      <stop offset="1" stop-color="#059669"/>
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" fill="url(#sky)"/>
-  <circle cx="300" cy="238" r="112" fill="url(#sun)"/>
-  <path d="M64 404 L212 148 L280 262 L330 186 L448 404 Z" fill="#F8FAFC"/>
-  <path d="M212 148 L280 262 L262 404 L204 404 Z" fill="#CBD5E1"/>
-  <path d="M330 186 L448 404 L372 404 Z" fill="#CBD5E1"/>
-  <rect y="404" width="512" height="108" fill="url(#land)"/>
-</svg>
-`;
+// Snow-white artwork on black, full 1254 px square: the logo's ink becomes the alpha of a snow fill.
+const mask = await sharp(join(root, "scripts/assets/logo-source.png"))
+  .flatten({ background: "#ffffff" })
+  .greyscale()
+  .negate()
+  .raw()
+  .toBuffer({ resolveWithObject: true });
+const { width, height } = mask.info;
+const art = await sharp({ create: { width, height, channels: 3, background: { r: SNOW[0], g: SNOW[1], b: SNOW[2] } } })
+  .joinChannel(mask.data, { raw: { width, height, channels: 1 } })
+  .flatten({ background: BLACK })
+  .png()
+  .toBuffer();
 
-const svgBuffer = Buffer.from(SVG);
-const png = (size) => sharp(svgBuffer, { density: 384 }).resize(size, size).png({ compressionLevel: 9 }).toBuffer();
+// Square crops in source pixels: the whole logo (circle plus the wordmark that overhangs it),
+// and the central peak for tiny icons.
+const WHOLE = { left: 37, top: 41, width: 1180, height: 1180 };
+const PEAK = { left: 455, top: 300, width: 350, height: 350 };
+const crop = (box, size, pad = 0) =>
+  sharp(art)
+    .extract(box)
+    .resize(size - 2 * pad, size - 2 * pad)
+    .extend({ top: pad, bottom: pad, left: pad, right: pad, background: BLACK })
+    .flatten({ background: BLACK })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
 
 // An .ico can hold PNG-compressed images, so build it by hand.
 function ico(images) {
@@ -60,12 +64,15 @@ function ico(images) {
   return Buffer.concat([header, ...entries, ...images.map((i) => i.data)]);
 }
 
-writeFileSync(join(pub, "favicon.svg"), SVG);
-writeFileSync(join(pub, "favicon.png"), await png(192));
-writeFileSync(join(pub, "favicon-512.png"), await png(512));
-writeFileSync(join(pub, "apple-touch-icon.png"), await sharp(await png(180)).flatten({ background: "#0B1222" }).png().toBuffer());
+writeFileSync(join(pub, "brand/badge.png"), await crop(WHOLE, 384));
+writeFileSync(join(pub, "favicon.png"), await crop(WHOLE, 192, 6));
+writeFileSync(join(pub, "favicon-512.png"), await crop(WHOLE, 512, 16));
+writeFileSync(join(pub, "apple-touch-icon.png"), await crop(WHOLE, 180, 6));
+writeFileSync(join(pub, "favicon.ico"), ico(await Promise.all([16, 32, 48].map(async (size) => ({ size, data: await crop(PEAK, size) })))));
+// Browsers that prefer the SVG icon get the peak too, as an embedded 64 px PNG.
+const peak64 = (await crop(PEAK, 64)).toString("base64");
 writeFileSync(
-  join(pub, "favicon.ico"),
-  ico(await Promise.all([16, 32, 48].map(async (size) => ({ size, data: await png(size) }))))
+  join(pub, "favicon.svg"),
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><image width="64" height="64" href="data:image/png;base64,${peak64}"/></svg>\n`
 );
-console.log("favicons written to public/");
+console.log("badge and favicons written to public/");

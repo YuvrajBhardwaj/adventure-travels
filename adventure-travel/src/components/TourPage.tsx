@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { TOUR_CONTACT } from "@/data/tours";
-import { PAYMENT_TERMS, REFUND_NOTE, REFUND_TIERS } from "@/data/cancellationPolicy";
+import { REFUND_NOTE, REFUND_TIERS } from "@/data/cancellationPolicy";
 import { absoluteUrl, ORGANIZATION_ID, SITE_URL } from "@/lib/seo";
 import Price from "@/components/Price";
 import NoPhoto from "@/components/NoPhoto";
@@ -283,8 +283,8 @@ export function TourPage({
                 <div>
                   <h3 className="font-semibold text-slate-900">Payment and confirmation</h3>
                   <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-600">
-                    {PAYMENT_TERMS.slice(0, 2).map((t) => <li key={t}>{t}</li>)}
-                    {REFUND_NOTE.filter((n) => /same season|processed/.test(n.text)).map((n) => <li key={n.text}>{n.text}</li>)}
+                    {REFUND_NOTE.slice(0, 2).map((n) => <li key={n.text}>{n.text}</li>)}
+                    {REFUND_NOTE.filter((n) => /processed|GST/.test(n.text)).map((n) => <li key={n.text}>{n.text}</li>)}
                   </ul>
                 </div>
               </div>
