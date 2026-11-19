@@ -131,7 +131,7 @@ Passed: no `.env`/`.git`/source/SQL files exposed; HTTPS + HSTS; every table has
 - [ ] **Dev (later):** online booking and payment, once the group rules are added to the price catalog.
 
 ## Foreign-national pricing (3×)
-- [ ] **You: OK to apply `supabase-nationality.sql` on the live database?** Then Claude pushes the pricing change. Until then it stays unpushed.
+- [x] ~~**You: OK to apply `supabase-nationality.sql` on the live database?**~~ Applied 20 Nov; pricing pushed.
 - [ ] **You:** check the wording "Price for foreign nationals, which covers their permits and local arrangements", and whether Razorpay live mode needs international cards turned on for foreign customers.
 
 ## Look and polish (20 Nov 2026 comparison with freesouladventures.in)
