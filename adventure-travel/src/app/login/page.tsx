@@ -37,7 +37,11 @@ export default function LoginPage() {
   const [resetMessage, setResetMessage] = useState("");
   const [sendingReset, setSendingReset] = useState(false);
 
-  if (user) { router.push(next); return null; }
+  // Already signed in: leave for `next` after render (navigating during render is a React error).
+  useEffect(() => {
+    if (user) router.replace(next);
+  }, [user, next, router]);
+  if (user) return null;
 
   // Same answer whether or not the email has an account, so the form can't be used to
   // find out who is registered.

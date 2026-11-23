@@ -40,7 +40,7 @@ Last updated: 7 Nov 2026.
 - [x] ~~**You: approve the payment fix on the live database.** Written and tested locally (13 Nov): `supabase-payment-guard.sql` replaces `apply_payment()` so an advance+full double payment, or a payment on a cancelled/refunded booking, no longer changes the booking; the payment is kept and marked "Needs refund" on /admin/payments. Say yes and Claude runs it on Supabase (then marks it ☑ in the CHANGELOG backend tracker).~~ Approved and applied 13 Nov.
 - [x] ~~**Dev (medium):** a payment that lands after the 15-min seat hold can overbook a full batch. Set the Razorpay order to expire with the hold, or check seats in `apply_payment()`.~~ (20 Nov: Razorpay checkout times out with the hold)
 - [x] ~~**Dev (medium):** signed-out course bookings (`api/bookings.js`) have no rate limit or captcha and email any address typed in. Add a limit or captcha.~~ (20 Nov: 3 per email per hour + honeypot)
-- [ ] **You + Dev:** Privacy Policy and Terms pages. Neither exists, and Razorpay usually checks for them before switching on live payments.
+- [x] ~~**You + Dev:** Privacy Policy and Terms pages. Neither exists, and Razorpay usually checks for them before switching on live payments.~~ (24 Nov: /privacy and /terms exist and are linked from the footer.)
 - [x] ~~**Dev:** footer Facebook and YouTube links are dead (`FooterV2.tsx:60,62`). Remove them, or tell Claude the real profile links.~~ (13 Nov: removed; only Instagram remains.)
 - [x] ~~**Dev:** a branded 404 page (`not-found.tsx`) with links to treks; make `/admin` open the bookings list instead of a 404.~~ (20 Nov)
 - [x] ~~**Dev:** fix trek facts: Pangarchula Day 3 says 15,419 ft (4,700 m) but the trek says 4,600 m; Kuari Day 2 says "+1,500 ft" (it's about 4,860 ft); the elevation charts of Kalindi Khal, Gupt Khal, Nanda Devi BC and Bhrigu Lake have a different number of points from their itinerary days; the FAQ start towns ("Dehradun, Manali or Delhi").~~ (20 Nov)
@@ -80,7 +80,7 @@ Last updated: 7 Nov 2026.
   - sticky booking card taller than the screen;
   - focus return after the lightbox and popup;
   - `<main>` on FAQ, contact, login and signup.
-- [ ] **Test:** re-run `npm run test:e2e` on a quiet machine (3/6 failed only because ~60 agent browsers were open).
+- [x] ~~**Test:** re-run `npm run test:e2e` on a quiet machine (3/6 failed only because ~60 agent browsers were open).~~ (24 Nov: 6/6 pass.)
 - [x] ~~Remove the ₹10,000 / ₹20,000 Basic package from the 7-day skiing course~~ (18 Nov).
 - [x] ~~Tour "Top attractions" as photo cards with Read more~~ (18 Nov), then restyled as "Choose Your Mountain" rows and moved to the end of the page (18 Nov).
 - [x] ~~Photos for Auli Artificial Lake, Gorson Bugyal, Nanda Devi National Park; Chopta gallery, Tungnath Temple, Chandrashila~~ (19 Nov). Attraction photos open full size.
@@ -119,7 +119,7 @@ Last updated: 7 Nov 2026.
 Passed: no `.env`/`.git`/source/SQL files exposed; HTTPS + HSTS; every table has RLS and the anon key reads nothing; `apply_payment()` refuses anon; payment signatures checked in constant time; only the anon key is in the browser JS; emails are plain text; Vercel's bot checkpoint blocks scripted traffic.
 - [x] ~~**Dev (high): update dependencies.** `npm audit` lists 8 issues: 1 critical (`next` 16.2.10, fix in 16.4.6), 5 high (`sharp`, `postcss`, `follow-redirects`, `nanoid`, `source-map-js`) and 2 moderate (`nodemailer`, `baseline-browser-mapping`). Real exposure is lower: the site is a static export, so the Next.js middleware/server-action bugs don't run in production, and `sharp` only runs in our photo script. `nodemailer` and `follow-redirects` do run in the API functions. Upgrade `next`, `nodemailer` and `sharp`, then run tsc, lint, tests and a build copy.~~ (20 Nov: next 16.4.6, 0 vulnerabilities)
 - [x] ~~**Dev (medium): security headers in `vercel.json`.** Missing: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, and clickjacking protection (`X-Frame-Options: DENY` / CSP `frame-ancestors 'none'`), which matters most for /checkout and /dashboard. Add a Content-Security-Policy in Report-Only mode first: Razorpay, Supabase and Google Fonts must be allowed. The comment in `next.config.ts` saying headers are set as meta tags in `layout.tsx` is wrong; there are none.~~ (20 Nov, no CSP yet)
-- [ ] **Dev (medium):** already listed above: rate limit or captcha on signed-out course bookings. Anyone can make our Gmail send a "Booking received" email, with a name they choose, to any address.
+- [x] ~~**Dev (medium):** already listed above: rate limit or captcha on signed-out course bookings. Anyone can make our Gmail send a "Booking received" email, with a name they choose, to any address.~~ (Done: hidden spam field plus 3 course bookings per email per hour, `api/_lib/spamGuard.js`.)
 - [ ] **You:** in Supabase → Authentication, turn on leaked-password protection and check the minimum password length (not checked: the Supabase connection needs `/mcp` sign-in).
 - [ ] **Dev (optional):** a full automated scan (Nuclei / OWASP ZAP) of a Vercel preview with the bot checkpoint bypassed for the scanner. It was blocked this time (see CHANGELOG 13 Nov).
 

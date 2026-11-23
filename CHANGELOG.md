@@ -17,6 +17,11 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 24 Nov 2026: login/sign-up redirect fix; status check — `main`
+- **Fix:** signed-in visitors opening /login or /sign-up were sent on with `router.push()` during render, which React rejects ("Cannot update a component (Router) while rendering LoginPage"). The redirect now runs after render and uses `replace`, so Back doesn't return to the login page.
+- **Checked against the code:** Next.js 16.4.6, security headers, /privacy, /terms, the 404 page, /admin, the course-booking spam guard and the Pangarchula/Kuari altitude text are all done. `npm run test:e2e`: 6/6 pass.
+- **Still open (Dev):** a payment that arrives after the 15-minute seat hold can still overbook a full batch; phones still download 1600 px photos.
+
 ### 24 Nov 2026: Pangarchula triple and double sharing prices — `main`
 - **Visitors:** Pangarchula Peak now has the same occupancy + pickup picker as Kuari Pass. Joshimath pickup: **triple sharing Rs.8,999, double sharing Rs.9,500** (owner's prices). The trek now shows "From Rs.8,999".
 - **Rishikesh/Haridwar/Dehradun pickup:** double Rs.11,000 (the old rate), triple Rs.10,499, following the Kuari rule (triple Rs.501 less). Awaiting the owner's confirmation; see TODO.
@@ -43,7 +48,7 @@ Scanned every page, component and data file for the banned words, empty phrases 
 ### 24 Nov 2026: fix duplicate-key error on trek package cards — `main`
 - **Fix:** the "Package options" cards on trek pages were keyed by their display name, which can repeat (same pickup town, different room sharing). That gave a React "two children with the same key" error on Kuari Pass. They are now keyed by the package label, which is unique (`TrekDetailClient.tsx`).
 
-### 24 Nov 2026: meal count fix, plainer site copy — `main`, uncommitted
+### 24 Nov 2026: meal count fix, plainer site copy — `main`
 - **Meals:** "What's Included" counted the last day's breakfast, which the itinerary no longer shows (owner, 18 Nov). The count now skips the last day, so Kuari Pass shows 10 meals instead of 11 (the same −1 on every trek). The Chopta–Tungnath tour still counts its last-day breakfast, because the tour itinerary still lists it.
 - **Copy (no-AI-slop pass):**
   - **FAQ:** plain questions replace the puffed-up ones ("What makes Kedarkantha … premier …", "diverse alpine crossing", "famous for"). "One of the best" and "Photographers love it" are cut. Unprovable lines are cut too: "designed by nutritionists", "meets professional catering guidelines", "strict safety protocols". Water, toilet, parking and period-care answers are shorter and direct.
@@ -59,7 +64,7 @@ Scanned every page, component and data file for the banned words, empty phrases 
     - Niti Pass no longer repeats Mana Pass's "raw Himalayan wilderness".
     - Auli tour days are plain steps ("Dinner at the stay").
 
-### 24 Nov 2026: Kuari Pass priced by room occupancy (Triple / Double) — `main`, uncommitted
+### 24 Nov 2026: Kuari Pass priced by room occupancy (Triple / Double) — `main`
 - **Visitors:** the Kuari Pass price card has an occupancy toggle (Triple / Double) and a pickup choice (Joshimath, or Rishikesh, Haridwar or Dehradun), modelled on Justwravel's pricing box, and a "Book this option" button that fills the reservation form. The "From" price is now **Rs.6,999**.
 - **Prices (per person):** Joshimath: Triple 6,999, Double 7,500. Rishikesh/Haridwar/Dehradun: Triple 8,499, Double 9,000. The double rates are the old package rates; triple is Rs.501 less, the same difference as at Joshimath.
 - **Backend:** package labels are now `Joshimath · Triple sharing` and the like (`packages[].sharing` in `src/data/treks.ts`), and `api/_lib/catalog.js` is regenerated. An unpaid Kuari Pass booking saved with an old label (`From Joshimath`) can no longer be paid online; book it again or settle it on WhatsApp. No SQL change.

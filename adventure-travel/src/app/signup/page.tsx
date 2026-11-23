@@ -34,7 +34,11 @@ export default function SignupPage() {
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [resending, setResending] = useState(false);
 
-  if (user) { router.push(next); return null; }
+  // Already signed in: leave for `next` after render (navigating during render is a React error).
+  useEffect(() => {
+    if (user) router.replace(next);
+  }, [user, next, router]);
+  if (user) return null;
 
   const update = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
