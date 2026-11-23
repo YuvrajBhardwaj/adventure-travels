@@ -17,6 +17,11 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 24 Nov 2026: admin overview page; late-payment overbooking guard — `main`
+- **Admin (business):** `/admin` is now an overview instead of a redirect: money collected this month and in total, what is still to collect, new bookings this week, failed emails, a "Needs you" list (overdue balances and bookings waiting for confirmation), departures in the next 14 days, and payments to refund. "Overview" is the first tab of the admin nav. Figures come from the same data as the other admin pages (`summarize()` in `src/lib/adminSummary.ts`, 4 unit tests). **Nobody can open it yet:** an admin account still has to be chosen (TODO).
+- **Backend (NOT applied yet, needs the owner's OK):** `supabase-payment-guard.sql` now also re-checks seats when a trek payment arrives after the 15-minute seat hold ran out. If the batch filled or closed meanwhile, the payment is kept and marked "Needs refund: batch filled up after the seat hold ran out", and the booking is not confirmed. Tested on PGlite with all 9 SQL files: late payment into a full batch is flagged; late payment with a seat free, payment inside the hold and balance payments apply as before.
+- **Phones:** checked the home page on a phone: 2.2 MB of images, 1.5 MB of it the hero slideshow (8 layered photos); card photos already use 800 px copies. Shrinking the hero would blur it on phones, so it's left to the owner (TODO).
+
 ### 24 Nov 2026: login/sign-up redirect fix; status check — `main`
 - **Fix:** signed-in visitors opening /login or /sign-up were sent on with `router.push()` during render, which React rejects ("Cannot update a component (Router) while rendering LoginPage"). The redirect now runs after render and uses `replace`, so Back doesn't return to the login page.
 - **Checked against the code:** Next.js 16.4.6, security headers, /privacy, /terms, the 404 page, /admin, the course-booking spam guard and the Pangarchula/Kuari altitude text are all done. `npm run test:e2e`: 6/6 pass.
@@ -1010,7 +1015,7 @@ Below, ☑ marks the files run on that project.
 | 5 | `adventure-travel/supabase-payments-v2.sql` | Advance/balance payments, audit trail, email outbox, `apply_payment()` | ☑ 19 Oct |
 | 6 | `adventure-travel/supabase-departures.sql` | Batch calendar, seats left; (29 Oct) checkout seat hold `hold_trek_seats()` | ☑ 23 Oct · 29 Oct version ☑ 5 Nov |
 | 7 | `adventure-travel/supabase-scale.sql` | Indexes, faster security rules, fixed search_path, explicit grants | ☑ 5 Nov |
-| 8 | `adventure-travel/supabase-payment-guard.sql` | `apply_payment()` no longer overcharges or pays cancelled/refunded bookings; flags them "Needs refund" | ☑ 13 Nov |
+| 8 | `adventure-travel/supabase-payment-guard.sql` | `apply_payment()` no longer overcharges or pays cancelled/refunded bookings; flags them "Needs refund". 24 Nov: also flags trek payments that land after the seat hold when the batch is full | ☑ 13 Nov · 24 Nov version ☐ not applied |
 | 9 | `adventure-travel/supabase-nationality.sql` | `nationality` (indian/foreign) on trek and course bookings; foreign nationals pay 3× | ☑ 20 Nov |
 
 After running them, give the business account admin rights (snippet at the top of file 2), then sign out and back in.

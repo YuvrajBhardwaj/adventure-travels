@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import AdminRedirect from "./AdminRedirect";
+import OverviewAdminClient from "./OverviewAdminClient";
 
 export const metadata: Metadata = {
-  title: "Admin",
+  title: "Overview | Admin",
   robots: { index: false, follow: false },
 };
 
 export default function AdminPage() {
-  return <AdminRedirect />;
+  return <OverviewAdminClient />;
 }

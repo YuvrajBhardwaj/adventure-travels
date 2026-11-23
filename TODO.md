@@ -10,6 +10,8 @@ Last updated: 7 Nov 2026.
 - [x] ~~**Dev:** clearer Google title and description, ski school page title, new site icon~~ (7 Nov, on the preview branch, uncommitted).
 - [x] ~~**Redeploy the 7 Nov change.**~~ Claude retried it; live on 7 Nov (`8af2cf0`).
 - [x] ~~**Dev:** walk-the-route altitude chart on trek pages; gliding trek filters~~ (7 Nov, on the preview branch).
+- [ ] **You: OK to update the live database?** `supabase-payment-guard.sql` (24 Nov) stops late payments from overbooking a full trek batch; tested locally. Say yes and Claude runs that one file on Supabase.
+- [ ] **You: hero slideshow on phones.** It is 1.5 MB of the 2.2 MB a phone loads on the home page. Options: show 2 slides on phones instead of 4, or keep it as it is.
 - [ ] **You: confirm Pangarchula prices from Rishikesh/Haridwar/Dehradun.** Set to double Rs.11,000 and triple Rs.10,499 (the Kuari rule: triple is Rs.501 less). Tell Claude if they should differ.
 - [ ] **You: put the new Razorpay test keys into Vercel** (7 Nov; the Test Mode webhook is done and checked, keys in Vercel still unconfirmed): Vercel → adventure-travels → Settings → Environment Variables → edit `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` (copy them from `adventure-travel/.env.local`) → Deployments → ⋯ → Redeploy. Then in the new Razorpay account (Test Mode) add the webhook `https://www.himalayanarcadventure.com/api/razorpay-webhook` with the `RAZORPAY_WEBHOOK_SECRET` from `.env.local`, events `payment.captured`, `order.paid`, `payment.failed`.
 - [ ] **You: try the new altitude chart on the preview** (any trek page, "Elevation Profile": drag along it on your phone), then say "go live".

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const TABS = [
+  { href: "/admin", label: "Overview" },
   { href: "/admin/activity", label: "Activity" },
   { href: "/admin/bookings", label: "Bookings" },
   { href: "/admin/customers", label: "Customers" },
@@ -18,7 +19,8 @@ export function AdminNav() {
     <nav aria-label="Admin sections" className="mb-6 overflow-x-auto">
       <ul className="flex min-w-max gap-1 rounded-full border border-slate-200 bg-white/70 p-1 shadow-sm shadow-slate-900/[0.03] dark:border-white/10 dark:bg-white/5 dark:shadow-none">
         {TABS.map((tab) => {
-          const active = pathname === tab.href || pathname.startsWith(`${tab.href}/`);
+          // "/admin" is the overview only; every other tab also owns its sub-pages.
+          const active = pathname === tab.href || (tab.href !== "/admin" && pathname.startsWith(`${tab.href}/`));
           return (
             <li key={tab.href}>
               <Link

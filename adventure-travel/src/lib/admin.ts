@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { BackendUnavailableError, type BookingStatus, type PaymentState } from "@/lib/auth";
 import { istToday, isOverdue } from "@/lib/paymentRules";
+import { summarize, type AdminSummary } from "@/lib/adminSummary";
 
 // Admin reads and writes go straight to Supabase with the admin's own session. RLS is the
 // real gate (public.is_admin()); the admin pages only hide what a non-admin couldn't load
@@ -469,4 +470,12 @@ export async function getBookingEvents(type: BookingType, id: string): Promise<B
       createdAt: str(r.created_at),
     };
   });
+}
+
+// ─── Overview (/admin) ───
+
+/** Everything the overview needs, in one round of requests. */
+export async function loadSummary(): Promise<{ summary: AdminSummary; failedEmails: number }> {
+  const [bookings, payments, failed] = await Promise.all([listBookings(), listPayments(), listFailedNotifications()]);
+  return { summary: summarize(bookings, payments, istToday()), failedEmails: failed.length };
 }

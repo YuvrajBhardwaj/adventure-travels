@@ -7,6 +7,8 @@
 -- money to it, so
 --   * an advance order and a full order on one booking could both be paid (overcharge),
 --   * an order opened before a cancel or refund still applied to that booking.
+--   * (24 Nov) a trek payment landing after the 15-minute seat hold, when the batch has
+--     filled or closed meanwhile, confirmed the booking anyway (overbooking).
 -- Razorpay has already captured the money when this runs, so the payment is still
 -- recorded as paid, but the booking is left alone and the payment is marked
 -- "Needs refund: …" (failure_reason, shown on /admin/payments) for a manual refund.
@@ -37,6 +39,14 @@ declare
   new_state text;
   new_status text;
   refund_reason text;
+  b_held timestamptz;
+  b_slug text;
+  b_group text;
+  d_cap integer;
+  d_offline integer;
+  d_closed boolean;
+  taken integer;
+  wanted integer;
 begin
   select * into pay from public.payments where razorpay_order_id = p_order_id for update;
   if not found then
@@ -62,8 +72,8 @@ begin
   end if;
 
   if btype = 'trek' then
-    select amount, amount_paid, status, payment_state, trek_date, user_id
-      into b_amount, b_paid, b_status, b_state, b_start, b_user
+    select amount, amount_paid, status, payment_state, trek_date, user_id, seats_held_until, trek_slug, group_size
+      into b_amount, b_paid, b_status, b_state, b_start, b_user, b_held, b_slug, b_group
       from public.trek_bookings where id = bid for update;
   else
     select amount, amount_paid, status, payment_state, preferred_date, user_id
@@ -79,6 +89,30 @@ begin
     when b_state = 'refunded' then 'booking was refunded'
     when b_amount is not null and new_paid > b_amount then 'booking would be overpaid'
   end;
+
+  -- A trek booking that doesn't own its seats yet, paid after its seat hold ran out: the batch
+  -- may have filled (or closed) meanwhile. Count it the way hold_trek_seats() does
+  -- (supabase-departures.sql); same lock order (booking, then departure).
+  if refund_reason is null and btype = 'trek' and b_status <> 'confirmed' and b_state = 'unpaid'
+     and (b_held is null or b_held < now()) then
+    select capacity, offline_seats, closed into d_cap, d_offline, d_closed
+      from public.trek_departures where trek_slug = b_slug and start_date = b_start for update;
+    if found then
+      wanted := case when b_group ~ '^[0-9]+$' then b_group::integer else 10 end;
+      select d_offline + coalesce(sum(case when tb.group_size ~ '^[0-9]+$' then tb.group_size::integer else 10 end), 0)
+        into taken
+        from public.trek_bookings tb
+       where tb.trek_slug = b_slug
+         and tb.trek_date = b_start
+         and tb.id <> bid
+         and tb.status <> 'cancelled'
+         and (tb.status = 'confirmed' or tb.payment_state in ('advance_paid', 'fully_paid') or tb.seats_held_until > now());
+      refund_reason := case
+        when d_closed then 'batch was closed after the seat hold ran out'
+        when d_cap - taken < wanted then 'batch filled up after the seat hold ran out'
+      end;
+    end if;
+  end if;
   if refund_reason is not null then
     update public.payments
        set status = 'paid',
