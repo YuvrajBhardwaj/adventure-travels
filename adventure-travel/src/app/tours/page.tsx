@@ -6,6 +6,7 @@ import Price from "@/components/Price";
 import NoPhoto from "@/components/NoPhoto";
 import { tourPhotos } from "@/lib/tourPhotos";
 import { shareImage } from "@/lib/shareImage";
+import EnquireTab from "@/components/EnquireTab";
 
 export const metadata = pageMetadata({
   title: fitTitle("Uttarakhand Tours", [TOURS.map((t) => t.name.split(/\s/)[0]).join(" & ") + " Getaways"]),
@@ -120,6 +121,7 @@ export default function ToursPage() {
           </ul>
         </section>
       </div>
+      <EnquireTab subject="a tour" kind="tour" heading="Questions about a tour?" message="I'd like to know more about your tours: dates, price and availability." />
     </main>
   );
 }

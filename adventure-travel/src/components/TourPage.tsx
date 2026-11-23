@@ -10,6 +10,7 @@ import WallpaperCarousel from "@/components/WallpaperCarousel";
 import TourAttractions, { type TourAttraction } from "@/components/TourAttractions";
 import { TourBookingProvider, TourEnquiry, TourPackages, type TourPackage } from "@/components/TourBooking";
 import { BrandIcon } from "@/components/BrandIcon";
+import EnquireTab from "@/components/EnquireTab";
 import { buttonVariants } from "@/components/ui/button";
 
 export type { TourPackage };
@@ -330,6 +331,7 @@ export function TourPage({
           </aside>
         </div>
       </TourBookingProvider>
+      <EnquireTab subject={name} kind="tour" photos={[...photos].slice(0, 6)} />
     </main>
   );
 }

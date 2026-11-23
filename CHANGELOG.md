@@ -17,6 +17,10 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 24 Nov 2026: "Enquire" tab on phones, and on tours — `main`
+- **Phones:** the "Enquire" side tab on trek and course pages (and the /treks and /courses lists) now shows on phones too, by request. Before, it appeared only on tablets and up.
+- **Tours:** every tour page and the /tours list now have the same tab. It opens the enquiry popup with the tour named and its photos, and the message goes to WhatsApp like the others.
+
 ### 20 Nov 2026: new logo, direct UPI, phone photo fix, security update, spam guard, 404/admin/privacy/terms, trek facts — `main` (logo and 800 px photos shipped 20 Nov; UPI, fonts, security, spam guard and the new pages still uncommitted)
 - **Logo:** the owner's new logo, snow white on black, is the header badge and every favicon. Tab-size icons (16–48 px) use the logo's central peak, because the wordmark can't be read that small. Rebuild with `node scripts/make-favicons.mjs` (source: `scripts/assets/logo-source.png`).
 - **Direct UPI:** checkout has a "Pay directly by UPI" box next to Razorpay: Google Pay, PhonePe and other-app buttons with the amount filled in, a QR code, and "Send payment screenshot on WhatsApp". It pays the owner's Google Pay ID `kuldeeprawat18081984-1@oksbi` (`src/data/upi.ts`). These payments don't reach the website, so the owner marks the booking paid by hand.
