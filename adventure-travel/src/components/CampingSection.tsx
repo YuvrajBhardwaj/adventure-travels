@@ -22,25 +22,25 @@ const CAMPS = [
   },
   {
     name: "Joshimath",
-    points: "Mountain landscapes • Village experiences • Outdoor exploration",
+    points: "Our base town • Garhwali villages • Narsingh temple",
     image: "/assets/camping/camp-01.jpg",
     gallery: ["/assets/camping/camp-01.jpg", "/assets/camping/camp-02.jpg", "/assets/camping/camp-03.jpg"],
   },
   {
     name: "Tapovan",
-    points: "Peaceful camps • Himalayan views • Nature & local experiences",
+    points: "Quiet camps • Himalayan views • Local villages",
     image: "/assets/camping/camp-04.jpg",
     gallery: ["/assets/camping/camp-04.jpg", "/assets/camping/camp-10.jpg", "/assets/camping/camp-09.jpg"],
   },
   {
     name: "Niti Valley",
-    points: "Remote landscapes • High Himalayan villages • Adventure",
+    points: "Remote landscapes • High Himalayan villages • Near the Tibet border",
     image: "/assets/camping/camp-11.jpg",
     gallery: ["/assets/camping/camp-11.jpg", "/assets/camping/camp-08.jpg", "/assets/camping/camp-07.jpg"],
   },
   {
     name: "Malari",
-    points: "Raw Himalayan scenery • Remote villages • Exploration",
+    points: "Raw Himalayan scenery • Remote villages",
     image: "/assets/camping/camp-02.jpg",
     gallery: ["/assets/camping/camp-02.jpg", "/assets/camping/camp-09.jpg", "/assets/camping/camp-05.jpg"],
   },
@@ -66,7 +66,7 @@ type Camp = (typeof CAMPS)[number] | { name: string; points: string; image: stri
 
 const CUSTOM_CAMP: Camp = {
   name: "Custom Camp",
-  points: "Tell us where you want to go. We’ll help design the experience.",
+  points: "Tell us where you want to go. We’ll plan the camp with you.",
   image: HERO_IMAGE,
   gallery: [HERO_IMAGE, "/assets/camping/camp-04.jpg", "/assets/camping/camp-11.jpg"],
   custom: true,
@@ -204,7 +204,7 @@ export default function CampingSection() {
                   className="group relative flex aspect-[3/4] w-full flex-col justify-end overflow-hidden rounded-3xl bg-gradient-to-br from-amber-400 to-orange-600 p-5 text-left text-white transition-transform duration-150 ease-out active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:active:scale-100"
                 >
                   <span className="block font-heading text-3xl font-medium leading-tight">Custom camps</span>
-                  <span className="mt-2 block text-sm leading-relaxed text-white/85">Tell us where you want to go. We’ll help design the experience.</span>
+                  <span className="mt-2 block text-sm leading-relaxed text-white/85">Tell us where you want to go. We’ll plan the camp with you.</span>
                   <span className="mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-orange-700">
                     Design my camp
                     <span aria-hidden className="transition-transform duration-150 ease-out group-hover:translate-x-0.5">→</span>
@@ -244,7 +244,7 @@ export default function CampingSection() {
                   className="group flex min-h-24 w-full cursor-pointer flex-col justify-center py-4 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   <span className="font-heading text-2xl font-medium tracking-[-0.015em] text-amber-700 sm:text-3xl">CUSTOM CAMPS</span>
-                  <span className="mt-1 text-sm leading-relaxed text-muted">Tell us where you want to go. We’ll help design the experience.</span>
+                  <span className="mt-1 text-sm leading-relaxed text-muted">Tell us where you want to go. We’ll plan the camp with you.</span>
                   <span className="mt-2 text-sm font-semibold text-amber-700 group-hover:underline">Design my camp →</span>
                 </button>
               </li>

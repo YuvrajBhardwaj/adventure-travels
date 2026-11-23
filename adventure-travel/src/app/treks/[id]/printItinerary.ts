@@ -77,7 +77,7 @@ export function printItinerary(trek: Trek): boolean {
 <h2>Day by day</h2>${days}
 <div class="cols">
   <div><h2>Included</h2>${list(pkg.included)}</div>
-  <div><h2>Not included</h2>${list(pkg.excluded.map((i) => i.replace(/ — see the Packing List tab$/, "")))}</div>
+  <div><h2>Not included</h2>${list(pkg.excluded.map((i) => i.replace(/ (see the Packing List tab)$/, "")))}</div>
 </div>
 <footer>
   Questions or bookings: +91 78179 12062 · +91 86505 61564 (call or WhatsApp)<br>

@@ -495,7 +495,7 @@ export default function DashboardPage() {
                         <span>Booked: {day(b.created_at)}</span>
                       </div>
                       <Money amount={b.amount} paid={b.amount_paid ?? 0} state={a.state} dueDate={b.balance_due_date} />
-                      {b.quote_required && <p className="mt-2 text-sm text-amber-200/80">Quote requested — we&apos;ll send you a price for your group.</p>}
+                      {b.quote_required && <p className="mt-2 text-sm text-amber-200/80">Quote requested. We&apos;ll send you a price for your group.</p>}
                       {b.message && <p className="mt-2 truncate text-sm text-white/40">{b.message}</p>}
                       {a.policyNote && policyNote}
                       {a.tripContacts && tripContacts}
@@ -547,7 +547,7 @@ export default function DashboardPage() {
                         <span>Booked: {day(b.created_at)}</span>
                       </div>
                       <Money amount={b.amount} paid={b.amount_paid ?? 0} state={a.state} dueDate={b.balance_due_date} />
-                      {b.quote_required && <p className="mt-2 text-sm text-amber-200/80">Quote requested — we&apos;ll send you a price.</p>}
+                      {b.quote_required && <p className="mt-2 text-sm text-amber-200/80">Quote requested. We&apos;ll send you a price.</p>}
                       {a.policyNote && policyNote}
                       {a.tripContacts && tripContacts}
                     </div>
@@ -635,7 +635,7 @@ export default function DashboardPage() {
           <h2 className="font-heading text-lg font-semibold text-white">Delete my account</h2>
           <p className="mt-2 text-sm text-white/60">
             This removes your sign-in and your personal details. Records of payments you&apos;ve made are kept, without your name, because
-            the law requires us to keep financial records. Bookings you&apos;ve paid for stay valid — contact us about them on WhatsApp.
+            the law requires us to keep financial records. Bookings you&apos;ve paid for stay valid; contact us about them on WhatsApp.
           </p>
           <form onSubmit={handleDelete} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
             <div className="flex-1">

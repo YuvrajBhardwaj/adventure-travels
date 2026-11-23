@@ -12,7 +12,7 @@ const CHOPTA_COVER = "/assets/tours/tungnath/IMG_6365.JPG.jpeg";
 const inr = (n: number) => `Rs.${n.toLocaleString("en-IN")}`;
 const from = T.startsFrom ?? "Delhi";
 const rooms = T.roomSharing ?? [{ label: "Standard", perRoom: 0, price: T.price }];
-const pkg = getTrekPackage(T);
+const pkg = getTrekPackage(T, { lastDayMeals: true });
 const covers = (re: RegExp) => pkg.included.find((x) => re.test(x));
 
 export const metadata = pageMetadata({

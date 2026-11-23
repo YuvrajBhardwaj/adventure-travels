@@ -488,7 +488,7 @@ export default function CheckoutClient() {
                           {converted && (
                             <p className="text-xs leading-snug text-slate-500 dark:text-slate-400">
                               The rest of the site shows estimates in {displayCurrency}. This is the exact amount you&apos;re
-                              charged, in INR — your card issuer converts it at their own rate.
+                              charged, in INR. Your card issuer converts it at their own rate.
                             </p>
                           )}
 
@@ -520,7 +520,7 @@ export default function CheckoutClient() {
                         </>
                       ) : (
                         <div className="space-y-3 text-center text-sm text-slate-600 dark:text-slate-300">
-                          <p>This booking is priced individually — we&apos;ll send you a quote.</p>
+                          <p>This booking is priced individually, so we&apos;ll send you a quote.</p>
                           <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className={buttonVariants()}>
                             Get a group quote on WhatsApp
                           </a>

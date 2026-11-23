@@ -106,7 +106,7 @@ export default function ActivitiesPage() {
       <section className="bg-navy-hero text-white">
         <div className={cn(CONTAINER, "grid items-end gap-10 pb-12 pt-28 sm:pt-32 lg:grid-cols-12 lg:gap-14 lg:pb-20 lg:pt-36")}>
           <div className="lg:col-span-6">
-            <p className="mb-5 text-sm text-white/70">Choose Your Adventure</p>
+            <p className="mb-5 text-sm text-white/70">From our Joshimath base</p>
             <h1 className="font-heading text-6xl font-semibold leading-[0.98] tracking-[-0.03em] sm:text-7xl lg:text-8xl">
               Activities
             </h1>
@@ -193,7 +193,7 @@ export default function ActivitiesPage() {
       <section className="py-section-sm">
         <div className={CONTAINER}>
           <FadeUp className="mb-10 max-w-2xl sm:mb-14">
-            <h2 className={cn(H2, "text-foreground")}>What Adventure Calls You?</h2>
+            <h2 className={cn(H2, "text-foreground")}>Pick an Activity</h2>
             <p className="mt-4 text-lg text-muted">
               Every activity is guided and insured. Pick one and we handle the rest.
             </p>
@@ -345,7 +345,7 @@ export default function ActivitiesPage() {
       <section className="py-section-sm">
         <div className={CONTAINER}>
           <FadeUp className="mb-8 sm:mb-10">
-            <h2 className={cn(H2, "text-foreground")}>Why Adventure With Us?</h2>
+            <h2 className={cn(H2, "text-foreground")}>Why Book With Us</h2>
           </FadeUp>
           <dl className={cn("grid grid-cols-2 border-y md:grid-cols-4", HAIRLINE)}>
             {[
@@ -370,7 +370,7 @@ export default function ActivitiesPage() {
       <section className="bg-navy py-section-sm">
         <div className={CONTAINER}>
           <FadeUp className="max-w-2xl">
-            <h2 className={cn(H2, "mb-5 text-white")}>Ready to Start Your Adventure?</h2>
+            <h2 className={cn(H2, "mb-5 text-white")}>Plan Your Trip With Us</h2>
             <p className="mb-8 text-lg text-white/80">
               First trek or fiftieth, talk to our team and we&apos;ll plan the trip around you.
             </p>

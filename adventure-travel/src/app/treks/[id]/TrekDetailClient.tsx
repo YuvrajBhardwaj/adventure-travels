@@ -6,7 +6,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import NationalityField from "@/components/NationalityField";
 import { motion, AnimatePresence, useAnimate, useReducedMotion } from "framer-motion";
 import Link from "next/link";
-import { priceOptions, priceRoute, type Trek } from "@/data/treks";
+import { packageGrid, priceOptions, priceRoute, type Trek } from "@/data/treks";
 import { TREK_GALLERIES, isVideo, trekPhotos } from "@/data/trekGalleries";
 import EnquireTab from "@/components/EnquireTab";
 import RouteProfile from "@/components/RouteProfile";
@@ -446,7 +446,9 @@ export default function TrekDetailClient({ trek, related }: { trek: Trek; relate
 
           {/* Right: Sticky Sidebar */}
           <div className="lg:w-1/3">
-            <div className="lg:sticky lg:top-24 space-y-6">
+            {/* Taller than the screen (picker + inclusions + contact), so on desktop the column scrolls on its own
+                while it sticks; otherwise its lower half stays out of view until the end of the page. */}
+            <div className="space-y-6 lg:sticky lg:top-24 lg:-mx-3 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:px-3 lg:pb-4 lg:[scrollbar-width:thin]">
               {/* Booking Card */}
               <BookingCard
                 trek={trek}
@@ -454,6 +456,14 @@ export default function TrekDetailClient({ trek, related }: { trek: Trek; relate
                 onViewDates={() => goToTab("Dates")}
                 onContact={() => setShowContact(true)}
                 onNav={(tab) => goToTab(tab)}
+                selected={bookingForm.sharing}
+                onSelect={(sharing) => setBookingForm((form) => ({ ...form, sharing }))}
+                onChoose={(sharing) => {
+                  setBookingForm((form) => ({ ...form, sharing }));
+                  goToTab("Make Reservation");
+                  // Put the cursor in the form so the jump is obvious (after the tab panel scrolls in).
+                  setTimeout(() => document.getElementById("res-name")?.focus({ preventScroll: true }), 450);
+                }}
               />
 
               {/* Elevation Profile Mini */}
@@ -557,19 +567,106 @@ const DATES_BADGE = {
   waitlist: { label: "Join Waitlist", tone: "slate" },
 } as const;
 
+/** Pickup tabs × occupancy toggle for treks whose packages carry room sharing (Kuari Pass). */
+function PackagePicker({
+  trek,
+  selected,
+  onSelect,
+  onChoose,
+}: {
+  trek: Trek;
+  /** The package label chosen in the reservation form; the picker shows and changes that one. */
+  selected: string;
+  onSelect: (label: string) => void;
+  onChoose: (label: string) => void;
+}) {
+  const grid = packageGrid(trek)!;
+  const current = trek.packages!.find((p) => p.label === selected) ?? trek.packages![0];
+  const pickup = current.from;
+  const sharing = current.sharing ?? "";
+  const pick = (from: string, share: string) => {
+    const next = trek.packages!.find((p) => p.from === from && (p.sharing ?? "") === share);
+    if (next) onSelect(next.label);
+  };
+  const pkg = current;
+  const pill = (active: boolean) =>
+    cn(
+      "min-h-9 rounded-full px-3 text-sm font-semibold transition-colors duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500",
+      active ? "bg-emerald-600 text-white" : "text-slate-600 hover:bg-emerald-50 dark:text-slate-300 dark:hover:bg-white/5"
+    );
+
+  return (
+    <div className="mb-4 rounded-xl bg-slate-50 p-3.5 text-sm ring-1 ring-slate-200/80 dark:bg-white/5 dark:ring-white/10">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="font-semibold text-foreground">Occupancy</span>
+        <div className="flex gap-1 rounded-full bg-white p-1 ring-1 ring-slate-200 dark:bg-card dark:ring-white/10">
+          {grid.sharings.map((s) => (
+            <button key={s} type="button" aria-pressed={s === sharing} onClick={() => pick(pickup, s)} className={pill(s === sharing)}>
+              {s.replace(/ sharing$/i, "")}
+            </button>
+          ))}
+        </div>
+      </div>
+      <p className="mt-3 font-semibold text-foreground">Pickup and drop</p>
+      <div className="mt-1.5 grid gap-1.5">
+        {grid.pickups.map((from) => (
+          <button
+            key={from}
+            type="button"
+            aria-pressed={from === pickup}
+            onClick={() => pick(from, sharing)}
+            className={cn(
+              "min-h-11 rounded-xl px-3 py-2 text-left font-medium ring-1 transition-colors duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500",
+              from === pickup
+                ? "bg-emerald-50 text-emerald-800 ring-emerald-400 dark:bg-emerald-500/10 dark:text-emerald-200"
+                : "bg-white text-slate-700 ring-slate-200 hover:ring-emerald-300 dark:bg-card dark:text-slate-200 dark:ring-white/10"
+            )}
+          >
+            {from}
+          </button>
+        ))}
+      </div>
+      {pkg && (
+        <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-200/80 pt-3 dark:border-white/10">
+          <span className="text-slate-700 dark:text-slate-200">Trek · {sharing}</span>
+          <span className="text-lg font-bold text-foreground tabular-nums"><Price inr={pkg.price} /></span>
+        </div>
+      )}
+      {pkg && (
+        <Button type="button" className="mt-3 w-full" onClick={() => onChoose(pkg.label)}>
+          Book this option
+        </Button>
+      )}
+    </div>
+  );
+}
+
 function BookingCard({
   trek,
   dates,
   onViewDates,
   onContact,
   onNav,
+  selected,
+  onSelect,
+  onChoose,
 }: {
   trek: Trek;
   dates: DeparturesState;
   onViewDates: () => void;
   onContact: () => void;
   onNav: (tab: Tab) => void;
+  selected: string;
+  onSelect: (sharing: string) => void;
+  onChoose: (sharing: string) => void;
 }) {
+  // The price and route on the card follow the option picked (here or in the reservation form).
+  const chosen = priceOptions(trek)?.find((o) => o.label === selected);
+  const chosenPkg = trek.packages?.find((p) => p.label === selected);
+  const shownPrice = chosen?.price ?? trek.price;
+  const shownRoute = chosenPkg
+    ? /,| or /.test(chosenPkg.from) ? `Pickup and drop: ${chosenPkg.from}` : `${chosenPkg.from} to ${chosenPkg.from}`
+    : priceRoute(trek);
   // Ratings removed from UI until verified review collection exists.
 
   // Kept after closing (open: false) so the dialog can animate out with its content.
@@ -621,20 +718,26 @@ function BookingCard({
 
         <div className="mt-3">
           <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
-            {priceOptions(trek) && <span className="text-sm text-muted">From</span>}
-            <span className="text-5xl font-bold tracking-tight text-foreground tabular-nums"><Price inr={trek.price} /></span>
+            {priceOptions(trek) && !chosen && <span className="text-sm text-muted">From</span>}
+            <span className="text-5xl font-bold tracking-tight text-foreground tabular-nums"><Price inr={shownPrice} /></span>
             <span className="text-sm text-muted">/ person</span>
           </div>
-          <PriceRoute
-            trek={trek}
-            className="mt-3 w-fit rounded-full bg-white/80 px-3 py-1 text-sm font-semibold text-slate-700 ring-1 ring-emerald-200 dark:bg-white/5 dark:text-slate-200 dark:ring-emerald-500/30"
-          />
-          <PriceNote inr={trek.price} className="mt-2 text-muted" />
+          {shownRoute && (
+            <p className="mt-3 flex w-fit items-center gap-1 rounded-full bg-white/80 px-3 py-1 text-sm font-semibold text-slate-700 ring-1 ring-emerald-200 dark:bg-white/5 dark:text-slate-200 dark:ring-emerald-500/30">
+              <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-600" strokeWidth={2} aria-hidden />
+              <span className="sr-only">Price covers </span>
+              {shownRoute}
+            </p>
+          )}
+          {chosen && priceOptions(trek)!.length > 1 && <p className="mt-2 text-xs text-muted">{chosen.label}</p>}
+          <PriceNote inr={shownPrice} className="mt-2 text-muted" />
         </div>
       </div>
 
       <div className="relative z-10 p-5 pt-4 sm:p-6 sm:pt-5">
-        {priceOptions(trek) && (
+        {packageGrid(trek) ? (
+          <PackagePicker trek={trek} selected={selected} onSelect={onSelect} onChoose={onChoose} />
+        ) : priceOptions(trek) && (
           <ul className="mb-4 divide-y divide-slate-200/80 overflow-hidden rounded-xl bg-slate-50 text-sm ring-1 ring-slate-200/80 dark:divide-white/10 dark:bg-white/5 dark:ring-white/10">
             {priceOptions(trek)!.map((r) => (
               <li key={r.label} className="flex items-center justify-between gap-3 px-3.5 py-2.5">
@@ -1272,7 +1375,7 @@ function ItineraryTab({ trek, onChoosePackage }: { trek: Trek; onChoosePackage: 
   const packageInfo = getTrekPackage(trek);
   const packageOptions = trek.packages?.length
     ? trek.packages.map((pkg) => ({
-        name: `${trek.name} from ${pkg.from}`,
+        name: pkg.sharing ? `${trek.name} from ${pkg.from}, ${pkg.sharing.toLowerCase()}` : `${trek.name} from ${pkg.from}`,
         detail: `Pickup and drop: ${pkg.from}`,
         price: pkg.price,
         sharing: pkg.label,
@@ -1409,7 +1512,8 @@ function ItineraryTab({ trek, onChoosePackage }: { trek: Trek; onChoosePackage: 
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           {packageOptions.map((option) => (
-            <article key={option.name} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-white/10 dark:bg-card">
+            // Keyed on the package/room label: display names can repeat (same pickup town, different sharing).
+            <article key={option.sharing ?? option.name} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-white/10 dark:bg-card">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h4 className="text-lg font-semibold text-foreground">{option.name}</h4>
@@ -1715,8 +1819,7 @@ function PackingListTab() {
     <div>
       <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.02em] text-foreground mb-3">Packing List</h2>
       <p className="mb-6 text-sm text-muted">
-        Pack for safety, not comfort extras. Our treks call for an<strong> essential-over-extras</strong> approach: every
-        item below is needed on a high-altitude Himalayan trek.
+        Every item below is needed on a high-altitude Himalayan trek. Pack these first and leave comfort extras at home.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
@@ -1890,7 +1993,7 @@ function ReservationTab({
         <h3 className="text-xl font-bold text-foreground mb-2">Reservation Request Sent!</h3>
         <p className="text-muted max-w-sm mx-auto">
           Thanks{form.name ? `, ${form.name.split(" ")[0]}` : ""}. Our team will confirm availability
-          {form.sharing ? (trek.packages ? ` and your pickup (${form.sharing.replace(/^From /, "")})` : ` and your ${form.sharing.toLowerCase()} room`) : ""} for {trek.name}. We reply Mon–Sat, 9 AM–7 PM IST, and your seats are confirmed when you pay.
+          {form.sharing ? (trek.packages ? ` and your package (${form.sharing.replace(/^From /, "")})` : ` and your ${form.sharing.toLowerCase()} room`) : ""} for {trek.name}. We reply Mon–Sat, 9 AM–7 PM IST, and your seats are confirmed when you pay.
         </p>
         {payHref && (
           <Link href={payHref} className={buttonVariants({ size: "lg", className: "mt-5" })}>
@@ -1966,7 +2069,7 @@ function ReservationTab({
             </Select>
             <p className="mt-1.5 text-xs text-muted">
               Per person: {trek.packages.map((p, i) => (
-                <span key={p.label}>{i > 0 && " · "}{p.from} <Price inr={p.price} /></span>
+                <span key={p.label}>{i > 0 && " · "}{p.sharing ? p.label : p.from} <Price inr={p.price} /></span>
               ))}
             </p>
           </div>

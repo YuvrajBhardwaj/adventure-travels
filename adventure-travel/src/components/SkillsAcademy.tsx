@@ -77,7 +77,7 @@ export default function SkillsAcademy({ className }: { className?: string }) {
       <FadeUp className="mb-8 max-w-2xl sm:mb-10">
         <h2 className="font-heading text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">Skills Academy</h2>
         <p className="mt-4 text-lg text-muted">
-          For first-timers and experienced people alike: step-by-step tracks taught by certified mountain guides. Learn at your pace, earn your level.
+          Each track has three levels, taught by certified mountain guides. Start where your skills are and move up one level at a time.
         </p>
         <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-foreground">
           {LEVELS.map((l, i) => (

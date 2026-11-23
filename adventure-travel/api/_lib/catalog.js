@@ -23,18 +23,22 @@ module.exports = {
   },
   "pangarchula-peak": {
     "name": "Pangarchula Peak Trek",
-    "price": 9500,
+    "price": 8999,
     "roomSharing": {
-      "From Joshimath": 9500,
-      "From Rishikesh, Haridwar or Dehradun": 11000
+      "Joshimath · Triple sharing": 8999,
+      "Joshimath · Double sharing": 9500,
+      "Rishikesh · Triple sharing": 10499,
+      "Rishikesh · Double sharing": 11000
     }
   },
   "kuari-pass": {
     "name": "Kuari Pass Trek",
-    "price": 7500,
+    "price": 6999,
     "roomSharing": {
-      "From Joshimath": 7500,
-      "From Rishikesh, Haridwar or Dehradun": 9000
+      "Joshimath · Triple sharing": 6999,
+      "Joshimath · Double sharing": 7500,
+      "Rishikesh · Triple sharing": 8499,
+      "Rishikesh · Double sharing": 9000
     }
   },
   "hampta-pass": {

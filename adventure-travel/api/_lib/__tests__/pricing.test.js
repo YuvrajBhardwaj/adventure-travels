@@ -55,14 +55,21 @@ describe("trekAmount", () => {
   it("refuses a missing trek", () => {
     expect(trekAmount(undefined, 1)).toBeNull();
   });
-  it("prices Kuari Pass pickup packages from the generated catalog", () => {
+  it("prices Kuari Pass pickup × room-sharing packages from the generated catalog", () => {
     const kuari = catalog["kuari-pass"];
-    expect(trekAmount(kuari, 1, "From Joshimath")).toBe(750000);
-    expect(trekAmount(kuari, 2, "From Rishikesh, Haridwar or Dehradun")).toBe(1800000);
-    expect(trekAmount(kuari, 1, undefined)).toBe(750000);
+    expect(trekAmount(kuari, 1, "Joshimath · Triple sharing")).toBe(699900);
+    expect(trekAmount(kuari, 1, "Joshimath · Double sharing")).toBe(750000);
+    expect(trekAmount(kuari, 1, "Rishikesh · Triple sharing")).toBe(849900);
+    expect(trekAmount(kuari, 2, "Rishikesh · Double sharing")).toBe(1800000);
+    expect(trekAmount(kuari, 1, undefined)).toBe(699900);
+    expect(trekAmount(kuari, 1, "From Joshimath")).toBeNull();
     const pangarchula = catalog["pangarchula-peak"];
-    expect(trekAmount(pangarchula, 1, "From Joshimath")).toBe(950000);
-    expect(trekAmount(pangarchula, 1, "From Rishikesh, Haridwar or Dehradun")).toBe(1100000);
+    expect(trekAmount(pangarchula, 1, "Joshimath · Triple sharing")).toBe(899900);
+    expect(trekAmount(pangarchula, 1, "Joshimath · Double sharing")).toBe(950000);
+    expect(trekAmount(pangarchula, 1, "Rishikesh · Triple sharing")).toBe(1049900);
+    expect(trekAmount(pangarchula, 1, "Rishikesh · Double sharing")).toBe(1100000);
+    expect(trekAmount(pangarchula, 1, undefined)).toBe(899900);
+    expect(trekAmount(pangarchula, 1, "From Joshimath")).toBeNull();
   });
 });
 

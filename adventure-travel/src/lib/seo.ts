@@ -12,7 +12,7 @@ export const SOCIAL_IMAGE = {
   url: `${SITE_URL}/social-share.png`,
   width: 1200,
   height: 630,
-  alt: "Himalayan Arc Adventure — guided Himalayan treks and Auli snow school",
+  alt: "Himalayan Arc Adventure: guided Himalayan treks and Auli snow school",
 };
 
 /**

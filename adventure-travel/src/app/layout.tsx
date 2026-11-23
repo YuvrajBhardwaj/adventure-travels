@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     template: "%s | Himalayan Arc Adventure",
   },
   description:
-    "Small-group treks in Uttarakhand and Himachal with local guides from Joshimath, and a ski and snowboard school in Auli. Mountain days you will remember.",
+    "Small-group treks in Uttarakhand and Himachal with local guides from Joshimath, and a ski and snowboard school in Auli.",
   keywords: [
     "Himalayan trekking",
     "Uttarakhand treks",

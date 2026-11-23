@@ -14,7 +14,7 @@ function MailIcon({ className = "w-5 h-5" }: { className?: string }) {
 
 const VOUCHER_POINTS = [
   "A Trek Voucher is credit added to your account, redeemable on any future fixed departure for one year.",
-  "Vouchers are non-transferable — only the person they were issued to can redeem them.",
+  "Vouchers are non-transferable: only the person they were issued to can redeem them.",
   "To redeem, reply to your voucher email or WhatsApp your trek coordinator on +91 78179 12062 with your voucher code and preferred batch date.",
 ];
 
@@ -110,7 +110,7 @@ export default function CancellationPolicyPage() {
               (snowstorms, thunderstorms, floods, landslides, earthquakes,
               bad weather), political unrest, curfews, or government orders,
               we issue a voucher for the <strong className="text-foreground">full amount</strong>{" "}
-              paid — or arrange an alternate trek. The voucher is valid for
+              paid, or arrange an alternate trek. The voucher is valid for
               one year and can be extended in emergencies.{" "}
               <strong className="text-foreground">No cash refund</strong> is
               made in this case.
@@ -131,7 +131,7 @@ export default function CancellationPolicyPage() {
               </strong>{" "}
               feature (not applicable on winter treks): email us for a
               Refcode, then rebook the <em>same</em> trek next season with it
-              — no extra trek fee. Offloading, travel, and rental fees are
+              at no extra trek fee. Offloading, travel, and rental fees are
               not included.
             </p>
           </FadeUp>

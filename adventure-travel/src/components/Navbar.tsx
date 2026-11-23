@@ -335,7 +335,7 @@ export default function Navbar() {
                             reduce={reduce}
                             id="nav-menu-activities"
                             label="Activities"
-                            className="absolute left-1/2 top-full mt-3 w-[340px] -translate-x-1/2 overflow-hidden rounded-2xl border border-white/10 bg-navy-deep p-2 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.75)]"
+                            className="absolute left-1/2 top-full mt-3 max-h-[calc(100dvh-6rem)] w-[340px] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-2xl border border-white/10 bg-navy-deep p-2 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.75)]"
                           >
                             {activities.map((act) => (
                               <Link
@@ -374,7 +374,7 @@ export default function Navbar() {
                             reduce={reduce}
                             id="nav-menu-treks"
                             label="Treks"
-                            className="absolute inset-x-0 top-full border-b border-white/10 bg-navy-deep shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)]"
+                            className="absolute inset-x-0 top-full max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain border-b border-white/10 bg-navy-deep shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)]"
                           >
                             <div className="mx-auto grid max-w-7xl grid-cols-[220px_1fr] gap-10 px-8 py-8 xl:grid-cols-[240px_1fr]">
                               <div className="space-y-7">

@@ -10,6 +10,7 @@ Last updated: 7 Nov 2026.
 - [x] ~~**Dev:** clearer Google title and description, ski school page title, new site icon~~ (7 Nov, on the preview branch, uncommitted).
 - [x] ~~**Redeploy the 7 Nov change.**~~ Claude retried it; live on 7 Nov (`8af2cf0`).
 - [x] ~~**Dev:** walk-the-route altitude chart on trek pages; gliding trek filters~~ (7 Nov, on the preview branch).
+- [ ] **You: confirm Pangarchula prices from Rishikesh/Haridwar/Dehradun.** Set to double Rs.11,000 and triple Rs.10,499 (the Kuari rule: triple is Rs.501 less). Tell Claude if they should differ.
 - [ ] **You: put the new Razorpay test keys into Vercel** (7 Nov; the Test Mode webhook is done and checked, keys in Vercel still unconfirmed): Vercel → adventure-travels → Settings → Environment Variables → edit `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` (copy them from `adventure-travel/.env.local`) → Deployments → ⋯ → Redeploy. Then in the new Razorpay account (Test Mode) add the webhook `https://www.himalayanarcadventure.com/api/razorpay-webhook` with the `RAZORPAY_WEBHOOK_SECRET` from `.env.local`, events `payment.captured`, `order.paid`, `payment.failed`.
 - [ ] **You: try the new altitude chart on the preview** (any trek page, "Elevation Profile": drag along it on your phone), then say "go live".
 - [x] ~~**You: are the trek card star ratings real?** Cards show e.g. "★ 4.9 (623)", typed into `src/data/treks.ts`. If they aren't from real reviews (Google, TripAdvisor), remove them: invented ratings can get the site penalised by Google and break consumer-protection rules.~~ (13 Nov: ratings deleted from the data; they no longer show anywhere.)
@@ -26,6 +27,10 @@ Last updated: 7 Nov 2026.
 - [x] ~~**Dev:** self-host the three fonts (`next/font/local`) so a Google Fonts hiccup can't fail a build again (it failed one production build on 6 Nov).~~ (20 Nov)
 - [ ] **Dev:** card slideshows load more photos per home visit. Shrink card photos to about 800 px (they are 1600 px today) in `scripts/prepare-photos.mjs` to save phone data and Vercel bandwidth.
 
+- [x] ~~**Dev:** meal count skips the last day; no-AI-slop copy pass on the FAQ, headings, camping, tours and terms~~ (24 Nov, uncommitted).
+- [ ] **You: claims Claude left in but can't check:** "Certified Instructors: professional coaches with international certifications" (/courses), "Every activity is guided and insured" (/activities), "trained to recognise AMS" and "A Gamow bag … with every Challenging route" (home), "a personalised evaluation from your Level 4 Pro" (snowboard course). Keep them only if they're true.
+- [x] ~~**Dev:** Kuari Pass Triple / Double occupancy pricing with pickup choice~~ (24 Nov, `main`, uncommitted).
+- [ ] **You: confirm the Kuari Pass Rishikesh/Haridwar/Dehradun rates:** Claude set Triple Rs.8,499 and Double Rs.9,000 (the old Rs.9,000 rate kept for double, triple Rs.501 less as at Joshimath). Say if triple should be different.
 - [x] ~~**Dev:** new payment, cancellation and ski-course terms on the policy page, trek/course itineraries, checkout, FAQ and emails~~ (20 Nov, `main`).
 - [x] ~~**You: confirm what was dropped with the new terms.**~~ (20 Nov: treks and tours keep the original policy; the new terms are for ski and snowboard courses only.)
 - [ ] **You: December ski batches.** The terms say customers pay only after you confirm the batch, but checkout still lets them pay a December course straight away. Either take December bookings as enquiries only, or ask Claude to block online payment for December course batches until 7 days before the start.

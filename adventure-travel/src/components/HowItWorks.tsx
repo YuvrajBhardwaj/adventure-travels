@@ -28,7 +28,7 @@ export default function HowItWorks() {
               From first idea to summit day
             </h2>
             <p className="max-w-sm text-base leading-relaxed text-muted lg:col-span-4 lg:col-start-9">
-              Five steps. We handle the logistics so you can focus on the climb.
+              Five steps from choosing a route to the walk back down. Permits and the gear checklist are sorted before you arrive.
             </p>
           </div>
         </FadeUp>

@@ -19,16 +19,16 @@ export const AULI_ESCAPE = {
   /** Extra gallery photos outside public/assets/tours/auli/ (that folder is always shown first). */
   gallery: [] as string[],
   intro:
-    "Escape to the Himalayas with a short Auli getaway: scenic mountain drives, comfortable stays, guided sightseeing, big views and optional snow adventures with your friends and family.",
+    "A short Auli trip from Rishikesh for friends and families: mountain drives, comfortable stays, guided sightseeing, big views, and optional skiing and snow activities.",
   itinerary: [
     {
       day: 1,
       title: "Rishikesh to Joshimath to Auli",
       points: [
-        "Depart from Rishikesh for a scenic drive through the Himalayan valleys.",
+        "Drive from Rishikesh up the Alaknanda valley.",
         "Reach Joshimath and transfer to a local taxi arranged by our team for Auli.",
-        "Check in to your accommodation and relax.",
-        "Enjoy dinner and the peaceful mountain atmosphere.",
+        "Check in to your stay in Auli.",
+        "Dinner at the stay.",
         "Bonfire included for groups of 4 or more, subject to weather and local permissions.",
       ],
       meals: "Dinner",
@@ -39,8 +39,8 @@ export const AULI_ESCAPE = {
       title: "Explore Auli",
       points: [
         "Start the day with breakfast.",
-        "Explore Auli with your local guide.",
-        "Visit Auli Artificial Lake and take in the Himalayan views.",
+        "See Auli with your local guide.",
+        "Visit the Auli Artificial Lake below the high peaks.",
         "Walk the trails towards Gorson Bugyal, depending on weather and trail conditions.",
         "Optional skiing or a chairlift/ropeway ride, at extra cost.",
         "Return to your accommodation for dinner.",

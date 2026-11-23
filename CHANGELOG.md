@@ -17,6 +17,53 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 24 Nov 2026: Pangarchula triple and double sharing prices — `main`
+- **Visitors:** Pangarchula Peak now has the same occupancy + pickup picker as Kuari Pass. Joshimath pickup: **triple sharing Rs.8,999, double sharing Rs.9,500** (owner's prices). The trek now shows "From Rs.8,999".
+- **Rishikesh/Haridwar/Dehradun pickup:** double Rs.11,000 (the old rate), triple Rs.10,499, following the Kuari rule (triple Rs.501 less). Awaiting the owner's confirmation; see TODO.
+- **Backend:** `npm run catalog` regenerated `api/_lib/catalog.js`, so online orders charge the new package prices. The old labels ("From Joshimath", "From Rishikesh…") are no longer accepted for new bookings; existing bookings keep their stored price. Pricing tests updated (29 pass).
+
+### 24 Nov 2026: desktop: booking sidebar and nav menus scroll — `main`
+- **Trek page sidebar (desktop):** with the occupancy/pickup picker the Trek Cost card plus the elevation chart is about 1,950 px tall, more than twice a laptop screen. Because it sticks to the top while you scroll, its lower half (inclusions, next departure, call us, View All Dates & Register) stayed out of view. It now fits the screen height and scrolls on its own (thin scrollbar); the page carries on scrolling once it reaches the end.
+- **Nav menus (desktop):** the Treks mega menu and the small dropdowns are capped at the screen height and scroll inside if a window is too short for them, instead of being cut off.
+
+### 24 Nov 2026: Trek Cost card follows the chosen package — `main`
+- **Price on the card:** on treks with an occupancy + pickup picker (Kuari Pass), the big price, the route line and the currency note now change with the choice (Rs.6,999 Joshimath triple → Rs.7,500 double → Rs.9,000 Rishikesh double). Before, they always showed the base "From Rs.6,999, Joshimath to Joshimath".
+- **One choice, everywhere:** the picker, the card and the reservation form now share the same package. Changing the package in the form moves the picker and the price too. On room-sharing treks (Tungnath) the card price follows the form's package.
+- **Book this option:** now a solid button. After the jump to "Make Reservation" the cursor lands in the name field, so it is clear the click worked.
+
+### 24 Nov 2026: copy pass against the no-AI-slop rules — `main`
+Scanned every page, component and data file for the banned words, empty phrases and patterns. The site was already close (the 13 Nov rewrite held). Fixed:
+- **"How it works" (home):** "real elevation profile, not a marketing photo" and "not a rotating roster of contractors" were "X, not Y" contrasts; now plain statements. The intro "We handle the logistics so you can focus on the climb" now says what is handled (permits and the gear checklist).
+- **Skills Academy:** "For first-timers and experienced people alike… Learn at your pace, earn your level." now says how the levels work.
+- **Trek Packing List tab:** dropped "Pack for safety, not comfort extras" and the bold "essential-over-extras approach".
+- **Default share-image alt text:** em dash replaced with a colon.
+- **Printed itinerary:** the "Not included" list again strips "(see the Packing List tab)", which only makes sense on screen (its pattern still expected the old wording).
+- **Kept on purpose:** "Two seasons" headline, "Pick a door", "avalanche beacon" (real kit), and factual "not" lines (payments go to Razorpay, not to us; the ski certificate is not a government one).
+
+### 24 Nov 2026: fix duplicate-key error on trek package cards — `main`
+- **Fix:** the "Package options" cards on trek pages were keyed by their display name, which can repeat (same pickup town, different room sharing). That gave a React "two children with the same key" error on Kuari Pass. They are now keyed by the package label, which is unique (`TrekDetailClient.tsx`).
+
+### 24 Nov 2026: meal count fix, plainer site copy — `main`, uncommitted
+- **Meals:** "What's Included" counted the last day's breakfast, which the itinerary no longer shows (owner, 18 Nov). The count now skips the last day, so Kuari Pass shows 10 meals instead of 11 (the same −1 on every trek). The Chopta–Tungnath tour still counts its last-day breakfast, because the tour itinerary still lists it.
+- **Copy (no-AI-slop pass):**
+  - **FAQ:** plain questions replace the puffed-up ones ("What makes Kedarkantha … premier …", "diverse alpine crossing", "famous for"). "One of the best" and "Photographers love it" are cut. Unprovable lines are cut too: "designed by nutritionists", "meets professional catering guidelines", "strict safety protocols". Water, toilet, parking and period-care answers are shorter and direct.
+  - **Headings:** "Ready to Start Your Adventure?", "Ready to Hit the Slopes?", "What Adventure Calls You?" and "Why Choose …?" are now "Plan Your Trip With Us", "Book a Ski or Snowboard Course", "Pick an Activity" and "Why Book With Us". The ski course call to action no longer says "7-day", since some courses are 14 days.
+  - **Small fixes:**
+    - Camping cards list real places in place of "village experiences" and "exploration".
+    - Auli tour copy drops "Escape to the Himalayas" and "make memories".
+    - Em dashes are gone from visible copy (policy, T&C, checkout, dashboard, payment note), and course dates read "Dec 2026 to Mar 2027".
+  - **Second pass (trek, course, story and page text):**
+    - Course descriptions drop "inspired by international snow school standards", "certificate recognised across India's snow sports community", "mirrors international instructor certification standards" and "flagship".
+    - The Auli story is now "Skiing in Auli", without "India's Best-Kept Secret" and "rival the world's top ski destinations".
+    - The site-wide search description loses "Mountain days you will remember".
+    - Niti Pass no longer repeats Mana Pass's "raw Himalayan wilderness".
+    - Auli tour days are plain steps ("Dinner at the stay").
+
+### 24 Nov 2026: Kuari Pass priced by room occupancy (Triple / Double) — `main`, uncommitted
+- **Visitors:** the Kuari Pass price card has an occupancy toggle (Triple / Double) and a pickup choice (Joshimath, or Rishikesh, Haridwar or Dehradun), modelled on Justwravel's pricing box, and a "Book this option" button that fills the reservation form. The "From" price is now **Rs.6,999**.
+- **Prices (per person):** Joshimath: Triple 6,999, Double 7,500. Rishikesh/Haridwar/Dehradun: Triple 8,499, Double 9,000. The double rates are the old package rates; triple is Rs.501 less, the same difference as at Joshimath.
+- **Backend:** package labels are now `Joshimath · Triple sharing` and the like (`packages[].sharing` in `src/data/treks.ts`), and `api/_lib/catalog.js` is regenerated. An unpaid Kuari Pass booking saved with an old label (`From Joshimath`) can no longer be paid online; book it again or settle it on WhatsApp. No SQL change.
+
 ### 24 Nov 2026: "Enquire" tab on phones, and on tours — `main`
 - **Phones:** the "Enquire" side tab on trek and course pages (and the /treks and /courses lists) now shows on phones too, by request. Before, it appeared only on tablets and up.
 - **Tours:** every tour page and the /tours list now have the same tab. It opens the enquiry popup with the tour named and its photos, and the message goes to WhatsApp like the others.

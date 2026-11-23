@@ -47,9 +47,9 @@ export const stories: Story[] = [
   },
   {
     id: "3",
-    title: "Skiing in Auli: India's Best-Kept Secret",
+    title: "Skiing in Auli",
     slug: "skiing-in-auli",
-    excerpt: "Why Auli's powder slopes and Nanda Devi views rival the world's top ski destinations.",
+    excerpt: "Skiing on Auli's slopes at 3,050 m, with Nanda Devi behind the runs, and how our courses work.",
     content: "Full article content here...",
     author: "Himalayan Arc team",
     authorRole: "Joshimath",

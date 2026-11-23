@@ -19,9 +19,12 @@ function mealCount(meals?: string) {
  * type, altitude, difficulty) so each trek page differs, and nothing here can drift
  * from the itinerary shown on the same page. Safety claims mirror the FAQ.
  */
-export function getTrekPackage(trek: Trek): TrekPackage {
-  const mealDays = trek.itinerary.filter((d) => mealCount(d.meals) > 0);
-  const totalMeals = trek.itinerary.reduce((n, d) => n + mealCount(d.meals), 0);
+export function getTrekPackage(trek: Trek, opts: { lastDayMeals?: boolean } = {}): TrekPackage {
+  // Trek pages show no meals on the last (travel) day (owner, 18 Nov), so it isn't counted
+  // either; tour pages list that day's meals and pass `lastDayMeals`.
+  const days = opts.lastDayMeals ? trek.itinerary : trek.itinerary.slice(0, -1);
+  const mealDays = days.filter((d) => mealCount(d.meals) > 0);
+  const totalMeals = days.reduce((n, d) => n + mealCount(d.meals), 0);
   const demanding = trek.difficulty === "Challenging" || trek.difficulty === "Strenuous";
 
   const facts: TrekPackage["facts"] = [

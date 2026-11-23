@@ -149,8 +149,8 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     title: "Uttarakhand Treks",
     faqs: [
       {
-        q: "What makes Kedarkantha Trek one of India's premier winter snow treks?",
-        a: "Kedarkantha Trek in the Govind Wildlife Sanctuary, Uttarakhand, has pine forests, snow-covered meadows and a 360-degree Himalayan view from the summit at 12,500 feet. It is known for reliable winter snow from December to April and its summit sunrise.",
+        q: "Why trek Kedarkantha in winter?",
+        a: "Kedarkantha Trek in the Govind Wildlife Sanctuary, Uttarakhand, has pine forests, snow-covered meadows and a 360-degree Himalayan view from the summit at 12,500 feet. Snow is reliable from December to April, and groups reach the summit for sunrise.",
         related: ["When is the best time for Kedarkantha?", "Is Kedarkantha suitable for first-timers?"],
       },
       {
@@ -159,18 +159,18 @@ const FAQ_CATEGORIES: FAQCategory[] = [
         related: ["How difficult is the Valley of Flowers trek?", "What weather can I expect during monsoon?"],
       },
       {
-        q: "Why is Har Ki Dun known as the cradle of the Himalayas?",
+        q: "What is Har Ki Dun like?",
         a: "Har Ki Dun is a hanging valley in Uttarakhand with old wooden villages and a lot of mythology attached to it. Ringed by peaks like Swargarohini and Bandarpoonch, it combines village culture with gentle alpine terrain.",
         related: ["What is the maximum altitude of Har Ki Dun?", "Best season to visit Har Ki Dun"],
       },
       {
-        q: "What are the key highlights of the Brahmatal Ridge Trek?",
-        a: "Brahmatal is known for its frozen alpine lake, campsites under clear night skies, and open views of Mt. Trishul and Nanda Ghunti. It is one of the best winter snow treks in Uttarakhand.",
+        q: "What will I see on the Brahmatal Ridge Trek?",
+        a: "A frozen alpine lake, campsites under clear night skies, and open views of Mt. Trishul and Nanda Ghunti. It is a winter snow trek.",
         related: ["How cold does it get at Brahmatal?", "Is Brahmatal good for beginners?"],
       },
       {
         q: "What can I expect from the Kuari Pass Bugyal Trek?",
-        a: "Kuari Pass, famously known as the Curzon Trail, crosses wide high-altitude meadows (bugyals) with a ring of peaks around you: Kamet, Dronagiri and Nanda Devi. Photographers love it, and it is a moderate-grade Himalayan trek.",
+        a: "Kuari Pass, also called the Curzon Trail, crosses wide high-altitude meadows (bugyals) with a ring of peaks around you: Kamet, Dronagiri and Nanda Devi. It is graded moderate.",
         related: ["What is the highest altitude on Kuari Pass?", "Best months for Kuari Pass"],
       },
     ],
@@ -180,13 +180,13 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     title: "Himachal Pradesh Treks",
     faqs: [
       {
-        q: "What makes Hampta Pass Trek a diverse alpine crossing in Himachal?",
+        q: "What will I see on the Hampta Pass Trek?",
         a: "Hampta Pass links the green Kullu Valley with the bare desert landscapes of Lahaul and Spiti. In one trek you walk through dense pine forests, past waterfalls and glacial streams, and cross a 14,000-foot mountain pass.",
         related: ["Are there river crossings on Hampta Pass?", "What is the best season for Hampta Pass?"],
       },
       {
-        q: "Why is Bhrigu Lake Trek famous for its glacial waters and meadows?",
-        a: "Bhrigu Lake sits at an altitude of about 13,700 feet (4,200 m) above Manali. It is known for its high-altitude glacial tarn that changes colour with the seasons, and wide green meadows with views of the Pir Panjal and Dhauladhar ranges.",
+        q: "What is Bhrigu Lake like?",
+        a: "Bhrigu Lake is a glacial tarn at about 13,700 feet (4,200 m) above Manali. Its colour changes with the seasons, and the green meadows around it look out on the Pir Panjal and Dhauladhar ranges.",
         related: ["How strenuous is Bhrigu Lake Trek?", "Can beginners do Bhrigu Lake?"],
       },
     ],
@@ -212,7 +212,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "Is parking available if I drive my own vehicle to the base camp?",
-        a: "Yes, secure parking arrangements can usually be coordinated at base camp villages or local hotels in Joshimath, Dehradun or Manali at nominal daily parking fees. Please inform our support team in advance if you plan to drive.",
+        a: "Yes. We can usually arrange parking at base camp villages or local hotels in Joshimath, Dehradun or Manali for a small daily fee. Tell our team in advance if you plan to drive.",
         related: ["Where is the base camp reporting point?", "Are transport costs included in trek fees?"],
       },
       {
@@ -233,7 +233,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "Are washroom facilities available at high-altitude campsites?",
-        a: "Yes, we set up hygienic, eco-friendly trench toilets (nature-friendly dry pit latrines) at every campsite with proper privacy enclosures, hand sanitizers, and toilet paper. Water is provided for wash hygiene.",
+        a: "Yes. We set up dry-pit toilet tents at every campsite, with privacy enclosures, hand sanitiser and toilet paper, and water for washing.",
         related: ["How do we maintain hygiene on the trail?", "Are there concrete restrooms?"],
       },
       {
@@ -248,7 +248,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "How is drinking water sourced and purified on the trek?",
-        a: "Our mountain staff sources fresh natural spring water along the trail. This water is boiled and filtered for sediment and chemical purification before it is served, to protect you against waterborne illnesses.",
+        a: "Our staff collect spring water along the trail, then boil and filter it before serving it.",
         related: ["Should I carry a reusable water bottle?", "Is mineral water available on trails?"],
       },
     ],
@@ -259,7 +259,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     faqs: [
       {
         q: "What kind of meals are served during Himalayan treks?",
-        a: "We serve freshly prepared vegetarian meals designed by nutritionists for long trekking days. Expect a balanced mix of Indian, continental, and pahadi cuisines including porridge, poha, dal, sabzi, chapati, rice, nutritious soups, and hot desserts.",
+        a: "We serve freshly cooked vegetarian meals planned for long trekking days: Indian, continental and pahadi food such as porridge, poha, dal, sabzi, chapati, rice, soups and hot desserts.",
         related: ["Do you cater to vegan or Jain dietary requirements?", "Are hot beverages provided?"],
       },
       {
@@ -274,7 +274,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "How is kitchen hygiene maintained at high-altitude base camps?",
-        a: "Our cooks and kitchen staff follow strict hygiene rules. All cooking utensils are sanitized with boiling water, raw ingredients are fresh and locally sourced, and food handling protocols meet professional catering guidelines.",
+        a: "Our cooks wash every utensil in boiling water and cook with fresh, locally sourced ingredients.",
         related: ["What water purification methods are used?", "Who cooks the food on the trail?"],
       },
     ],
@@ -326,7 +326,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "Is trekking safe during the monsoon season in Uttarakhand?",
-        a: "Monsoon trekking requires caution due to slippery trails and occasional landslides in lower valleys. High-altitude alpine routes like Valley of Flowers or Hampta Pass are at their greenest then. Our experienced leaders follow strict safety protocols on the trail.",
+        a: "Trails get slippery in the monsoon, and landslides happen in the lower valleys, so take care. High-altitude routes like Valley of Flowers or Hampta Pass are at their greenest then. Our trek leaders change or stop the day's walk when the trail isn't safe.",
         related: ["What rain gear should I pack?", "Which treks are open during monsoon?"],
       },
     ],
@@ -378,7 +378,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: "How do I manage menstrual hygiene during multi-day Himalayan treks?",
-        a: "Managing periods on the trail is straightforward with proper planning. We recommend carrying eco-friendly sanitary products, biodegradable disposal bags, wet wipes, and pain relief medication. Our toilet tents and clean water supply give you comfort and privacy.",
+        a: "Carry eco-friendly sanitary products, biodegradable disposal bags, wet wipes and pain relief medication. Every campsite has a toilet tent for privacy and clean water.",
         related: ["Can I trek during my period?", "What disposal facilities are available at camps?"],
       },
     ],

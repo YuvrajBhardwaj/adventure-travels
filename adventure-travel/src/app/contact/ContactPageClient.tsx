@@ -277,7 +277,7 @@ export default function ContactPage() {
 
             {/* Why Choose Us */}
             <FadeUp className="mt-10">
-              <h3 className="mb-3 font-heading text-lg font-semibold text-foreground">Why Choose Himalayan Arc Adventure?</h3>
+              <h3 className="mb-3 font-heading text-lg font-semibold text-foreground">Why Book With Us</h3>
               <ul className="divide-y divide-slate-200 border-y border-slate-200 text-sm text-foreground dark:divide-white/10 dark:border-white/10">
                 {[
                   "Guiding Himalayan treks since 2010",

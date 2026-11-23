@@ -238,7 +238,7 @@ export default function CoursesPageClient() {
           <StaggerContainer className="grid grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-4">
             {[
               { title: "Certified Instructors", desc: "Professional coaches with international certifications" },
-              { title: "Prime Location", desc: "Auli's 3,050m slopes with Nanda Devi views" },
+              { title: "Auli, 3,050m", desc: "Ski slopes with Nanda Devi views" },
               { title: "All Equipment", desc: "Complete gear provided, so you don't need to bring anything" },
               { title: "Course Certificate", desc: "Our private ski school certificate, plus a personal ski report. Registered with Uttarakhand Tourism (UTDB)" },
             ].map((item) => (
@@ -256,10 +256,10 @@ export default function CoursesPageClient() {
         <FadeUp className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <h2 className="mb-4 font-heading text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">
-              Ready to Hit the Slopes?
+              Book a Ski or Snowboard Course
             </h2>
             <p className="mb-8 text-lg text-white/80">
-              Book your 7-day course today and learn to ski or snowboard in the Himalayas.
+              Learn to ski or snowboard in Auli. Message us on WhatsApp to book.
             </p>
             <a
               href="https://wa.me/917817912062?text=Hi!%20I'm%20interested%20in%20the%20skiing/snowboarding%20course%20in%20Auli."

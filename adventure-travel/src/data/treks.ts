@@ -47,7 +47,20 @@ export interface Trek {
    * Pickup packages, cheapest first; `price` must equal the first. Booked like a room tier:
    * the label is stored on the booking and the order API charges that package's price.
    */
-  packages?: { label: string; from: string; price: number }[];
+  packages?: { label: string; from: string; price: number; sharing?: string }[];
+}
+
+/**
+ * Pickup × room-sharing grid for treks whose packages carry `sharing` (e.g. Kuari Pass:
+ * Joshimath or Rishikesh, each Triple or Double). Undefined when packages have no sharing.
+ */
+export function packageGrid(trek: Trek): { pickups: string[]; sharings: string[] } | undefined {
+  const pkgs = trek.packages;
+  if (!pkgs?.some((p) => p.sharing)) return undefined;
+  return {
+    pickups: [...new Set(pkgs.map((p) => p.from))],
+    sharings: [...new Set(pkgs.map((p) => p.sharing ?? ""))],
+  };
 }
 
 /** A trek's bookable price options (room tiers or pickup packages), cheapest first; undefined when it has one price. */
@@ -262,7 +275,7 @@ export const treks: Trek[] = [
     country: "India",
     location: "Joshimath, Uttarakhand, India",
     difficulty: "Challenging",
-    price: 9500,
+    price: 8999,
     currency: "Rs.",
     blurb: "Pangarchula Peak (4,600m) is a challenging summit trek from Joshimath, Uttarakhand, with a 360° view of Nanda Devi, Dronagiri, Trishul and Kamet from the top.",
     bestSeason: "Mar–May (snow summit) & Oct–Nov",
@@ -281,8 +294,12 @@ export const treks: Trek[] = [
     groupSize: 10,
     startsFrom: "Joshimath",
     packages: [
-      { label: "From Joshimath", from: "Joshimath", price: 9500 },
-      { label: "From Rishikesh, Haridwar or Dehradun", from: "Rishikesh, Haridwar or Dehradun", price: 11000 },
+      // Owner, 24 Nov: Joshimath double Rs.9,500, triple Rs.8,999. Rishikesh follows the Kuari rule
+      // (double keeps the old rate, triple Rs.501 less) until the owner confirms it.
+      { label: "Joshimath · Triple sharing", from: "Joshimath", sharing: "Triple sharing", price: 8999 },
+      { label: "Joshimath · Double sharing", from: "Joshimath", sharing: "Double sharing", price: 9500 },
+      { label: "Rishikesh · Triple sharing", from: "Rishikesh, Haridwar or Dehradun", sharing: "Triple sharing", price: 10499 },
+      { label: "Rishikesh · Double sharing", from: "Rishikesh, Haridwar or Dehradun", sharing: "Double sharing", price: 11000 },
     ],
   },
   {
@@ -293,7 +310,7 @@ export const treks: Trek[] = [
     country: "India",
     location: "Joshimath, Uttarakhand, India",
     difficulty: "Moderate",
-    price: 7500,
+    price: 6999,
     currency: "Rs.",
     blurb: "The Kuari Pass trek from Joshimath follows Lord Curzon's old trail in Garhwal, Uttarakhand, to a 3,815 m pass with a 360° view of Nanda Devi, Dronagiri and Trishul.",
     bestSeason: "Sep–Jun (snow Dec–Mar)",
@@ -311,8 +328,11 @@ export const treks: Trek[] = [
     groupSize: 15,
     startsFrom: "Joshimath",
     packages: [
-      { label: "From Joshimath", from: "Joshimath", price: 7500 },
-      { label: "From Rishikesh, Haridwar or Dehradun", from: "Rishikesh, Haridwar or Dehradun", price: 9000 },
+      // Double keeps the old package rate; triple sharing is Rs.501 less.
+      { label: "Joshimath · Triple sharing", from: "Joshimath", sharing: "Triple sharing", price: 6999 },
+      { label: "Joshimath · Double sharing", from: "Joshimath", sharing: "Double sharing", price: 7500 },
+      { label: "Rishikesh · Triple sharing", from: "Rishikesh, Haridwar or Dehradun", sharing: "Triple sharing", price: 8499 },
+      { label: "Rishikesh · Double sharing", from: "Rishikesh, Haridwar or Dehradun", sharing: "Double sharing", price: 9000 },
     ],
   },
   {
@@ -604,7 +624,7 @@ export const treks: Trek[] = [
     difficulty: "Strenuous",
     price: 5000,
     currency: "Rs.",
-    blurb: "Walk the old Indo-Tibetan trade route from Joshimath over Niti Pass (5,360m) in Chamoli, Uttarakhand, through glacial country that tourism hasn't reached. ILP-restricted, raw Himalayan wilderness.",
+    blurb: "Walk the old Indo-Tibetan trade route from Joshimath over Niti Pass (5,360m) in Chamoli, Uttarakhand, through glacial country that tourism hasn't reached. ILP-restricted.",
     bestSeason: "Jun–Jul & Sept–Oct",
     days: 9,
     maxAltitude: 5360,
@@ -733,10 +753,10 @@ export const treks: Trek[] = [
 ];
 
 export const processSteps = [
-  { n: "01", title: "Choose Your Route", text: "Filter by region, difficulty and days. Every trek is listed with its real elevation profile, not a marketing photo." },
+  { n: "01", title: "Choose Your Route", text: "Filter by region, difficulty and days. Every trek page shows its elevation profile, day by day." },
   { n: "02", title: "Customize the Plan", text: "Solo, couple, or group. We adjust pacing, acclimatization days, and lodging to match your fitness and time." },
   { n: "03", title: "Permits & Prep", text: "National park permits, inner-line permits, and a full gear checklist handled before you arrive at the trailhead." },
-  { n: "04", title: "Trek With a Local Guide", text: "Licensed guides from the region you're walking through, not a rotating roster of contractors." },
+  { n: "04", title: "Trek With a Local Guide", text: "Licensed guides from the region you're walking through." },
   { n: "05", title: "Summit & Return", text: "Buffer days are built in for weather and altitude." },
 ];
 

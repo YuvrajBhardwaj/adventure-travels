@@ -120,7 +120,7 @@ export default function AuliWinterEscapePage() {
       ]}
       enquiryOffer={`Groups of ${P.groupFrom}+ pay ${inr(P.groupPrice)} each on the Standard Package`}
       bookTitle="Book your Auli getaway"
-      bookText="Bring your friends, save more as a group, and make memories in the Himalayas. Tell us your dates and group size."
+      bookText="Bring your friends and save more as a group. Tell us your dates and group size."
       offerDescription={`Per person. ${inr(P.groupPrice)} per person for groups of ${P.groupFrom} or more.`}
     />
   );
