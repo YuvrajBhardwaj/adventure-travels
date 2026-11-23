@@ -17,6 +17,10 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 24 Nov 2026: password reset links work from any browser — `main` (2382431)
+- **Visitors:** reset links failed with "This reset link has expired or was already used" when the email was opened in another browser or device than the one that asked (Gmail app, phone), or when a mail scanner opened the link first. The link now carries a one-time code that /reset-password checks itself, so it works anywhere, and an expired link is reported at once instead of after 8 seconds. Tested on the live site.
+- **Backend (Supabase Auth, owner approved):** the "Reset your password" email template now links to `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery` instead of `{{ .ConfirmationURL }}`. Same wording. Emails sent before the change still use the old link.
+
 ### 24 Nov 2026: admin account — `main`
 - **Backend:** himalayanarcadventure@gmail.com has the admin role (checked read-only on Supabase; it was already set). It is the only admin. Sign out and back in once to open `/admin`.
 
