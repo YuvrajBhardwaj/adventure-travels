@@ -33,9 +33,27 @@ export default function ResetPasswordPage() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: unknown) => {
       if (event === "PASSWORD_RECOVERY" || session) setStage("ready");
     });
-    void supabase.auth.getSession().then(({ data }: { data: { session: unknown } }) => {
-      if (data.session) setStage("ready");
-    });
+
+    const params = new URLSearchParams(window.location.search);
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const tokenHash = params.get("token_hash");
+    if (params.get("error") || hash.get("error")) {
+      // Supabase sends expired or already-used links back with an error: say so straight away.
+      setStage("invalid");
+    } else if (tokenHash) {
+      // The email links here with a one-time token (Supabase "token_hash" template), so the link
+      // works in any browser or device, and mail scanners that open links can't use it up:
+      // it's only spent when this page verifies it.
+      window.history.replaceState(null, "", window.location.pathname);
+      void supabase.auth
+        .verifyOtp({ token_hash: tokenHash, type: "recovery" })
+        .then(({ error }: { error: unknown }) => setStage(error ? "invalid" : "ready"));
+    } else {
+      // Older emails (Supabase confirmation link): the client finishes the sign-in from the URL.
+      void supabase.auth.getSession().then(({ data }: { data: { session: unknown } }) => {
+        if (data.session) setStage("ready");
+      });
+    }
     // The link is single-use and expires; if no session shows up, say so instead of spinning.
     const timer = setTimeout(() => setStage((s) => (s === "waiting" ? "invalid" : s)), 8000);
     return () => {
