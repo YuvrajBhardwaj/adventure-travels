@@ -198,7 +198,7 @@ Passed: no `.env`/`.git`/source/SQL files exposed; HTTPS + HSTS; every table has
 ## Backend health check, 29 Oct (details in CHANGELOG)
 Works today: accounts, trek and course bookings, booking emails and the payment flow (in test mode).
 - [x] ~~**You: apply the database update and the email limit.**~~ Done 5 Nov: with your OK, Claude ran `node scripts/setup-backend.mjs`. All 7 SQL files are applied (15-minute seat hold, speed fixes) and sign-up emails are limited to 20 an hour (was 2). Checked afterwards.
-- [ ] **You: choose the admin account.** Nobody has admin rights, so `/admin` is unusable. Tell Claude which email (it must already be signed up), or set `ADMIN_EMAIL` in `.env.setup` and run the setup script.
+- [x] ~~**You: choose the admin account.** Nobody has admin rights, so `/admin` is unusable. Tell Claude which email (it must already be signed up), or set `ADMIN_EMAIL` in `.env.setup` and run the setup script.~~ (24 Nov: himalayanarcadventure@gmail.com is admin, checked on Supabase.)
 - [ ] **You: switch Razorpay to live keys and register the webhook.** The live site still takes test payments only, so real customers can't pay online.
 - [ ] **You: upgrade Vercel to Pro (about $20 a month).** Hobby is for non-commercial use only, and it pauses the site when a monthly limit runs out. At today's page weight that's around 10,000 visitors a month (100 GB of bandwidth, 1M requests).
 - [ ] **You (before traffic grows):** move email from Gmail (about 500 a day) to a transactional sender such as Brevo, Resend, Amazon SES or Zoho ZeptoMail. Then consider Supabase Pro ($25 a month): daily backups, no pausing, 100k monthly users instead of 50k.

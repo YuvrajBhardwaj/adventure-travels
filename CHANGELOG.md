@@ -17,6 +17,9 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 24 Nov 2026: admin account — `main`
+- **Backend:** himalayanarcadventure@gmail.com has the admin role (checked read-only on Supabase; it was already set). It is the only admin. Sign out and back in once to open `/admin`.
+
 ### 24 Nov 2026: admin overview page; late-payment overbooking guard — `main`
 - **Admin (business):** `/admin` is now an overview instead of a redirect: money collected this month and in total, what is still to collect, new bookings this week, failed emails, a "Needs you" list (overdue balances and bookings waiting for confirmation), departures in the next 14 days, and payments to refund. "Overview" is the first tab of the admin nav. Figures come from the same data as the other admin pages (`summarize()` in `src/lib/adminSummary.ts`, 4 unit tests). **Nobody can open it yet:** an admin account still has to be chosen (TODO).
 - **Backend (applied to Supabase on 24 Nov, owner approved; verified read-only: the live function has the seat check, 0 payments flagged):** `supabase-payment-guard.sql` now also re-checks seats when a trek payment arrives after the 15-minute seat hold ran out. If the batch filled or closed meanwhile, the payment is kept and marked "Needs refund: batch filled up after the seat hold ran out", and the booking is not confirmed. Tested on PGlite with all 9 SQL files: late payment into a full batch is flagged; late payment with a seat free, payment inside the hold and balance payments apply as before.
