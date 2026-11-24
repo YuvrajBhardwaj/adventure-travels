@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { PrivacyNotice } from "@/components/PrivacyNotice";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { resendSignupConfirmation, signUp } from "@/lib/auth";
@@ -138,6 +139,7 @@ export default function SignupPage() {
                     {errors[key] && <p id={`signup-${key}-error`} className="mt-1.5 text-xs text-red-400">{errors[key]}</p>}
                   </div>
                 ))}
+                <PrivacyNotice action="signing up" className="text-white/55 dark:text-white/55" />
                 <Button type="submit" size="lg" loading={submitting} className="w-full">
                   {submitting ? "Creating account…" : "Sign Up"}
                 </Button>

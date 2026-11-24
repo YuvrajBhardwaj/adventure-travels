@@ -6,6 +6,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import NationalityField from "@/components/NationalityField";
 import { motion, AnimatePresence, useAnimate, useReducedMotion } from "framer-motion";
 import Link from "next/link";
+import { PrivacyNotice } from "@/components/PrivacyNotice";
 import { packageGrid, priceOptions, priceRoute, type Trek } from "@/data/treks";
 import { TREK_GALLERIES, isVideo, trekPhotos } from "@/data/trekGalleries";
 import EnquireTab from "@/components/EnquireTab";
@@ -2100,6 +2101,7 @@ function ReservationTab({
             placeholder="Custom requests, dietary needs, transport questions..."
           />
         </div>
+        <PrivacyNotice />
         <Button type="submit" size="lg" loading={submitting} className="w-full">
           {submitting ? "Sending…" : "Send Reservation Request"}
         </Button>

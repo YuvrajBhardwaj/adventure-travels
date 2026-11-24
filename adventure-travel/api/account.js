@@ -41,6 +41,32 @@ async function remove(db, user) {
     .eq("user_id", user.id);
   if (bookingError) throw bookingError;
 
+  // Free-text messages can hold personal details; the kept booking records don't need them.
+  const bookingIds = [];
+  for (const table of ["trek_bookings", "course_bookings", "activity_bookings"]) {
+    const { data, error } = await db.from(table).update({ message: "" }).eq("user_id", user.id).select("id");
+    if (error) throw error;
+    for (const row of data || []) bookingIds.push(row.id);
+  }
+
+  // The email outbox keeps a copy of every email (name, phone, booking details): clear the
+  // copies about this user's bookings, and stop anything still queued to their address.
+  if (bookingIds.length) {
+    const { error } = await db.from("notifications").update({ body_text: "" }).in("booking_id", bookingIds);
+    if (error) throw error;
+  }
+  const email = (user.email || "").toLowerCase();
+  if (email) {
+    const { error: queuedError } = await db
+      .from("notifications")
+      .update({ status: "failed", attempts: 99, last_error: "account deleted" }) // past the cron's retry limit
+      .eq("recipient", email)
+      .neq("status", "sent");
+    if (queuedError) throw queuedError;
+    const { error: recipientError } = await db.from("notifications").update({ recipient: "deleted" }).eq("recipient", email);
+    if (recipientError) throw recipientError;
+  }
+
   const { error: authError } = await db.auth.admin.deleteUser(user.id);
   if (authError) throw authError;
   return { deleted: true };

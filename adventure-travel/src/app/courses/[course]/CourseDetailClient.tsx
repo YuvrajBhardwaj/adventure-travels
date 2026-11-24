@@ -4,8 +4,9 @@ import { useState, useEffect, useRef, useSyncExternalStore, type ReactNode } fro
 import { useCurrency } from "@/contexts/CurrencyContext";
 import NationalityField from "@/components/NationalityField";
 import Link from "next/link";
+import { PrivacyNotice } from "@/components/PrivacyNotice";
 import { motion, useAnimate, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { coursePhotos, type Course } from "@/data/courses";
+import { coursePhotos, type Course, type CourseInclusion } from "@/data/courses";
 import EnquireTab from "@/components/EnquireTab";
 import WallpaperCarousel from "@/components/WallpaperCarousel";
 import SmartImage from "@/components/SmartImage";
@@ -19,7 +20,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import WhatsAppFallback from "@/components/WhatsAppFallback";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { transition } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { BrandIcon } from "@/components/BrandIcon";
@@ -49,7 +50,116 @@ const INC_ICONS: Record<string, string> = {
   certificate: "M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z",
   firstaid: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z",
   photos: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z",
+  heater: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657zM9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z",
+  support: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
+  info: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+  pack: "M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
+  pin: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z",
 };
+
+function IncIcon({ icon, className }: { icon: string; className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={INC_ICONS[icon] || INC_ICONS.structor} />
+    </svg>
+  );
+}
+
+/**
+ * What's Included cards. A card with `details` is a button that opens a popup (kit Dialog,
+ * like the trek page's "Know more" tiles); the popup stays mounted after closing so it animates out.
+ */
+function InclusionCards({ items }: { items: CourseInclusion[] }) {
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [open, setOpen] = useState(false);
+  const active = openIdx === null ? null : items[openIdx];
+  const card = "flex w-full items-start gap-4 rounded-2xl bg-white p-5 text-left shadow-sm ring-1 ring-slate-100";
+  const body = (item: CourseInclusion, clickable: boolean) => (
+    <>
+      <div
+        className={cn(
+          "flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-100 to-sky-50 ring-1 ring-sky-100",
+          clickable && "transition-transform duration-200 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+        )}
+      >
+        <IncIcon icon={item.icon} className="h-5 w-5 text-sky-600" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <h3 className="font-semibold text-slate-900">{item.label}</h3>
+        <p className="text-sm text-slate-600">{item.description}</p>
+        {clickable && (
+          <span className="mt-1 block text-xs font-semibold text-sky-700 transition-opacity duration-150 ease-out pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:group-focus-visible:opacity-100">
+            Know more
+          </span>
+        )}
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {items.map((item, i) =>
+          item.details ? (
+            <button
+              key={i}
+              type="button"
+              onClick={() => {
+                setOpenIdx(i);
+                setOpen(true);
+              }}
+              className={cn(
+                card,
+                "group transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-900/10 hover:ring-sky-200 active:translate-y-0 active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100"
+              )}
+            >
+              {body(item, true)}
+            </button>
+          ) : (
+            <div key={i} className={card}>
+              {body(item, false)}
+            </div>
+          )
+        )}
+      </div>
+      {active && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent size="lg" placement="bottom" tone="light" hideClose className="max-w-lg">
+            <DialogTitle className="sr-only">{`${active.label} details`}</DialogTitle>
+            <div className="px-6 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:p-8">
+              <DialogClose
+                aria-label="Close popup"
+                className="absolute right-3 top-3 z-10 inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 transition-colors duration-150 ease-out hover:bg-slate-100 hover:text-slate-900"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </DialogClose>
+              <div className="mb-4 flex items-center gap-3 pr-10">
+                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-100 to-sky-50 ring-1 ring-sky-100">
+                  <IncIcon icon={active.icon} className="h-5 w-5 text-sky-600" />
+                </div>
+                <h3 className="font-heading text-xl font-bold text-slate-900">{active.label}</h3>
+              </div>
+              {Array.isArray(active.details) ? (
+                <ul className="space-y-2.5">
+                  {active.details.map((d) => (
+                    <li key={d} className="flex gap-2.5 leading-relaxed text-slate-700">
+                      <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-sky-500" aria-hidden />
+                      {d}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="leading-relaxed text-slate-700">{active.details}</p>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
+  );
+}
 
 // Course-type tag tones, in the brand palette.
 const TYPE_TONES: Record<string, "sky" | "slate" | "amber"> = {
@@ -841,21 +951,13 @@ export default function CourseDetailClient({ course }: Props) {
                     <h2 className={cn(PANEL_H2, "mb-2")}>What&apos;s Included</h2>
                     <p className="mb-8 text-slate-600">What the course fee covers.</p>
                   </div>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {course.inclusions.map((item, i) => (
-                      <div key={i} className="flex items-start gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
-                        <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-100 to-sky-50 ring-1 ring-sky-100">
-                          <svg className="h-5 w-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={INC_ICONS[item.icon] || INC_ICONS.structor} />
-                          </svg>
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-slate-900">{item.label}</h3>
-                          <p className="text-sm text-slate-600">{item.description}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <InclusionCards items={course.inclusions} />
+                  {course.beforeYouGo && (
+                    <>
+                      <h3 className="mb-4 mt-10 font-heading text-xl font-semibold text-slate-900">Before you go</h3>
+                      <InclusionCards items={course.beforeYouGo} />
+                    </>
+                  )}
                 </div>
               )}
 
@@ -1066,6 +1168,7 @@ export default function CourseDetailClient({ course }: Props) {
                           <p>{bookError}</p>
                         </div>
                       )}
+                      <PrivacyNotice />
                       <Button type="submit" size="lg" loading={submitting} className="w-full px-8 sm:w-auto">
                         {submitting ? "Submitting..." : "Submit Booking"}
                       </Button>

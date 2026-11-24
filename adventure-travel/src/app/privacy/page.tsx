@@ -27,7 +27,7 @@ export default function PrivacyPage() {
             <span className="text-white/90">Privacy Policy</span>
           </nav>
           <h1 className="font-heading text-5xl font-medium leading-[0.98] tracking-[-0.02em] sm:text-6xl">Privacy Policy</h1>
-          <p className="mt-6 text-white/75">Last updated: 20 Nov 2026</p>
+          <p className="mt-6 text-white/75">Last updated: 24 Nov 2026</p>
         </div>
       </header>
 
@@ -63,6 +63,7 @@ export default function PrivacyPage() {
           <li><strong>Razorpay</strong> processes payments.</li>
           <li><strong>Google</strong> delivers our emails (through our Gmail account) and handles Google sign-in if you choose it.</li>
           <li><strong>WhatsApp (Meta)</strong>, if you message us: enquiry buttons open a WhatsApp chat with +91 78179 12062, and that chat is covered by WhatsApp&apos;s own privacy policy.</li>
+          <li><strong>Unsplash, Pexels and Wikimedia Commons</strong>: some photos on the site load from these image libraries, so your browser asks them for the picture and they see your IP address. We send them nothing else.</li>
         </ul>
 
         <h2 className={h2}>Cookies and your browser</h2>
@@ -76,7 +77,8 @@ export default function PrivacyPage() {
         <h2 className={h2}>Your choices</h2>
         <ul className={list}>
           <li><strong>See and correct:</strong> your profile and bookings are in your <Link href="/dashboard" className={a}>dashboard</Link>.</li>
-          <li><strong>Delete your account:</strong> from the dashboard. This removes your sign-in and clears your name, email, phone, city and emergency contact, and the contact details on your course bookings. The booking and payment records themselves are kept, without your name, because we need them for our accounts.</li>
+          <li><strong>Download your data:</strong> from the dashboard, as one file with your details, bookings, payments and account activity.</li>
+          <li><strong>Delete your account:</strong> from the dashboard. This removes your sign-in and clears your name, email, phone, city and emergency contact, the contact details on your course bookings, the messages you wrote on your bookings, and our stored copies of emails about your bookings. The booking and payment records themselves are kept, without your name, because we need them for our accounts.</li>
           <li><strong>Anything else:</strong> email <a href="mailto:himalayanarcadventure@gmail.com" className={a}>himalayanarcadventure@gmail.com</a> or call +91 78179 12062 / +91 86505 61564.</li>
         </ul>
 

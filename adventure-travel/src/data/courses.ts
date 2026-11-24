@@ -42,6 +42,8 @@ export interface CourseInclusion {
   icon: string;
   label: string;
   description: string;
+  /** Longer text shown in the card's popup. A list renders as bullets. */
+  details?: string | string[];
 }
 
 /** Pricing/itinerary tier (e.g. Basic vs Premium) for courses sold in packages. */
@@ -87,7 +89,62 @@ export interface Course {
   milestones?: { day: number; skill: string }[];
   /** Multi-tier pricing (Basic/Premium) — falls back to `price` when absent. */
   tiers?: CourseTier[];
+  /** Good to know / what to pack / location cards under What's Included. */
+  beforeYouGo?: CourseInclusion[];
 }
+
+/* ─── Auli ski & snowboard school: shared "What's Included" text (owner copy, 24 Nov 2026) ─── */
+const STAY_DETAILS = "Cozy cottage-style rooms with mountain views, a warm place to rest after a day on the slopes. Included only when you book with stay; bookings without stay do not include it.";
+const HEATER: CourseInclusion = {
+  icon: "heater",
+  label: "Room Heater",
+  description: "A heater in every room (with stay)",
+  details: "Every room has a heater, so you stay warm even on freezing Himalayan nights. Included only when you book with stay; bookings without stay do not include it.",
+};
+const MEALS_DETAILS = "Fresh, hot breakfast, lunch and dinner every day, so you have the energy for training.";
+const INSTRUCTOR_DETAILS = "Learn from experienced instructors who teach you step by step, from your first slide to confident turns.";
+const SUPPORT: CourseInclusion = {
+  icon: "support",
+  label: "Local Support & Guidance",
+  description: "Our local team, from arrival to departure",
+  details: "Our local team helps with everything from arrival to departure, including directions, weather updates and on-ground support.",
+};
+const SKI_EQUIPMENT_DETAILS = "Skis, boots and poles are provided during training sessions. You don't need to buy or rent anything.";
+const BOARD_EQUIPMENT_DETAILS = "Snowboards and boots are provided during training sessions. You don't need to buy or rent anything.";
+
+const AULI_BEFORE_YOU_GO: CourseInclusion[] = [
+  {
+    icon: "info",
+    label: "Good to Know",
+    description: "Beginner-friendly, weather-dependent",
+    details: [
+      "Beginner-friendly: made for complete beginners, no prior experience needed.",
+      "Fitness: you should be in good physical health. Skiing is fun, but it's an active sport.",
+      "Choose one: skiing and snowboarding are separate courses. Please confirm which one you want when you book.",
+      "Weather-dependent: training depends on snow and weather conditions in Auli. Safety always comes first.",
+    ],
+  },
+  {
+    icon: "pack",
+    label: "What to Pack",
+    description: "Warm layers, gloves, goggles and sunscreen",
+    details: [
+      "Warm thermal layers and a winter jacket",
+      "Waterproof gloves",
+      "Sunglasses or snow goggles (snow glare is strong at altitude)",
+      "Woollen socks",
+      "Sunscreen and lip balm",
+      "A cap or beanie",
+    ],
+  },
+  {
+    icon: "pin",
+    label: "Course Location",
+    description: "Auli, near Joshimath, Chamoli district, Uttarakhand",
+    details:
+      "Auli, near Joshimath, Chamoli district, Uttarakhand. A Himalayan ski destination known for its long slopes, oak and pine forests, and panoramic views of snow-capped peaks.",
+  },
+];
 
 /* ─── 14-Day International-Style Skiing Course itineraries ─── */
 const SKI14_PREMIUM_ITINERARY: CourseItineraryDay[] = [
@@ -178,15 +235,18 @@ export const courses: Course[] = [
       },
     ],
     inclusions: [
-      { icon: "structor", label: "Certified Instructor", description: "20+ hrs/week from Level 4 qualified coaches" },
-      { icon: "equipment", label: "All Equipment", description: "Skis, boots, helmets & poles fitted by specialists" },
+      { icon: "structor", label: "Certified Instructor", description: "20+ hrs/week from Level 4 qualified coaches", details: INSTRUCTOR_DETAILS },
+      { icon: "equipment", label: "All Equipment", description: "Skis, boots, helmets & poles fitted by specialists", details: SKI_EQUIPMENT_DETAILS },
       { icon: "lift", label: "Lift Passes", description: "Full Auli cable car & chairlift access" },
-      { icon: "bed", label: "Accommodation", description: "7 nights in Auli mountain-view stay" },
-      { icon: "food", label: "All Meals", description: "Breakfast, lunch & dinner included daily" },
+      { icon: "bed", label: "Swiss Cottage Stay", description: "7 nights in a Swiss cottage with mountain views (with stay)", details: STAY_DETAILS },
+      HEATER,
+      { icon: "food", label: "All Meals", description: "Breakfast, lunch & dinner included daily", details: MEALS_DETAILS },
       { icon: "certificate", label: "Certification", description: "Course completion certificate + personalised evaluation" },
       { icon: "firstaid", label: "Safety Support", description: "Emergency first aid & mountain rescue protocol" },
       { icon: "photos", label: "HD Video Analysis", description: "Movement analysis + professional course photos" },
+      SUPPORT,
     ],
+    beforeYouGo: AULI_BEFORE_YOU_GO,
     image: "/assets/skiing/IMG_5035.JPG.jpeg",
     gallery: [
       ...SKIING_LOCAL_GALLERY,
@@ -248,15 +308,18 @@ export const courses: Course[] = [
       },
     ],
     inclusions: [
-      { icon: "structor", label: "Certified Instructor", description: "International-style progressive coaching, certified" },
-      { icon: "equipment", label: "All Equipment", description: "Skis, boots, helmets & poles fitted by specialists" },
+      { icon: "structor", label: "Certified Instructor", description: "International-style progressive coaching, certified", details: INSTRUCTOR_DETAILS },
+      { icon: "equipment", label: "All Equipment", description: "Skis, boots, helmets & poles fitted by specialists", details: SKI_EQUIPMENT_DETAILS },
       { icon: "lift", label: "Lift Passes", description: "Full 14-day Auli cable car & chairlift access" },
-      { icon: "bed", label: "Accommodation", description: "13 nights in Auli accommodation (with-stay packages)" },
-      { icon: "food", label: "All Meals", description: "Breakfast, lunch & dinner included daily (with-stay packages)" },
+      { icon: "bed", label: "Swiss Cottage Stay", description: "13 nights in a Swiss cottage with mountain views (with stay)", details: STAY_DETAILS },
+      HEATER,
+      { icon: "food", label: "All Meals", description: "Breakfast, lunch & dinner included daily (with-stay packages)", details: MEALS_DETAILS },
       { icon: "certificate", label: "Certification", description: "Private ski school certificate + Personal Ski Report (no grades)" },
       { icon: "firstaid", label: "Safety Support", description: "Emergency first aid & mountain rescue protocol" },
       { icon: "photos", label: "HD Video Analysis", description: "Regular movement analysis + professional course photos" },
+      SUPPORT,
     ],
+    beforeYouGo: AULI_BEFORE_YOU_GO,
     image: "/assets/skiing/IMG_5036.JPG.jpeg",
     gallery: [
       ...SKIING_LOCAL_GALLERY,
@@ -307,15 +370,18 @@ export const courses: Course[] = [
       { day: 7, title: "Final Riding Day & Assessment", description: "Warm-up, technical revision, individual riding assessment, demonstration of linked turns, edge control and stopping, controlled descent, instructor feedback and course completion assessment. Certificate of participation/completion from Himalayan Arc Adventure. Focus: demonstrating what you have learned and understanding your next progression." },
     ],
     inclusions: [
-      { icon: "structor", label: "Certified Instructor", description: "20+ hrs/week from Level 4 qualified coaches" },
-      { icon: "equipment", label: "All Equipment", description: "Boards, boots, helmets & bindings fitted by specialists" },
+      { icon: "structor", label: "Certified Instructor", description: "20+ hrs/week from Level 4 qualified coaches", details: INSTRUCTOR_DETAILS },
+      { icon: "equipment", label: "All Equipment", description: "Boards, boots, helmets & bindings fitted by specialists", details: BOARD_EQUIPMENT_DETAILS },
       { icon: "lift", label: "Lift Passes", description: "Full Auli cable car & chairlift access" },
-      { icon: "bed", label: "Accommodation", description: "7 nights in Auli mountain-view stay" },
-      { icon: "food", label: "All Meals", description: "Breakfast, lunch & dinner included daily" },
+      { icon: "bed", label: "Swiss Cottage Stay", description: "7 nights in a Swiss cottage with mountain views (with stay)", details: STAY_DETAILS },
+      HEATER,
+      { icon: "food", label: "All Meals", description: "Breakfast, lunch & dinner included daily", details: MEALS_DETAILS },
       { icon: "certificate", label: "Certification", description: "Course completion certificate + personalised evaluation" },
       { icon: "firstaid", label: "Safety Support", description: "Emergency first aid & mountain rescue protocol" },
       { icon: "photos", label: "HD Video Analysis", description: "Movement analysis + professional course photos" },
+      SUPPORT,
     ],
+    beforeYouGo: AULI_BEFORE_YOU_GO,
     image: "/assets/snowboarding/IMG_5472.jpg",
     video: "/assets/snowboarding/IMG_5201.mp4",
     gallery: [
@@ -377,15 +443,18 @@ export const courses: Course[] = [
       { day: 14, title: "Certification & Departure", description: "Course certificate ceremony, a last après session, and departure." },
     ],
     inclusions: [
-      { icon: "structor", label: "Certified Instructor", description: "25+ hrs/week from Level 4 qualified coaches" },
-      { icon: "equipment", label: "All Equipment", description: "Boards, boots, helmets & bindings fitted by specialists" },
+      { icon: "structor", label: "Certified Instructor", description: "25+ hrs/week from Level 4 qualified coaches", details: INSTRUCTOR_DETAILS },
+      { icon: "equipment", label: "All Equipment", description: "Boards, boots, helmets & bindings fitted by specialists", details: BOARD_EQUIPMENT_DETAILS },
       { icon: "lift", label: "Lift Passes", description: "Full 14-day Auli cable car & chairlift access" },
-      { icon: "bed", label: "Accommodation", description: "14 nights in Auli mountain-view stay" },
-      { icon: "food", label: "All Meals", description: "Breakfast, lunch & dinner included daily" },
+      { icon: "bed", label: "Swiss Cottage Stay", description: "14 nights in a Swiss cottage with mountain views (with stay)", details: STAY_DETAILS },
+      HEATER,
+      { icon: "food", label: "All Meals", description: "Breakfast, lunch & dinner included daily", details: MEALS_DETAILS },
       { icon: "certificate", label: "Certification", description: "Private ski school certificate + personalised evaluation" },
       { icon: "firstaid", label: "Safety Support", description: "Emergency first aid & mountain rescue protocol" },
       { icon: "photos", label: "HD Video Analysis", description: "Daily movement analysis + professional course photos" },
+      SUPPORT,
     ],
+    beforeYouGo: AULI_BEFORE_YOU_GO,
     image: "/assets/snowboarding/IMG_4063.jpg",
     video: "/assets/snowboarding/IMG_4222.mp4",
     gallery: [

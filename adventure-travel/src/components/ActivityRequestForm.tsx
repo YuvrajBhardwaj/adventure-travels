@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { PrivacyNotice } from "@/components/PrivacyNotice";
 import { useAuth } from "@/contexts/AuthContext";
 import { BackendUnavailableError, createActivityBooking } from "@/lib/auth";
 import WhatsAppFallback from "@/components/WhatsAppFallback";
@@ -160,6 +161,7 @@ export default function ActivityRequestForm() {
                   ].filter((line): line is string => Boolean(line))}
                 />
               )}
+              <PrivacyNotice />
               <Button type="submit" size="lg" loading={status === "saving"} className="w-full">
                 {status === "saving" ? "Sending…" : "Send request"}
               </Button>
