@@ -86,6 +86,6 @@ Even if you're unsure whether it counts as a breach, write down why you decided 
 
 ## Prevent (already in place)
 
-Database access rules on every table; the master key only in Vercel server functions, never in the browser; payments only through Razorpay; a Content-Security-Policy; no trackers or analytics; customers can download their data and delete their account from the dashboard.
+Database access rules on every table; the master key only in Vercel server functions, never in the browser; payments only through Razorpay; a Content-Security-Policy; no trackers, and analytics without cookies (Vercel Web Analytics, query strings removed); customers can download their data and delete their account from the dashboard.
 
 Still to do (see `TODO.md`): make the GitHub repo private; rotate the Gmail App Password (it was shared in chat once); turn on leaked-password protection in Supabase.

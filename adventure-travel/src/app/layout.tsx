@@ -9,6 +9,7 @@ import { treks } from "@/data/treks";
 import { courses } from "@/data/courses";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import LegacyDataNotice from "@/components/LegacyDataNotice";
+import SiteAnalytics from "@/components/SiteAnalytics";
 
 // Self-hosted so a Google Fonts outage can't fail a build. The files in ./fonts are the
 // google/fonts variable TTFs subset to Google's "latin" range plus ₹ (U+20B9), as woff2;
@@ -249,6 +250,7 @@ export default function RootLayout({
             <FooterV2 />
           </CurrencyProvider>
         </AuthProvider>
+        <SiteAnalytics />
       </body>
     </html>
   );

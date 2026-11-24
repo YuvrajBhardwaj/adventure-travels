@@ -17,6 +17,15 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+- **25 Nov 2026 · Vercel Web Analytics; privacy page updated** (`main`, owner approved).
+  - **Business:** page visits are counted by Vercel Web Analytics (`@vercel/analytics` 2.0.1, `src/components/SiteAnalytics.tsx`, in the root layout). No cookies.
+    - Before sending, `src/lib/analytics.ts` strips the query string and #hash from every address, so checkout booking ids and password-reset codes never leave the site, and it skips `/admin` entirely (tested).
+    - It's off under `npm run dev`.
+    - The script and its data go to our own domain (`/_vercel/insights/…`), so the Content-Security-Policy needed no change.
+    - **You:** switch it on in Vercel → Project → Analytics, or it counts nothing.
+  - **Visitors (/privacy, "Last updated: 25 Nov 2026"):** "no analytics" is replaced by what's counted: the page address without anything after "?", the page you came from, browser, device type and country, with a visitor code that's thrown away within 24 hours, no cookies, no advertising trackers, and admin pages not counted. The Vercel line under "Who it is shared with" says it counts visits. The data-breach plan's wording matches.
+  - **Tests:** 122 unit tests and 6 browser tests pass. The browser tests' time limit went from 120 s to 300 s, because the page-width check now takes about 135 s with the new pages; every page still fits at all 4 widths.
+
 - **25 Nov 2026 · "Filling fast" and "Full" on every date** (`main`). **Backend**, database change approved by the owner.
   - **Visitors:** the Dates calendar counts seats already taken on every generated daily date, not only on dates an admin listed. A day with 3 or fewer seats left shows "Filling fast"; a full day shows "Full" and can't be picked.
   - **Backend:**

@@ -5,7 +5,8 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["e2e/**/*.e2e.test.mjs"],
-    testTimeout: 120000,
+    // The page-width check loads every main page at 4 widths: ~135 s on the dev server by 25 Nov.
+    testTimeout: 300000,
     hookTimeout: 60000,
     fileParallelism: false,
   },
