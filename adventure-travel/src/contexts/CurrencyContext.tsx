@@ -15,6 +15,12 @@ type Rates = Record<string, number>;
 interface Saved {
   /** "user" = picked in the switcher, "auto" = detected from the visitor's location. */
   source: "user" | "auto";
+  /**
+   * The visitor chose to follow their location ("Auto" in the switcher, or "Use my location").
+   * Without it the site shows INR (owner, 25 Nov 2026); older "auto" entries saved before
+   * that change don't have it, so they go back to INR too.
+   */
+  chosen?: boolean;
   currency: string;
   country?: string | null;
   /** "device" = from the browser's location (GPS/Wi-Fi), which then wins over the IP guess. */
@@ -73,7 +79,7 @@ function devicePosition(): Promise<GeolocationPosition> {
 const Ctx = createContext<CurrencyCtx>({
   currency: BASE_CURRENCY,
   country: null,
-  mode: "auto",
+  mode: "user",
   detected: BASE_CURRENCY,
   converted: false,
   rates: null,
@@ -81,7 +87,7 @@ const Ctx = createContext<CurrencyCtx>({
   format: (inr) => formatMoney(inr, BASE_CURRENCY, 1),
   setCurrency: () => {},
   nationality: "indian",
-  nationalitySource: "auto",
+  nationalitySource: "user",
   setNationality: () => {},
   countrySource: "ip",
   locate: async () => "unavailable",
@@ -96,6 +102,9 @@ function readSaved(): Saved | null {
     return null;
   }
 }
+/** Following the location only when the visitor chose it; everyone else sees INR. */
+const following = (s: Saved | null | undefined) => s?.source === "auto" && s.chosen === true;
+
 function writeSaved(value: Saved) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
@@ -108,12 +117,14 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   // Server HTML and the first client render are always INR, so hydration never
   // mismatches; conversion happens right after mount.
   const [currency, setCurrencyState] = useState(BASE_CURRENCY);
-  const [mode, setMode] = useState<"auto" | "user">("auto");
+  // INR is the default, shown as a normal pick; "auto" only after the visitor chooses it.
+  const [mode, setMode] = useState<"auto" | "user">("user");
   const [country, setCountry] = useState<string | null>(null);
   const [rates, setRates] = useState<Rates | null>(null);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
-  // Indian until we know better, so the static HTML and first render match.
-  const [pickedNationality, setPickedNationality] = useState<Nationality | null>(null);
+  // Indian national prices unless the visitor picks foreign, or "auto" (follow the location).
+  // null = nothing picked = Indian (owner, 25 Nov 2026).
+  const [pickedNationality, setPickedNationality] = useState<Nationality | "auto" | null>(null);
   const [countrySource, setCountrySource] = useState<"ip" | "device">("ip");
   const [locating, setLocating] = useState(false);
 
@@ -121,9 +132,9 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     try {
       const v = localStorage.getItem(NATIONALITY_KEY);
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (v === "indian" || v === "foreign") setPickedNationality(v);
+      if (v === "indian" || v === "foreign" || v === "auto") setPickedNationality(v);
     } catch {
-      /* storage blocked: follow the location */
+      /* storage blocked: Indian prices */
     }
   }, []);
 
@@ -137,8 +148,9 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       setRates(saved.rates);
       setCountry(saved.country ?? null);
       setCountrySource(saved.countrySource ?? "ip");
-      setMode(saved.source);
-      setCurrencyState(saved.rates[saved.currency] ? saved.currency : BASE_CURRENCY);
+      const keep = saved.source === "user" || following(saved);
+      setMode(following(saved) ? "auto" : "user");
+      setCurrencyState(keep && saved.rates[saved.currency] ? saved.currency : BASE_CURRENCY);
     }
 
     (async () => {
@@ -171,15 +183,18 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       setCountry(detectedCountry);
       setCountrySource(fromDevice ? "device" : "ip");
 
-      const wanted = saved?.source === "user" ? saved.currency : currencyForCountry(detectedCountry);
+      // A manual pick stays; "Auto" (chosen) follows the country; everyone else gets INR.
+      const auto = following(saved);
+      const wanted = saved?.source === "user" ? saved.currency : auto ? currencyForCountry(detectedCountry) : BASE_CURRENCY;
       // No rate (upstream down, unknown code) → stay in INR rather than guess.
-      const final = table && table[wanted] ? wanted : BASE_CURRENCY;
+      const final = wanted === BASE_CURRENCY || (table && table[wanted]) ? wanted : BASE_CURRENCY;
       setCurrencyState(final);
-      setMode(saved?.source === "user" ? "user" : "auto");
+      setMode(auto ? "auto" : "user");
 
       if (table) {
         writeSaved({
-          source: saved?.source === "user" ? "user" : "auto",
+          source: auto ? "auto" : "user",
+          ...(auto ? { chosen: true } : {}),
           currency: final,
           country: detectedCountry,
           countrySource: fromDevice ? "device" : "ip",
@@ -204,7 +219,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       if (code === "auto") {
         setMode("auto");
         setCurrencyState(detected);
-        writeSaved({ source: "auto", currency: detected, country, rates: rates ?? undefined, ts: Date.now() });
+        writeSaved({ source: "auto", chosen: true, currency: detected, country, rates: rates ?? undefined, ts: Date.now() });
         return;
       }
       const next = code === BASE_CURRENCY || (rates && rates[code]) ? code : BASE_CURRENCY;
@@ -215,7 +230,12 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     [detected, country, rates]
   );
 
-  const locate = useCallback(async (): Promise<LocateResult> => {
+  /**
+   * Find the country from the device's location. `chosen` = the visitor tapped "Use my
+   * location": currency and price list then follow the location. The silent refresh on page
+   * load only updates the country, so the INR / Indian defaults stay unless they chose Auto.
+   */
+  const runLocate = useCallback(async (chosen: boolean): Promise<LocateResult> => {
     if (typeof navigator === "undefined" || !navigator.geolocation) return "unavailable";
     setLocating(true);
     try {
@@ -225,12 +245,31 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       setCountry(code);
       setCountrySource("device");
       const saved = readSaved();
-      const auto = saved?.source !== "user";
+      const auto = chosen || following(saved);
       const table = rates ?? saved?.rates ?? null;
       const wanted = currencyForCountry(code);
-      const next = auto ? (table && table[wanted] ? wanted : BASE_CURRENCY) : (saved?.currency ?? BASE_CURRENCY);
-      if (auto) setCurrencyState(next);
-      writeSaved({ source: auto ? "auto" : "user", currency: next, country: code, countrySource: "device", rates: table ?? undefined, ts: Date.now() });
+      const next = auto ? (table && table[wanted] ? wanted : BASE_CURRENCY) : (saved?.source === "user" ? saved.currency : BASE_CURRENCY);
+      if (auto) {
+        setMode("auto");
+        setCurrencyState(next);
+      }
+      if (chosen) {
+        setPickedNationality("auto");
+        try {
+          localStorage.setItem(NATIONALITY_KEY, "auto");
+        } catch {
+          /* storage blocked: lasts for this visit */
+        }
+      }
+      writeSaved({
+        source: auto ? "auto" : "user",
+        ...(auto ? { chosen: true } : {}),
+        currency: next,
+        country: code,
+        countrySource: "device",
+        rates: table ?? undefined,
+        ts: Date.now(),
+      });
       return "ok";
     } catch (err) {
       // GeolocationPositionError code 1 = the visitor said no.
@@ -239,6 +278,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       setLocating(false);
     }
   }, [rates]);
+  const locate = useCallback(() => runLocate(true), [runLocate]);
 
   // Visitors who already allowed location for this site get it refreshed silently; nobody is
   // prompted on page load (only the "Use my location" button asks).
@@ -248,7 +288,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     navigator.permissions
       .query({ name: "geolocation" as PermissionName })
       .then((p) => {
-        if (!cancelled && p.state === "granted") void locate();
+        if (!cancelled && p.state === "granted") void runLocate(false);
       })
       .catch(() => {});
     return () => {
@@ -259,16 +299,16 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setNationality = useCallback((n: Nationality | "auto") => {
-    setPickedNationality(n === "auto" ? null : n);
+    setPickedNationality(n);
     try {
-      if (n === "auto") localStorage.removeItem(NATIONALITY_KEY);
-      else localStorage.setItem(NATIONALITY_KEY, n);
+      localStorage.setItem(NATIONALITY_KEY, n);
     } catch {
       /* storage blocked: the pick lasts for this visit */
     }
   }, []);
   const autoNationality: Nationality = country && country.toUpperCase() !== "IN" ? "foreign" : "indian";
-  const nationality = pickedNationality ?? autoNationality;
+  // Nothing picked → Indian national prices; "auto" → from the location.
+  const nationality: Nationality = pickedNationality === "auto" ? autoNationality : (pickedNationality ?? "indian");
 
   const rate = currency === BASE_CURRENCY ? 1 : (rates?.[currency] ?? 1);
   const value = useMemo<CurrencyCtx>(
@@ -283,7 +323,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       format: (inr: number) => formatMoney(inr, currency, rate),
       setCurrency,
       nationality,
-      nationalitySource: pickedNationality ? "user" : "auto",
+      nationalitySource: pickedNationality === "auto" ? "auto" : "user",
       setNationality,
       countrySource,
       locate,

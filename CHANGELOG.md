@@ -17,6 +17,14 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+- **25 Nov 2026 · INR and Indian national prices by default** (`main`, owner request).
+  - **Visitors:** everyone now starts on INR and "Indian national prices", wherever they are (before, a visitor outside India, or on a foreign VPN, got their local currency and foreign-national prices automatically).
+  - "Auto" in both menus, and the "Use my location" button, still follow the location when the visitor chooses them, and that choice is remembered.
+  - Visitors saved on "Auto" before this change go back to INR.
+  - The silent location refresh on page load only updates the country; it no longer changes currency or prices.
+  - **Code:** `src/contexts/CurrencyContext.tsx` (`chosen` flag on the saved currency; the price list stores "auto" explicitly; nothing stored means Indian).
+  - **Tested:** 7 browser checks as a US visitor (first visit, old saved Auto, choosing Auto, choosing Indian again); 122 unit tests and 6 browser tests pass.
+
 - **25 Nov 2026 · Vercel Web Analytics; privacy page updated** (`main`, owner approved).
   - **Business:** page visits are counted by Vercel Web Analytics (`@vercel/analytics` 2.0.1, `src/components/SiteAnalytics.tsx`, in the root layout). No cookies.
     - Before sending, `src/lib/analytics.ts` strips the query string and #hash from every address, so checkout booking ids and password-reset codes never leave the site, and it skips `/admin` entirely (tested).
