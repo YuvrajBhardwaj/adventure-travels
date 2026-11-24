@@ -68,11 +68,17 @@ writeFileSync(join(pub, "brand/badge.png"), await crop(WHOLE, 384));
 writeFileSync(join(pub, "favicon.png"), await crop(WHOLE, 192, 6));
 writeFileSync(join(pub, "favicon-512.png"), await crop(WHOLE, 512, 16));
 writeFileSync(join(pub, "apple-touch-icon.png"), await crop(WHOLE, 180, 6));
-writeFileSync(join(pub, "favicon.ico"), ico(await Promise.all([16, 32, 48].map(async (size) => ({ size, data: await crop(PEAK, size) })))));
-// Browsers that prefer the SVG icon get the peak too, as an embedded 64 px PNG.
-const peak64 = (await crop(PEAK, 64)).toString("base64");
+// 16 and 32 px (browser tabs) use the peak alone; 48 px, the size Google's search results use,
+// gets the whole badge, like the header (owner, 25 Nov 2026).
+writeFileSync(
+  join(pub, "favicon.ico"),
+  ico(await Promise.all([16, 32, 48].map(async (size) => ({ size, data: await crop(size < 48 ? PEAK : WHOLE, size, size < 48 ? 0 : 2) }))))
+);
+// The SVG icon (listed first, so Google and most browsers pick it) is the whole badge too,
+// embedded at 192 px so it stays sharp at any size.
+const badge192 = (await crop(WHOLE, 192, 6)).toString("base64");
 writeFileSync(
   join(pub, "favicon.svg"),
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><image width="64" height="64" href="data:image/png;base64,${peak64}"/></svg>\n`
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><image width="192" height="192" href="data:image/png;base64,${badge192}"/></svg>\n`
 );
 console.log("badge and favicons written to public/");

@@ -17,6 +17,8 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+- **25 Nov 2026 · Site icon is the header badge everywhere** (`main`). `favicon.svg` (the icon Google and most browsers pick) was the peak alone; it is now the whole round "Himalayan Arc Adventure" badge from the header, and so is the 48 px image in `favicon.ico`. 16 and 32 px tab icons keep the peak, because the lettering can't be read that small. `scripts/make-favicons.mjs` builds them. The cartoon mountain in Google's results is an older icon Google cached; it changes after Google re-crawls the home page (request indexing in Search Console to speed it up).
+
 - **25 Nov 2026 · Guides: Kuari Pass trek guide and How to reach Joshimath** (`main`).
   - **Visitors and SEO:** new `/guides` section, server-rendered so all the text is in the exported HTML.
     - `/guides/kuari-pass-trek-guide` (about 1,100 words): at a glance, best time month by month, the day-by-day itinerary, cost per package, difficulty and AMS, weather route changes, packing, getting there.
