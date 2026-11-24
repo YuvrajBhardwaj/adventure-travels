@@ -96,6 +96,10 @@ module.exports = async function handler(req, res) {
   if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET || !db) {
     return res.status(503).json({ error: "Online payments are temporarily unavailable. Please contact us on WhatsApp." });
   }
+  // Test keys on the live site take no real money: shout about it in the Vercel logs.
+  if (process.env.VERCEL_ENV === "production" && RAZORPAY_KEY_ID.startsWith("rzp_test_")) {
+    console.error("create-order: production is using Razorpay TEST keys; no real payments will be taken.");
+  }
 
   const user = await getUserFromRequest(db, req);
   if (!user) return res.status(401).json({ error: "Please sign in to continue." });

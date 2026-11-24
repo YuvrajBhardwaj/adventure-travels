@@ -285,11 +285,18 @@ export default function CheckoutClient() {
         image: `${window.location.origin}/favicon.png`,
         prefill: order.prefill,
         theme: { color: "#059669" },
-        // UPI first (PhonePe, GPay, Paytm, BHIM…), other methods stay available below it.
+        // Google Pay / PhonePe / Paytm first (app on phones, QR on desktop), then any UPI app;
+        // cards, netbanking and wallets stay available below. Live keys only: test mode simulates UPI.
         config: {
           display: {
-            blocks: { upi: { name: "Pay using UPI", instruments: [{ method: "upi" }] } },
-            sequence: ["block.upi"],
+            blocks: {
+              gpay: {
+                name: "Google Pay, PhonePe or Paytm",
+                instruments: [{ method: "upi", apps: ["google_pay", "phonepe", "paytm"] }],
+              },
+              upi: { name: "Any UPI app or QR", instruments: [{ method: "upi" }] },
+            },
+            sequence: ["block.gpay", "block.upi"],
             preferences: { show_default_blocks: true },
           },
         },
