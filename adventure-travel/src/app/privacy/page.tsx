@@ -69,7 +69,7 @@ export default function PrivacyPage() {
         <ul className={list}>
           <li>We use <strong>no analytics and no advertising trackers</strong>.</li>
           <li>When you sign in, a sign-in cookie keeps you logged in.</li>
-          <li>To show prices in your currency, the site asks our server which country your connection comes from. Our host works this out from your IP address; we do not store it. Your currency and nationality choice are saved in your browser&apos;s local storage, not on our servers.</li>
+          <li>To show prices in your currency, the site asks our server which country your connection comes from. Our host works this out from your IP address; we do not store it. If you tap &ldquo;Use my location&rdquo; and allow it, your browser shares your approximate position (rounded to about 1 km) with BigDataCloud, which tells us only the country; we do not store your position. Your country, currency and nationality choice are saved in your browser&apos;s local storage, not on our servers.</li>
           <li>If you start a trek booking while signed out, the form is kept in that browser tab until you sign up, so you don&apos;t have to fill it in again.</li>
         </ul>
 

@@ -2,10 +2,11 @@
 
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { priceForNationality } from "@/lib/paymentRules";
+import { LocateButton } from "@/components/CurrencySwitcher";
 
 /**
  * Renders an INR catalogue price in the visitor's display currency and price list. Inline text
- * only, so it drops into any existing price markup. Foreign nationals see 3× (the price they are
+ * only, so it drops into any existing price markup. Foreign nationals see 2× (the price they are
  * charged); converted amounts carry a "≈" because they are indicative — the amount actually
  * charged is always the INR one.
  */
@@ -38,6 +39,7 @@ export function PriceNote({ inr, className = "" }: { inr: number; className?: st
           </button>
         </p>
       )}
+      {(foreign || converted) && <LocateButton label="Wrong country? Use my location" />}
       {converted && (
         <p>
           Shown in {currency} as an estimate. You&apos;re billed <strong>Rs.{billed}</strong> in INR. Your card issuer converts it at

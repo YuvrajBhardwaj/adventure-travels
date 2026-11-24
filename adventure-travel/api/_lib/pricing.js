@@ -7,9 +7,9 @@ const ADVANCE_CUTOFF_DAYS = 15; // advance only when the start is MORE than this
 const BALANCE_DUE_DAYS_BEFORE = 15;
 const MAX_TREK_GROUP = 10; // larger groups get a custom quote
 const MAX_COURSE_GROUP = 20;
-// Foreign nationals pay this many times the listed price (owner, 20 Nov 2026: permits and
-// local arrangements cost more for them). Mirrored for display in src/lib/paymentRules.ts.
-const FOREIGN_MULTIPLIER = 3;
+// Foreign nationals pay this many times the listed price (owner: 3× on 20 Nov 2026, 2× from
+// 24 Nov 2026). Mirrored for display in src/lib/paymentRules.ts.
+const FOREIGN_MULTIPLIER = 2;
 
 /** "foreign" for a foreign national, anything else counts as Indian. */
 function nationalityFactor(nationality) {

@@ -3,7 +3,8 @@
 -- Run AFTER supabase-payment-guard.sql (the setup script runs it last).
 -- Additive and idempotent: safe to re-run.
 --
--- Foreign nationals pay 3× the listed price (owner, 20 Nov 2026). The booking form asks
+-- Foreign nationals pay 2× the listed price (owner, 24 Nov 2026; 3× before). The multiplier
+-- lives in api/_lib/pricing.js, not in the database. The booking form asks
 -- "Indian national / Foreign national"; api/bookings.js stores the answer here and locks the
 -- amount from it (api/_lib/pricing.js). Existing bookings default to 'indian', which is what
 -- they were charged as.

@@ -13,10 +13,12 @@ const FRESH_MS = 6 * 60 * 60 * 1000;
 type Rates = Record<string, number>;
 
 interface Saved {
-  /** "user" = picked in the switcher, "auto" = detected from the visitor's IP. */
+  /** "user" = picked in the switcher, "auto" = detected from the visitor's location. */
   source: "user" | "auto";
   currency: string;
   country?: string | null;
+  /** "device" = from the browser's location (GPS/Wi-Fi), which then wins over the IP guess. */
+  countrySource?: "ip" | "device";
   rates?: Rates;
   ts: number;
 }
@@ -41,6 +43,31 @@ interface CurrencyCtx {
   /** "auto" = from the visitor's location (outside India → foreign), "user" = picked. */
   nationalitySource: "auto" | "user";
   setNationality: (n: Nationality | "auto") => void;
+  /** Where `country` came from: the IP guess (follows VPNs) or the device's own location. */
+  countrySource: "ip" | "device";
+  /** Ask the browser for the device's location and set country, currency and price list from it. */
+  locate: () => Promise<LocateResult>;
+  locating: boolean;
+}
+
+export type LocateResult = "ok" | "denied" | "unavailable";
+
+/**
+ * Country code for a position, via BigDataCloud's free client-side reverse geocoder (no key;
+ * listed in the CSP connect-src in vercel.json). Only the rounded coordinates are sent.
+ */
+async function countryAt(lat: number, lon: number): Promise<string | null> {
+  const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat.toFixed(2)}&longitude=${lon.toFixed(2)}&localityLanguage=en`;
+  const res = await fetch(url);
+  if (!res.ok) return null;
+  const code = String((await res.json()).countryCode ?? "").toUpperCase();
+  return /^[A-Z]{2}$/.test(code) ? code : null;
+}
+
+function devicePosition(): Promise<GeolocationPosition> {
+  return new Promise((resolve, reject) =>
+    navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60 * 60 * 1000 })
+  );
 }
 
 const Ctx = createContext<CurrencyCtx>({
@@ -56,6 +83,9 @@ const Ctx = createContext<CurrencyCtx>({
   nationality: "indian",
   nationalitySource: "auto",
   setNationality: () => {},
+  countrySource: "ip",
+  locate: async () => "unavailable",
+  locating: false,
 });
 
 function readSaved(): Saved | null {
@@ -84,6 +114,8 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   // Indian until we know better, so the static HTML and first render match.
   const [pickedNationality, setPickedNationality] = useState<Nationality | null>(null);
+  const [countrySource, setCountrySource] = useState<"ip" | "device">("ip");
+  const [locating, setLocating] = useState(false);
 
   useEffect(() => {
     try {
@@ -104,6 +136,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setRates(saved.rates);
       setCountry(saved.country ?? null);
+      setCountrySource(saved.countrySource ?? "ip");
       setMode(saved.source);
       setCurrencyState(saved.rates[saved.currency] ? saved.currency : BASE_CURRENCY);
     }
@@ -111,7 +144,10 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     (async () => {
       const [ratesRes, geoRes] = await Promise.allSettled([
         fetch("/api/rates").then((r) => (r.ok ? r.json() : Promise.reject(new Error("rates")))),
-        saved?.source === "user" ? Promise.resolve(null) : fetch("/api/geo").then((r) => (r.ok ? r.json() : null)),
+        // A country found from the device's location beats the IP guess, so skip the lookup.
+        saved?.source === "user" || saved?.countrySource === "device"
+          ? Promise.resolve(null)
+          : fetch("/api/geo").then((r) => (r.ok ? r.json() : null)),
       ]);
       if (cancelled) return;
 
@@ -123,10 +159,17 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       // `npm run dev`, where /api/geo doesn't run. It only changes what is shown; bookings are
       // still priced by the nationality chosen on the form.
       const forced = new URLSearchParams(window.location.search).get("country");
+      // The silent device lookup may have finished while we waited: never overwrite it with the IP guess.
+      const latest = readSaved();
+      const device = latest?.countrySource === "device" ? latest : saved?.countrySource === "device" ? saved : null;
       const detectedCountry: string | null = forced && /^[a-z]{2}$/i.test(forced)
         ? forced.toUpperCase()
-        : geoRes.status === "fulfilled" && geoRes.value ? (geoRes.value.country ?? null) : (saved?.country ?? null);
+        : device
+          ? (device.country ?? null)
+          : geoRes.status === "fulfilled" && geoRes.value ? (geoRes.value.country ?? null) : (saved?.country ?? null);
+      const fromDevice = !forced && Boolean(device);
       setCountry(detectedCountry);
+      setCountrySource(fromDevice ? "device" : "ip");
 
       const wanted = saved?.source === "user" ? saved.currency : currencyForCountry(detectedCountry);
       // No rate (upstream down, unknown code) → stay in INR rather than guess.
@@ -139,6 +182,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
           source: saved?.source === "user" ? "user" : "auto",
           currency: final,
           country: detectedCountry,
+          countrySource: fromDevice ? "device" : "ip",
           rates: table,
           ts: Date.now(),
         });
@@ -171,6 +215,49 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     [detected, country, rates]
   );
 
+  const locate = useCallback(async (): Promise<LocateResult> => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) return "unavailable";
+    setLocating(true);
+    try {
+      const pos = await devicePosition();
+      const code = await countryAt(pos.coords.latitude, pos.coords.longitude);
+      if (!code) return "unavailable";
+      setCountry(code);
+      setCountrySource("device");
+      const saved = readSaved();
+      const auto = saved?.source !== "user";
+      const table = rates ?? saved?.rates ?? null;
+      const wanted = currencyForCountry(code);
+      const next = auto ? (table && table[wanted] ? wanted : BASE_CURRENCY) : (saved?.currency ?? BASE_CURRENCY);
+      if (auto) setCurrencyState(next);
+      writeSaved({ source: auto ? "auto" : "user", currency: next, country: code, countrySource: "device", rates: table ?? undefined, ts: Date.now() });
+      return "ok";
+    } catch (err) {
+      // GeolocationPositionError code 1 = the visitor said no.
+      return (err as { code?: number })?.code === 1 ? "denied" : "unavailable";
+    } finally {
+      setLocating(false);
+    }
+  }, [rates]);
+
+  // Visitors who already allowed location for this site get it refreshed silently; nobody is
+  // prompted on page load (only the "Use my location" button asks).
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !navigator.permissions?.query) return;
+    let cancelled = false;
+    navigator.permissions
+      .query({ name: "geolocation" as PermissionName })
+      .then((p) => {
+        if (!cancelled && p.state === "granted") void locate();
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+    // Once per page load; locate's identity changes when rates arrive.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const setNationality = useCallback((n: Nationality | "auto") => {
     setPickedNationality(n === "auto" ? null : n);
     try {
@@ -198,8 +285,11 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       nationality,
       nationalitySource: pickedNationality ? "user" : "auto",
       setNationality,
+      countrySource,
+      locate,
+      locating,
     }),
-    [currency, country, mode, detected, rates, updatedAt, rate, setCurrency, nationality, pickedNationality, setNationality]
+    [currency, country, mode, detected, rates, updatedAt, rate, setCurrency, nationality, pickedNationality, setNationality, countrySource, locate, locating]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

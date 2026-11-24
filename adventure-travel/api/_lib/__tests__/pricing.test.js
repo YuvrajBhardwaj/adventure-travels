@@ -74,15 +74,15 @@ describe("trekAmount", () => {
 });
 
 describe("foreign nationals", () => {
-  it("pay three times the trek price, per person, in every option", () => {
-    expect(trekAmount(plainTrek, 1, undefined, "foreign")).toBe(1800000);
-    expect(trekAmount(tieredTrek, 2, "Double sharing", "foreign")).toBe(3899400);
+  it("pay twice the trek price, per person, in every option", () => {
+    expect(trekAmount(plainTrek, 1, undefined, "foreign")).toBe(1200000);
+    expect(trekAmount(tieredTrek, 2, "Double sharing", "foreign")).toBe(2599600);
     expect(trekAmount(plainTrek, 1, undefined, "indian")).toBe(600000);
     expect(trekAmount(plainTrek, 1, undefined, "anything else")).toBe(600000);
   });
-  it("pay three times the course price", () => {
-    expect(courseAmount(tieredCourse, "basic", "base", 1, "foreign")).toBe(3000000);
-    expect(courseAmount(flatCourse, undefined, "", 2, "foreign")).toBe(21000000);
+  it("pay twice the course price", () => {
+    expect(courseAmount(tieredCourse, "basic", "base", 1, "foreign")).toBe(2000000);
+    expect(courseAmount(flatCourse, undefined, "", 2, "foreign")).toBe(14000000);
   });
 });
 

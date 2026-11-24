@@ -17,6 +17,12 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+### 24 Nov 2026: foreign nationals pay 2×; "Use my location" for prices — `main`
+- **Business / Backend:** foreign nationals now pay **2×** the listed price (was 3×), by request. Changed where the money is charged (`FOREIGN_MULTIPLIER` in `api/_lib/pricing.js`) and where it's shown (`src/lib/paymentRules.ts`); pricing tests updated (29 pass). No database change. Bookings already made keep their price.
+- **Visitors:** the country (and so currency and Indian or foreign prices) was a guess from the IP address, which follows VPNs, office proxies and some mobile networks, so Indians could see foreign prices. New **"Use my location"** button in the footer and under foreign or converted prices: with the visitor's permission it reads the device's location (GPS/Wi-Fi), finds the country (BigDataCloud, coordinates rounded to ~1 km) and sets currency and price list; the result is remembered over the IP guess. Visitors who already allowed it get it refreshed silently; nobody is asked on page load. Tested in Chrome: Paris → France, Rs.13,998 for Kuari Pass (2× Rs.6,999); Joshimath → India, Rs.6,999.
+- **Security headers:** `geolocation=()` → `geolocation=(self)` (vercel.json and layout) so the site itself may ask; CSP allows api.bigdatacloud.net (a921223). Privacy policy explains the location lookup.
+- **Still true:** the booking form's nationality answer decides what is charged.
+
 - **24 Nov 2026 · 5 more tour photos; tour galleries no longer show each photo twice** (`main`). Visitors: Auli Winter Escape gets 4 new photos (IMG_5917, IMG_5921, IMG_6361, IMG_7216) and Chopta & Tungnath 1 (IMG_6412, by the lake); the two HEIC files were converted with Windows' own decoder (sharp can't read HEIC). Bug fixed: the tour galleries listed every photo twice (the photo and its `.800` phone copy) and asked for `….800.800.jpg` files that don't exist; `src/lib/tourPhotos.ts` now skips the phone copies, with a test. Originals are in `media-originals/assets/tours/`; the served copies are watermarked and carry no GPS. The two videos in the Auli drop (14 MB and 82 MB) are not on the site: they need ffmpeg to shrink.
 
 - **24 Nov 2026 · YouTube channel on the site** (`main`). Visitors: a YouTube icon next to Instagram in the footer (desktop and phone) opens youtube.com/@HimalayanArcAdventure. Business/SEO: the channel is added to the Organization `sameAs` in the structured data, so Google can tie it to the site.

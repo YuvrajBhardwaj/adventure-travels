@@ -226,7 +226,7 @@ export default function RootLayout({
         <meta name="X-Content-Type-Options" content="nosniff" />
         <meta name="X-Frame-Options" content="DENY" />
         <meta name="Referrer-Policy" content="strict-origin-when-cross-origin" />
-        <meta name="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
+        <meta name="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self)" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}

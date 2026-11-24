@@ -38,10 +38,10 @@ export function isOverdue(paymentState: PaymentState | null | undefined, dueDate
 }
 
 /**
- * Foreign nationals pay this many times the listed price (owner, 20 Nov 2026: permits and local
- * arrangements cost more). The server applies it when the booking says "foreign" (api/_lib/pricing.js).
+ * Foreign nationals pay this many times the listed price (owner: 2× from 24 Nov 2026). The server
+ * applies it when the booking says "foreign" (api/_lib/pricing.js).
  */
-export const FOREIGN_MULTIPLIER = 3;
+export const FOREIGN_MULTIPLIER = 2;
 
 /** A listed INR price as charged to an Indian or a foreign national. */
 export function priceForNationality(inr: number, nationality: "indian" | "foreign") {

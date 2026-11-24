@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { LocateFixed } from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { BASE_CURRENCY, SWITCHER_CURRENCIES } from "@/lib/currency";
 import { Select } from "@/components/ui/select";
@@ -62,4 +64,43 @@ export function NationalitySwitcher({ className = "" }: { className?: string }) 
       </Select>
     </label>
   );
+}
+
+/**
+ * "Use my location": sets country, currency and price list from the device's location
+ * (GPS/Wi-Fi) instead of the IP guess, which follows VPNs and some mobile networks.
+ * The browser asks permission first; nothing is asked on page load.
+ */
+export function LocateButton({ className = "", label = "Use my location" }: { className?: string; label?: string }) {
+  const { locate, locating, country, countrySource } = useCurrency();
+  const [note, setNote] = useState("");
+  const onClick = async () => {
+    setNote("");
+    const result = await locate();
+    if (result === "denied") setNote("Location is blocked for this site. Pick your prices with the switch instead.");
+    else if (result === "unavailable") setNote("Couldn't find your location. Pick your prices with the switch instead.");
+  };
+  return (
+    <span className={cn("inline-flex flex-wrap items-center gap-x-2", className)}>
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={locating}
+        className="inline-flex min-h-11 items-center gap-1.5 font-semibold underline underline-offset-2 disabled:opacity-60 md:min-h-0"
+      >
+        <LocateFixed className="h-3.5 w-3.5" aria-hidden />
+        {locating ? "Finding you…" : label}
+      </button>
+      {countrySource === "device" && country && !note && <span aria-live="polite">Location: {regionName(country)}</span>}
+      {note && <span role="status">{note}</span>}
+    </span>
+  );
+}
+
+function regionName(code: string) {
+  try {
+    return new Intl.DisplayNames(["en-IN"], { type: "region" }).of(code) ?? code;
+  } catch {
+    return code;
+  }
 }

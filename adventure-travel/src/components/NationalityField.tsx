@@ -7,7 +7,7 @@ import { Select } from "@/components/ui/select";
 /**
  * "Nationality" on booking and enquiry forms. It is the site-wide price-list setting, so the
  * prices on the page always match what the form will be charged; the server prices the booking
- * from the value sent with it (foreign nationals pay 3×, api/_lib/pricing.js).
+ * from the value sent with it (foreign nationals pay 2×, api/_lib/pricing.js).
  */
 export default function NationalityField({ id, className }: { id: string; className?: string }) {
   const { nationality, setNationality } = useCurrency();

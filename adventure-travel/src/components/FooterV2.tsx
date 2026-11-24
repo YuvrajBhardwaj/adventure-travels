@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "./MotionWrapper";
 import SmartImage from "./SmartImage";
-import CurrencySwitcher, { NationalitySwitcher } from "./CurrencySwitcher";
+import CurrencySwitcher, { LocateButton, NationalitySwitcher } from "./CurrencySwitcher";
 import { POPULAR_TREK_SLUGS, treks } from "@/data/treks";
 import { TOURS } from "@/data/tours";
 import { Input } from "@/components/ui/input";
@@ -397,6 +397,7 @@ export default function FooterV2() {
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-white/50">
               <CurrencySwitcher />
               <NationalitySwitcher />
+              <LocateButton className="text-white/70 hover:text-white" />
               {legalLinks.map((link) => (
                 <Link key={link.label} href={link.href} className="inline-flex min-h-11 items-center hover:text-white transition-colors duration-150 ease-out md:min-h-0">
                   {link.label}

@@ -137,7 +137,7 @@ export async function createTrekBooking(input: {
   date: string;
   groupSize: string;
   roomSharing?: string;
-  /** Foreign nationals are charged 3× by the server. */
+  /** Foreign nationals are charged 2× by the server. */
   nationality?: "indian" | "foreign";
   message?: string;
 }): Promise<CreatedBooking> {
