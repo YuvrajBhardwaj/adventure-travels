@@ -10,12 +10,14 @@ Also at the root:
 - **`CHANGELOG.md`, `TODO.md`:** how the owner tracks the project (see below).
 - **`specs/001-persistent-backend/`:** the Spec Kit design docs for the backend: spec, plan, data model, API contracts, quickstart with validation scenarios V1–V22. Code comments cite their requirement ids (`FR-016`, research `R5`, …).
 - **`.mcp.json`:** a Supabase MCP server for project `sdhtgmlkzcknmeakxgdz` (it needs `/mcp` sign-in).
-- **OpenCode scaffold:** `opencode.json`, `.opencode/`, `.agents/skills/`, `skills-lock.json`. Not part of the app.
+- **OpenCode scaffold:** `opencode.json`, `.opencode/`. Not part of the app. Locally installed agent skills (`.agents/`, `skills-lock.json`, `AGENTS.md`) are git-ignored.
 - **Reference material:** `REFERENCE_SITE.md`, `reference-*.png`, `screenshot.js` (the original visual reference) and `graphify-out/`: a code graph of `src/` (`GRAPH_REPORT.md`, `graph.json`), rebuilt with `graphify update adventure-travel/src`, which writes into `adventure-travel/src/graphify-out/`; move that into the root `graphify-out/`.
 - **Git-ignored, never edit or commit:**
   - root-level `*.html`, `_next/` and route folders: stale static-export output
   - `.claude/` and `.specify/`: tooling
   - `/media-originals/`: full-resolution photo originals.
+  - `.agents/`, `skills-lock.json`, `AGENTS.md`: locally installed agent skills
+  - `adventure-travel/assets/`: raw photo drops from the owner; `*.log` files.
 
 ## Keep CHANGELOG.md and TODO.md current
 

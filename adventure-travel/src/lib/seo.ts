@@ -18,10 +18,13 @@ export const SOCIAL_IMAGE = {
 /**
  * Social profiles listed in the Organization `sameAs`. Only profiles that exist belong here.
  * Checked 2026-10-19: facebook.com/himalayan_arc_adventure returns HTTP 400 (Facebook usernames
- * can't contain "_") and youtube.com/@himalayan_arc_adventure returns 404, so both stay out
- * until the owner confirms the real URLs.
+ * can't contain "_"), so it stays out until the owner confirms the real URL. YouTube is
+ * @HimalayanArcAdventure (owner, 24 Nov 2026).
  */
-export const SOCIAL_PROFILES = ["https://www.instagram.com/himalayan_arc_adventure/"];
+export const SOCIAL_PROFILES = [
+  "https://www.instagram.com/himalayan_arc_adventure/",
+  "https://www.youtube.com/@HimalayanArcAdventure",
+];
 
 /** Absolute URL on this site for a path such as "/assets/kuari-pass-trek/x.jpeg"; full URLs pass through. */
 export function absoluteUrl(pathOrUrl: string): string {

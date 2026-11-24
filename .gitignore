@@ -20,9 +20,18 @@
 # (The specs it writes, in specs/, stay tracked — the code links to them as design docs.)
 .specify/
 .claude/
+# Agent skills installed locally (find-skills, ui-taste, …), their lock file and agent rules:
+# per-machine tooling, not part of the site (owner, 24 Nov 2026).
+.agents/
+skills-lock.json
+AGENTS.md
 
 # Full-resolution photo originals (scripts/prepare-photos.mjs). Never published or committed.
 /media-originals/
+# Raw photo drops from the owner (hundreds of MB); prepare-photos.mjs puts the web-sized copies in public/.
+/adventure-travel/assets/
+# Dev server logs
+*.log
 
 # env files (secrets) — keep examples only
 .env*

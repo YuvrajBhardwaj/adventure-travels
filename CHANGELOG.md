@@ -17,7 +17,7 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
-- **24 Nov 2026 · YouTube channel on the site** (uncommitted). Visitors: a YouTube icon next to Instagram in the footer (desktop and phone) opens youtube.com/@HimalayanArcAdventure. Business/SEO: the channel is added to the Organization `sameAs` in the structured data, so Google can tie it to the site.
+- **24 Nov 2026 · YouTube channel on the site** (`main`). Visitors: a YouTube icon next to Instagram in the footer (desktop and phone) opens youtube.com/@HimalayanArcAdventure. Business/SEO: the channel is added to the Organization `sameAs` in the structured data, so Google can tie it to the site.
 
 ### 24 Nov 2026: SEO on every page, and GEO (AI search) — `main` (71cc9b9 + 49e7284, live)
 - **Google:** every public page (43 checked) now has a title, description, canonical link, breadcrumbs and its own structured data. New on /treks and /courses (lists of every trek or course), /destinations and /activities (collection pages), /contact (contact page) and /faq, /cancellation-policy, /terms and /privacy (breadcrumbs and page data). /treks, /courses, /destinations, /activities and the two hub pages now share a real photo instead of the logo card.
