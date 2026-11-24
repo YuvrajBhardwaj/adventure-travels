@@ -2,334 +2,85 @@
 
 What's left, most urgent first. Tick items off here and record the change in [CHANGELOG.md](CHANGELOG.md).
 **You** = the business owner (accounts, dashboards, decisions). **Dev** = code work Claude or a developer can do.
-Last updated: 7 Nov 2026.
+Last updated: 24 Nov 2026. On 24 Nov every open item was checked against the code and the list was rewritten: finished items were removed, duplicates merged and the rest ordered by priority. Finished work is recorded in the CHANGELOG.
 
-- [x] ~~**You: check the new phone menu on the preview**~~ (6 Nov, styled after oknadesigns.com). Live on 6 Nov.
-- [x] ~~**You: check the new phone/tablet home page on the preview** (6 Nov: swipeable photo cards, photo slideshows on cards, timeline), the redrawn mountain graphic and the "Enquire now" tab on trek and course pages, then say "go live".~~ Live on 7 Nov (`de34d31`, by request).
-- [x] ~~**Dev:** calm course page background, day-by-day skill track and per-day prices~~ (6 Nov, on the preview branch, uncommitted).
-- [x] ~~**Dev:** clearer Google title and description, ski school page title, new site icon~~ (7 Nov, on the preview branch, uncommitted).
-- [x] ~~**Redeploy the 7 Nov change.**~~ Claude retried it; live on 7 Nov (`8af2cf0`).
-- [x] ~~**Dev:** walk-the-route altitude chart on trek pages; gliding trek filters~~ (7 Nov, on the preview branch).
-- [x] ~~**You: OK to update the live database?** `supabase-payment-guard.sql` (24 Nov) stops late payments from overbooking a full trek batch; tested locally. Say yes and Claude runs that one file on Supabase.~~ (24 Nov: approved and applied.)
-- [ ] **You: hero slideshow on phones.** It is 1.5 MB of the 2.2 MB a phone loads on the home page. Options: show 2 slides on phones instead of 4, or keep it as it is.
-- [ ] **You: confirm Pangarchula prices from Rishikesh/Haridwar/Dehradun.** Set to double Rs.11,000 and triple Rs.10,499 (the Kuari rule: triple is Rs.501 less). Tell Claude if they should differ.
-- [ ] **You: put the new Razorpay test keys into Vercel** (7 Nov; the Test Mode webhook is done and checked, keys in Vercel still unconfirmed): Vercel → adventure-travels → Settings → Environment Variables → edit `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` (copy them from `adventure-travel/.env.local`) → Deployments → ⋯ → Redeploy. Then in the new Razorpay account (Test Mode) add the webhook `https://www.himalayanarcadventure.com/api/razorpay-webhook` with the `RAZORPAY_WEBHOOK_SECRET` from `.env.local`, events `payment.captured`, `order.paid`, `payment.failed`.
-- [ ] **You: try the new altitude chart on the preview** (any trek page, "Elevation Profile": drag along it on your phone), then say "go live".
-- [x] ~~**You: are the trek card star ratings real?** Cards show e.g. "★ 4.9 (623)", typed into `src/data/treks.ts`. If they aren't from real reviews (Google, TripAdvisor), remove them: invented ratings can get the site penalised by Google and break consumer-protection rules.~~ (13 Nov: ratings deleted from the data; they no longer show anywhere.)
-- [ ] **You: after these go live,** open Google Search Console → URL inspection → request indexing for the home page, `/courses` and `/activities`, so Google picks up the new titles and icon sooner. Google chooses the links under the result itself; it can take a few weeks.
-- [x] ~~**Dev:** footer logo uses the new icon~~ (7 Nov).
-- [x] ~~**Dev:** Backcountry skill steps; deleted the unused `CourseVideoBackdrop.tsx`~~ (7 Nov).
-- [ ] **You (optional):** glance at the course skill steps on each course page; tell Claude if any line is wrong.
-- [x] ~~**Dev:** daily departures through each trek's season, Calendar-style Dates tab~~ (6 Nov, on the preview branch, `8e6acec`).
-- [ ] **You: check the season windows** in `adventure-travel/src/data/trekSeasons.ts` (`DEPARTURE_CALENDAR`, also listed in CHANGELOG 6 Nov), e.g. whether Roopkund or Satopanth should run daily instead of weekly, and the 3-day / 21-day booking notice.
-- [ ] **You: decide about the old seeded Saturday dates** in the database. They still show as overrides, and some fall outside the new windows (e.g. Kuari Pass in early September). Claude can delete the ones outside the season (a live database change, needs your OK).
-- [ ] **Dev (optional, needs a SQL change):** count bookings on generated daily dates, so a busy day turns "Filling fast"/"Full" by itself. Today only dates with an admin row can fill up.
-- [x] ~~**Dev:** Kuari Pass Day 3 note: turn back to Khulara if weather or a landslide blocks the pass; Pangarchula Day 4 note: head down to Karchi if Tali is closed~~ (20 Nov, `main`).
-- [ ] **You (optional):** if the group turns back to Khulara on Kuari Pass Day 3, what happens on Day 4 (walk out Khulara → Joshimath, or retry the pass)? Tell Claude and it can add that to the Day 4 note.
-- [x] ~~**Dev:** self-host the three fonts (`next/font/local`) so a Google Fonts hiccup can't fail a build again (it failed one production build on 6 Nov).~~ (20 Nov)
-- [ ] **Dev:** card slideshows load more photos per home visit. Shrink card photos to about 800 px (they are 1600 px today) in `scripts/prepare-photos.mjs` to save phone data and Vercel bandwidth.
+## 1. Before real customers can pay (You)
+- [ ] **You: switch Razorpay to live (real money, Google Pay included)** (24 Nov). Code is ready; only keys change. **Done 24 Nov:** live Key ID + Secret in Vercel Production, redeployed. **Still open:** regenerate the key (the secret was pasted in a chat), the live webhook + `RAZORPAY_WEBHOOK_SECRET` (step 3), and the real test payment (step 5). 1) Razorpay dashboard → finish account activation (KYC, bank account, website `www.himalayanarcadventure.com` approved). 2) Switch the dashboard to **Live Mode** → Account & Settings → API Keys → Generate live key (`rzp_live_…` + secret). 3) Live Mode → Webhooks → add `https://www.himalayanarcadventure.com/api/razorpay-webhook`, events `payment.captured`, `order.paid`, `payment.failed`, with a new secret. 4) Vercel → Settings → Environment Variables (Production only) → set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` to the live values → Redeploy. Keep test keys on Preview. 5) Make one small real booking with Google Pay, check it shows paid on /admin/payments, then refund it in Razorpay. (UPI/Google Pay must also be enabled for the account under Live Mode → Payment Methods.) Also decide whether to accept international cards (foreign nationals pay 3×).
+- [ ] **You: upgrade Vercel to Pro (about $20 a month)** at the same time. Hobby is for non-commercial use only and pauses the site when a monthly limit runs out (around 10,000 visitors a month at today's page weight).
+- [ ] **You: make the GitHub repo private.** GitHub → `YuvrajBhardwaj/adventure-travels` → Settings → General → Danger Zone → "Change visibility" → Private. Today anyone can download the code, photo originals and business documents. Vercel still deploys from a private repo.
+- [ ] **You: rotate the Gmail App Password** (it was shared in chat on 23 Oct), then give Claude the new one for `.env.setup` and Vercel.
+- [ ] **You: Supabase → Authentication:** turn on leaked-password protection and check the minimum password length.
+- [ ] **You: answer for the Privacy and Terms pages:** does **support@himalayanarcadventure.com** exist (several pages use it)? Which email takes cancellations? How long are booking records kept? Who is the grievance contact (DPDP Act)? Are guest names shared with hotels, permit offices or trek leaders?
 
-- [x] ~~**Dev:** meal count skips the last day; no-AI-slop copy pass on the FAQ, headings, camping, tours and terms~~ (24 Nov, uncommitted).
-- [ ] **You: claims Claude left in but can't check:** "Certified Instructors: professional coaches with international certifications" (/courses), "Every activity is guided and insured" (/activities), "trained to recognise AMS" and "A Gamow bag … with every Challenging route" (home), "a personalised evaluation from your Level 4 Pro" (snowboard course). Keep them only if they're true.
-- [x] ~~**Dev:** Kuari Pass Triple / Double occupancy pricing with pickup choice~~ (24 Nov, `main`, uncommitted).
-- [ ] **You: confirm the Kuari Pass Rishikesh/Haridwar/Dehradun rates:** Claude set Triple Rs.8,499 and Double Rs.9,000 (the old Rs.9,000 rate kept for double, triple Rs.501 less as at Joshimath). Say if triple should be different.
-- [x] ~~**Dev:** new payment, cancellation and ski-course terms on the policy page, trek/course itineraries, checkout, FAQ and emails~~ (20 Nov, `main`).
-- [x] ~~**You: confirm what was dropped with the new terms.**~~ (20 Nov: treks and tours keep the original policy; the new terms are for ski and snowboard courses only.)
-- [ ] **You: December ski batches.** The terms say customers pay only after you confirm the batch, but checkout still lets them pay a December course straight away. Either take December bookings as enquiries only, or ask Claude to block online payment for December course batches until 7 days before the start.
-- [ ] **You: no-snow refunds** are done by hand: refund in the Razorpay dashboard, then mark the booking refunded on /admin/bookings.
+## 2. Dev: high
+- [ ] **Test (Razorpay Test Mode):** the full booking → payment → receipt flow with UPI, card and net banking; failed and cancelled payments; the back button from Razorpay; phones at 320–1440 px. Then checks V1–V22 of [quickstart.md](specs/001-persistent-backend/quickstart.md) and record the results there. Needs a test login.
+- [ ] **Dev P1: 3% surcharge on card payments** (the owner chose to charge it). Needs Razorpay customer-fee settings, showing the fee before payment, and `apply_payment()` accepting the fee-inclusive amount. Until then the terms mention 3% but checkout doesn't charge it.
+- [x] ~~**Dev: lighter home hero layers.**~~ (24 Nov: re-compressed, 1.49 MB → 0.99 MB for all 4 slides. 800 px copies wouldn't help: on a phone the hero is ~1,070 CSS px wide, so 800 px would look blurry.)
+- [ ] **You: hero slideshow on phones:** show 2 slides instead of 4 to cut the phone download further (about 0.9 MB at start now), or keep it?
+- [ ] **You: after the next deploy, make one test-mode payment** (UPI and card) to confirm checkout works with the new Content-Security-Policy. It passed in a browser test (13 pages, Razorpay window opens), but not a full payment. If checkout breaks, delete the `Content-Security-Policy` line in `adventure-travel/vercel.json`.
 
-## Site audit (13 Nov 2026: pages, backend, SEO, live site)
-- [x] ~~**You: approve the payment fix on the live database.** Written and tested locally (13 Nov): `supabase-payment-guard.sql` replaces `apply_payment()` so an advance+full double payment, or a payment on a cancelled/refunded booking, no longer changes the booking; the payment is kept and marked "Needs refund" on /admin/payments. Say yes and Claude runs it on Supabase (then marks it ☑ in the CHANGELOG backend tracker).~~ Approved and applied 13 Nov.
-- [x] ~~**Dev (medium):** a payment that lands after the 15-min seat hold can overbook a full batch. Set the Razorpay order to expire with the hold, or check seats in `apply_payment()`.~~ (20 Nov: Razorpay checkout times out with the hold)
-- [x] ~~**Dev (medium):** signed-out course bookings (`api/bookings.js`) have no rate limit or captcha and email any address typed in. Add a limit or captcha.~~ (20 Nov: 3 per email per hour + honeypot)
-- [x] ~~**You + Dev:** Privacy Policy and Terms pages. Neither exists, and Razorpay usually checks for them before switching on live payments.~~ (24 Nov: /privacy and /terms exist and are linked from the footer.)
-- [x] ~~**Dev:** footer Facebook and YouTube links are dead (`FooterV2.tsx:60,62`). Remove them, or tell Claude the real profile links.~~ (13 Nov: removed; only Instagram remains.)
-- [x] ~~**Dev:** a branded 404 page (`not-found.tsx`) with links to treks; make `/admin` open the bookings list instead of a 404.~~ (20 Nov)
-- [x] ~~**Dev:** fix trek facts: Pangarchula Day 3 says 15,419 ft (4,700 m) but the trek says 4,600 m; Kuari Day 2 says "+1,500 ft" (it's about 4,860 ft); the elevation charts of Kalindi Khal, Gupt Khal, Nanda Devi BC and Bhrigu Lake have a different number of points from their itinerary days; the FAQ start towns ("Dehradun, Manali or Delhi").~~ (20 Nov)
-- [x] ~~**You: confirm or remove claims:** "since 2010" / "Est. 2010", the 8 home testimonials and the course testimonials, "No-cost EMI", "Filling Fast", "India's highest motorable pass". Dev can then delete the unused `rating`/`reviewCount` data in `treks.ts`.~~ (13 Nov, owner: "since 2010" is true and stays. Removed the home and course testimonials, "No-cost EMI", "India's highest motorable pass" and the unused ratings. "Filling fast" stays: it comes from real seat counts.)
-- [x] ~~**Dev (SEO):** home h1 that matches a search; related treks on trek pages; breadcrumb "Adventures" → "Treks"; Panpatia share image~~ (20 Nov, `main`).
-- [ ] **You: photos for the 9 treks that still share the generic card or a stock photo:** Brahmatal, Roopkund, Kalindi Khal, Gupt Khal, Nanda Devi Base Camp, Mana Pass, Niti Pass, Rimkhim, Madhyamaheshwar. Rimkhim's cover is a stock photo of the Matterhorn (Switzerland), which now also shows under "More treks like this"; replace it first. Drop photos in `adventure-travel/public/assets/<trek>/` and ask Claude to wire them in.
-- [ ] **You: the off-site work that actually makes the site known** (the full list is in `adventure-travel/docs/seo/2026-10-21-traffic-and-bookings-plan.md`): Google Business Profile for Joshimath, a Google review request after every batch, Search Console sitemap + indexing, Instagram reels from each departure that link to the trek page, and listings on Thrillophilia, TripAdvisor and JustDial.
-- [ ] **You: decide (traffic plan D1):** should visitors who aren't signed in go straight to WhatsApp with their booking details, or keep today's flow (sign up first, the form is kept and restored)? The plan recommends WhatsApp first and an account only at payment.
-- [ ] **Dev (traffic plan D11):** cookieless Vercel Web Analytics. `npm install @vercel/analytics` stopped on a peer-dependency conflict (20 Nov); needs a look before adding. **You:** then switch on Analytics in Vercel → Project → Analytics.
-- [x] ~~**Dev (traffic plan D3, D6):**~~ WhatsApp links already name their trek/tour/course (the generic floating button is only on the home page); the refund summary is on trek pages (20 Nov).
-- [ ] **Dev (content):** the 3 story articles are still placeholders (`stories.ts`); write them or drop the stories section.
-- [ ] **Dev (phone, cosmetic):** the mobile menu doesn't cover the page (the booking bar and WhatsApp button show through); the season stat card wraps to 3+ lines; three floating calls to action on trek pages. (24 Nov: the "Enquire" tab now also shows on phones, by request, so watch that the right edge doesn't feel crowded.)
-- [ ] **You: photos for Chopta & Tungnath.** The tour page and its link preview have no photo of ours yet (it shows the mountain outline). Put photos in `adventure-travel/public/assets/tours/tungnath/`, set the Tungnath trek's cover, then run `node scripts/prepare-photos.mjs`; the share card follows automatically.
-- [x] ~~**Dev: make the Chopta tour and the Tungnath trek page differ.**~~ (14 Nov: the tour has its own intro and day-by-day text; prices and facts still come from the trek.)
-- [ ] **You: after the tour changes go live,** check how a tour link looks in WhatsApp (or use the Facebook Sharing Debugger) and request indexing for `/tours` in Search Console.
-- [x] ~~**Dev (minor):** unused `textColor` in `Logo.tsx:68` (the only lint warning).~~ (16 Nov: `Logo.tsx` was unused and is deleted; lint is clean.)
+## 3. Dev: medium
+- [x] ~~Content-Security-Policy header.~~ (24 Nov, `vercel.json`; enforced after a browser test with no violations.)
+- [ ] From the 18 Nov test report (`adventure-travel/docs/ux-qa/2026-11-18-test-report.md`): cap seat holds per user; one open advance order per booking; the sticky booking card is taller than some screens; return focus after the lightbox and popups.
+- [ ] Phones: the mobile menu doesn't cover the page (booking bar and WhatsApp button show through); the season stat card wraps to 3+ lines; up to three floating buttons on trek pages (booking bar, WhatsApp, Enquire tab).
+- [ ] Count bookings on generated daily dates, so a busy day turns "Filling fast"/"Full" by itself (needs a SQL change; today only dates with an admin row fill up).
+- [ ] Cookieless Vercel Web Analytics: `npm install @vercel/analytics` stopped on a peer-dependency conflict (20 Nov). **You:** then switch on Analytics in Vercel.
+- [ ] Signed-in browser tests (dashboard, checkout, admin) once there is a test account; maybe run `npm run test:e2e` on every push with GitHub Actions.
+- [ ] Shrink the hero videos and the 35 trek videos to small MP4/WebM, and replace the Video band poster that has a burned-in caption. Needs ffmpeg (`winget install ffmpeg`).
+- [ ] Cut background link prefetching (about 55 requests per desktop home visit) to save Vercel quota.
+- [ ] Before about 1,000 customers: move admin search into the database (the lists load at most 500 bookings per type and 1,000 customers).
 
-## Test pass, 18 Nov 2026 (report: `adventure-travel/docs/ux-qa/2026-11-18-test-report.md`)
-- [ ] **You, 9 questions** (report § "Needs the owner"):
-  1. what the 90% refund is calculated on;
-  2. Joshimath vs Rishikesh pickups on 8 treks;
-  3. ₹5,000 placeholder prices (Mana, Niti, Rimkhim, Bhrigu);
-  4. altitudes that disagree;
-  5. ski, acclimatisation and "certified" claims;
-  6. does the support@ mailbox exist;
-  7. the 3% card fee;
-  8. Tungnath trek vs Chopta tour page;
-  9. photos for the attraction cards.
-- [ ] **Dev (high):**
-  - seat-hold overbooking (live DB change, needs your OK);
-  - 800 px photos for phones;
-  - upgrade `next` and `nodemailer`.
-- [ ] **Dev (medium):**
-  - cap seat holds per user;
-  - one open advance order per booking;
-  - rate limit signed-out course bookings;
-  - sticky booking card taller than the screen;
-  - focus return after the lightbox and popup;
-  - `<main>` on FAQ, contact, login and signup.
-- [x] ~~**Test:** re-run `npm run test:e2e` on a quiet machine (3/6 failed only because ~60 agent browsers were open).~~ (24 Nov: 6/6 pass.)
-- [x] ~~Remove the ₹10,000 / ₹20,000 Basic package from the 7-day skiing course~~ (18 Nov).
-- [x] ~~Tour "Top attractions" as photo cards with Read more~~ (18 Nov), then restyled as "Choose Your Mountain" rows and moved to the end of the page (18 Nov).
-- [x] ~~Photos for Auli Artificial Lake, Gorson Bugyal, Nanda Devi National Park; Chopta gallery, Tungnath Temple, Chandrashila~~ (19 Nov). Attraction photos open full size.
-- [x] ~~Joshimath, Deoria Tal, Devprayag photos~~ (19 Nov): Wikimedia Commons, CC BY-SA 4.0, credited on the page. Swap in our own photos when we have them.
-- [x] ~~Chattrakund photo~~ (19 Nov, owner's own).
-- [ ] **You:** confirm whether to add Chenab Lake (owner to give the facts).
-- [ ] **You:** `assets/chopta/IMG_6412.HEIC` wasn't used. HEIC can't be processed, so export it as JPEG if you want it on the site.
+## 4. Decisions and content from you
+**Treks and prices**
+- [ ] **Kuari Pass and Pangarchula itineraries:** both start and end with the Rishikesh ↔ Joshimath drive (Kuari 5 days, Pangarchula 6), which only the Rishikesh/Haridwar/Dehradun package includes. How many days do the Joshimath-only packages run?
+- [ ] **The other Joshimath treks:** day 1 of 5 itineraries is still "Drive Rishikesh to Joshimath" while the price is "Joshimath to Joshimath". Is that drive included, extra, or on request? Which treks get a Rishikesh/Haridwar/Dehradun package, and at what price?
+- [ ] **Confirm Rishikesh/Haridwar/Dehradun rates:** Kuari Pass triple Rs.8,499 / double Rs.9,000; Pangarchula double Rs.11,000 / triple Rs.10,499.
+- [ ] **Placeholder prices:** Mana Pass, Niti Pass, Rimkhim and Bhrigu Lake still show Rs.5,000. Also the Nanda Devi campsite height.
+- [ ] **Season windows** in `adventure-travel/src/data/trekSeasons.ts` (e.g. should Roopkund or Satopanth run daily instead of weekly; the 3-day / 21-day booking notice), and whether to delete the old seeded Saturday dates that fall outside the new windows (a live database change).
+- [ ] **Kuari Pass Day 4** if the group turned back to Khulara on Day 3: walk out to Joshimath, or retry the pass?
+- [ ] **Claims Claude can't check:** "Certified Instructors … international certifications" (/courses), "Every activity is guided and insured" (/activities), "trained to recognise AMS" and the Gamow bag (home), "Level 4 Pro" (snowboard course), the softened safety FAQ, the backcountry ski claims in `courses.ts`, and the foreign-national price wording. Keep only what's true.
+- [ ] **18 Nov test report questions:** what the 90% refund is calculated on; Tungnath trek vs Chopta tour page. (The other 7 are covered by items in this list.)
 
-## UX & QA list (16 Nov 2026): 106 items, tracker `adventure-travel/docs/ux-qa/2026-11-16-tracker.md`
-- [x] ~~Verified every item against the code; fixed hours, claims, policy contradictions, checkout refund summary, trip contacts, month filter and altitude sort on `/treks`, office map links; link crawl clean.~~ (16 Nov, uncommitted)
-- [ ] **You:**
-  - real Google reviews (UX-008/030), trek videos (UX-009);
-  - late-arrival rule (UX-040), gear rental prices (UX-042), reporting times per departure (UX-039);
-  - GA4 property ID (QA-009);
-  - does **support@himalayanarcadventure.com** exist? 3 pages use it (QA-004);
-  - read the softened safety FAQ once and confirm what we can add back (UX-037), and the backcountry ski course claims in `courses.ts`.
-- [ ] **Dev P1:** 3% surcharge on card payments (owner chose to charge it). Needs Razorpay customer-fee settings, showing it before payment, and `apply_payment()` accepting the fee-inclusive amount. Until then the terms mention 3% but checkout doesn't charge it.
-- [ ] **Dev (high, speed): phones get desktop-size photos.** Measured 16 Nov: the home page loads 2.9 MB of images at start (up to 437 KB, 1600 px wide, on a 375 px phone), and `/treks` loads 1.2 MB. Make 800 px copies in `scripts/prepare-photos.mjs`, with a small manifest so `SmartImage` and the card `<img>`s can add `srcset`/`sizes`. This replaces the older "shrink card photos" item. (QA-029/030)
-- [ ] **You (optional):** allow Lighthouse in this session's permissions if you want official speed scores; the 16 Nov numbers were measured directly in the browser.
-- [ ] **Dev P2:**
-  - trek finder wizard and home "Find my trek" CTA;
-  - next departure on trek cards;
-  - group total in the trek-page booking form;
-  - safety badges by the booking panel;
-  - Women Trekkers link on trek pages;
-  - Lighthouse and accessibility pass.
-- [ ] **Dev P3:**
-  - compare treks;
-  - readiness check;
-  - interactive packing list;
-  - self-service date change;
-  - vouchers and waitlist in the dashboard.
-- [ ] **Test (Razorpay Test Mode):** full booking → payment → receipt flow with UPI, card and net banking; failed and cancelled payments; back button from Razorpay; phones at 320–1440 px.
+**Courses**
+- [ ] Can a ski/snowboard course start on any day of the season, or only on fixed intake days?
+- [ ] **December batches:** the terms say customers pay only after you confirm the batch, but checkout lets them pay straight away. Take December bookings as enquiries only, or have Claude block online payment for December batches until 7 days before the start?
+- [ ] No-snow refunds are manual: refund in the Razorpay dashboard, then mark the booking refunded on /admin/bookings. Direct UPI payments are manual too: mark them paid on /admin after the customer's screenshot.
 
-## Security scan (13 Nov 2026)
-Passed: no `.env`/`.git`/source/SQL files exposed; HTTPS + HSTS; every table has RLS and the anon key reads nothing; `apply_payment()` refuses anon; payment signatures checked in constant time; only the anon key is in the browser JS; emails are plain text; Vercel's bot checkpoint blocks scripted traffic.
-- [x] ~~**Dev (high): update dependencies.** `npm audit` lists 8 issues: 1 critical (`next` 16.2.10, fix in 16.4.6), 5 high (`sharp`, `postcss`, `follow-redirects`, `nanoid`, `source-map-js`) and 2 moderate (`nodemailer`, `baseline-browser-mapping`). Real exposure is lower: the site is a static export, so the Next.js middleware/server-action bugs don't run in production, and `sharp` only runs in our photo script. `nodemailer` and `follow-redirects` do run in the API functions. Upgrade `next`, `nodemailer` and `sharp`, then run tsc, lint, tests and a build copy.~~ (20 Nov: next 16.4.6, 0 vulnerabilities)
-- [x] ~~**Dev (medium): security headers in `vercel.json`.** Missing: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, and clickjacking protection (`X-Frame-Options: DENY` / CSP `frame-ancestors 'none'`), which matters most for /checkout and /dashboard. Add a Content-Security-Policy in Report-Only mode first: Razorpay, Supabase and Google Fonts must be allowed. The comment in `next.config.ts` saying headers are set as meta tags in `layout.tsx` is wrong; there are none.~~ (20 Nov, no CSP yet)
-- [x] ~~**Dev (medium):** already listed above: rate limit or captcha on signed-out course bookings. Anyone can make our Gmail send a "Booking received" email, with a name they choose, to any address.~~ (Done: hidden spam field plus 3 course bookings per email per hour, `api/_lib/spamGuard.js`.)
-- [ ] **You:** in Supabase → Authentication, turn on leaked-password protection and check the minimum password length (not checked: the Supabase connection needs `/mcp` sign-in).
-- [ ] **Dev (optional):** a full automated scan (Nuclei / OWASP ZAP) of a Vercel preview with the bot checkpoint bypassed for the scanner. It was blocked this time (see CHANGELOG 13 Nov).
+**Auli Winter Escape**
+- [ ] Deluxe Package: which hotel, what else differs, and the price per person (it shows "Price on request").
+- [ ] Prices for 7, 8, 9 and 11+ people (the page says "message us").
+- [ ] Do the trek cancellation and payment terms apply to the Auli tour, or does it need its own?
+- [ ] The second number (+91 86505 61564) and the Gmail address appear only on this page. Should they go site-wide?
+- [ ] Chopta group offers like Auli's? (Today it has only room-sharing prices.)
 
-## Tours (/tours)
-- [x] ~~**Dev:** Tours section with the Auli Winter Escape~~ (13 Nov, `main`).
-- [x] ~~**Dev:** Chopta & Tungnath tour page, same layout as Auli, built from the Tungnath trek data~~ (13 Nov, `main`).
-- [ ] **You: Chopta/Tungnath photos → `adventure-travel/public/assets/tours/tungnath/`.** None exist yet, so the tour shows the no-photo panel and "coming soon". Then run `node scripts/prepare-photos.mjs` (or ask Claude) and push.
-- [ ] **You (optional): more Auli photos → `adventure-travel/public/assets/tours/auli/`.** Same steps; they appear before the current 8.
-- [ ] **You (optional): Chopta group offers** like Auli's? Today it has only the room-sharing prices.
+**Photos**
+- [ ] Chopta & Tungnath → `adventure-travel/public/assets/tours/tungnath/`; Madhyamaheshwar. Both show the no-photo panel.
+- [ ] The 9 treks on stock or no photo: Brahmatal, Roopkund, Kalindi Khal, Gupt Khal, Nanda Devi Base Camp, Mana Pass, Niti Pass, Rimkhim (its cover is the Matterhorn: replace it first), Madhyamaheshwar.
+- [ ] A landscape cover for Kuari Pass (it opens on a group selfie).
+- [ ] Optional: more Auli photos (Gorson Bugyal, the lake, the stays); export `assets/chopta/IMG_6412.HEIC` as JPEG if you want it on the site; facts for Chenab Lake if you want it added.
+- [ ] Real Google reviews and trek videos when you have them; late-arrival rule, gear rental prices and reporting times per departure.
 
-### Auli Winter Escape (/tours/auli-winter-escape)
-- [ ] **You: Auli Deluxe Package.** Which hotel or resort, anything else that differs (meals, vehicle, extras), and the price per person. It shows "Price on request" until then.
-- [ ] **You: do our trek cancellation and payment terms apply to the Auli tour?** The tour pages show the same refund ladder (90% / 70% / 50% / none) and link to /cancellation-policy. Tell Claude if Auli needs its own terms.
-- [x] ~~**Dev:** page with price, group offers, itinerary, inclusions, transport and contact~~ (13 Nov, `main`).
-- [x] ~~**Dev:** listed under a new "Trips" menu item~~ (13 Nov, `main`).
-- [ ] **You: prices for 7, 8, 9 and 11+ people.** The brief only covers 1–6 and 10; the page says "message us" for other sizes.
-- [ ] **You: the second number (+91 86505 61564) and the Gmail address** appear only on this page; the rest of the site uses +91 78179 12062 and support@himalayanarcadventure.com. Should they go site-wide?
-- [ ] **You (optional): more photos from your Auli trips** (13 Nov: now using our own Auli slopes-and-range shot) (Gorson Bugyal, the lake, the stays) would beat the skiing course photo used now.
-- [ ] **Dev (later):** online booking and payment, once the group rules are added to the price catalog.
+**Coupon codes** (design: `specs/003-coupons/design.md`)
+- [ ] **You:** answer the 8 questions in §9: 10% or 20% and the rupee cap; courses too?; exclude offline customers?; per booking; partner commission; reuse after a refund; the 48-hour payment window; loyalty code %, validity and how codes are issued.
+- [ ] **Dev:** then build it in the 5 phases of design §4; **You:** approve `supabase-coupons.sql` on the live database after the dry-run.
 
-## Direct UPI and policy questions (20 Nov 2026)
-- [ ] **You:** UPI payments don't reach the website: after a customer's WhatsApp screenshot, mark the booking paid by hand (needs the admin account, see above).
-- [ ] **You (from the privacy/terms pages):** which email takes cancellations (support@ or the Gmail address)? How long are booking records kept? Who is the grievance contact (DPDP Act)? Are guest names shared with hotels, permit offices or trek leaders?
-- [ ] **Dev:** a Content-Security-Policy header, tested against Razorpay checkout and Supabase first.
-- [ ] **Dev:** 800 px copies of the hand-cut home hero layers (now the biggest phone download, about 1.5 MB).
+**Other choices**
+- [ ] Signed-out visitors: go straight to WhatsApp with the booking details, or keep sign-up first (the form is kept)? The traffic plan recommends WhatsApp first.
+- [ ] Newsletter: Subscribe opens an email to you today. Want a real list (Brevo or Mailchimp)?
+- [ ] Booking-boost ideas: sticky Pay bar on phones, WhatsApp on every trek card, a balance-due banner on the dashboard, a trust line under the hero buttons. Say which to build.
 
-## Foreign-national pricing (3×)
-- [x] ~~**You: OK to apply `supabase-nationality.sql` on the live database?**~~ Applied 20 Nov; pricing pushed.
-- [ ] **You:** check the wording "Price for foreign nationals, which covers their permits and local arrangements", and whether Razorpay live mode needs international cards turned on for foreign customers.
+## 5. Off-site (You)
+- [ ] **Google Search Console:** submit `https://www.himalayanarcadventure.com/sitemap.xml`; request indexing for the home page (also refreshes the favicon), `/treks`, `/tours`, `/courses`, `/activities`, `/treks-from-joshimath`, `/winter-treks-uttarakhand` and the top 5 trek pages.
+- [ ] **Google Business Profile** for the Joshimath office (same name, address and phone as the footer, real photos), and a review request after every batch.
+- [ ] The rest of `adventure-travel/docs/seo/2026-10-21-traffic-and-bookings-plan.md`: Instagram reels linking to trek pages, WhatsApp Business, listings on Thrillophilia, TripAdvisor and JustDial; recreate the Facebook and YouTube pages if you want them linked.
+- [ ] After tour changes go live, check a tour link's preview in WhatsApp (or the Facebook Sharing Debugger).
+- [ ] Clean-up: delete `C:/Users/yuvra/dev/adventure-travels-3d` (the old 3D experiment).
 
-## Look and polish (20 Nov 2026 comparison with freesouladventures.in)
-- [x] ~~**Dev:** Destinations and Activities use stock photos that aren't the Himalayas (a Matterhorn-like peak on the Garhwal card, a Rockies-style lake on Activities). Swap them for our own photos.~~ (20 Nov, `main`: own photos; Commons for Kumaon and paragliding; no-photo panel for Mana/Niti/Rimkhim)
-- [x] ~~**Dev:** the footer "Instagram" grid is stock photos; use our own, or link to the real Instagram.~~ (20 Nov, `main`)
-- [x] ~~**Dev:** /tours is two cards in a lot of white space; add a short intro strip (why a tour, who it suits) or a third tour.~~ (20 Nov: intro strip)
-- [x] ~~**Dev (phones):** the ENQUIRE edge tab sits over trek and course page heroes; with WhatsApp and the sticky booking bar that's three floating buttons.~~ (20 Nov: hidden on phones)
-- [ ] **You:** Kuari Pass trek page opens on a group selfie; a landscape cover (the pass, the peaks) looks more professional as the first photo.
-- [ ] **Dev + You:** trek guides like theirs (how to reach, best time, winter), to replace the 3 placeholder story articles; good for Google too.
-
-## Trek packages
-- [x] ~~**Dev:** Kuari Pass packages: Joshimath ₹7,500, Rishikesh/Haridwar/Dehradun ₹9,000~~ (13 Nov, `main`).
-- [x] ~~**Dev:** Pangarchula Peak packages: Joshimath ₹9,500, Rishikesh/Haridwar/Dehradun ₹11,000~~ (13 Nov, `main`).
-- [ ] **You: check the Kuari Pass and Pangarchula itineraries.** Both start and end with the Rishikesh ↔ Joshimath drive (Kuari 5 days, Pangarchula 6), which only the Rishikesh/Haridwar/Dehradun package includes. Should the Joshimath packages show a shorter day plan (and how many days)?
-- [ ] **You: which other treks get a Rishikesh/Haridwar/Dehradun package, and at what price?** Claude adds them in `src/data/treks.ts` the same way.
-
-## Courses
-- [ ] **Decide:** can a ski/snowboard course really start on any day of the season, or only on fixed intake days? The Dates calendar now offers every day (like the treks). Tell Claude the intake days if they're fixed.
-
-## Coupon codes (design: `specs/003-coupons/design.md`)
-- [x] Design drafted and reviewed (Elephant–Goldfish, 12 Nov); v2 fixes both blockers.
-- [ ] **You: answer the 8 questions in §9 of the design**:
-  1. 10% or 20%, and the rupee cap;
-  2. courses too?;
-  3. exclude offline customers?;
-  4. per booking;
-  5. partner commission;
-  6. reuse after a refund;
-  7. the 48-hour payment window;
-  8. loyalty code %, validity, and whether codes are issued by hand or by email automatically.
-- [ ] **Dev:** build it in the 5 phases of design §4 (helpers + tests → migration → API → UI → rollout).
-- [ ] **You:** approve `supabase-coupons.sql` on the live database after the dry-run.
-
-## Hosting
-- [ ] **Decide:** stay on Vercel (recommended) or move pages to GoDaddy with WhatsApp-only bookings. See `adventure-travel/docs/deploy-godaddy.md`.
-- [ ] **You:** upgrade to Vercel Pro when Razorpay live keys go in (Hobby is non-commercial only).
-- [ ] **You:** stop the dev server on port 3001, delete `C:/Users/yuvra/dev/adventure-travels-3d` and `.claude/worktrees/ascent`, then `git worktree prune` and `git branch -D feat/3d-mountains`.
-
-## Redesign: "The Ascent" (branch `redesign/ascent`)
-- [x] Part 1: hero behind the peaks, altitude meter, The Range, Book-a-trek button, honest story cards.
-- [ ] **You:** look at it (local preview or a Vercel preview of the branch) and say go / change.
-- [ ] Part 2: restyle the remaining home sections to match (trek chooser, Snow School, camping, why us, FAQ, final call to action), and fold "How it works" into "Why trek with us" so the page is shorter.
-- [ ] Part 3: carry the look to /treks, trek pages and courses; check page weight (home was 19.5 MB on the live site).
-- [ ] **Decide:** the three story cards link to trek pages, not articles. Write real guides, or drop the section.
-
-## Backend health check, 29 Oct (details in CHANGELOG)
-Works today: accounts, trek and course bookings, booking emails and the payment flow (in test mode).
-- [x] ~~**You: apply the database update and the email limit.**~~ Done 5 Nov: with your OK, Claude ran `node scripts/setup-backend.mjs`. All 7 SQL files are applied (15-minute seat hold, speed fixes) and sign-up emails are limited to 20 an hour (was 2). Checked afterwards.
-- [x] ~~**You: choose the admin account.** Nobody has admin rights, so `/admin` is unusable. Tell Claude which email (it must already be signed up), or set `ADMIN_EMAIL` in `.env.setup` and run the setup script.~~ (24 Nov: himalayanarcadventure@gmail.com is admin, checked on Supabase.)
-- [ ] **You: switch Razorpay to live keys and register the webhook.** The live site still takes test payments only, so real customers can't pay online.
-- [ ] **You: upgrade Vercel to Pro (about $20 a month).** Hobby is for non-commercial use only, and it pauses the site when a monthly limit runs out. At today's page weight that's around 10,000 visitors a month (100 GB of bandwidth, 1M requests).
-- [ ] **You (before traffic grows):** move email from Gmail (about 500 a day) to a transactional sender such as Brevo, Resend, Amazon SES or Zoho ZeptoMail. Then consider Supabase Pro ($25 a month): daily backups, no pausing, 100k monthly users instead of 50k.
-- [x] ~~**Dev:** deploy the 29 Oct changes (commit and push to `main`).~~ Done 5 Nov; the server functions now run in Mumbai, next to the database.
-- [ ] **Dev:** (7 Nov: home hero cut to the 3 lightest clips; conversion still to do) shrink the hero videos (14.7 MB home page on desktop, 38 MB of `.MOV` files). Needs ffmpeg (`winget install ffmpeg`).
-- [ ] **You: Razorpay live keys** (from the 7 Nov report): put live `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` and `RAZORPAY_WEBHOOK_SECRET` in Vercel Production, register the webhook `https://www.himalayanarcadventure.com/api/razorpay-webhook` (payment.captured, order.paid, payment.failed), then make a Rs.1 live payment and refund it.
-- [ ] **You: newsletter.** Subscribe opens an email to you for now. Want a real list (e.g. Brevo or Mailchimp)? Dev can wire it then.
-- [ ] **Dev:** the admin lists load at most 500 bookings per type and 1,000 customers, and search runs only over those. Move search into the database before about 1,000 customers.
-- [ ] **Dev:** cut background link prefetching (55 requests per desktop home visit) to save Vercel request quota.
-
-## MakeMyTrip-style booking flow (asked 29 Oct; needs your choices)
-Already there: live batch dates with seats left, a price locked on the server, a 30% advance or full payment, UPI-first Razorpay, a dashboard with "Pay balance" and "Cancel", booking emails and (live from 5 Nov) a 15-minute seat hold.
-- [x] (Partly done 7 Nov: the form is saved and restored after sign-up.) Book without losing the form: sign in or sign up inside the booking step (today a signed-out visitor is sent to `/signup` and loses what they typed).
-- [ ] A review step before payment: trip summary, price breakdown (per person, room tier, GST if it applies, total, amount now), and a "seats held 14:59" timer.
-- [ ] Traveller details per person (name, age, gender, ID for permits) and an emergency contact.
-- [ ] A confirmation page plus a downloadable voucher or invoice (PDF) with the booking ID; WhatsApp confirmation.
-- [ ] My Trips: Upcoming, Completed and Cancelled tabs; cancel with a refund preview from the cancellation policy; request a date change.
-- [ ] Offers: coupon codes and an early-bird price. **You:** which offers, and is GST charged on top of the listed prices?
-- [ ] Add-ons: Rishikesh or Dehradun pickup, gear rental, trek insurance. **You:** which, and at what price?
-
-## 0. Do these first (5 minutes each, big effect)
-- [x] ~~Ship the favicon hotfix~~ (done 19 Oct: `a42c960` pushed to `main`).
-- [ ] **You: Search Console → URL Inspection → home page → Request indexing**, so Google re-reads the new favicon. Allow days to weeks before the logo replaces the grey globe.
-- [ ] **You: make the GitHub repo private.** GitHub → `YuvrajBhardwaj/adventure-travels` → Settings → General → Danger Zone → "Change visibility" → Private. Right now anyone can download the whole site: every photo and video original, the code, the database design and the business documents. Vercel still deploys from a private repo.
-- [x] **You: make the www redirect permanent.** (done 23 Oct by Claude via the Vercel API: 308 now) Vercel → Project → Settings → Domains → `himalayanarcadventure.com` → redirect to `www.himalayanarcadventure.com` with **308 Permanent** (it is 307 Temporary now). Google treats a temporary redirect as "this might change".
-- [ ] **You: Google Search Console.** After the next deploy, go to Sitemaps → submit `https://www.himalayanarcadventure.com/sitemap.xml`, then use URL Inspection → "Request indexing" on the home page and the 5 most important trek pages. The domain is only 19 days old, so this is how Google finds it fastest. Requesting the home page also makes Google re-read the favicon, which was fixed on 19 Oct. Allow days to weeks before the logo replaces the grey globe in results.
-- [ ] **You: Google Business Profile** for the Joshimath office, with the same name, address and phone as the website footer, real photos, and a review request after each batch. Steps are in `adventure-travel/docs/seo/2026-10-19-audit-and-plan.md`.
-
-## 1. Set up the backend (blocks login, booking and payments)
-Until this is done, login and sign-up show "Accounts are temporarily unavailable". This is true on this computer and almost certainly on the live site too.
-
-**Fast way (new):**
-1. Create the Supabase project.
-2. Copy `adventure-travel/scripts/setup-backend.example.env` to `adventure-travel/.env.setup` and fill it in (instructions are inside).
-3. From `adventure-travel/`, run `node scripts/setup-backend.mjs --dry-run`, then `node scripts/setup-backend.mjs`.
-
-That covers most of the items below. The manual steps are listed in case you prefer the dashboards.
-
-- [x] ~~Create a Supabase project~~ (ref `sdhtgmlkzcknmeakxgdz`). **You:** is this the production project or a dev one?
-- [x] ~~Run the 5 SQL files~~ (done 19 Oct by the setup script, and verified).
-- [x] ~~Supabase Auth: confirm email, site URL, redirect URLs~~ (done 19 Oct by the setup script).
-- [ ] **You: admin rights.** Sign up on the site with your email, put that email in `ADMIN_EMAIL` in `adventure-travel/.env.setup`, and run `node scripts/setup-backend.mjs` again (or tell Claude the email).
-- [x] **You: Gmail App Password** (done 23 Oct; **rotate it before go-live**, it was shared in chat) into `.env.setup` (`SMTP_USER`, `SMTP_PASS`), then re-run the script. Until then Supabase only emails your own team, a few per hour, so customers can't confirm their sign-ups.
-- [ ] **You (optional):** Supabase → Authentication → Providers → Google, for "Continue with Google". It needs a Google Cloud OAuth client.
-- [x] **You:** Razorpay in **Test mode** (keys done 23 Oct; **still to do: add the webhook in the Razorpay dashboard**): copy the keys into `.env.setup` and re-run the script. Then add a webhook to `https://<site>/api/razorpay-webhook` for `payment.captured`, `order.paid` and `payment.failed`.
-- [x] ~~Make up a `CRON_SECRET`~~ (the setup script generated one, 19 Oct).
-- [x] ~~Supabase keys into Vercel **Preview**~~ (done 21 Oct with the logged-in Vercel CLI; the preview is redeployed and connected). **Production** gets them at go-live (§3). The local `.env.local` is done too, and the running dev server already picked it up.
-- [ ] **Dev:** after you add the SMTP and Razorpay keys to `.env.setup`, load them into `.env.local` and Vercel Preview the same way, then redeploy the preview.
-
-## 2. Test it end to end (after step 1)
-- [ ] **Dev:** Run checks V1–V22 from [quickstart.md](specs/001-persistent-backend/quickstart.md) with `npx vercel dev` or on a preview, and record the results there. These are spec tasks T025, T033, T041, T045, T052, T055, T057 and T061. They cover:
-  - bookings across devices
-  - price lock
-  - Google sign-in
-  - advance then balance payments
-  - webhook-only payments
-  - email outage and reminders
-  - admin search and changes
-  - cancelling, deleting accounts, signed-out course bookings
-  - the old-browser-accounts notice.
-
-## 3. Go live
-- [ ] **You:** Switch Razorpay to live keys and register a live webhook. Decide whether to accept international cards.
-- [ ] **You or Dev:** Run the 5 SQL files on the **production** database and set the Production variables in Vercel.
-- [x] **Dev:** Merge `preview/trek-slideshows` into `main` (done 23 Oct, live), after step 2 passes. This updates the live site. Then bring local `main` back in step with GitHub.
-- [ ] **You:** Make one real ₹1 booking and payment, then refund it in Razorpay.
-
-## 4. Decisions needed from you
-- [ ] **Rishikesh ↔ Joshimath drive.** The 8 Joshimath treks are now priced "Joshimath to Joshimath", and "What's included" says transfers run from Joshimath. Day 1 of their itineraries still shows the Rishikesh drive. Is that drive included, extra, or available on request?
-- [ ] **Valley of Flowers location.** The page header says "Rishikesh" next to "Starts from Joshimath". Should it change to Joshimath?
-- [ ] **Star ratings.** The invented ones were removed from Google's structured data on 19 Oct (the site-wide 4.8/692, courses 4.9/150, and the "100 reviews" fallback). `src/data/treks.ts` still holds ratings for 19 treks, which show on the page and in trek structured data. Are they from real reviews? If not, delete them (Dev, 10 minutes).
-- [ ] **Unverified claims on the page.** The footer says "4.9, based on 1,200+ Google Reviews" and "Est. 2010 / since 2010". Every trek shows a "10% OFF" strike-through price that the code calculates as price ÷ 0.9; it isn't a real old price. Testimonial names repeat across treks. If these aren't true, they should go: fake discounts count as misleading advertising under India's consumer rules, and fake reviews break Google's policies.
-- [x] ~~**Departure dates and "seats left" are made up by code.**~~ Resolved 6 Nov: dates now come from each trek's season calendar (`8e6acec`). The Dates tab always shows the 8th and 22nd of each month, cycling "Available / Few Seats Left / Sold Out", and the "Filling Fast" badge depends on it. Is there a real batch calendar? If yes, Dev can put the real dates into the trek data. If no, these labels should go. Google can now read them too.
-- [ ] **Altitudes to check.** Dronagiri says a maximum of 4,500 m, but its own Day 7 reaches 4,920 m. Pangarchula says 4,700 m, while most sources give about 4,590 m.
-- [ ] **Stock photos.** Brahmatal, Roopkund, Kalindi Khal, Gupt Khal, Mana Pass, Niti Pass and Rimkhim show generic stock mountain photos (gallery and banner slideshow). Keep them, or show only the main image until you have real photos?
-- [ ] **Navbar wording.** "Adventures" → "Treks", "Home" removed from the desktop bar, and the phone menu's main button now opens WhatsApp. OK?
-- [ ] **SEO agent in git?** It's ignored with the rest of `.claude/`. Should it be shared in the repo?
-
-## 5. Code and content
-- [x] ~~**UI consistency and polish**~~ built 22 Oct (`specs/002-ui-polish-consistency/`: 70 of 72 tasks done; deployed as a preview). Still open:
-  - [ ] **You:** click through on a real phone and with a real login: dashboard, checkout, admin (bookings, customers, payments, departures), the mobile menu and a trek photo viewer. These can't be tested without a login. Tell me anything odd.
-  - [ ] **Dev:** after that, V6 to V9 of the quickstart (Slow-4G walk, phone smoothness, keyboard and contrast, signed-in flows), then mark the audit rows `verified`.
-  - [ ] **Dev:** the checkout page stayed invisible for 10 s in a headless test with a fake booking id (also before this work). Check once with a real session.
-- [ ] **UI polish: your decisions** (found while polishing; none changed):
-  - [ ] Invented or unsourced claims: crossed-out "10% OFF" price on trek pages; "No-cost EMI · Free Trek Date Change"; "4.9 / 1,200+ Google Reviews" and "Since 2010" in the footer; "5,000+ Happy Adventurers", "100% Safety Record", "4.8/5" on /activities; "100% Safe / 4.9+ Rating" in the home call to action. Back each with real data or remove it.
-  - [ ] Course batch dates and "Filling Fast" / "Sold Out" labels are generated from a repeating pattern, not real seats. Wire them to real seats or remove them (trek pages already use live departures).
-  - [ ] Opening hours differ: the contact page says Mon to Fri 9 to 6, the FAQ says Mon to Sat 9 to 7.
-  - [ ] Home says "18 treks" but there are 21 routes.
-  - [ ] Show the floating WhatsApp button on every page (today only the home page has it).
-  - [ ] A signed-out visitor submitting a trek reservation is sent to /signup before WhatsApp opens and loses the form. Always hand the details to WhatsApp first?
-  - [ ] The footer newsletter shows a success message but saves nothing: wire it up or replace it with a WhatsApp sign-up.
-  - [ ] Booking-boost ideas from the agents (sticky Pay bar on phones, a WhatsApp button on every trek card and booking card, a balance-due banner on the dashboard, a trust line under the hero buttons): say which to build.
-- [ ] **Favicon in Google (globe icon instead of the logo).** New simple icon built 22 Oct (see CHANGELOG). **You:** say "go live" for a favicon-only fix to production (or merge the whole preview). Then in Search Console: URL Inspection, enter `https://www.himalayanarcadventure.com/`, "Request indexing". Google usually takes days to a few weeks to swap the icon after it re-crawls; the globe stays until then. Google also wants the home page and icon not blocked (they aren't).
-- [ ] **Browser tests (Puppeteer) added** (`npm run test:e2e`, 6 checks). **Dev:** next, add checks for the signed-in flows once there is a test account (dashboard, checkout, admin), and decide whether to run them automatically on every push (GitHub Actions is free for this size).
-- [ ] **Redesign (22 Oct) — your call on:**
-  - [ ] Look at the preview once it's pushed and say what you like or don't; the home section order changed.
-  - [ ] Trek cards now show each trek's highest point; keep or drop?
-  - [ ] Contact, FAQ and cancellation-policy pages lost their decorative header photos (text-only headers); OK?
-  - [ ] Still open from the visitor test: a signed-out visitor's trek reservation is sent to /signup and loses the form (D-01); "4.8 (341 Reviews)"-style ratings and "4.9 / 1,200+ Google Reviews" need to be real or removed; the activities page says "17 handcrafted treks" next to "9+"; the 404 page is bare (no links back); /checkout, /dashboard, /admin redirect to login with no "please log in" note.
-  - [ ] **Dev:** convert the six hero `.MOV` videos to small MP4/WebM (needs ffmpeg; they're 1.3–7 MB each) and replace the Video band's poster that has a burned-in caption.
-- [ ] **You (now that it's live):** in Razorpay (Test Mode) set the webhook URL to `https://www.himalayanarcadventure.com/api/razorpay-webhook` with the secret from `.env.setup`; when ready for real money, switch to **live** Razorpay keys (tell Claude to load them); rotate the Gmail App Password (it was shared in chat); Search Console → submit `sitemap.xml` and request indexing for the home page.
-- [ ] **Facts to check** (29 Oct: altitudes, places, counts and FAQ fixed from Trek The Himalayas; see CHANGELOG. **Still yours:** Mana/Niti/Rimkhim prices, the Rishikesh day-1 drive on Joshimath treks, Nanda Devi campsite height):
-  - Dronagiri: day 7 reaches 4,920 m but the highest point is listed as 4,500 m.
-  - Valley of Flowers: starts from Joshimath, but its location says Rishikesh and day 1 is the Rishikesh drive (same pattern for Pangarchula and Kuari Pass). The FAQ also gives Hemkund as 14,100 ft (usually about 15,200 ft); Bhrigu Lake and Hampta Pass also show 14,100 ft.
-  - Brahmatal day 1 calls Lohajung "Kumaon"; it is in Chamoli (Garhwal). Hampta day 6 mentions Spiti; Chhatru is in Lahaul.
-  - Gupt Khal's blurb says it links Gangotri and Kedarnath, but the itinerary runs Niti to Mana/Badrinath. Satopanth lists Joshimath but runs Haridwar to Badrinath.
-  - Mana Pass, Niti Pass and Rimkhim are all priced Rs. 5,000 for 9–10 day strenuous trips: placeholders?
-  - Trek counts disagree: 18 (home stat), 17 and "9+" (activities), 21 in the data.
-  - FAQ: Kedarkantha "open year-round" vs "December to April"; FAQ says Uttarakhand pickups are from Dehradun, while hubs say Joshimath to Joshimath; FAQ names Triund, Kareri and Beas Kund, which are not in the trek list.
-  - Activities page shows skiing "From Rs.10,000" and snowboarding Rs.35,000; check against the course prices.
-- [ ] **Traffic and bookings plan** is in `adventure-travel/docs/seo/2026-10-21-traffic-and-bookings-plan.md`: Google Business Profile, first reviews, Search Console, the 308 redirect, directory listings, WhatsApp Business, 13 questions only you can answer.
-- [x] ~~Commit the navbar redesign and the `.gitignore` change~~ (done: `1be764a`, pushed to the preview branch).
-- [x] **Dev:** Commit `CHANGELOG.md`, `TODO.md` and the `CLAUDE.md` note. (done: committed with `52938f8`)
-- [x] ~~Re-save the sideways Panpatia photos and put them back in the slideshow~~ (done 19 Oct).
-- [x] ~~Favicon missing in Google results~~ (done 19 Oct). `apple-touch-icon.png` was a camping photo, not a square icon. Live via hotfix `a42c960` on `main`, and committed on `preview/trek-slideshows` too.
-- [x] **Dev:** (covered by the UI plan, US2/US3) Still waiting for JavaScript before showing: card and gallery photos (`SmartImage` starts invisible), the home hero slides and several home sections, and the home FAQ, which arrives as a hidden streamed block. Same fix pattern as the trek pages; this mainly helps load speed. (done 22 Oct)
-- [x] ~~Run the SEO/SMO agent~~ (done 19 Oct). The report is `adventure-travel/docs/seo/2026-10-19-audit-and-plan.md`.
-- [ ] **Dev:** Work through the report's prioritised actions. Done 19 Oct: #6 and #7 hub pages, #9 link-preview images, #10 logo badge, #14 noindex on account pages. Next up: the Inner Line Permit guide (needs your facts: documents, office, processing days), a "related treks" block on trek pages, and #15 a home-page h1 that says what we do.
-- [x] **Dev:** Switch `QuickInfoModal.tsx` to the new season parser (`src/lib/season.ts`). Its own parser mis-reads ranges like "Mar–Jun & Sept–Dec" in the "Best season" pop-up. (done 22 Oct)
-- [ ] **You:** After the next deploy, request indexing in Search Console for `/treks-from-joshimath` and `/winter-treks-uttarakhand`.
-- [x] ~~"Where to today?" pop-up on the home page~~ (done 19 Oct). It is now a normal section under the home hero instead of a full-screen gate. Not live until the branch is merged.
-- [x] **Dev:** The preloader covers every page until the site's JavaScript has loaded, plus 600 ms. It slows down when pages appear (load speed is a Google ranking signal). Shorten it, or skip it after the first visit. (done 22 Oct: removed)
-- [ ] **Dev:** Downsize and watermark the 35 trek videos as well. This needs `ffmpeg`, which isn't installed here.
-- [ ] **You:** Fix or recreate the Facebook and YouTube pages. The links on the site returned errors, so they were removed from the site's profile list.
-- [ ] **Dev:** Fix the 9 remaining lint warnings (all minor: unused variables and similar).
-- [ ] **Dev:** Optional: run `/impeccable init` once to record your brand and audience, so future design work fits better.
-- [ ] **You:** Real photos for Tungnath and Madhyamaheshwar. They show a "no photo" panel at the moment.
-
-## Done recently
-See [CHANGELOG.md](CHANGELOG.md):
-- trek slideshows and "Joshimath to Joshimath" pricing
-- the finished backend: admin area, advance/balance payments, reminders, account self-service
-- the navbar redesign
-- the SEO/SMO agent.
+## 6. Later (Dev, when wanted)
+- [ ] Trek guides (how to reach, best time, winter, Inner Line Permit) to replace the 3 placeholder story articles (`stories.ts`), or drop the stories section.
+- [ ] Booking flow: review step with a "seats held 14:59" timer; traveller details per person and an emergency contact; confirmation page with a PDF voucher; My Trips tabs with a refund preview and date-change request; add-ons (pickup, gear rental, insurance: **You** say which and at what price; is GST charged on top?).
+- [ ] P2: trek finder and "Find my trek" call to action; next departure on trek cards; group total in the booking form; safety badges by the booking panel; Women Trekkers link; Lighthouse and accessibility pass.
+- [ ] P3: compare treks; readiness check; packing list; self-service date change; vouchers and waitlist in the dashboard.
+- [ ] Auli online booking and payment, once the group rules are in the price catalog.
+- [ ] Before traffic grows: move email from Gmail (about 500 a day) to a transactional sender (Brevo, Resend, SES, ZeptoMail); consider Supabase Pro ($25 a month) for daily backups.
+- [ ] Optional: "Continue with Google" sign-in (Supabase → Authentication → Providers → Google; needs a Google Cloud OAuth client); a full Nuclei / OWASP ZAP scan of a preview.

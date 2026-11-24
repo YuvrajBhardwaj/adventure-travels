@@ -100,6 +100,7 @@ Next.js 16 App Router with **`output: "export"`** (fully static: no runtime serv
 - **Our own photos** live in `public/assets/<trek>/`. They are served web-sized (1600px max), watermarked and metadata-free; `scripts/prepare-photos.mjs` builds them from the originals in `/media-originals/`. The same script builds the `public/og/` share images.
 - **Never put full-resolution originals in `public/`.**
 - **Image tags:** use plain `<img>` or `SmartImage`, not `next/image`.
+- **Outside hosts:** the Content-Security-Policy in `vercel.json` allows images only from our own site, Unsplash, Pexels and Razorpay, and connections only to Supabase and Razorpay. Add any new outside host there, or it is blocked on the live site (not under `npm run dev`).
 - **Missing photos:** treks without a photo render `NoPhoto`; don't add stock photos to new treks. Some older treks still use Unsplash covers.
 
 ### Design system
