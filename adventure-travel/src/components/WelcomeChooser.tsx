@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/Link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { byPopularity, treks, type Trek } from "@/data/treks";
 import { courses, coursePhotos } from "@/data/courses";

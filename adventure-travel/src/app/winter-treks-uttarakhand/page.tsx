@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/Link";
 import { treks } from "@/data/treks";
 import { seasonMonths } from "@/lib/season";
 import { fitDescription, fitTitle, pageMetadata } from "@/lib/seo";

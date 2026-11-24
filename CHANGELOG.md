@@ -17,6 +17,18 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+- **25 Nov 2026 · Fixes from the 18 Nov test report; fewer background requests** (`main`).
+  - **Backend (`api/create-order.js`, `api/_lib/departures.js`), no database change:**
+    - **Seat holds are capped.** A hold with 5+ minutes left is reused, not extended. At most 4 fresh holds per booking per 24 hours, and at most 2 other unpaid bookings holding seats per user; past that the customer is asked to message us on WhatsApp. Holds are logged as `PAYMENT_INITIATED` with `seats_held: true`; the admin feed shows them as "held seats for 15 minutes to pay". Before this, anyone could keep a batch's seats held for ever by retrying every 15 minutes.
+    - **Two tabs, one order.** Every checkout gets the oldest open order of the same kind and amount, so tabs racing each other pay the same Razorpay order, which can be paid only once.
+    - Unit tests for the hold rules; the count queries were checked read-only against Supabase.
+  - **Visitors:**
+    - Closing the photo viewer or the Info popup puts keyboard focus back on the button that opened it (all kit Dialogs, `src/components/ui/dialog.tsx`).
+    - The tour pages' sticky enquiry card fits the screen and scrolls inside itself, like the trek page's, so its button is never below the fold on a laptop (it was 842 px tall on a 720 px screen).
+  - **Vercel quota:** every link now goes through `src/components/Link.tsx`, which prefetches a page on hover, touch or keyboard focus instead of whenever the link scrolls into view. Before: 36 page-data requests in one desktop home-page visit.
+  - **Checked:** 114 unit tests and 6 browser tests pass; focus return tested with the keyboard in Edge.
+  - **Not done (needs the owner):** Vercel Analytics (the privacy page promises no analytics) and counting bookings on daily dates (a live database change).
+
 - **25 Nov 2026 · Site icon is the header badge everywhere** (`main`). `favicon.svg` (the icon Google and most browsers pick) was the peak alone; it is now the whole round "Himalayan Arc Adventure" badge from the header, and so is the 48 px image in `favicon.ico`. 16 and 32 px tab icons keep the peak, because the lettering can't be read that small. `scripts/make-favicons.mjs` builds them. The cartoon mountain in Google's results is an older icon Google cached; it changes after Google re-crawls the home page (request indexing in Search Console to speed it up).
 
 - **25 Nov 2026 · Guides: Kuari Pass trek guide and How to reach Joshimath** (`main`).

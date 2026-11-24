@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/Link";
 import { guides } from "@/data/guides";
 import { breadcrumbLd, fitTitle, pageMetadata, webPageLd } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";

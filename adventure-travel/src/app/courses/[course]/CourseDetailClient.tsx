@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import NationalityField from "@/components/NationalityField";
-import Link from "next/link";
+import Link from "@/components/Link";
 import { PrivacyNotice } from "@/components/PrivacyNotice";
 import { motion, useAnimate, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { coursePhotos, type Course, type CourseInclusion } from "@/data/courses";

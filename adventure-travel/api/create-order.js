@@ -80,7 +80,37 @@ async function loadBooking(db, user, bookingType, bookingId) {
     label: `${b.trek_name}${b.room_sharing ? ` · ${b.room_sharing}` : ""} · ${persons(b.group_size)}`,
     slug: b.trek_slug,
     seats: departures.seatsFor(b.group_size),
+    heldUntil: b.seats_held_until || null,
   };
+}
+
+/** Inputs for departures.holdDecision(): fresh holds on this booking in 24 h, and the user's other live holds. */
+async function holdCounts(db, userId, booking) {
+  const now = Date.now();
+  if (booking.heldUntil && new Date(booking.heldUntil).getTime() - now >= departures.HOLD_LIMITS.reuseMinutes * 60_000) {
+    return { recentHolds: 0, otherActiveHolds: 0 }; // reusing the current hold: nothing to count
+  }
+  const [recent, others] = await Promise.all([
+    db
+      .from("activity_logs")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("action_type", "PAYMENT_INITIATED")
+      .eq("metadata->>seats_held", "true")
+      .eq("metadata->>booking_id", booking.id)
+      .gte("created_at", new Date(now - 24 * 3600_000).toISOString()),
+    db
+      .from("trek_bookings")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .neq("id", booking.id)
+      .eq("status", "pending")
+      .eq("payment_state", "unpaid")
+      .gt("seats_held_until", new Date(now).toISOString()),
+  ]);
+  if (recent.error) throw recent.error;
+  if (others.error) throw others.error;
+  return { recentHolds: recent.count || 0, otherActiveHolds: others.count || 0 };
 }
 
 // POST { bookingType: "trek"|"course", bookingId, kind: "advance"|"balance"|"full" }
@@ -121,9 +151,25 @@ module.exports = async function handler(req, res) {
     // (supabase-departures.sql). The hold is atomic, so the last seats can't be sold twice.
     let seatsHeldUntil = null;
     if (booking.type === "trek" && booking.status === "pending" && booking.paymentState === "unpaid") {
-      const hold = await departures.holdSeats(db, booking);
-      if (hold.problem) throw new HttpError(409, hold.problem);
-      seatsHeldUntil = hold.heldUntil;
+      const decision = departures.holdDecision({ heldUntil: booking.heldUntil, ...(await holdCounts(db, user.id, booking)) });
+      if (decision.action === "refuse") throw new HttpError(429, decision.message);
+      if (decision.action === "reuse") {
+        seatsHeldUntil = booking.heldUntil;
+      } else {
+        const hold = await departures.holdSeats(db, booking);
+        if (hold.problem) throw new HttpError(409, hold.problem);
+        seatsHeldUntil = hold.heldUntil;
+        // Counted by holdCounts(): the per-booking daily limit.
+        if (seatsHeldUntil) {
+          await logActivity(db, user.id, "PAYMENT_INITIATED", {
+            seats_held: true,
+            booking_id: booking.id,
+            booking_type: "trek",
+            held_until: seatsHeldUntil,
+            description: "Seats held for checkout",
+          });
+        }
+      }
     }
 
     const summary = {
@@ -155,7 +201,7 @@ module.exports = async function handler(req, res) {
       .eq("kind", kind)
       .eq("amount", amount)
       .neq("status", "paid")
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: true }) // the oldest, like the race check below
       .limit(1);
     if (existingError) throw existingError;
     if (existing && existing.length > 0) return res.status(200).json(reply(existing[0]));
@@ -181,6 +227,21 @@ module.exports = async function handler(req, res) {
       .select("id, razorpay_order_id, amount, currency")
       .single();
     if (insertError) throw insertError;
+
+    // Two tabs can get here at once, both having found no open order. Hand every tab the oldest
+    // open order of this kind and amount, so they all pay the same Razorpay order (which can be
+    // paid once); a spare order that loses the race is left unpaid. 18 Nov test report.
+    const { data: oldest, error: oldestError } = await db
+      .from("payments")
+      .select("id, razorpay_order_id, amount, currency")
+      .eq(booking.column, booking.id)
+      .eq("kind", kind)
+      .eq("amount", amount)
+      .neq("status", "paid")
+      .order("created_at", { ascending: true })
+      .limit(1);
+    if (oldestError) throw oldestError;
+    if (oldest && oldest.length > 0 && oldest[0].id !== row.id) return res.status(200).json(reply(oldest[0]));
 
     await logActivity(db, user.id, "PAYMENT_INITIATED", {
       order_id: order.id,

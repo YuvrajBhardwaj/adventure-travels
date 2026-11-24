@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/Link";
 import { treks } from "@/data/treks";
 import SmartImage from "@/components/SmartImage";
 import NoPhoto from "@/components/NoPhoto";

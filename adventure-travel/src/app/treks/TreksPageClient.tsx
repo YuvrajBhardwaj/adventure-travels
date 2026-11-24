@@ -2,7 +2,7 @@
 
 import EnquireTab from "@/components/EnquireTab";
 import { useState, useMemo, useEffect } from "react";
-import Link from "next/link";
+import Link from "@/components/Link";
 import { treks, REGIONS, priceRoute, byPopularity, type Trek } from "@/data/treks";
 import { destinations } from "@/data/destinations";
 import SmartImage from "@/components/SmartImage";

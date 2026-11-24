@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/Link";
 import { treks } from "@/data/treks";
 import { courses } from "@/data/courses";
 import { fitDescription, fitTitle, pageMetadata } from "@/lib/seo";

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/Link";
 import { stories } from "@/data/stories";
 import { FadeUp } from "./MotionWrapper";
 import SmartImage from "./SmartImage";

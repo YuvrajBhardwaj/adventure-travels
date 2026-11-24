@@ -50,7 +50,10 @@ const ACTIONS: Record<
     tone: "amber",
     icon: CircleDollarSign,
     describe: (m) =>
-      `started a payment${typeof m.amount === "number" ? ` of ${formatPaise(m.amount)}` : ""}${str(m.trek_name) ? ` for ${m.trek_name}` : ""}`,
+      // create-order also logs each 15-minute seat hold under this type (seats_held: true).
+      m.seats_held === true
+        ? "held seats for 15 minutes to pay"
+        : `started a payment${typeof m.amount === "number" ? ` of ${formatPaise(m.amount)}` : ""}${str(m.trek_name) ? ` for ${m.trek_name}` : ""}`,
   },
   PAYMENT_SUCCESS: {
     label: "Payment",

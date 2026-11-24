@@ -55,4 +55,32 @@ async function holdSeats(db, booking, minutes = HOLD_MINUTES) {
   return { problem: seatProblem({ closed: row.closed, seats_left: row.seats_left }, booking.seats), heldUntil: null };
 }
 
-module.exports = { seatProblem, findDeparture, seatsFor, holdSeats, HOLD_MINUTES };
+// Seat-hold limits (18 Nov test report: one user could keep a batch's seats held for ever by
+// calling create-order every 15 minutes). No database change: holds are counted from the
+// activity log (PAYMENT_INITIATED rows with metadata.seats_held = true).
+const HOLD_LIMITS = {
+  /** Reuse a hold that still has at least this long to run, instead of extending it. */
+  reuseMinutes: 5,
+  /** Fresh holds per booking in 24 hours. */
+  perBookingPerDay: 4,
+  /** Other unpaid bookings of the same user that may hold seats at the same time. */
+  otherActive: 2,
+};
+
+/**
+ * What create-order does about seats for an unpaid, pending trek booking:
+ * "reuse" the hold it has, take a fresh "hold", or "refuse" with a message.
+ */
+function holdDecision({ heldUntil, now = new Date(), recentHolds, otherActiveHolds }) {
+  const left = heldUntil ? new Date(heldUntil).getTime() - now.getTime() : 0;
+  if (left >= HOLD_LIMITS.reuseMinutes * 60_000) return { action: "reuse" };
+  if (recentHolds >= HOLD_LIMITS.perBookingPerDay) {
+    return { action: "refuse", message: "Too many payment attempts for this booking today. Message us on WhatsApp and we'll help you finish it." };
+  }
+  if (otherActiveHolds >= HOLD_LIMITS.otherActive) {
+    return { action: "refuse", message: "You're already paying for other bookings. Finish those payments, or try again in 15 minutes." };
+  }
+  return { action: "hold" };
+}
+
+module.exports = { seatProblem, findDeparture, seatsFor, holdSeats, holdDecision, HOLD_MINUTES, HOLD_LIMITS };

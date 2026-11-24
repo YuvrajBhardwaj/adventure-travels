@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/Link";
 import { ArrowRight, CalendarDays, Snowflake, Timer } from "lucide-react";
 import { courses, coursePhotos } from "@/data/courses";
 import { FadeUp } from "./MotionWrapper";

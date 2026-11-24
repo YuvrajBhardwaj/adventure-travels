@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/Link";
 import { motion, type Variants } from "framer-motion";
 import { BadgeCheck, BriefcaseMedical, CloudSun, FileCheck2, HeartPulse, Users, type LucideIcon } from "lucide-react";
 import { FadeUp, useDeferredReveal } from "./MotionWrapper";

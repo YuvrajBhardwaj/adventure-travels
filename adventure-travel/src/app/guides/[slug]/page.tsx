@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import Link from "@/components/Link";
 import { notFound } from "next/navigation";
 import { guideBySlug, guides, type GuideBlock } from "@/data/guides";
 import { absoluteUrl, breadcrumbLd, fitTitle, ORGANIZATION_ID, pageMetadata, WEBSITE_ID } from "@/lib/seo";

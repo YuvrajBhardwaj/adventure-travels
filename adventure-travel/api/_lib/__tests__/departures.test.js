@@ -96,3 +96,28 @@ describe("holdSeats", () => {
     await expect(departures.holdSeats(db, booking)).rejects.toEqual({ code: "500", message: "down" });
   });
 });
+
+describe("holdDecision (seat-hold limits)", () => {
+  const { holdDecision, HOLD_LIMITS } = departures;
+  const now = new Date("2026-11-25T10:00:00Z");
+  const inMin = (m) => new Date(now.getTime() + m * 60_000).toISOString();
+
+  it("reuses a hold with time left instead of extending it", () => {
+    expect(holdDecision({ heldUntil: inMin(10), now, recentHolds: 99, otherActiveHolds: 99 }).action).toBe("reuse");
+  });
+
+  it("takes a fresh hold when none is running or it is nearly over", () => {
+    expect(holdDecision({ heldUntil: null, now, recentHolds: 0, otherActiveHolds: 0 }).action).toBe("hold");
+    expect(holdDecision({ heldUntil: inMin(2), now, recentHolds: 1, otherActiveHolds: 1 }).action).toBe("hold");
+  });
+
+  it("refuses after the daily number of holds for one booking", () => {
+    const d = holdDecision({ heldUntil: null, now, recentHolds: HOLD_LIMITS.perBookingPerDay, otherActiveHolds: 0 });
+    expect(d.action).toBe("refuse");
+    expect(d.message).toMatch(/WhatsApp/);
+  });
+
+  it("refuses when the user already holds seats on too many other bookings", () => {
+    expect(holdDecision({ heldUntil: null, now, recentHolds: 0, otherActiveHolds: HOLD_LIMITS.otherActive }).action).toBe("refuse");
+  });
+});

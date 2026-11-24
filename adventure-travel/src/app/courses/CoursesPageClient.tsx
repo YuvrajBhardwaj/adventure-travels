@@ -1,7 +1,7 @@
 "use client";
 
 import EnquireTab from "@/components/EnquireTab";
-import Link from "next/link";
+import Link from "@/components/Link";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { courses } from "@/data/courses";

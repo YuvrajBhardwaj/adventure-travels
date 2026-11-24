@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
+import Link from "@/components/Link";
 import { Search } from "lucide-react";
 import { destinations, sortOptions } from "@/data/destinations";
 import SmartImage from "@/components/SmartImage";

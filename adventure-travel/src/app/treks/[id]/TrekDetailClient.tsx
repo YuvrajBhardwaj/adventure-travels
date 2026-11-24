@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import NationalityField from "@/components/NationalityField";
 import { motion, AnimatePresence, useAnimate, useReducedMotion } from "framer-motion";
-import Link from "next/link";
+import Link from "@/components/Link";
 import { PrivacyNotice } from "@/components/PrivacyNotice";
 import { packageGrid, priceOptions, priceRoute, type Trek } from "@/data/treks";
 import { TREK_GALLERIES, isVideo, trekPhotos } from "@/data/trekGalleries";

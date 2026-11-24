@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/Link";
 import { PrivacyNotice } from "@/components/PrivacyNotice";
 import { useAuth } from "@/contexts/AuthContext";
 import { BackendUnavailableError, createActivityBooking } from "@/lib/auth";

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/Link";
 import type { ReactNode } from "react";
 import { TOUR_CONTACT } from "@/data/tours";
 import { REFUND_NOTE, REFUND_TIERS } from "@/data/cancellationPolicy";
@@ -325,7 +325,8 @@ export function TourPage({
 
           {/* Beside the page on desktop (stays in view while scrolling), after it on phones. */}
           <aside className="lg:col-span-4">
-            <div className="lg:sticky lg:top-24">
+            {/* Capped to the screen and scrollable, like the trek page's card, so its button never sits below the fold. */}
+            <div className="lg:sticky lg:top-24 lg:-mx-3 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:px-3 lg:pb-4 lg:[scrollbar-width:thin]">
               <TourEnquiry tourName={name} packages={packages} offer={enquiryOffer} />
             </div>
           </aside>

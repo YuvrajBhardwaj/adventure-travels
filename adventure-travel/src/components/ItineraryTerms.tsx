@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/Link";
 import { COURSE_REFUND_NOTE, COURSE_REFUND_TIERS, PAYMENT_TERMS, REFUND_TIERS, SKI_TERMS } from "@/data/cancellationPolicy";
 
 /** The booking terms under a course itinerary — the only place ski and snowboard course terms are shown (owner, 20 Nov 2026). */

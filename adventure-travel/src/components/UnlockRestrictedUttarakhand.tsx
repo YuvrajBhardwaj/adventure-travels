@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/Link";
 import { Check } from "lucide-react";
 import { treks } from "@/data/treks";
 import { FadeUp } from "./MotionWrapper";

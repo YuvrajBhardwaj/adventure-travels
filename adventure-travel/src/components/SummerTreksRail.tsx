@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/Link";
 import { byPopularity, type Trek } from "@/data/treks";
 import { FadeUp } from "./MotionWrapper";
 import CardSlideshow from "./CardSlideshow";

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { formatRupees } from "@/lib/utils";
-import Link from "next/link";
+import Link from "@/components/Link";
 import { courses, type Course } from "@/data/courses";
 import { absoluteUrl, fitDescription, fitTitle, ORGANIZATION_ID, pageMetadata, SITE_URL } from "@/lib/seo";
 import { shareImage } from "@/lib/shareImage";

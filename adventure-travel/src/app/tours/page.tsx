@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/Link";
 import { CHOPTA_TREK, TOURS } from "@/data/tours";
 import { AULI_ESCAPE } from "@/data/auliEscape";
 import { absoluteUrl, fitDescription, fitTitle, pageMetadata, SITE_URL } from "@/lib/seo";

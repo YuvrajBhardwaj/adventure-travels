@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/Link";
 import type { ReactNode } from "react";
 import { priceRoute, type Trek } from "@/data/treks";
 import { MONTHS, seasonMonths } from "@/lib/season";

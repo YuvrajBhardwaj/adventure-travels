@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/Link";
 import type { ReactNode } from "react";
 import { AlertTriangle, CalendarDays, Clock, IndianRupee, MailWarning, RefreshCw, Undo2 } from "lucide-react";
 import { AdminGate } from "@/components/admin/AdminGate";

@@ -41,6 +41,44 @@ export function Dialog({
     [open, onOpenChange]
   );
   const state = React.useMemo(() => ({ open: isOpen, setOpen }), [isOpen, setOpen]);
+
+  // Focus return for dialogs opened by a plain button (Radix only returns focus to a
+  // DialogTrigger). We remember the last element focused outside any dialog; that is the
+  // opener when this dialog opens. 18 Nov test report: focus fell to <body> after the photo
+  // viewer and the Info popup closed.
+  const lastOutside = React.useRef<HTMLElement | null>(null);
+  const openerRef = React.useRef<HTMLElement | null>(null);
+  const wasOpen = React.useRef(isOpen);
+  React.useEffect(() => {
+    const onFocus = (e: FocusEvent) => {
+      const t = e.target;
+      if (t instanceof HTMLElement && t !== document.body && !t.closest('[role="dialog"]')) lastOutside.current = t;
+    };
+    document.addEventListener("focusin", onFocus);
+    return () => document.removeEventListener("focusin", onFocus);
+  }, []);
+  React.useEffect(() => {
+    const opening = !wasOpen.current && isOpen;
+    const closing = wasOpen.current && !isOpen;
+    wasOpen.current = isOpen;
+    if (opening) openerRef.current = lastOutside.current;
+    if (!closing) return;
+    const opener = openerRef.current;
+    if (!opener) return;
+    // Only step in when focus has nowhere better to be: on <body>, gone, or still in the closing dialog.
+    const restore = () => {
+      const active = document.activeElement;
+      const lost = !active || active === document.body || !active.isConnected || !!active.closest('[role="dialog"]');
+      if (lost && opener.isConnected) opener.focus({ preventScroll: true });
+    };
+    const frame = requestAnimationFrame(restore);
+    const late = window.setTimeout(restore, 450); // again after the exit animation unmounts the content
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(late);
+    };
+  }, [isOpen]);
+
   return (
     <DialogPrimitive.Root open={isOpen} onOpenChange={setOpen}>
       <DialogStateContext.Provider value={state}>{children}</DialogStateContext.Provider>

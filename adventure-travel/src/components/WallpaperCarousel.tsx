@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import Link from "next/link";
+import Link from "@/components/Link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { DURATION, EASE } from "@/lib/motion";
 import { cn } from "@/lib/utils";

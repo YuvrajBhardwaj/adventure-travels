@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/Link";
 import { ArrowRight } from "lucide-react";
 import { treks, REGIONS, DIFFICULTY_COLORS } from "@/data/treks";
 import { FadeUp } from "./MotionWrapper";

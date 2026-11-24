@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/Link";
 import type { Trek } from "@/data/treks";
 import Price from "@/components/Price";
 import { buttonVariants } from "@/components/ui/button";

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/Link";
 import type { ReactNode } from "react";
 import { courses } from "@/data/courses";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/MotionWrapper";

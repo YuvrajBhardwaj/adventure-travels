@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/Link";
 import { CircleCheck } from "lucide-react";
 import { cn, formatPaise } from "@/lib/utils";
 
