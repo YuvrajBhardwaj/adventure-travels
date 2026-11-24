@@ -24,6 +24,7 @@ import {
   type Profile,
 } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { downloadMyData } from "@/lib/dataExport";
 import { daysUntil, isOverdue } from "@/lib/paymentRules";
 import { cn, formatPaise } from "@/lib/utils";
 import { Compass, GraduationCap, Mountain, Receipt } from "lucide-react";
@@ -176,6 +177,8 @@ export default function DashboardPage() {
   const [deleteText, setDeleteText] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [deleteMsg, setDeleteMsg] = useState("");
+  const [exporting, setExporting] = useState(false);
+  const [exportMsg, setExportMsg] = useState("");
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -291,6 +294,18 @@ export default function DashboardPage() {
     } catch (err) {
       setDeleteMsg(err instanceof Error ? err.message : "Couldn't delete your account. Please contact us.");
       setDeleting(false);
+    }
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    setExportMsg("");
+    try {
+      await downloadMyData();
+    } catch (err) {
+      setExportMsg(err instanceof Error ? err.message : "Couldn't download your data. Please contact us.");
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -628,6 +643,19 @@ export default function DashboardPage() {
               ))}
             </div>
           )}
+        </Card>
+
+        {/* Download my data (right to access) */}
+        <Card className="p-5 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold text-white">Download my data</h2>
+          <p className="mt-2 text-sm text-white/60">
+            A copy of everything your account holds with us: your details, bookings, payments and account activity, as one file
+            (JSON) you can keep or open in any text editor.
+          </p>
+          <Button type="button" variant="outline" className="mt-4" loading={exporting} onClick={handleExport}>
+            {exporting ? "Preparing…" : "Download my data"}
+          </Button>
+          {exportMsg && <p role="alert" className="mt-3 text-sm text-red-300">{exportMsg}</p>}
         </Card>
 
         {/* Delete account (FR-070) */}
