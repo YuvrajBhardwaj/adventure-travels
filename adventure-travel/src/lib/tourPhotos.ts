@@ -19,7 +19,8 @@ export function tourPhotos(slug: string): string[] {
   try {
     return fs
       .readdirSync(dir)
-      .filter((f) => /\.(jpe?g|png|webp)$/i.test(f))
+      // Skip the phone copies (name.800.jpeg): SmartImage adds them through srcset.
+      .filter((f) => /\.(jpe?g|png|webp)$/i.test(f) && !/\.800\.[a-z]+$/i.test(f))
       .sort()
       .map((f) => `/assets/tours/${folder}/${f}`);
   } catch {
