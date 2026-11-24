@@ -1,5 +1,8 @@
 import { treks } from "@/data/treks";
-import { fitDescription, fitTitle, pageMetadata } from "@/lib/seo";
+import { absoluteUrl, breadcrumbLd, fitDescription, fitTitle, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/JsonLd";
+import { shareImage } from "@/lib/shareImage";
+
 import TreksPageClient from "./TreksPageClient";
 
 const fromJoshimath = treks.filter((t) => t.startsFrom === "Joshimath").length;
@@ -11,8 +14,25 @@ export const metadata = pageMetadata({
     "Filter by difficulty, days and price.",
   ]),
   path: "/treks",
+  ...shareImage("kuari-pass"),
+  imageAlt: "Kuari Pass Trek, Uttarakhand",
 });
 
 export default function TreksPage() {
-  return <TreksPageClient />;
+  return (
+    <>
+      <JsonLd
+        graph={[
+          {
+            "@type": "ItemList",
+            name: "Guided Himalayan treks",
+            numberOfItems: treks.length,
+            itemListElement: treks.map((t, i) => ({ "@type": "ListItem", position: i + 1, name: t.name, url: absoluteUrl(`/treks/${t.slug}`) })),
+          },
+          breadcrumbLd([["Treks", "/treks"]]),
+        ]}
+      />
+      <TreksPageClient />
+    </>
+  );
 }

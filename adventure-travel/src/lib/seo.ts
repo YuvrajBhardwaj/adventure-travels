@@ -124,3 +124,30 @@ export function pageMetadata({
     alternates: { canonical: url },
   };
 }
+
+/** BreadcrumbList JSON-LD: Home, then each [name, path] in order (the last one is the page itself). */
+export function breadcrumbLd(trail: [name: string, path: string][]) {
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: [["Home", "/"] as const, ...trail].map(([name, path], i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name,
+      item: path === "/" ? `${SITE_URL}/` : absoluteUrl(path),
+    })),
+  };
+}
+
+/** A WebPage node tied to the site and the business, for pages with no richer type. */
+export function webPageLd(type: "WebPage" | "ContactPage" | "CollectionPage" | "AboutPage", path: string, name: string, description: string) {
+  return {
+    "@type": type,
+    "@id": `${absoluteUrl(path)}#webpage`,
+    url: absoluteUrl(path),
+    name,
+    description,
+    inLanguage: "en-IN",
+    isPartOf: { "@id": WEBSITE_ID },
+    about: { "@id": ORGANIZATION_ID },
+  };
+}

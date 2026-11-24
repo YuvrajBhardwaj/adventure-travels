@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbLd, pageMetadata, webPageLd } from "@/lib/seo";
+import { JsonLd } from "@/components/JsonLd";
+
+const DESCRIPTION =
+  "What Himalayan Arc Adventure collects when you enquire, sign up, book or pay, who it is shared with, and how to correct or delete it.";
 
 export const metadata = pageMetadata({
   title: "Privacy Policy",
-  description:
-    "What Himalayan Arc Adventure collects when you enquire, sign up, book or pay, who it is shared with, and how to correct or delete it.",
+  description: DESCRIPTION,
   path: "/privacy",
 });
 
@@ -15,6 +18,7 @@ const a = "font-semibold text-emerald-700 underline underline-offset-4 hover:tex
 export default function PrivacyPage() {
   return (
     <main id="main" className="min-h-screen bg-white">
+      <JsonLd graph={[webPageLd("WebPage", "/privacy", "Privacy Policy", DESCRIPTION), breadcrumbLd([["Privacy Policy", "/privacy"]])]} />
       <header className="bg-navy text-white">
         <div className="mx-auto max-w-3xl px-4 pb-12 pt-28 sm:px-6 lg:pb-16 lg:pt-36">
           <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-2 text-sm text-white/60">

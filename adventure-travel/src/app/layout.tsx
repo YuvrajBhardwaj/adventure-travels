@@ -108,6 +108,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.himalayanarcadventure.com",
   },
+  // Local signals for search engines and AI answers: the base town. Town-centre coordinates of
+  // Joshimath (the office is "near Military Hospital"); swap in the office's map pin when known.
+  other: {
+    "geo.region": "IN-UT",
+    "geo.placename": "Joshimath, Chamoli, Uttarakhand",
+    "geo.position": "30.5550;79.5650",
+    ICBM: "30.5550, 79.5650",
+  },
   // Google takes the search-result favicon from these links on the home page, apple-touch-icon
   // included, so every file must be a real square image of its declared size.
   icons: {
@@ -158,6 +166,17 @@ export default function RootLayout({
           postalCode: "246443",
           addressCountry: "IN",
         },
+        // Joshimath town centre; see the geo meta tags in `metadata`.
+        geo: { "@type": "GeoCoordinates", latitude: 30.555, longitude: 79.565 },
+        // Owner confirmed "since 2010" (13 Nov 2026).
+        foundingDate: "2010",
+        knowsAbout: [
+          "Himalayan trekking",
+          "High-altitude trekking and acclimatisation",
+          "Skiing and snowboarding in Auli",
+          "Inner Line Permits for Mana and Niti",
+          ...treks.map((t) => t.name),
+        ],
         contactPoint: ["+91-78179-12062", "+91-86505-61564"].map((telephone) => ({
           "@type": "ContactPoint",
           telephone,
@@ -181,6 +200,8 @@ export default function RootLayout({
         areaServed: [
           { "@type": "State", name: "Uttarakhand" },
           { "@type": "State", name: "Himachal Pradesh" },
+          { "@type": "City", name: "Joshimath" },
+          { "@type": "Place", name: "Auli" },
         ],
         priceRange: `${inr(Math.min(...prices))}–${inr(Math.max(...prices))}`,
       },

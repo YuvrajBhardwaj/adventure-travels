@@ -2,6 +2,7 @@ import Link from "next/link";
 import { treks } from "@/data/treks";
 import { courses } from "@/data/courses";
 import { fitDescription, fitTitle, pageMetadata } from "@/lib/seo";
+import { shareImage } from "@/lib/shareImage";
 import { TrekHub } from "@/components/TrekHub";
 
 const PATH = "/treks-from-joshimath";
@@ -17,6 +18,8 @@ export const metadata = pageMetadata({
     `From ₹${fromPrice.toLocaleString("en-IN")} per person, Joshimath to Joshimath.`,
   ]),
   path: PATH,
+  ...shareImage("kuari-pass"),
+  imageAlt: "Kuari Pass Trek from Joshimath",
 });
 
 export default function TreksFromJoshimathPage() {

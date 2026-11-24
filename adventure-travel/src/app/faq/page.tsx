@@ -1,4 +1,5 @@
-import { fitTitle, pageMetadata } from "@/lib/seo";
+import { breadcrumbLd, fitTitle, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/JsonLd";
 import FAQPageClient from "./FAQPageClient";
 
 export const metadata = pageMetadata({
@@ -39,6 +40,7 @@ export default function FAQPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
+      <JsonLd graph={[breadcrumbLd([["FAQ", "/faq"]])]} />
       <FAQPageClient />
     </>
   );

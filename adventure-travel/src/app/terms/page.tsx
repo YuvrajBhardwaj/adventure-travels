@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbLd, pageMetadata, webPageLd } from "@/lib/seo";
+import { JsonLd } from "@/components/JsonLd";
+
+const DESCRIPTION =
+  "Booking terms for Himalayan Arc Adventure treks, tours and ski courses: cancellations, refunds, payments and trip changes.";
 import TermsConditions from "@/components/TermsConditions";
 
 export const metadata = pageMetadata({
   title: "Terms & Conditions",
-  description:
-    "Booking terms for Himalayan Arc Adventure treks, tours and ski courses: cancellations, refunds, payments and trip changes.",
+  description: DESCRIPTION,
   path: "/terms",
 });
 
@@ -14,6 +17,7 @@ const a = "font-semibold text-emerald-700 underline underline-offset-4 hover:tex
 export default function TermsPage() {
   return (
     <main id="main" className="min-h-screen bg-white">
+      <JsonLd graph={[webPageLd("WebPage", "/terms", "Terms & Conditions", DESCRIPTION), breadcrumbLd([["Terms & Conditions", "/terms"]])]} />
       <header className="bg-navy text-white">
         <div className="mx-auto max-w-3xl px-4 pb-12 pt-28 sm:px-6 lg:pb-16 lg:pt-36">
           <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-2 text-sm text-white/60">

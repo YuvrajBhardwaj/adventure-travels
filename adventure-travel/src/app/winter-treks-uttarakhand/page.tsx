@@ -2,6 +2,7 @@ import Link from "next/link";
 import { treks } from "@/data/treks";
 import { seasonMonths } from "@/lib/season";
 import { fitDescription, fitTitle, pageMetadata } from "@/lib/seo";
+import { shareImage } from "@/lib/shareImage";
 import { TrekHub } from "@/components/TrekHub";
 
 const PATH = "/winter-treks-uttarakhand";
@@ -19,6 +20,8 @@ export const metadata = pageMetadata({
     "Compare days, altitude, grade and price.",
   ]),
   path: PATH,
+  ...shareImage("kedarkantha"),
+  imageAlt: "Kedarkantha winter trek, Uttarakhand",
 });
 
 export default function WinterTreksPage() {
