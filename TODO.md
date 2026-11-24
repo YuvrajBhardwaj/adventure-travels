@@ -84,7 +84,8 @@ Last updated: 24 Nov 2026. On 24 Nov every open item was checked against the cod
 - [ ] Clean-up: delete `C:/Users/yuvra/dev/adventure-travels-3d` (the old 3D experiment).
 
 ## 6. Later (Dev, when wanted)
-- [ ] Trek guides (how to reach, best time, winter, Inner Line Permit) to replace the 3 placeholder story articles (`stories.ts`), or drop the stories section.
+- [ ] Trek guides (how to reach, best time, winter, Inner Line Permit) to replace the 3 placeholder story articles (`stories.ts`), or drop the stories section. (25 Nov: `/guides` started with "Kuari Pass Trek Guide" and "How to Reach Joshimath", built from `src/data/guides.ts`. Next: Inner Line Permit (**You:** documents, office, processing days), Valley of Flowers, winter treks; then point the home story cards at the guides.)
+- [ ] **You:** after the guides go live, Search Console → URL Inspection → request indexing for `/guides/kuari-pass-trek-guide` and `/guides/how-to-reach-joshimath`.
 - [ ] Booking flow: review step with a "seats held 14:59" timer; traveller details per person and an emergency contact; confirmation page with a PDF voucher; My Trips tabs with a refund preview and date-change request; add-ons (pickup, gear rental, insurance: **You** say which and at what price; is GST charged on top?).
 - [ ] P2: trek finder and "Find my trek" call to action; next departure on trek cards; group total in the booking form; safety badges by the booking panel; Women Trekkers link; Lighthouse and accessibility pass.
 - [ ] P3: compare treks; readiness check; packing list; self-service date change; vouchers and waitlist in the dashboard.

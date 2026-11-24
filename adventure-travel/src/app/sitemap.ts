@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { treks } from "@/data/treks";
 import { courses } from "@/data/courses";
 import { TOURS } from "@/data/tours";
+import { guides } from "@/data/guides";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 
 export const dynamic = "force-static";
@@ -54,6 +55,17 @@ const TOUR_ROUTES = TOURS.map((tour) => ({
   ...ownImages(tour.image),
 }));
 
+const GUIDE_ROUTES = [
+  { url: `${BASE}/guides`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.6 },
+  ...guides.map((guide) => ({
+    url: `${BASE}/guides/${guide.slug}`,
+    lastModified: new Date(guide.updated),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+    ...ownImages(guide.image),
+  })),
+];
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [...STATIC_ROUTES, ...TREK_ROUTES, ...COURSE_ROUTES, ...TOUR_ROUTES];
+  return [...STATIC_ROUTES, ...TREK_ROUTES, ...COURSE_ROUTES, ...TOUR_ROUTES, ...GUIDE_ROUTES];
 }

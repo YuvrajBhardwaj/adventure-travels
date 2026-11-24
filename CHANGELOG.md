@@ -17,6 +17,15 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+- **25 Nov 2026 · Guides: Kuari Pass trek guide and How to reach Joshimath** (`main`).
+  - **Visitors and SEO:** new `/guides` section, server-rendered so all the text is in the exported HTML.
+    - `/guides/kuari-pass-trek-guide` (about 1,100 words): at a glance, best time month by month, the day-by-day itinerary, cost per package, difficulty and AMS, weather route changes, packing, getting there.
+    - `/guides/how-to-reach-joshimath` (about 700 words): by air (Jolly Grant), train, road from Rishikesh (245–270 km, 9–10 hours), Joshimath to Auli, the treks that start there, our office.
+    - `/guides` lists them.
+  - **How they're built:** every fact comes from `src/data` (prices, altitudes, days, season windows and notes, itinerary) or what the FAQ and contact page already say. The content is in `src/data/guides.ts`, so the guides change when the trek data does.
+  - **Search signals:** Article and breadcrumb structured data; both guides in the sitemap; linked from the Kuari Pass page (a new "Guides" strip on every Joshimath trek page) and from `/treks-from-joshimath`.
+  - **Tests:** `src/lib/__tests__/guides.test.ts` checks that the guide facts match the trek data and that every link in a guide points to a page that exists.
+
 - **25 Nov 2026 · Headings and titles for "treks", "trips to Uttarakhand" and "skiing in Uttarakhand"** (`main`). SEO: `/treks` h1 "All Trekking Adventures" → "Treks in Uttarakhand & Himachal"; `/tours` h1 "Tours" → "Uttarakhand Trips & Tours", and the Google title says "Trips"; `/courses` h1 "…in the Himalayas" → "Skiing & Snowboarding in Auli, Uttarakhand", and the Google title is now "Skiing in Auli, Uttarakhand". The Kuari Pass page was checked and needs no change (3,100 words, indexable, in the sitemap, TouristTrip data). Ranking for "kuari pass" against Indiahikes depends mostly on off-site work: Search Console, Google Business Profile, reviews and links (see TODO §5).
 
 - **24 Nov 2026 · "Download my data" and a data breach plan** (`main`).

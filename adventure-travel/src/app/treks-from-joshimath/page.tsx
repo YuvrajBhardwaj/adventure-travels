@@ -35,7 +35,13 @@ export default function TreksFromJoshimathPage() {
             Military Hospital). Their prices are quoted Joshimath to Joshimath.
           </p>
           {/* Distances from the Rishikesh → Joshimath drives in the trek itineraries (src/data/treks.ts). */}
-          <p>Getting here: Joshimath is 245–270 km by road from Rishikesh, a 9–10 hour drive up the Alaknanda valley.</p>
+          <p>
+            Getting here: Joshimath is 245–270 km by road from Rishikesh, a 9–10 hour drive up the Alaknanda valley. See our guide on{" "}
+            <Link href="/guides/how-to-reach-joshimath" className="text-white underline decoration-white/40 underline-offset-4 hover:decoration-white">
+              how to reach Joshimath
+            </Link>
+            .
+          </p>
         </>
       }
     >

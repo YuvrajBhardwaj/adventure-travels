@@ -6,6 +6,31 @@ import { absoluteUrl, fitDescription, fitTitle, ORGANIZATION_ID, pageMetadata, S
 import { shareImage } from "@/lib/shareImage";
 import TrekDetailClient from "./TrekDetailClient";
 import RelatedTreks from "@/components/RelatedTreks";
+import { guideBySlug, guideForTrek } from "@/data/guides";
+
+/** Links to the guides about this trek and its start town (server-rendered, so Google sees them). */
+function TrekGuides({ trek }: { trek: (typeof treks)[number] }) {
+  const list = [guideForTrek(trek.slug), trek.startsFrom === "Joshimath" ? guideBySlug("how-to-reach-joshimath") : undefined].filter(
+    (g): g is NonNullable<typeof g> => !!g
+  );
+  if (!list.length) return null;
+  return (
+    <section aria-labelledby="trek-guides" className="border-t border-slate-200 bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <h2 id="trek-guides" className="font-heading text-2xl font-medium tracking-[-0.02em] text-slate-900 sm:text-3xl">Guides</h2>
+        <ul className="mt-4 flex flex-wrap gap-x-8 gap-y-2">
+          {list.map((g) => (
+            <li key={g.slug}>
+              <Link href={`/guides/${g.slug}`} className="inline-flex min-h-11 items-center font-semibold text-emerald-700 hover:underline">
+                {g.title} →
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
 
 // "Kalindi Khal Expedition" and "Ghiya Vinayak Pass (Nandi Kund Trek)" already say what they are.
 const trekTitle = (name: string) => (/\b(trek|expedition)\)?$/i.test(name) ? name : `${name} Trek`);
@@ -122,7 +147,15 @@ export default async function TrekDetailPage({ params }: { params: Promise<{ id:
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <TrekDetailClient trek={trek} related={<RelatedTreks trek={trek} />} />
+      <TrekDetailClient
+        trek={trek}
+        related={
+          <>
+            <TrekGuides trek={trek} />
+            <RelatedTreks trek={trek} />
+          </>
+        }
+      />
     </>
   );
 }
