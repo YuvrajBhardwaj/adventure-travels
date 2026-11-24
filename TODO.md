@@ -29,7 +29,7 @@ Last updated: 24 Nov 2026. On 24 Nov every open item was checked against the cod
 ## 3. Dev: medium
 - [x] ~~Content-Security-Policy header.~~ (24 Nov, `vercel.json`; enforced after a browser test with no violations.)
 - [ ] From the 18 Nov test report (`adventure-travel/docs/ux-qa/2026-11-18-test-report.md`): cap seat holds per user; one open advance order per booking; the sticky booking card is taller than some screens; return focus after the lightbox and popups.
-- [ ] Phones: the mobile menu doesn't cover the page (booking bar and WhatsApp button show through); the season stat card wraps to 3+ lines; up to three floating buttons on trek pages (booking bar, WhatsApp, Enquire tab).
+- [x] ~~Phones: the mobile menu doesn't cover the page (booking bar and WhatsApp button show through); the season stat card wraps to 3+ lines; up to three floating buttons on trek pages (booking bar, WhatsApp, Enquire tab).~~ (25 Nov, checked at 390 px: the menu sheet covers everything, trek pages float only the booking bar and the Enquire tab, the stat cards fit.)
 - [ ] Count bookings on generated daily dates, so a busy day turns "Filling fast"/"Full" by itself (needs a SQL change; today only dates with an admin row fill up).
 - [ ] Cookieless Vercel Web Analytics: `npm install @vercel/analytics` stopped on a peer-dependency conflict (20 Nov). **You:** then switch on Analytics in Vercel.
 - [ ] Signed-in browser tests (dashboard, checkout, admin) once there is a test account; maybe run `npm run test:e2e` on every push with GitHub Actions.
