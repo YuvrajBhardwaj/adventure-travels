@@ -3,27 +3,33 @@
 module.exports = {
   "valley-of-flowers": {
     "name": "Valley of Flowers",
-    "price": 8000
+    "price": 8000,
+    "groupSize": 20
   },
   "kedarkantha": {
     "name": "Kedarkantha Trek",
-    "price": 6000
+    "price": 6000,
+    "groupSize": 15
   },
   "brahmatal": {
     "name": "Brahmatal Trek",
-    "price": 14999
+    "price": 14999,
+    "groupSize": 15
   },
   "roopkund": {
     "name": "Roopkund Trek",
-    "price": 28999
+    "price": 28999,
+    "groupSize": 12
   },
   "har-ki-dun": {
     "name": "Har Ki Dun Trek",
-    "price": 12999
+    "price": 12999,
+    "groupSize": 18
   },
   "pangarchula-peak": {
     "name": "Pangarchula Peak Trek",
     "price": 8999,
+    "groupSize": 10,
     "roomSharing": {
       "Joshimath · Triple sharing": 8999,
       "Joshimath · Double sharing": 9500,
@@ -34,6 +40,7 @@ module.exports = {
   "kuari-pass": {
     "name": "Kuari Pass Trek",
     "price": 6999,
+    "groupSize": 15,
     "roomSharing": {
       "Joshimath · Triple sharing": 6999,
       "Joshimath · Double sharing": 7500,
@@ -43,55 +50,68 @@ module.exports = {
   },
   "hampta-pass": {
     "name": "Hampta Pass",
-    "price": 7500
+    "price": 7500,
+    "groupSize": 15
   },
   "satopanth-lake": {
     "name": "Satopanth Lake",
-    "price": 15000
+    "price": 15000,
+    "groupSize": 12
   },
   "nandi-kund": {
     "name": "Ghiya Vinayak Pass (Nandi Kund Trek)",
-    "price": 40000
+    "price": 40000,
+    "groupSize": 10
   },
   "kalindi-khal": {
     "name": "Kalindi Khal Expedition",
-    "price": 95000
+    "price": 95000,
+    "groupSize": 13
   },
   "gupt-khal": {
     "name": "Gupt Khal Expedition",
-    "price": 95000
+    "price": 95000,
+    "groupSize": 6
   },
   "panpatia-col": {
     "name": "Panpatia Col Trek",
-    "price": 85000
+    "price": 85000,
+    "groupSize": 8
   },
   "dronagiri-base-camp": {
     "name": "Dronagiri Base Camp Trek",
-    "price": 29999
+    "price": 29999,
+    "groupSize": 12
   },
   "nanda-devi-base-camp": {
     "name": "Nanda Devi Base Camp Trek",
-    "price": 35999
+    "price": 35999,
+    "groupSize": 10
   },
   "mana-pass": {
     "name": "Mana Pass Expedition",
-    "price": 5000
+    "price": 5000,
+    "groupSize": 8
   },
   "niti-pass": {
     "name": "Niti Pass Expedition",
-    "price": 5000
+    "price": 5000,
+    "groupSize": 8
   },
   "rimkhim": {
     "name": "Rimkhim Expedition",
-    "price": 5000
+    "price": 5000,
+    "groupSize": 10
   },
   "bhrigu-lake": {
     "name": "Bhrigu Lake Trek",
-    "price": 5000
+    "price": 5000,
+    "groupSize": 12
   },
   "tungnath": {
     "name": "Tungnath Trek",
     "price": 5499,
+    "groupSize": 15,
     "roomSharing": {
       "Quad sharing": 5499,
       "Triple sharing": 5999,
@@ -100,6 +120,7 @@ module.exports = {
   },
   "madhyamaheshwar": {
     "name": "Madhyamaheshwar Trek",
-    "price": 6999
+    "price": 6999,
+    "groupSize": 15
   }
 };

@@ -121,3 +121,33 @@ describe("holdDecision (seat-hold limits)", () => {
     expect(holdDecision({ heldUntil: null, now, recentHolds: 0, otherActiveHolds: HOLD_LIMITS.otherActive }).action).toBe("refuse");
   });
 });
+
+describe("dateProblem (generated dates limited to the group size)", () => {
+  const { dateProblem } = departures;
+  // A fake db: no listed batch on the date; `taken` seats on generated dates.
+  const db = (taken, listed = []) => ({
+    rpc: async (name) =>
+      name === "trek_departure_availability"
+        ? { data: listed, error: null }
+        : { data: [{ start_date: "2026-12-02", seats_taken: taken }], error: null },
+  });
+
+  it("allows a group that fits the trek's group size", async () => {
+    expect(await dateProblem(db(10), "kuari-pass", "2026-12-02", 5, 15)).toBeNull();
+  });
+
+  it("refuses a group that doesn't fit, saying how many seats are left", async () => {
+    expect(await dateProblem(db(12), "kuari-pass", "2026-12-02", 4, 15)).toMatch(/Only 3 seats are left/);
+    expect(await dateProblem(db(15), "kuari-pass", "2026-12-02", 1, 15)).toMatch(/full/);
+  });
+
+  it("uses a listed batch's own seats instead", async () => {
+    const listed = [{ start_date: "2026-12-02", seats_left: 1, closed: false }];
+    expect(await dateProblem(db(0, listed), "kuari-pass", "2026-12-02", 2, 15)).toMatch(/Only 1 seat is left/);
+  });
+
+  it("doesn't limit anything when the counts function isn't deployed yet", async () => {
+    const missing = { rpc: async (name) => (name === "trek_departure_availability" ? { data: [], error: null } : { data: null, error: { code: "PGRST202" } }) };
+    expect(await dateProblem(missing, "kuari-pass", "2026-12-02", 10, 15)).toBeNull();
+  });
+});

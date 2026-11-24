@@ -20,7 +20,9 @@ for (const trek of mod.exports.treks ?? []) {
   if (!trek.slug || !Number.isInteger(trek.price) || trek.price <= 0) {
     throw new Error(`Trek "${trek.name}" has no valid integer price.`);
   }
-  catalog[trek.slug] = { name: trek.name, price: trek.price };
+  // groupSize: seats per departure on dates an admin hasn't listed (supabase-date-seats.sql).
+  // Same default as the Dates calendar (src/app/treks/[id]/useDepartures.ts).
+  catalog[trek.slug] = { name: trek.name, price: trek.price, groupSize: trek.groupSize ?? 15 };
   // `roomSharing` is the API's option label → price map: room tiers or pickup packages
   // (stored on the booking's room_sharing column either way).
   if (trek.roomSharing && trek.packages) {

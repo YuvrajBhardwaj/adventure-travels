@@ -35,8 +35,10 @@ async function createTrek(db, user, body) {
   if (!pricing.isFutureStart(date)) throw new HttpError(400, "Pick a start date in the future.");
 
   const group = parseTrekGroup(body.groupSize);
-  // A listed batch must be open and have room for the whole group.
-  const full = departures.seatProblem(await departures.findDeparture(db, slug, date), departures.seatsFor(group.label));
+  // A listed batch must be open and have room for the whole group; any other date is limited
+  // to the trek's group size (supabase-date-seats.sql). The seat hold at checkout re-checks
+  // under a lock, so this early check can't oversell.
+  const full = await departures.dateProblem(db, slug, date, departures.seatsFor(group.label), trek.groupSize);
   if (full) throw new HttpError(409, full);
   const roomSharing = text(body.roomSharing, 40) || null;
   if (roomSharing && (!trek.roomSharing || !Object.prototype.hasOwnProperty.call(trek.roomSharing, roomSharing))) {

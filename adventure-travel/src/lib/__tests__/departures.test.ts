@@ -151,6 +151,21 @@ describe("season departures", () => {
     expect(list[1]).toMatchObject({ id: "gen-2026-11-09", capacity: 15, seatsLeft: 15, closed: false });
   });
 
+  it("counts seats already taken on generated dates (filling fast, full)", () => {
+    const list = mergeDepartures(
+      ["2026-12-01", "2026-12-02", "2026-12-03", "2026-12-04"],
+      [dep("2026-12-04", 9)], // an admin row wins over the counts
+      15,
+      { "2026-12-02": 13, "2026-12-03": 18, "2026-12-04": 15 },
+    );
+    expect(list.map((d) => [d.start, d.seatsLeft, seatLabel(d)])).toEqual([
+      ["2026-12-01", 15, "Available"],
+      ["2026-12-02", 2, "Filling fast"],
+      ["2026-12-03", 0, "Full"],
+      ["2026-12-04", 9, "Available"],
+    ]);
+  });
+
   it("uses India's date, not the visitor's", () => {
     expect(todayInIndia(new Date("2026-11-06T20:00:00Z"))).toBe("2026-11-07");
     expect(todayInIndia(new Date("2026-11-06T10:00:00Z"))).toBe("2026-11-06");

@@ -36,8 +36,17 @@ export function useDepartures(trek: Trek): DeparturesState {
     if (!supabase) return;
     (async () => {
       try {
-        const { data, error } = await supabase.rpc("trek_departure_availability", { p_slug: trek.slug });
+        const [listed, seats] = await Promise.all([
+          supabase.rpc("trek_departure_availability", { p_slug: trek.slug }),
+          supabase.rpc("trek_date_seats", { p_slug: trek.slug }),
+        ]);
+        const { data, error } = listed;
         if (error) throw error;
+        // Seats taken on generated dates; missing (function not deployed, or an error) means none.
+        const taken: Record<string, number> = {};
+        for (const s of ((seats.error ? [] : seats.data) ?? []) as { start_date: string; seats_taken: number }[]) {
+          taken[s.start_date] = s.seats_taken;
+        }
         const rows = ((data ?? []) as Row[]).map<Departure>((r) => ({
           id: r.id,
           start: r.start_date,
@@ -46,7 +55,7 @@ export function useDepartures(trek: Trek): DeparturesState {
           closed: r.closed,
           tag: r.tag ?? "",
         }));
-        if (live) setState({ status: "ready", departures: mergeDepartures(dates, rows, capacity) });
+        if (live) setState({ status: "ready", departures: mergeDepartures(dates, rows, capacity, taken) });
       } catch {
         // Overrides couldn't load: the season's dates stay as they are.
       }

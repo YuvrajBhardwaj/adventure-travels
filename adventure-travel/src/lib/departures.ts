@@ -143,12 +143,22 @@ export function seasonDates(cal: DepartureCalendar, today: string, horizonDays =
 
 /**
  * One open departure per generated date; an admin row on the same date replaces it, and
- * admin rows on other dates (special departures) are kept. Earliest first.
+ * admin rows on other dates (special departures) are kept. Earliest first. `taken` holds the
+ * seats already booked on each generated date (trek_date_seats, supabase-date-seats.sql), so
+ * a busy day shows "Filling fast" and a full one "Full".
  */
-export function mergeDepartures(dates: string[], rows: Departure[], capacity: number): Departure[] {
+export function mergeDepartures(dates: string[], rows: Departure[], capacity: number, taken: Record<string, number> = {}): Departure[] {
   const byDate = new Map(rows.map((r) => [r.start, r]));
   const list = dates.map<Departure>(
-    (start) => byDate.get(start) ?? { id: `gen-${start}`, start, capacity, seatsLeft: capacity, closed: false, tag: "" },
+    (start) =>
+      byDate.get(start) ?? {
+        id: `gen-${start}`,
+        start,
+        capacity,
+        seatsLeft: Math.max(capacity - (taken[start] ?? 0), 0),
+        closed: false,
+        tag: "",
+      },
   );
   const generated = new Set(dates);
   for (const r of rows) if (!generated.has(r.start)) list.push(r);

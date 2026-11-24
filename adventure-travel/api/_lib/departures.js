@@ -24,6 +24,30 @@ async function findDeparture(db, slug, date) {
   return (data || []).find((d) => d.start_date === date) || null;
 }
 
+/**
+ * Seats already taken on a date an admin hasn't listed (supabase-date-seats.sql), or 0 when
+ * the function isn't in the database yet.
+ */
+async function dateSeatsTaken(db, slug, date) {
+  const { data, error } = await db.rpc("trek_date_seats", { p_slug: slug });
+  if (error) {
+    if (error.code === "PGRST202") return 0;
+    throw error;
+  }
+  return (data || []).find((d) => d.start_date === date)?.seats_taken ?? 0;
+}
+
+/**
+ * Why `persons` can't book `date`: a listed batch uses its own seat count; any other date
+ * is limited to the trek's group size (`capacity`). Null when they can.
+ */
+async function dateProblem(db, slug, date, persons, capacity) {
+  const listed = await findDeparture(db, slug, date);
+  if (listed) return seatProblem(listed, persons);
+  if (!capacity) return null;
+  return seatProblem({ closed: false, seats_left: Math.max(capacity - (await dateSeatsTaken(db, slug, date)), 0) }, persons);
+}
+
 /** Seats a stored group size takes: "10+" (a quote request) counts as 10. */
 function seatsFor(groupSize) {
   const n = Number.parseInt(String(groupSize), 10);
@@ -38,11 +62,15 @@ const HOLD_MINUTES = 15;
 /**
  * Holds a pending booking's seats while its owner pays (hold_trek_seats in
  * supabase-departures.sql). The database locks the batch, so two checkouts for the last
- * seats can't both succeed. Returns { problem, heldUntil }: problem is the message to show
- * when the group doesn't fit, heldUntil is null for a private-departure date.
+ * seats can't both succeed. With booking.capacity (the trek's group size), dates an admin
+ * hasn't listed are limited to it too (supabase-date-seats.sql). Returns { problem, heldUntil }:
+ * problem is the message to show when the group doesn't fit.
  */
 async function holdSeats(db, booking, minutes = HOLD_MINUTES) {
-  const { data, error } = await db.rpc("hold_trek_seats", { p_booking: booking.id, p_minutes: minutes });
+  const args = { p_booking: booking.id, p_minutes: minutes };
+  let { data, error } = await db.rpc("hold_trek_seats", booking.capacity ? { ...args, p_capacity: booking.capacity } : args);
+  // supabase-date-seats.sql not run yet: the 2-argument hold (listed batches only).
+  if (error && error.code === "PGRST202" && booking.capacity) ({ data, error } = await db.rpc("hold_trek_seats", args));
   if (error) {
     // Migration not run yet: fall back to the plain (non-locking) check.
     if (error.code === "PGRST202") {
@@ -83,4 +111,4 @@ function holdDecision({ heldUntil, now = new Date(), recentHolds, otherActiveHol
   return { action: "hold" };
 }
 
-module.exports = { seatProblem, findDeparture, seatsFor, holdSeats, holdDecision, HOLD_MINUTES, HOLD_LIMITS };
+module.exports = { seatProblem, findDeparture, dateSeatsTaken, dateProblem, seatsFor, holdSeats, holdDecision, HOLD_MINUTES, HOLD_LIMITS };

@@ -81,6 +81,8 @@ async function loadBooking(db, user, bookingType, bookingId) {
     slug: b.trek_slug,
     seats: departures.seatsFor(b.group_size),
     heldUntil: b.seats_held_until || null,
+    // Seats per departure on dates an admin hasn't listed (supabase-date-seats.sql).
+    capacity: trekCatalog[b.trek_slug]?.groupSize ?? null,
   };
 }
 

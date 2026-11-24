@@ -17,6 +17,17 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+- **25 Nov 2026 · "Filling fast" and "Full" on every date** (`main`). **Backend**, database change approved by the owner.
+  - **Visitors:** the Dates calendar counts seats already taken on every generated daily date, not only on dates an admin listed. A day with 3 or fewer seats left shows "Filling fast"; a full day shows "Full" and can't be picked.
+  - **Backend:**
+    - New `supabase-date-seats.sql` (file 10). `trek_date_seats(slug)` returns seats taken per upcoming date: counts only, no names; readable by browsers.
+    - A 3-argument `hold_trek_seats(booking, minutes, capacity)` limits unlisted dates to the trek's group size, under an advisory lock so the last seats can't be held twice. Listed batches still use the original 2-argument function, unchanged.
+    - `api/bookings.js` refuses a full date when the booking is made; `api/create-order.js` passes the trek's group size to the hold. The catalog now carries `groupSize` (`npm run catalog`; prices unchanged, checked).
+    - Both API paths fall back to the old behaviour if the function is missing.
+  - **Tested:** 14 checks on PGlite with all 10 SQL files (run twice): counts, hold fits, hold refused, re-hold, listed batch untouched, cancelled bookings, permissions. Unit tests for the calendar merge and the API date check: 119 pass; browser tests 6/6.
+  - **Live:** applied to Supabase on 25 Nov through the Management API, then verified read-only (both functions present, browsers can read counts but get "permission denied" on the hold).
+  - **Not covered:** `apply_payment()`'s late-payment check still looks only at listed batches.
+
 - **25 Nov 2026 · Fixes from the 18 Nov test report; fewer background requests** (`main`).
   - **Backend (`api/create-order.js`, `api/_lib/departures.js`), no database change:**
     - **Seat holds are capped.** A hold with 5+ minutes left is reused, not extended. At most 4 fresh holds per booking per 24 hours, and at most 2 other unpaid bookings holding seats per user; past that the customer is asked to message us on WhatsApp. Holds are logged as `PAYMENT_INITIATED` with `seats_held: true`; the admin feed shows them as "held seats for 15 minutes to pay". Before this, anyone could keep a batch's seats held for ever by retrying every 15 minutes.
@@ -1081,6 +1092,7 @@ Below, ☑ marks the files run on that project.
 | 7 | `adventure-travel/supabase-scale.sql` | Indexes, faster security rules, fixed search_path, explicit grants | ☑ 5 Nov |
 | 8 | `adventure-travel/supabase-payment-guard.sql` | `apply_payment()` no longer overcharges or pays cancelled/refunded bookings; flags them "Needs refund". 24 Nov: also flags trek payments that land after the seat hold when the batch is full | ☑ 13 Nov · 24 Nov version ☑ 24 Nov |
 | 9 | `adventure-travel/supabase-nationality.sql` | `nationality` (indian/foreign) on trek and course bookings; foreign nationals pay 3× | ☑ 20 Nov |
+| 10 | `adventure-travel/supabase-date-seats.sql` | `trek_date_seats()` (seats taken per generated date, for the calendar) and a 3-argument `hold_trek_seats()` that limits unlisted dates to the trek's group size under a lock | ☑ 25 Nov |
 
 After running them, give the business account admin rights (snippet at the top of file 2), then sign out and back in.
 
