@@ -178,7 +178,7 @@ export default function TreksPage() {
       <header className="bg-navy text-white">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 pb-10 pt-28 sm:px-6 lg:grid-cols-12 lg:items-end lg:gap-12 lg:px-8 lg:pb-14 lg:pt-32">
           <div className="lg:col-span-5 lg:pb-1">
-            <h1 className="font-heading text-5xl font-medium leading-[0.98] tracking-[-0.02em] sm:text-6xl xl:text-7xl">All Trekking Adventures</h1>
+            <h1 className="font-heading text-5xl font-medium leading-[0.98] tracking-[-0.02em] sm:text-6xl xl:text-7xl">Treks in Uttarakhand &amp; Himachal</h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-white/75 sm:text-lg">
               Every trekking itinerary we run, from beginner-friendly walks to hard high-altitude expeditions.
             </p>

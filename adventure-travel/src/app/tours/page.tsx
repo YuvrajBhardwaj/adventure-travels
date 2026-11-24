@@ -9,7 +9,7 @@ import { shareImage } from "@/lib/shareImage";
 import EnquireTab from "@/components/EnquireTab";
 
 export const metadata = pageMetadata({
-  title: fitTitle("Uttarakhand Tours", [TOURS.map((t) => t.name.split(/\s/)[0]).join(" & ") + " Getaways"]),
+  title: fitTitle("Uttarakhand Trips & Tours", [TOURS.map((t) => t.name.split(/\s/)[0]).join(" & ") + " Getaways"]),
   description: fitDescription([
     `Short Uttarakhand tours with Himalayan Arc Adventure: ${TOURS.map((t) => t.name).join(", ")}.`,
     "Drives, stays and guided sightseeing; no trekking needed.",
@@ -68,7 +68,7 @@ export default function ToursPage() {
             <span aria-hidden>/</span>
             <span className="text-white/90">Tours</span>
           </nav>
-          <h1 className="font-heading text-5xl font-medium leading-[0.98] tracking-[-0.02em] sm:text-6xl xl:text-7xl">Tours</h1>
+          <h1 className="font-heading text-5xl font-medium leading-[0.98] tracking-[-0.02em] sm:text-6xl xl:text-7xl">Uttarakhand Trips &amp; Tours</h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">
             Short Himalayan getaways for friends and families: scenic drives, comfortable stays and guided sightseeing, no trekking needed.
           </p>

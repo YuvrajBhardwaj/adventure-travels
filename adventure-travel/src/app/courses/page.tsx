@@ -13,7 +13,7 @@ const withStayFrom = tiers.length ? Math.min(...tiers.map((t) => t.priceFull)) :
 const durations = [...new Set(courses.map((c) => Number.parseInt(c.duration, 10)))].filter(Number.isFinite).sort((a, b) => a - b);
 
 export const metadata = pageMetadata({
-  title: fitTitle("Auli Ski & Snowboard School"),
+  title: fitTitle("Skiing in Auli, Uttarakhand", ["Ski & Snowboard School"]),
   description: fitDescription([
     `${durations.join("- and ")}-day skiing and snowboarding courses and backcountry touring in Auli, Uttarakhand.`,
     `Training from ${formatRupees(trainingFrom)}${withStayFrom ? `, or ${formatRupees(withStayFrom)} with stay and meals` : ""}.`,

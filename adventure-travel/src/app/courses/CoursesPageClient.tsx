@@ -117,7 +117,7 @@ export default function CoursesPageClient() {
             <div className="lg:col-span-9">
               <h1 className="font-heading text-[2.6rem] font-semibold leading-[1.02] tracking-[-0.025em] text-white sm:text-6xl lg:text-7xl [text-shadow:0_2px_30px_rgba(2,6,23,0.55)]">
                 <span className="block">Skiing &amp; Snowboarding</span>
-                <span className="block">in the Himalayas</span>
+                <span className="block">in Auli, Uttarakhand</span>
               </h1>
               <p className="mt-6 max-w-xl text-lg text-white/85 [text-shadow:0_1px_12px_rgba(2,6,23,0.7)]">
                 Certified 7-day courses on the powder slopes of Auli, with professional instructors, full equipment and Nanda Devi in view.
