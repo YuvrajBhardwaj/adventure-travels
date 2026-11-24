@@ -26,7 +26,11 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
     - Both API paths fall back to the old behaviour if the function is missing.
   - **Tested:** 14 checks on PGlite with all 10 SQL files (run twice): counts, hold fits, hold refused, re-hold, listed batch untouched, cancelled bookings, permissions. Unit tests for the calendar merge and the API date check: 119 pass; browser tests 6/6.
   - **Live:** applied to Supabase on 25 Nov through the Management API, then verified read-only (both functions present, browsers can read counts but get "permission denied" on the hold).
-  - **Not covered:** `apply_payment()`'s late-payment check still looks only at listed batches.
+  - **Follow-up, same day (owner approved):** late payments on daily dates are flagged too.
+    - New column `trek_bookings.seat_capacity`, written by the 3-argument hold for unlisted dates.
+    - `apply_payment()` (`supabase-payment-guard.sql`) uses it: a payment that lands after the 15-minute hold, on a date that filled up meanwhile, is recorded as paid, marked "Needs refund: date filled up after the seat hold ran out" on /admin/payments, and the booking is left unpaid, the same as for listed batches. Old bookings without a recorded capacity behave as before.
+    - **Tested:** 8 more PGlite checks (22 in all): flagged when full, applied when there's room, applied inside the hold, older bookings unchanged, listed batches unchanged.
+    - **Live:** both files re-applied to Supabase. Verified: the column exists, `apply_payment()` has the new check, browsers still can't call it ("permission denied"), and a server call with an unknown order answers `unknown_order`.
 
 - **25 Nov 2026 · Fixes from the 18 Nov test report; fewer background requests** (`main`).
   - **Backend (`api/create-order.js`, `api/_lib/departures.js`), no database change:**
@@ -1090,9 +1094,9 @@ Below, ☑ marks the files run on that project.
 | 5 | `adventure-travel/supabase-payments-v2.sql` | Advance/balance payments, audit trail, email outbox, `apply_payment()` | ☑ 19 Oct |
 | 6 | `adventure-travel/supabase-departures.sql` | Batch calendar, seats left; (29 Oct) checkout seat hold `hold_trek_seats()` | ☑ 23 Oct · 29 Oct version ☑ 5 Nov |
 | 7 | `adventure-travel/supabase-scale.sql` | Indexes, faster security rules, fixed search_path, explicit grants | ☑ 5 Nov |
-| 8 | `adventure-travel/supabase-payment-guard.sql` | `apply_payment()` no longer overcharges or pays cancelled/refunded bookings; flags them "Needs refund". 24 Nov: also flags trek payments that land after the seat hold when the batch is full | ☑ 13 Nov · 24 Nov version ☑ 24 Nov |
+| 8 | `adventure-travel/supabase-payment-guard.sql` | `apply_payment()` no longer overcharges or pays cancelled/refunded bookings; flags them "Needs refund". 24 Nov: also flags trek payments that land after the seat hold when the batch is full. 25 Nov: the same on daily (unlisted) dates, using the new `trek_bookings.seat_capacity` | ☑ 13 Nov · 24 Nov version ☑ 24 Nov · 25 Nov version ☑ 25 Nov |
 | 9 | `adventure-travel/supabase-nationality.sql` | `nationality` (indian/foreign) on trek and course bookings; foreign nationals pay 3× | ☑ 20 Nov |
-| 10 | `adventure-travel/supabase-date-seats.sql` | `trek_date_seats()` (seats taken per generated date, for the calendar) and a 3-argument `hold_trek_seats()` that limits unlisted dates to the trek's group size under a lock | ☑ 25 Nov |
+| 10 | `adventure-travel/supabase-date-seats.sql` | `trek_date_seats()` (seats taken per generated date, for the calendar) and a 3-argument `hold_trek_seats()` that limits unlisted dates to the trek's group size under a lock and records it in `seat_capacity` | ☑ 25 Nov (seat_capacity version ☑ 25 Nov) |
 
 After running them, give the business account admin rights (snippet at the top of file 2), then sign out and back in.
 

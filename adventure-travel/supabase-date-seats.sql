@@ -10,7 +10,13 @@
 --      group size on dates that aren't listed batches. Listed batches go through the existing
 --      2-argument function unchanged. Concurrent checkouts for the same trek and date take
 --      turns through an advisory lock, so the last seats can't be held twice.
--- Safe to re-run. Run after supabase-departures.sql (and supabase-nationality.sql).
+--   3. The hold records the capacity it checked on the booking (seat_capacity), so
+--      apply_payment() can flag a payment that lands after the hold ran out on a date that
+--      filled up meanwhile (supabase-payment-guard.sql).
+-- Safe to re-run. Run after supabase-departures.sql and supabase-payment-guard.sql.
+
+-- Also added by supabase-payment-guard.sql; repeated so this file stands alone.
+alter table public.trek_bookings add column if not exists seat_capacity integer;
 
 create or replace function public.trek_date_seats(p_slug text)
 returns table (start_date date, seats_taken integer)
@@ -77,7 +83,7 @@ begin
   end if;
 
   until_ts := now() + make_interval(mins => greatest(1, least(p_minutes, 60)));
-  update public.trek_bookings set seats_held_until = until_ts where id = b.id;
+  update public.trek_bookings set seats_held_until = until_ts, seat_capacity = p_capacity where id = b.id;
   return query select true, false, p_capacity - taken - wanted, until_ts;
 end;
 $$;

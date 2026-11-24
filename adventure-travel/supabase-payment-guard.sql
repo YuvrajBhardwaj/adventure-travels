@@ -9,10 +9,17 @@
 --   * an order opened before a cancel or refund still applied to that booking.
 --   * (24 Nov) a trek payment landing after the 15-minute seat hold, when the batch has
 --     filled or closed meanwhile, confirmed the booking anyway (overbooking).
+--   * (25 Nov) the same on dates an admin hasn't listed (daily dates from the season
+--     calendar): the booking's seat_capacity, recorded by hold_trek_seats() in
+--     supabase-date-seats.sql, is the limit there.
 -- Razorpay has already captured the money when this runs, so the payment is still
 -- recorded as paid, but the booking is left alone and the payment is marked
 -- "Needs refund: …" (failure_reason, shown on /admin/payments) for a manual refund.
 -- =============================================
+
+-- Seats per departure on an unlisted date, written when the booking's seats are held for
+-- payment (null for listed batches, which keep their own capacity in trek_departures).
+alter table public.trek_bookings add column if not exists seat_capacity integer;
 
 create or replace function public.apply_payment(
   p_order_id text,
@@ -42,6 +49,7 @@ declare
   b_held timestamptz;
   b_slug text;
   b_group text;
+  b_cap integer;
   d_cap integer;
   d_offline integer;
   d_closed boolean;
@@ -72,8 +80,8 @@ begin
   end if;
 
   if btype = 'trek' then
-    select amount, amount_paid, status, payment_state, trek_date, user_id, seats_held_until, trek_slug, group_size
-      into b_amount, b_paid, b_status, b_state, b_start, b_user, b_held, b_slug, b_group
+    select amount, amount_paid, status, payment_state, trek_date, user_id, seats_held_until, trek_slug, group_size, seat_capacity
+      into b_amount, b_paid, b_status, b_state, b_start, b_user, b_held, b_slug, b_group, b_cap
       from public.trek_bookings where id = bid for update;
   else
     select amount, amount_paid, status, payment_state, preferred_date, user_id
@@ -111,6 +119,22 @@ begin
         when d_closed then 'batch was closed after the seat hold ran out'
         when d_cap - taken < wanted then 'batch filled up after the seat hold ran out'
       end;
+    elsif b_cap is not null then
+      -- An unlisted (daily) date: the capacity recorded at the seat hold, under the same
+      -- per-date lock hold_trek_seats() takes (supabase-date-seats.sql).
+      perform pg_advisory_xact_lock(hashtext('trek_date_seats:' || b_slug || ':' || b_start::text));
+      wanted := case when b_group ~ '^[0-9]+$' then b_group::integer else 10 end;
+      select coalesce(sum(case when tb.group_size ~ '^[0-9]+$' then tb.group_size::integer else 10 end), 0)
+        into taken
+        from public.trek_bookings tb
+       where tb.trek_slug = b_slug
+         and tb.trek_date = b_start
+         and tb.id <> bid
+         and tb.status <> 'cancelled'
+         and (tb.status = 'confirmed' or tb.payment_state in ('advance_paid', 'fully_paid') or tb.seats_held_until > now());
+      if b_cap - taken < wanted then
+        refund_reason := 'date filled up after the seat hold ran out';
+      end if;
     end if;
   end if;
   if refund_reason is not null then
