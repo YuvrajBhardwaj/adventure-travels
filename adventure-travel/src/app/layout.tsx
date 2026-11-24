@@ -120,6 +120,9 @@ export const metadata: Metadata = {
   // included, so every file must be a real square image of its declared size.
   icons: {
     icon: [
+      // The peak mark (scripts/make-favicons.mjs). Listed first so browsers and Google's
+      // results page use it; the .ico and PNGs below are the same artwork for older clients.
+      { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
       { url: "/favicon.png", type: "image/png", sizes: "192x192" },
     ],

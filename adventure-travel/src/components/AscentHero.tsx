@@ -192,7 +192,9 @@ export default function AscentHero() {
               <span className="mb-3 block font-nav text-xs font-bold uppercase tracking-[0.18em] text-navy-deep [text-shadow:0_0_12px_rgba(255,255,255,0.9)] sm:text-sm">
                 Himalayan treks from Joshimath · Auli ski school
               </span>
-              One range.
+              {/* A real space: the text is read without layout (Google snippets), where the span's
+                  line break doesn't exist, so it would run into the headline ("schoolOne"). */}{" "}
+              One range.{" "}
               <br />
               Two seasons.
             </h1>
