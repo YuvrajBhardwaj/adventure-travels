@@ -55,8 +55,10 @@ export const metadata: Metadata = {
     default: "Himalayan Arc: Uttarakhand & Himachal Treks, Auli Ski School",
     template: "%s | Himalayan Arc Adventure",
   },
+  // The owner's wording (26 Nov 2026): the Google result snippet only, not shown on the page.
+  // It names the brand, so Google uses it for a "himalayan arc adventure" search.
   description:
-    "Small-group treks in Uttarakhand and Himachal with local guides from Joshimath, and a ski and snowboard school in Auli.",
+    "Explore Uttarakhand with Himalayan Arc Adventure! Discover guided Himalayan treks, peak expeditions, professional skiing and snowboarding courses, and unforgettable mountain adventures with experienced local mountain professionals.",
   keywords: [
     "Himalayan trekking",
     "Uttarakhand treks",

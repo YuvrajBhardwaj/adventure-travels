@@ -53,6 +53,8 @@ const instagramImages = [1, 2, 3, 4, 5, 6].map((n) => `/thumbs/footer-${n}.jpg`)
 
 const INSTAGRAM_URL = "https://instagram.com/himalayan_arc_adventure";
 
+const EMAIL = "himalayanarcadventure@gmail.com";
+
 const socials = [
   { label: "Instagram", href: INSTAGRAM_URL, brand: "instagram" as const },
   { label: "YouTube", href: "https://www.youtube.com/@HimalayanArcAdventure", brand: "youtube" as const },
@@ -159,6 +161,13 @@ export default function FooterV2() {
                   <BrandIcon brand={social.brand} className="h-4 w-4" />
                 </a>
               ))}
+              <a
+                href={`mailto:${EMAIL}`}
+                aria-label="Email Himalayan Arc Adventure"
+                className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-primary/20 hover:border-primary/30 hover:-translate-y-0.5 active:scale-95 transition-[color,background-color,border-color,transform] duration-150 ease-out motion-reduce:transition-colors motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100"
+              >
+                <Mail className="h-4 w-4" aria-hidden />
+              </a>
             </div>
 
             {/* No unverified rating claimed here until reviews are collected and linkable. */}
@@ -342,6 +351,9 @@ export default function FooterV2() {
                 <BrandIcon brand={social.brand} className="h-4 w-4" />
               </a>
             ))}
+            <a href={`mailto:${EMAIL}`} aria-label="Email" className="h-11 w-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/70 transition-colors duration-150 ease-out active:bg-white/10">
+              <Mail className="h-4 w-4" aria-hidden />
+            </a>
           </div>
 
           <MobileAccordion title="Quick Links" id="quick" openId={openSection} setOpenId={setOpenSection}>

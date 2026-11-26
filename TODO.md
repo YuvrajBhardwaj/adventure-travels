@@ -78,6 +78,7 @@ Last updated: 24 Nov 2026. On 24 Nov every open item was checked against the cod
 - [ ] Booking-boost ideas: sticky Pay bar on phones, WhatsApp on every trek card, a balance-due banner on the dashboard, a trust line under the hero buttons. Say which to build.
 
 ## 5. Off-site (You)
+- [ ] **You: after the 26 Nov Google description is deployed**, Search Console → URL Inspection → home page → Request indexing, so the new search snippet shows sooner.
 - [ ] **Google Search Console:** submit `https://www.himalayanarcadventure.com/sitemap.xml`; request indexing for the home page (also refreshes the favicon), `/treks`, `/tours`, `/courses`, `/activities`, `/treks-from-joshimath`, `/winter-treks-uttarakhand` and the top 5 trek pages.
 - [ ] **Google Business Profile** for the Joshimath office (same name, address and phone as the footer, real photos), and a review request after every batch.
 - [ ] The rest of `adventure-travel/docs/seo/2026-10-21-traffic-and-bookings-plan.md`: Instagram reels linking to trek pages, WhatsApp Business, listings on Thrillophilia, TripAdvisor and JustDial; recreate the Facebook and YouTube pages if you want them linked.

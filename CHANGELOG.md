@@ -17,6 +17,12 @@ Every change to the Himalayan Arc Adventure site, newest first. Backend changes 
 
 ## [Unreleased]
 
+- **26 Nov 2026 · New Google description for the home page** (uncommitted, owner request).
+  - **Google:** the home page meta description is now the owner's text ("Explore Uttarakhand with Himalayan Arc Adventure! Discover guided Himalayan treks, peak expeditions, professional skiing and snowboarding courses…"). It names the brand, so a "himalayan arc adventure" search should show it instead of the camping line Google pulled from the page. Google shows about the first 155–160 characters and updates after it re-crawls.
+  - **Visitors:** nothing changes on the page itself (owner asked for the search result only).
+  - **Code:** `src/app/layout.tsx` (`description`).
+  - **Footer:** a mail icon (opens an email to `himalayanarcadventure@gmail.com`) next to the Instagram and YouTube icons, on desktop and mobile (`src/components/FooterV2.tsx`).
+
 - **25 Nov 2026 · INR and Indian national prices by default** (`main`, owner request).
   - **Visitors:** everyone now starts on INR and "Indian national prices", wherever they are (before, a visitor outside India, or on a foreign VPN, got their local currency and foreign-national prices automatically).
   - "Auto" in both menus, and the "Use my location" button, still follow the location when the visitor chooses them, and that choice is remembered.
